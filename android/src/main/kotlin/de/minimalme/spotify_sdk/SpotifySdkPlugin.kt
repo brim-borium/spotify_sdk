@@ -30,18 +30,35 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Pl
         }
     }
 
+    //connecting
     private val methodConnectToSpotify = "connectToSpotify"
     private val methodLogoutFromSpotify = "logoutFromSpotify"
+
+    //player api
     private val methodQueueTrack = "queueTrack"
     private val methodPlay = "play"
     private val methodPause = "pause"
+    private val methodResume = "resume"
     private val methodToggleRepeat = "toggleRepeat"
     private val methodToggleShuffle = "toggleShuffle"
+    private val methodSkipNext = "skipNext"
+    private val methodSkipPrevious = "skipPrevious"
+    private val methodSeekTo = "seekTo"
+    private val methodSeekToRelativePosition = "seekToRelativePosition"
+
+    //user api
     private val methodAddToLibrary = "addToLibrary"
+
+    //images api
+    private val methodGetImage = "getImage"
 
     private val paramClientId = "clientId"
     private val paramRedirectUrl = "redirectUrl"
     private val paramSpotifyUri = "spotifyUri"
+    private val paramImageUri = "imageUri"
+    private val paramImageDimension = "imageDimension"
+    private val paramPositionedMilliseconds = "positionedMilliseconds"
+    private val paramRelativeMilliseconds = "relativeMilliseconds"
 
     private val errorConnecting = "errorConnecting"
 
@@ -58,12 +75,14 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Pl
     private var spotifyAppRemote: SpotifyAppRemote? = null
     private var spotifyPlayerApi: SpotifyPlayerApi? = null
     private var spotifyUserApi: SpotifyUserApi? = null
+    private var spotifyImagesApi: SpotifyImagesApi? = null
 
     override fun onMethodCall(call: MethodCall, result: Result) {
 
         if (spotifyAppRemote != null) {
-            spotifyPlayerApi = SpotifyPlayerApi(spotifyAppRemote)
-            spotifyUserApi = SpotifyUserApi(spotifyAppRemote)
+            spotifyPlayerApi = SpotifyPlayerApi(spotifyAppRemote, result)
+            spotifyUserApi = SpotifyUserApi(spotifyAppRemote, result)
+            spotifyImagesApi = SpotifyImagesApi(spotifyAppRemote, result)
         }
 
         when (call.method) {
@@ -71,14 +90,22 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Pl
             methodConnectToSpotify -> connectToSpotify(call.argument(paramClientId), call.argument(paramRedirectUrl), result)
             methodLogoutFromSpotify -> logoutFromSpotify(result)
             //player api calls
-            methodQueueTrack -> spotifyPlayerApi?.queue(call.argument(paramSpotifyUri), result)
-            methodPlay -> spotifyPlayerApi?.play(call.argument(paramSpotifyUri), result)
-            methodPause -> spotifyPlayerApi?.pause(result)
-            methodToggleShuffle -> spotifyPlayerApi?.toggleShuffle(result)
-            methodToggleRepeat -> spotifyPlayerApi?.toggleRepeat(result)
+            methodQueueTrack -> spotifyPlayerApi?.queue(call.argument(paramSpotifyUri))
+            methodPlay -> spotifyPlayerApi?.play(call.argument(paramSpotifyUri))
+            methodPause -> spotifyPlayerApi?.pause()
+            methodResume -> spotifyPlayerApi?.resume()
+            methodSeekTo -> spotifyPlayerApi?.seekTo(call.argument(paramPositionedMilliseconds))
+            methodSeekToRelativePosition -> spotifyPlayerApi?.seekToRelativePosition(call.argument(paramRelativeMilliseconds))
+            methodToggleShuffle -> spotifyPlayerApi?.toggleShuffle()
+            methodToggleRepeat -> spotifyPlayerApi?.toggleRepeat()
+            methodSkipNext -> spotifyPlayerApi?.skipNext()
+            methodSkipPrevious -> spotifyPlayerApi?.skipPrevious()
             //user api calls
-            methodAddToLibrary -> spotifyUserApi?.addToUserLibrary(call.argument(paramSpotifyUri), result)
+            methodAddToLibrary -> spotifyUserApi?.addToUserLibrary(call.argument(paramSpotifyUri))
+            //image api calls
+            methodGetImage -> spotifyImagesApi?.getImage(call.argument(paramImageUri), call.argument(paramImageDimension))
 
+            // method call is not implemented yet
             else -> result.notImplemented()
         }
     }
