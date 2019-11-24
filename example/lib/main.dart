@@ -19,9 +19,8 @@ class _MyAppState extends State<MyApp> {
     String authentication;
     // Platform messages may fail, so we use a try/catch PlatformException.
     try {
-      authentication = await SpotifySdk.connectSpotify(
-          clientId: "4ee5e972f7154c3293f4c0fdec99f373",
-          redirectUrl: "http://example.com/callback/");
+      authentication =
+          await SpotifySdk.connectSpotify(clientId: "", redirectUrl: "");
     } on PlatformException catch (e) {
       var message = e.message;
       var details = e.details;

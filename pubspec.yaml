@@ -1,7 +1,8 @@
 name: spotify_sdk
-description: A new flutter plugin project.
+description: A flutter plugin that let's you communicate with the flutter sdk
 version: 0.0.1
-homepage:
+homepage: https://github.com/IamTobi/spotify_sdk
+issue_tracker: https://github.com/IamTobi/spotify_sdk/issues
 
 environment:
   sdk: ">=2.1.0 <3.0.0"
