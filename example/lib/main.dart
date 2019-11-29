@@ -80,8 +80,8 @@ class _MyAppState extends State<MyApp> {
   Future<void> getAuthenticationToken() async {
     try {
       var authenticationToken = await SpotifySdk.getAuthenticationToken(
-          clientId: "4ee5e972f7154c3293f4c0fdec99f373",
-          redirectUrl: "https://mysite.com/callback/");
+          clientId: "",
+          redirectUrl: "");
       setState(() {
         _authenticationToken = authenticationToken;
       });
