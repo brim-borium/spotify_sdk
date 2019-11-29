@@ -37,9 +37,11 @@ class SpotifySdk {
   static final Logger _logger = new Logger();
   static const MethodChannel _channel = const MethodChannel('spotify_sdk');
 
-  static Future<void> connectSpotify() async {
+  static Future<bool> connectSpotify(
+      {@required String clientId, @required String redirectUrl}) async {
     try {
-      await _channel.invokeMethod(_methodConnectToSpotify);
+      return await _channel.invokeMethod(_methodConnectToSpotify,
+          {_paramClientId: clientId, _paramRedirectUrl: redirectUrl});
     } on PlatformException catch (e) {
       _logger.i('$_methodConnectToSpotify failed: ${e.message}');
       throw e;
@@ -53,7 +55,7 @@ class SpotifySdk {
       {@required String clientId, @required String redirectUrl}) async {
     try {
       final String authorization = await _channel.invokeMethod(
-          _methodConnectToSpotify,
+          _methodGetAuthenticationToken,
           {_paramClientId: clientId, _paramRedirectUrl: redirectUrl});
       return authorization;
     } on PlatformException catch (e) {

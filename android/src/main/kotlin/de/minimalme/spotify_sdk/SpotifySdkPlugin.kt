@@ -16,6 +16,7 @@ import io.flutter.plugin.common.PluginRegistry.Registrar
 
 
 class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, PluginRegistry.ActivityResultListener {
+
     companion object {
 
         private const val CHANNEL_NAME = "spotify_sdk"
@@ -71,7 +72,6 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Pl
             "playlist-modify-public",
             "user-read-currently-playing")
 
-    private var connectionParams: ConnectionParams? = null
     private var pendingOperation: PendingOperation? = null
     private var spotifyAppRemote: SpotifyAppRemote? = null
     private var spotifyPlayerApi: SpotifyPlayerApi? = null
@@ -88,7 +88,7 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Pl
 
         when (call.method) {
             //connecting to spotify
-            methodConnectToSpotify -> connectToSpotify(result)
+            methodConnectToSpotify -> connectToSpotify(call.argument(paramClientId), call.argument(paramRedirectUrl), result)
             methodGetAuthenticationToken -> getAuthenticationToken(call.argument(paramClientId), call.argument(paramRedirectUrl), result)
             methodLogoutFromSpotify -> logoutFromSpotify(result)
             //player api calls
@@ -113,16 +113,21 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Pl
     }
 
     //-- Method implementations
-    private fun connectToSpotify(result: Result) {
+    private fun connectToSpotify(clientId: String?, redirectUrl: String?, result: Result) {
+        var connectionParams = ConnectionParams.Builder(clientId)
+                .setRedirectUri(redirectUrl)
+                .showAuthView(true)
+                .build()
+
         SpotifyAppRemote.connect(registrar.context(), connectionParams,
                 object : ConnectionListener {
                     override fun onConnected(spotifyAppRemoteValue: SpotifyAppRemote) {
                         spotifyAppRemote = spotifyAppRemoteValue
-                        result.success("")
+                        result.success(true)
                     }
 
                     override fun onFailure(throwable: Throwable) {
-                        result.error(throwable.cause.toString(), throwable.message, throwable.stackTrace)
+                        result.error(throwable.cause.toString(), throwable.message, "")
                     }
                 })
     }
@@ -137,11 +142,6 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Pl
         if (clientId.isNullOrBlank() || redirectUrl.isNullOrBlank()) {
             result.error(errorConnecting, "client id or redirectUrl are not set or have invalid format", "")
         } else {
-            connectionParams = ConnectionParams.Builder(clientId)
-                    .setRedirectUri(redirectUrl)
-                    .showAuthView(false)
-                    .build()
-
             val builder = AuthenticationRequest.Builder(clientId, AuthenticationResponse.Type.TOKEN, redirectUrl)
             builder.setScopes(scope)
             val request = builder.build()

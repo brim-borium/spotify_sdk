@@ -17,12 +17,6 @@ class _MyAppState extends State<MyApp> {
   String _currentStatus = "";
 
   @override
-  void initState() {
-    super.initState();
-    connectSpotify();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
@@ -43,7 +37,11 @@ class _MyAppState extends State<MyApp> {
         Text("Status $_currentStatus"),
         Text("Token: $_authenticationToken"),
         RaisedButton(
-          child: Text("connect to Spotify"),
+          child: Text("connectToSpotify"),
+          onPressed: () => connectSpotify(),
+        ),
+        RaisedButton(
+          child: Text("getauthtoken"),
           onPressed: () => getAuthenticationToken(),
         ),
         RaisedButton(child: Text("queue"), onPressed: () => queue()),
@@ -69,7 +67,12 @@ class _MyAppState extends State<MyApp> {
 
   Future<void> connectSpotify() async {
     try {
-      await SpotifySdk.connectSpotify();
+      var result = await SpotifySdk.connectSpotify(
+          clientId: "4ee5e972f7154c3293f4c0fdec99f373",
+          redirectUrl: "https://mysite.com/callback/");
+      setStatus(result
+          ? "connect to spotify successful"
+          : "conntect to spotify failed");
     } on PlatformException catch (e) {
       setStatus(e.code, message: e.message);
     } on MissingPluginException {
