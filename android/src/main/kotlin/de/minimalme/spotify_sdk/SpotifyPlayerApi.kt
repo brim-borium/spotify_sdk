@@ -69,28 +69,30 @@ class SpotifyPlayerApi(spotifyAppRemote: SpotifyAppRemote?, result: MethodChanne
         }
     }
 
-    internal fun seekTo(positionMs: Long?) {
-        if (playerApi != null && positionMs != null) {
-            playerApi.seekTo(positionMs)
+    internal fun seekTo(milliseconds: Int?) {
+        var castedMilliseconds = milliseconds?.toLong()
+        if (playerApi != null && castedMilliseconds != null) {
+            playerApi.seekTo(castedMilliseconds)
                     .setResultCallback {
                         result.success(true)
-                        result.error(errorResume, "error when seeking to: $positionMs", "")
+                        result.error(errorResume, "error when seeking to: $castedMilliseconds", "")
                     }
-        } else if(positionMs == null){
+        } else if(castedMilliseconds == null){
             result.error(errorSeekTo, "positionMS is not set", "")
         } else {
             spotifyRemoteAppNotSetError()
         }
     }
 
-    internal fun seekToRelativePosition(milliseconds: Long?) {
-        if (playerApi != null && milliseconds != null) {
-            playerApi.seekToRelativePosition(milliseconds)
+    internal fun seekToRelativePosition(milliseconds: Int?) {
+        var castedMilliseconds = milliseconds?.toLong()
+        if (playerApi != null && castedMilliseconds != null) {
+            playerApi.seekToRelativePosition(castedMilliseconds)
                     .setResultCallback {
                         result.success(true)
-                        result.error(errorResume, "error when seeking relative to: $milliseconds", "")
+                        result.error(errorResume, "error when seeking relative to: $castedMilliseconds", "")
                     }
-        } else if(milliseconds == null){
+        } else if(castedMilliseconds == null){
             result.error(errorSeekTo, "milliseconds is not set", "")
         } else {
             spotifyRemoteAppNotSetError()

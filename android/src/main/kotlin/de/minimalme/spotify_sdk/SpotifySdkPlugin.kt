@@ -32,6 +32,7 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Pl
 
     //connecting
     private val methodConnectToSpotify = "connectToSpotify"
+    private val methodGetAuthenticationToken = "getAuthenticationToken";
     private val methodLogoutFromSpotify = "logoutFromSpotify"
 
     //player api
@@ -87,7 +88,8 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Pl
 
         when (call.method) {
             //connecting to spotify
-            methodConnectToSpotify -> connectToSpotify(call.argument(paramClientId), call.argument(paramRedirectUrl), result)
+            methodConnectToSpotify -> connectToSpotify(result)
+            methodGetAuthenticationToken -> getAuthenticationToken(call.argument(paramClientId), call.argument(paramRedirectUrl), result)
             methodLogoutFromSpotify -> logoutFromSpotify(result)
             //player api calls
             methodQueueTrack -> spotifyPlayerApi?.queue(call.argument(paramSpotifyUri))
@@ -111,8 +113,21 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Pl
     }
 
     //-- Method implementations
-    private fun connectToSpotify(clientId: String?, redirectUrl: String?, result: Result) {
+    private fun connectToSpotify(result: Result) {
+        SpotifyAppRemote.connect(registrar.context(), connectionParams,
+                object : ConnectionListener {
+                    override fun onConnected(spotifyAppRemoteValue: SpotifyAppRemote) {
+                        spotifyAppRemote = spotifyAppRemoteValue
+                        result.success("")
+                    }
 
+                    override fun onFailure(throwable: Throwable) {
+                        result.error(throwable.cause.toString(), throwable.message, throwable.stackTrace)
+                    }
+                })
+    }
+
+    private fun getAuthenticationToken(clientId: String?, redirectUrl: String?, result: Result) {
         if (registrar.activity() == null) {
             throw IllegalStateException("connectToSpotify needs a foreground activity")
         }
@@ -162,25 +177,11 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Pl
 
         when (response.type) {
             AuthenticationResponse.Type.TOKEN -> {
-
-                initSpotifyAppRemote()
                 result.success(response.accessToken)
             }
             AuthenticationResponse.Type.ERROR -> result.error("authentication_error", "Authentication went wrong", response.error)
             else -> result.notImplemented()
         }
-    }
-
-    private fun initSpotifyAppRemote() {
-        SpotifyAppRemote.connect(registrar.context(), connectionParams,
-                object : ConnectionListener {
-                    override fun onConnected(spotifyAppRemoteValue: SpotifyAppRemote) {
-                        spotifyAppRemote = spotifyAppRemoteValue
-                    }
-
-                    override fun onFailure(throwable: Throwable) {
-                    }
-                })
     }
 
     private fun checkAndSetPendingOperation(method: String, result: Result) {

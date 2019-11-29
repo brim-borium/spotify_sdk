@@ -18,7 +18,7 @@ class SpotifyImagesApi(spotifyAppRemote: SpotifyAppRemote?, result: MethodChanne
             var imagesize = Dimension.values()[dimension]
             imagesApi.getImage(imageUri, imagesize)
                     .setResultCallback {
-                        result.success(true)
+                        result.success(it)
                         result.error(errorGetImage, "error when getting the image", "")
                     }
         } else if (imageUri == null) {

@@ -6,60 +6,73 @@ import 'package:logger/logger.dart';
 
 class SpotifySdk {
   // connection and auth
-  static final String methodConnectToSpotify = "connectToSpotify";
-  static final String methodLogoutFromSpotify = "logoutFromSpotify";
+  static const String _methodConnectToSpotify = "connectToSpotify";
+  static const String _methodGetAuthenticationToken = "getAuthenticationToken";
+  static const String _methodLogoutFromSpotify = "logoutFromSpotify";
 
   // player api
-  static final String methodQueueTrack = "queueTrack";
-  static final String methodPlay = "play";
-  static final String methodPause = "pause";
-  static final String methodToggleRepeat = "toggleRepeat";
-  static final String methodToggleShuffle = "toggleShuffle";
-  static final String methodResume = "resume";
-  static final String methodSkipNext = "skipNext";
-  static final String methodSkipPrevious = "skipPrevious";
-  static final String methodSeekTo = "seekTo";
-  static final String methodSeekToRelativePosition = "seekToRelativePosition";
+  static const String _methodQueueTrack = "queueTrack";
+  static const String _methodPlay = "play";
+  static const String _methodPause = "pause";
+  static const String _methodToggleRepeat = "toggleRepeat";
+  static const String _methodToggleShuffle = "toggleShuffle";
+  static const String _methodResume = "resume";
+  static const String _methodSkipNext = "skipNext";
+  static const String _methodSkipPrevious = "skipPrevious";
+  static const String _methodSeekTo = "seekTo";
+  static const String _methodSeekToRelativePosition = "seekToRelativePosition";
   // user api
-  static final String methodAddToLibrary = "addToLibrary";
+  static const String _methodAddToLibrary = "addToLibrary";
   // images api
-  static final String methodGetImage = "getImage";
+  static const String _methodGetImage = "getImage";
   // params
-  static final String paramClientId = "clientId";
-  static final String paramRedirectUrl = "redirectUrl";
-  static final String paramSpotifyUri = "spotifyUri";
-  static final String paramImageUri = "imageUri";
-  static final String paramImageDimension = "imageDimension";
-  static final String paramPositionedMilliseconds = "positionedMilliseconds";
-  static final String paramRelativeMilliseconds = "relativeMilliseconds";
+  static const String _paramClientId = "clientId";
+  static const String _paramRedirectUrl = "redirectUrl";
+  static const String _paramSpotifyUri = "spotifyUri";
+  static const String _paramImageUri = "imageUri";
+  static const String _paramImageDimension = "imageDimension";
+  static const String _paramPositionedMilliseconds = "positionedMilliseconds";
+  static const String _paramRelativeMilliseconds = "relativeMilliseconds";
 
   static final Logger _logger = new Logger();
   static const MethodChannel _channel = const MethodChannel('spotify_sdk');
 
-  static Future<String> connectSpotify(
+  static Future<void> connectSpotify() async {
+    try {
+      await _channel.invokeMethod(_methodConnectToSpotify);
+    } on PlatformException catch (e) {
+      _logger.i('$_methodConnectToSpotify failed: ${e.message}');
+      throw e;
+    } on MissingPluginException catch (e) {
+      _logger.i('$_methodConnectToSpotify not implemented');
+      throw e;
+    }
+  }
+
+  static Future<String> getAuthenticationToken(
       {@required String clientId, @required String redirectUrl}) async {
     try {
       final String authorization = await _channel.invokeMethod(
-          methodConnectToSpotify,
-          {paramClientId: clientId, paramRedirectUrl: redirectUrl});
+          _methodConnectToSpotify,
+          {_paramClientId: clientId, _paramRedirectUrl: redirectUrl});
       return authorization;
     } on PlatformException catch (e) {
-      _logger.i('$methodConnectToSpotify failed: ${e.message}');
+      _logger.i('$_methodGetAuthenticationToken failed: ${e.message}');
       throw e;
     } on MissingPluginException catch (e) {
-      _logger.i('$methodConnectToSpotify not implemented');
+      _logger.i('$_methodGetAuthenticationToken not implemented');
       throw e;
     }
   }
 
   static Future logout() async {
     try {
-      await _channel.invokeMethod(methodLogoutFromSpotify);
+      await _channel.invokeMethod(_methodLogoutFromSpotify);
     } on PlatformException catch (e) {
-      _logger.i('$methodLogoutFromSpotify failed: ${e.message}');
+      _logger.i('$_methodLogoutFromSpotify failed: ${e.message}');
       throw e;
     } on MissingPluginException catch (e) {
-      _logger.i('$methodLogoutFromSpotify not implemented');
+      _logger.i('$_methodLogoutFromSpotify not implemented');
       throw e;
     }
   }
@@ -67,85 +80,85 @@ class SpotifySdk {
   static Future queue({@required String spotifyUri}) async {
     try {
       await _channel
-          .invokeMethod(methodQueueTrack, {paramSpotifyUri: spotifyUri});
+          .invokeMethod(_methodQueueTrack, {_paramSpotifyUri: spotifyUri});
     } on PlatformException catch (e) {
-      _logger.i('$methodQueueTrack failed: ${e.message}');
+      _logger.i('$_methodQueueTrack failed: ${e.message}');
       throw e;
     } on MissingPluginException catch (e) {
-      _logger.i('$methodQueueTrack not implemented');
+      _logger.i('$_methodQueueTrack not implemented');
       throw e;
     }
   }
 
   static Future play({@required String spotifyUri}) async {
     try {
-      await _channel.invokeMethod(methodPlay, {paramSpotifyUri: spotifyUri});
+      await _channel.invokeMethod(_methodPlay, {_paramSpotifyUri: spotifyUri});
     } on PlatformException catch (e) {
-      _logger.i('$methodPlay failed: ${e.message}');
+      _logger.i('$_methodPlay failed: ${e.message}');
       throw e;
     } on MissingPluginException catch (e) {
-      _logger.i('$methodPlay not implemented');
+      _logger.i('$_methodPlay not implemented');
       throw e;
     }
   }
 
   static Future pause() async {
     try {
-      await _channel.invokeMethod(methodPause);
+      await _channel.invokeMethod(_methodPause);
     } on PlatformException catch (e) {
-      _logger.i('$methodPause failed: ${e.message}');
+      _logger.i('$_methodPause failed: ${e.message}');
       throw e;
     } on MissingPluginException catch (e) {
-      _logger.i('$methodPause not implemented');
+      _logger.i('$_methodPause not implemented');
       throw e;
     }
   }
 
   static Future resume() async {
     try {
-      await _channel.invokeMethod(methodResume);
+      await _channel.invokeMethod(_methodResume);
     } on PlatformException catch (e) {
-      _logger.i('$methodResume failed: ${e.message}');
+      _logger.i('$_methodResume failed: ${e.message}');
       throw e;
     } on MissingPluginException catch (e) {
-      _logger.i('$methodResume not implemented');
+      _logger.i('$_methodResume not implemented');
       throw e;
     }
   }
 
   static Future skipNext() async {
     try {
-      await _channel.invokeMethod(methodSkipNext);
+      await _channel.invokeMethod(_methodSkipNext);
     } on PlatformException catch (e) {
-      _logger.i('$methodSkipNext failed: ${e.message}');
+      _logger.i('$_methodSkipNext failed: ${e.message}');
       throw e;
     } on MissingPluginException catch (e) {
-      _logger.i('$methodSkipNext not implemented');
+      _logger.i('$_methodSkipNext not implemented');
       throw e;
     }
   }
 
   static Future skipPrevious() async {
     try {
-      await _channel.invokeMethod(methodSkipPrevious);
+      await _channel.invokeMethod(_methodSkipPrevious);
     } on PlatformException catch (e) {
-      _logger.i('$methodSkipPrevious failed: ${e.message}');
+      _logger.i('$_methodSkipPrevious failed: ${e.message}');
       throw e;
     } on MissingPluginException catch (e) {
-      _logger.i('$methodSkipPrevious not implemented');
+      _logger.i('$_methodSkipPrevious not implemented');
       throw e;
     }
   }
 
   static Future seekTo({@required int positionedMilliseconds}) async {
     try {
-      await _channel.invokeMethod(
-          methodSeekTo, {paramPositionedMilliseconds: positionedMilliseconds});
+      await _channel.invokeMethod(_methodSeekTo,
+          {_paramPositionedMilliseconds: positionedMilliseconds});
     } on PlatformException catch (e) {
-      _logger.i('$methodSeekTo failed: ${e.message}');
+      _logger.i('$_methodSeekTo failed: ${e.message}');
       throw e;
     } on MissingPluginException catch (e) {
-      _logger.i('$methodSeekTo not implemented');
+      _logger.i('$_methodSeekTo not implemented');
       throw e;
     }
   }
@@ -153,37 +166,37 @@ class SpotifySdk {
   static Future seekToRelativePosition(
       {@required int relativeMilliseconds}) async {
     try {
-      await _channel.invokeMethod(methodSeekToRelativePosition,
-          {paramRelativeMilliseconds: relativeMilliseconds});
+      await _channel.invokeMethod(_methodSeekToRelativePosition,
+          {_paramRelativeMilliseconds: relativeMilliseconds});
     } on PlatformException catch (e) {
-      _logger.i('$methodSeekToRelativePosition failed: ${e.message}');
+      _logger.i('$_methodSeekToRelativePosition failed: ${e.message}');
       throw e;
     } on MissingPluginException catch (e) {
-      _logger.i('$methodSeekToRelativePosition not implemented');
+      _logger.i('$_methodSeekToRelativePosition not implemented');
       throw e;
     }
   }
 
   static Future toggleShuffle() async {
     try {
-      await _channel.invokeMethod(methodToggleShuffle);
+      await _channel.invokeMethod(_methodToggleShuffle);
     } on PlatformException catch (e) {
-      _logger.i('$methodToggleShuffle failed: ${e.message}');
+      _logger.i('$_methodToggleShuffle failed: ${e.message}');
       throw e;
     } on MissingPluginException catch (e) {
-      _logger.i('$methodToggleShuffle not implemented');
+      _logger.i('$_methodToggleShuffle not implemented');
       throw e;
     }
   }
 
   static Future toggleRepeat() async {
     try {
-      await _channel.invokeMethod(methodToggleRepeat);
+      await _channel.invokeMethod(_methodToggleRepeat);
     } on PlatformException catch (e) {
-      _logger.i('$methodToggleRepeat failed: ${e.message}');
+      _logger.i('$_methodToggleRepeat failed: ${e.message}');
       throw e;
     } on MissingPluginException catch (e) {
-      _logger.i('$methodToggleRepeat not implemented');
+      _logger.i('$_methodToggleRepeat not implemented');
       throw e;
     }
   }
@@ -191,12 +204,12 @@ class SpotifySdk {
   static Future addToLibrary({@required String spotifyUri}) async {
     try {
       await _channel
-          .invokeMethod(methodAddToLibrary, {paramSpotifyUri: spotifyUri});
+          .invokeMethod(_methodAddToLibrary, {_paramSpotifyUri: spotifyUri});
     } on PlatformException catch (e) {
-      _logger.i('$methodAddToLibrary failed: ${e.message}');
+      _logger.i('$_methodAddToLibrary failed: ${e.message}');
       throw e;
     } on MissingPluginException catch (e) {
-      _logger.i('$methodAddToLibrary not implemented');
+      _logger.i('$_methodAddToLibrary not implemented');
       throw e;
     }
   }
@@ -222,13 +235,13 @@ class SpotifySdk {
           imageDimension = 144;
           break;
       }
-      await _channel.invokeMethod(methodGetImage,
-          {paramImageUri: imageUri, paramImageDimension: imageDimension});
+      await _channel.invokeMethod(_methodGetImage,
+          {_paramImageUri: imageUri, _paramImageDimension: imageDimension});
     } on PlatformException catch (e) {
-      _logger.i('$methodAddToLibrary failed: ${e.message}');
+      _logger.i('$_methodAddToLibrary failed: ${e.message}');
       throw e;
     } on MissingPluginException catch (e) {
-      _logger.i('$methodAddToLibrary not implemented');
+      _logger.i('$_methodAddToLibrary not implemented');
       throw e;
     }
   }
