@@ -51,6 +51,11 @@ class SpotifySdk {
     }
   }
 
+  /// Returns an authentication token as a [String].
+  ///
+  /// Required paramters are the [clientId] and the [redirectUrl] to authenticate with the Spotify Api
+  /// Throws a [PlatformException] if retrieving the authentication token failed.
+  /// Throws a [MissingPluginException] if the method is not implemented on any of the native platforms.
   static Future<String> getAuthenticationToken(
       {@required String clientId, @required String redirectUrl}) async {
     try {
@@ -67,6 +72,10 @@ class SpotifySdk {
     }
   }
 
+  /// Logs the user out and disconnects the app from the users spotify account
+  ///
+  /// Throws a [PlatformException] if logut failed
+  /// Throws a [MissingPluginException] if the method is not implemented on any of the native platforms.
   static Future logout() async {
     try {
       await _channel.invokeMethod(_methodLogoutFromSpotify);
@@ -79,6 +88,11 @@ class SpotifySdk {
     }
   }
 
+  /// Queues the given [spotifyUri]
+  ///
+  /// The [spotifyUri] can be an artist, album, playlist and track
+  /// Throws a [PlatformException] if queing failed
+  /// Throws a [MissingPluginException] if the method is not implemented on any of the native platforms.
   static Future queue({@required String spotifyUri}) async {
     try {
       await _channel
@@ -92,6 +106,11 @@ class SpotifySdk {
     }
   }
 
+  /// Plays the given [spotifyUri]
+  ///
+  /// The [spotifyUri] can be an artist, album, playlist and track
+  /// Throws a [PlatformException] if playing failed
+  /// Throws a [MissingPluginException] if the method is not implemented on any of the native platforms.
   static Future play({@required String spotifyUri}) async {
     try {
       await _channel.invokeMethod(_methodPlay, {_paramSpotifyUri: spotifyUri});
@@ -104,6 +123,10 @@ class SpotifySdk {
     }
   }
 
+  /// Pauses the current playing track
+  ///
+  /// Throws a [PlatformException] if pausing failed
+  /// Throws a [MissingPluginException] if the method is not implemented on any of the native platforms.
   static Future pause() async {
     try {
       await _channel.invokeMethod(_methodPause);
@@ -116,6 +139,10 @@ class SpotifySdk {
     }
   }
 
+  /// Resumes the current paused track
+  ///
+  /// Throws a [PlatformException] if resuming failed
+  /// Throws a [MissingPluginException] if the method is not implemented on any of the native platforms.
   static Future resume() async {
     try {
       await _channel.invokeMethod(_methodResume);
@@ -128,6 +155,10 @@ class SpotifySdk {
     }
   }
 
+  /// Skips to the next track
+  ///
+  /// Throws a [PlatformException] if skipping failed
+  /// Throws a [MissingPluginException] if the method is not implemented on any of the native platforms.
   static Future skipNext() async {
     try {
       await _channel.invokeMethod(_methodSkipNext);
@@ -140,6 +171,10 @@ class SpotifySdk {
     }
   }
 
+  /// Skips to the previous track
+  ///
+  /// Throws a [PlatformException] if skipping failed
+  /// Throws a [MissingPluginException] if the method is not implemented on any of the native platforms.
   static Future skipPrevious() async {
     try {
       await _channel.invokeMethod(_methodSkipPrevious);
@@ -152,6 +187,11 @@ class SpotifySdk {
     }
   }
 
+  /// Seeks the current track to the given [positionedMilliseconds]
+  ///
+  ///
+  /// Throws a [PlatformException] if seeking failed
+  /// Throws a [MissingPluginException] if the method is not implemented on any of the native platforms.
   static Future seekTo({@required int positionedMilliseconds}) async {
     try {
       await _channel.invokeMethod(_methodSeekTo,
@@ -165,6 +205,11 @@ class SpotifySdk {
     }
   }
 
+  /// Adds the given [relativeMilliseconds] to the current playback time.
+  ///
+  /// This will add [relativeMilliseconds] to the current value of the playback time. This can also be negative to rewind the current track.
+  /// Throws a [PlatformException] if seeking failed
+  /// Throws a [MissingPluginException] if the method is not implemented on any of the native platforms.
   static Future seekToRelativePosition(
       {@required int relativeMilliseconds}) async {
     try {
@@ -179,6 +224,10 @@ class SpotifySdk {
     }
   }
 
+  /// Toggles shuffle
+  ///
+  /// Throws a [PlatformException] if toggling shuffle failed
+  /// Throws a [MissingPluginException] if the method is not implemented on any of the native platforms.
   static Future toggleShuffle() async {
     try {
       await _channel.invokeMethod(_methodToggleShuffle);
@@ -191,6 +240,10 @@ class SpotifySdk {
     }
   }
 
+  /// Toggles repeat
+  ///
+  /// Throws a [PlatformException] if toggling repeat failed
+  /// Throws a [MissingPluginException] if the method is not implemented on any of the native platforms.
   static Future toggleRepeat() async {
     try {
       await _channel.invokeMethod(_methodToggleRepeat);
@@ -203,6 +256,10 @@ class SpotifySdk {
     }
   }
 
+  /// Adds the given [spotifyUri] to the users library
+  ///
+  /// Throws a [PlatformException] if adding failed
+  /// Throws a [MissingPluginException] if the method is not implemented on any of the native platforms.
   static Future addToLibrary({@required String spotifyUri}) async {
     try {
       await _channel
@@ -216,6 +273,11 @@ class SpotifySdk {
     }
   }
 
+  /// Gets an image from a specified [imageUri]
+  ///
+  /// The size of the image can be controlled via the [dimension]. If no [dimension] is given the default value of [ImageDimension.medium] will be used
+  /// Throws a [PlatformException] if adding failed
+  /// Throws a [MissingPluginException] if the method is not implemented on any of the native platforms.
   static Future getImage(
       {@required String imageUri, @required ImageDimension dimension}) async {
     try {
