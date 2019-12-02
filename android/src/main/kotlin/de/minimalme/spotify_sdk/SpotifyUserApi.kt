@@ -12,10 +12,8 @@ class SpotifyUserApi(spotifyAppRemote: SpotifyAppRemote?, result: MethodChannel.
     fun addToUserLibrary(spotifyUri: String?) {
         if (userApi != null && !spotifyUri.isNullOrBlank()) {
             userApi.addToLibrary(spotifyUri)
-                    .setResultCallback {
-                        result.success(true)
-                        result.error(errorAddToLibrary, "error when adding uri to user library", "")
-                    }
+                    .setResultCallback {result.success(true)}
+                    .setErrorCallback { throwable -> result.error(errorAddToLibrary, "error when adding uri to user library", throwable.message) }
         } else if (spotifyUri.isNullOrBlank()) {
             result.error(errorAddToLibrary, "spotifyUri has invalid format", "")
         } else {

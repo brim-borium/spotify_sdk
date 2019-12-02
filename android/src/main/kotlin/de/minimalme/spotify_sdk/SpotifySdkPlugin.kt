@@ -7,6 +7,7 @@ import com.spotify.android.appremote.api.SpotifyAppRemote
 import com.spotify.sdk.android.authentication.AuthenticationClient
 import com.spotify.sdk.android.authentication.AuthenticationRequest
 import com.spotify.sdk.android.authentication.AuthenticationResponse
+import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
@@ -15,38 +16,50 @@ import io.flutter.plugin.common.PluginRegistry
 import io.flutter.plugin.common.PluginRegistry.Registrar
 
 
-class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, PluginRegistry.ActivityResultListener {
+class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, EventChannel.StreamHandler, PluginRegistry.ActivityResultListener {
 
     companion object {
 
         private const val CHANNEL_NAME = "spotify_sdk"
+        private const val EVENT_CHANNEL_NAME = "events_spotify_sdk"
 
         @JvmStatic
         fun registerWith(registrar: Registrar) {
 
             val channel = MethodChannel(registrar.messenger(), CHANNEL_NAME)
+            val eventChannel = EventChannel(registrar.messenger(), EVENT_CHANNEL_NAME)
+
             val spotifySdkPluginInstance = SpotifySdkPlugin(registrar)
+
             channel.setMethodCallHandler(spotifySdkPluginInstance)
+
+            eventChannel.setStreamHandler(spotifySdkPluginInstance)
+
             registrar.addActivityResultListener(spotifySdkPluginInstance)
+
         }
     }
 
     //connecting
     private val methodConnectToSpotify = "connectToSpotify"
-    private val methodGetAuthenticationToken = "getAuthenticationToken";
+    private val methodGetAuthenticationToken = "getAuthenticationToken"
     private val methodLogoutFromSpotify = "logoutFromSpotify"
 
     //player api
-    private val methodQueueTrack = "queueTrack"
+    private val methodGetCrossfadeState = "getCrossfadeState"
+    private val methodGetPlayerState = "getPlayerState"
     private val methodPlay = "play"
     private val methodPause = "pause"
+    private val methodQueueTrack = "queueTrack"
     private val methodResume = "resume"
-    private val methodToggleRepeat = "toggleRepeat"
-    private val methodToggleShuffle = "toggleShuffle"
+    private val methodSeekToRelativePosition = "seekToRelativePosition"
+    private val methodSetPodcastPlaybackSpeed = "setPodcastPlaybackSpeed"
     private val methodSkipNext = "skipNext"
     private val methodSkipPrevious = "skipPrevious"
+    private val methodSkipToIndex = "skipToIndex"
     private val methodSeekTo = "seekTo"
-    private val methodSeekToRelativePosition = "seekToRelativePosition"
+    private val methodToggleRepeat = "toggleRepeat"
+    private val methodToggleShuffle = "toggleShuffle"
 
     //user api
     private val methodAddToLibrary = "addToLibrary"
@@ -61,6 +74,8 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Pl
     private val paramImageDimension = "imageDimension"
     private val paramPositionedMilliseconds = "positionedMilliseconds"
     private val paramRelativeMilliseconds = "relativeMilliseconds"
+    private val paramPodcastPlaybackSpeed = "podcastPlaybackSpeed"
+    private val paramTrackIndex = "trackIndex"
 
     private val errorConnecting = "errorConnecting"
 
@@ -92,16 +107,20 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Pl
             methodGetAuthenticationToken -> getAuthenticationToken(call.argument(paramClientId), call.argument(paramRedirectUrl), result)
             methodLogoutFromSpotify -> logoutFromSpotify(result)
             //player api calls
-            methodQueueTrack -> spotifyPlayerApi?.queue(call.argument(paramSpotifyUri))
+            methodGetCrossfadeState -> spotifyPlayerApi?.getCrossfadeState()
+            methodGetPlayerState -> spotifyPlayerApi?.getPlayerState()
             methodPlay -> spotifyPlayerApi?.play(call.argument(paramSpotifyUri))
             methodPause -> spotifyPlayerApi?.pause()
+            methodQueueTrack -> spotifyPlayerApi?.queue(call.argument(paramSpotifyUri))
             methodResume -> spotifyPlayerApi?.resume()
             methodSeekTo -> spotifyPlayerApi?.seekTo(call.argument(paramPositionedMilliseconds))
             methodSeekToRelativePosition -> spotifyPlayerApi?.seekToRelativePosition(call.argument(paramRelativeMilliseconds))
-            methodToggleShuffle -> spotifyPlayerApi?.toggleShuffle()
-            methodToggleRepeat -> spotifyPlayerApi?.toggleRepeat()
+            methodSetPodcastPlaybackSpeed -> spotifyPlayerApi?.setPodcastPlaybackSpeed(call.argument(paramPodcastPlaybackSpeed))
             methodSkipNext -> spotifyPlayerApi?.skipNext()
             methodSkipPrevious -> spotifyPlayerApi?.skipPrevious()
+            methodSkipToIndex -> spotifyPlayerApi?.skipToIndex(call.argument(paramSpotifyUri), call.argument(paramTrackIndex))
+            methodToggleShuffle -> spotifyPlayerApi?.toggleShuffle()
+            methodToggleRepeat -> spotifyPlayerApi?.toggleRepeat()
             //user api calls
             methodAddToLibrary -> spotifyUserApi?.addToUserLibrary(call.argument(paramSpotifyUri))
             //image api calls
@@ -110,6 +129,14 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Pl
             // method call is not implemented yet
             else -> result.notImplemented()
         }
+    }
+
+    override fun onListen(arguments: Any?, events: EventChannel.EventSink?) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun onCancel(arguments: Any?) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     //-- Method implementations
@@ -137,11 +164,11 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Pl
             throw IllegalStateException("connectToSpotify needs a foreground activity")
         }
 
-        checkAndSetPendingOperation(methodConnectToSpotify, result)
-
         if (clientId.isNullOrBlank() || redirectUrl.isNullOrBlank()) {
             result.error(errorConnecting, "client id or redirectUrl are not set or have invalid format", "")
         } else {
+            checkAndSetPendingOperation(methodConnectToSpotify, result)
+
             val builder = AuthenticationRequest.Builder(clientId, AuthenticationResponse.Type.TOKEN, redirectUrl)
             builder.setScopes(scope)
             val request = builder.build()
@@ -192,6 +219,8 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Pl
         }
         pendingOperation = PendingOperation(method, result)
     }
+
+
 }
 
 private class PendingOperation internal constructor(val method: String, val result: Result)
