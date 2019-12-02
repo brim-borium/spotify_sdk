@@ -37,7 +37,7 @@ class SpotifySdk {
   static final Logger _logger = new Logger();
   static const MethodChannel _channel = const MethodChannel('spotify_sdk');
 
-  static Future<bool> connectSpotify(
+  static Future<bool> connectToSpotifyRemote(
       {@required String clientId, @required String redirectUrl}) async {
     try {
       return await _channel.invokeMethod(_methodConnectToSpotify,

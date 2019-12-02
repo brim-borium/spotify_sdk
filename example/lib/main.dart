@@ -67,7 +67,7 @@ class _MyAppState extends State<MyApp> {
 
   Future<void> connectSpotify() async {
     try {
-      var result = await SpotifySdk.connectSpotify(
+      var result = await SpotifySdk.connectToSpotifyRemote(
           clientId: "4ee5e972f7154c3293f4c0fdec99f373",
           redirectUrl: "https://mysite.com/callback/");
       setStatus(result
@@ -83,8 +83,8 @@ class _MyAppState extends State<MyApp> {
   Future<void> getAuthenticationToken() async {
     try {
       var authenticationToken = await SpotifySdk.getAuthenticationToken(
-          clientId: "",
-          redirectUrl: "");
+          clientId: "4ee5e972f7154c3293f4c0fdec99f373",
+          redirectUrl: "https://mysite.com/callback/");
       setState(() {
         _authenticationToken = authenticationToken;
       });
