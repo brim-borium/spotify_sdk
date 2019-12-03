@@ -26,7 +26,11 @@ class SpotifyPlayerApi(spotifyAppRemote: SpotifyAppRemote?, result: MethodChanne
     internal fun getCrossfadeState() {
         if (playerApi != null) {
             playerApi.crossfadeState
-                    .setResultCallback { crossfadeState -> result.success(crossfadeState) }
+                    .setResultCallback { crossfadeState ->
+                        result.success(
+                                mapOf("isEnabled" to crossfadeState.isEnabled,
+                                        "duration" to crossfadeState.duration))
+                    }
                     .setErrorCallback { throwable -> result.error(errorCrossfadeState, "error when getting the current state of crossfade setting", throwable.message) }
         } else {
             spotifyRemoteAppNotSetError()
@@ -36,7 +40,15 @@ class SpotifyPlayerApi(spotifyAppRemote: SpotifyAppRemote?, result: MethodChanne
     internal fun getPlayerState() {
         if (playerApi != null) {
             playerApi.playerState
-                    .setResultCallback { playerState -> result.success(playerState) }
+                    .setResultCallback { playerState ->
+                        result.success(
+                                mapOf("track" to playerState.track,
+                                        "isPaused" to playerState.isPaused,
+                                        "playbackSpeed" to playerState.playbackSpeed,
+                                        "playbackPosition" to playerState.playbackPosition,
+                                        "playbackOptions" to playerState.playbackOptions,
+                                        "playbackRestrictions" to playerState.playbackRestrictions))
+                    }
                     .setErrorCallback { throwable -> result.error(errorPlayerState, "error when getting the current state of the player", throwable.message) }
         } else {
             spotifyRemoteAppNotSetError()

@@ -3,6 +3,9 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:logger/logger.dart';
+import 'package:spotify_sdk/models/player_state.dart';
+
+import 'models/crossfade_state.dart';
 
 class SpotifySdk {
   // connection and auth
@@ -11,16 +14,18 @@ class SpotifySdk {
   static const String _methodLogoutFromSpotify = "logoutFromSpotify";
 
   // player api
-  static const String _methodQueueTrack = "queueTrack";
+  static const String _methodGetCrossfadeState = "getCrossfadeState";
+  static const String _methodGetPlayerState = "getPlayerState";
   static const String _methodPlay = "play";
   static const String _methodPause = "pause";
-  static const String _methodToggleRepeat = "toggleRepeat";
-  static const String _methodToggleShuffle = "toggleShuffle";
+  static const String _methodQueueTrack = "queueTrack";
   static const String _methodResume = "resume";
   static const String _methodSkipNext = "skipNext";
   static const String _methodSkipPrevious = "skipPrevious";
   static const String _methodSeekTo = "seekTo";
   static const String _methodSeekToRelativePosition = "seekToRelativePosition";
+  static const String _methodToggleRepeat = "toggleRepeat";
+  static const String _methodToggleShuffle = "toggleShuffle";
   // user api
   static const String _methodAddToLibrary = "addToLibrary";
   // images api
@@ -34,19 +39,21 @@ class SpotifySdk {
   static const String _paramPositionedMilliseconds = "positionedMilliseconds";
   static const String _paramRelativeMilliseconds = "relativeMilliseconds";
 
-  static final Logger _logger = new Logger();
+  static final Logger _logger = Logger();
   static const MethodChannel _channel = const MethodChannel('spotify_sdk');
 
+  /// Connects to Spotify Remote, returning a [bool] for confirmation
+  ///
+  /// Required paramters are the [clientId] and the [redirectUrl] to authenticate with the Spotify Api
+  /// Throws a [PlatformException] if connecting to the remote api failed
+  /// Throws a [MissingPluginException] if the method is not implemented on any of the native platforms.
   static Future<bool> connectToSpotifyRemote(
       {@required String clientId, @required String redirectUrl}) async {
     try {
       return await _channel.invokeMethod(_methodConnectToSpotify,
           {_paramClientId: clientId, _paramRedirectUrl: redirectUrl});
-    } on PlatformException catch (e) {
-      _logger.i('$_methodConnectToSpotify failed: ${e.message}');
-      throw e;
-    } on MissingPluginException catch (e) {
-      _logger.i('$_methodConnectToSpotify not implemented');
+    } on Exception catch (e) {
+      _logException(_methodConnectToSpotify, e);
       throw e;
     }
   }
@@ -63,27 +70,51 @@ class SpotifySdk {
           _methodGetAuthenticationToken,
           {_paramClientId: clientId, _paramRedirectUrl: redirectUrl});
       return authorization;
-    } on PlatformException catch (e) {
-      _logger.i('$_methodGetAuthenticationToken failed: ${e.message}');
-      throw e;
-    } on MissingPluginException catch (e) {
-      _logger.i('$_methodGetAuthenticationToken not implemented');
+    } on Exception catch (e) {
+      _logException(_methodGetAuthenticationToken, e);
       throw e;
     }
   }
 
   /// Logs the user out and disconnects the app from the users spotify account
   ///
-  /// Throws a [PlatformException] if logut failed
+  /// Throws a [PlatformException] if logout failed
   /// Throws a [MissingPluginException] if the method is not implemented on any of the native platforms.
   static Future logout() async {
     try {
       await _channel.invokeMethod(_methodLogoutFromSpotify);
-    } on PlatformException catch (e) {
-      _logger.i('$_methodLogoutFromSpotify failed: ${e.message}');
+    } on Exception catch (e) {
+      _logException(_methodLogoutFromSpotify, e);
       throw e;
-    } on MissingPluginException catch (e) {
-      _logger.i('$_methodLogoutFromSpotify not implemented');
+    }
+  }
+
+  /// Gets the current [CrossfadeState]
+  ///
+  /// Throws a [PlatformException] getting the crossfadeState failed
+  /// Throws a [MissingPluginException] if the method is not implemented on any of the native platforms.
+  static Future<CrossfadeState> getCrossFadeState() async {
+    try {
+      Map<String, dynamic> crossfadeStateMap =
+          await _channel.invokeMethod(_methodGetCrossfadeState);
+      return CrossfadeState.fromJson(crossfadeStateMap);
+    } on Exception catch (e) {
+      _logException(_methodGetCrossfadeState, e);
+      throw e;
+    }
+  }
+
+  /// Gets the current [PlayerState]
+  ///
+  /// Throws a [PlatformException] getting the playerState failed
+  /// Throws a [MissingPluginException] if the method is not implemented on any of the native platforms.
+  static Future<PlayerState> getPlayerState() async {
+    try {
+      Map<String, dynamic> playerStateMap =
+          await _channel.invokeMethod(_methodGetPlayerState);
+      return PlayerState.fromJson(playerStateMap);
+    } on Exception catch (e) {
+      _logException(_methodGetCrossfadeState, e);
       throw e;
     }
   }
@@ -97,11 +128,8 @@ class SpotifySdk {
     try {
       await _channel
           .invokeMethod(_methodQueueTrack, {_paramSpotifyUri: spotifyUri});
-    } on PlatformException catch (e) {
-      _logger.i('$_methodQueueTrack failed: ${e.message}');
-      throw e;
-    } on MissingPluginException catch (e) {
-      _logger.i('$_methodQueueTrack not implemented');
+    } on Exception catch (e) {
+      _logException(_methodQueueTrack, e);
       throw e;
     }
   }
@@ -114,11 +142,8 @@ class SpotifySdk {
   static Future play({@required String spotifyUri}) async {
     try {
       await _channel.invokeMethod(_methodPlay, {_paramSpotifyUri: spotifyUri});
-    } on PlatformException catch (e) {
-      _logger.i('$_methodPlay failed: ${e.message}');
-      throw e;
-    } on MissingPluginException catch (e) {
-      _logger.i('$_methodPlay not implemented');
+    } on Exception catch (e) {
+      _logException(_methodPlay, e);
       throw e;
     }
   }
@@ -130,11 +155,8 @@ class SpotifySdk {
   static Future pause() async {
     try {
       await _channel.invokeMethod(_methodPause);
-    } on PlatformException catch (e) {
-      _logger.i('$_methodPause failed: ${e.message}');
-      throw e;
-    } on MissingPluginException catch (e) {
-      _logger.i('$_methodPause not implemented');
+    } on Exception catch (e) {
+      _logException(_methodPause, e);
       throw e;
     }
   }
@@ -146,11 +168,8 @@ class SpotifySdk {
   static Future resume() async {
     try {
       await _channel.invokeMethod(_methodResume);
-    } on PlatformException catch (e) {
-      _logger.i('$_methodResume failed: ${e.message}');
-      throw e;
-    } on MissingPluginException catch (e) {
-      _logger.i('$_methodResume not implemented');
+    } on Exception catch (e) {
+      _logException(_methodResume, e);
       throw e;
     }
   }
@@ -162,11 +181,8 @@ class SpotifySdk {
   static Future skipNext() async {
     try {
       await _channel.invokeMethod(_methodSkipNext);
-    } on PlatformException catch (e) {
-      _logger.i('$_methodSkipNext failed: ${e.message}');
-      throw e;
-    } on MissingPluginException catch (e) {
-      _logger.i('$_methodSkipNext not implemented');
+    } on Exception catch (e) {
+      _logException(_methodSkipNext, e);
       throw e;
     }
   }
@@ -178,11 +194,8 @@ class SpotifySdk {
   static Future skipPrevious() async {
     try {
       await _channel.invokeMethod(_methodSkipPrevious);
-    } on PlatformException catch (e) {
-      _logger.i('$_methodSkipPrevious failed: ${e.message}');
-      throw e;
-    } on MissingPluginException catch (e) {
-      _logger.i('$_methodSkipPrevious not implemented');
+    } on Exception catch (e) {
+      _logException(_methodSkipPrevious, e);
       throw e;
     }
   }
@@ -196,11 +209,8 @@ class SpotifySdk {
     try {
       await _channel.invokeMethod(_methodSeekTo,
           {_paramPositionedMilliseconds: positionedMilliseconds});
-    } on PlatformException catch (e) {
-      _logger.i('$_methodSeekTo failed: ${e.message}');
-      throw e;
-    } on MissingPluginException catch (e) {
-      _logger.i('$_methodSeekTo not implemented');
+    } on Exception catch (e) {
+      _logException(_methodSeekTo, e);
       throw e;
     }
   }
@@ -215,11 +225,8 @@ class SpotifySdk {
     try {
       await _channel.invokeMethod(_methodSeekToRelativePosition,
           {_paramRelativeMilliseconds: relativeMilliseconds});
-    } on PlatformException catch (e) {
-      _logger.i('$_methodSeekToRelativePosition failed: ${e.message}');
-      throw e;
-    } on MissingPluginException catch (e) {
-      _logger.i('$_methodSeekToRelativePosition not implemented');
+    } on Exception catch (e) {
+      _logException(_methodSeekToRelativePosition, e);
       throw e;
     }
   }
@@ -231,11 +238,8 @@ class SpotifySdk {
   static Future toggleShuffle() async {
     try {
       await _channel.invokeMethod(_methodToggleShuffle);
-    } on PlatformException catch (e) {
-      _logger.i('$_methodToggleShuffle failed: ${e.message}');
-      throw e;
-    } on MissingPluginException catch (e) {
-      _logger.i('$_methodToggleShuffle not implemented');
+    } on Exception catch (e) {
+      _logException(_methodToggleShuffle, e);
       throw e;
     }
   }
@@ -247,11 +251,8 @@ class SpotifySdk {
   static Future toggleRepeat() async {
     try {
       await _channel.invokeMethod(_methodToggleRepeat);
-    } on PlatformException catch (e) {
-      _logger.i('$_methodToggleRepeat failed: ${e.message}');
-      throw e;
-    } on MissingPluginException catch (e) {
-      _logger.i('$_methodToggleRepeat not implemented');
+    } on Exception catch (e) {
+      _logException(_methodToggleRepeat, e);
       throw e;
     }
   }
@@ -264,11 +265,8 @@ class SpotifySdk {
     try {
       await _channel
           .invokeMethod(_methodAddToLibrary, {_paramSpotifyUri: spotifyUri});
-    } on PlatformException catch (e) {
-      _logger.i('$_methodAddToLibrary failed: ${e.message}');
-      throw e;
-    } on MissingPluginException catch (e) {
-      _logger.i('$_methodAddToLibrary not implemented');
+    } on Exception catch (e) {
+      _logException(_methodAddToLibrary, e);
       throw e;
     }
   }
@@ -301,12 +299,22 @@ class SpotifySdk {
       }
       await _channel.invokeMethod(_methodGetImage,
           {_paramImageUri: imageUri, _paramImageDimension: imageDimension});
-    } on PlatformException catch (e) {
-      _logger.i('$_methodAddToLibrary failed: ${e.message}');
+    } on Exception catch (e) {
+      _logException(_methodGetImage, e);
       throw e;
-    } on MissingPluginException catch (e) {
-      _logger.i('$_methodAddToLibrary not implemented');
-      throw e;
+    }
+  }
+
+  static void _logException(String method, Exception e) {
+    if (e is PlatformException) {
+      var message = e.message;
+      message += !e.details.isEmpty ? "\n${e.details}" : "";
+
+      _logger.i('$method failed with: $message');
+    } else if (e is MissingPluginException) {
+      _logger.i('$method not implemented');
+    } else {
+      _logger.i('$method throws unhandled exception: ${e.toString()}');
     }
   }
 }
