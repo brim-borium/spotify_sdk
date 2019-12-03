@@ -101,7 +101,7 @@ class _MyAppState extends State<MyApp> {
           spotifyUri: "spotify:track:58kNJana4w5BIjlZE2wq5m");
     } on PlatformException catch (e) {
       setStatus(e.code, message: e.message);
-    } on MissingPluginException catch (e) {
+    } on MissingPluginException {
       setStatus("not implemented");
     }
   }
@@ -111,7 +111,7 @@ class _MyAppState extends State<MyApp> {
       await SpotifySdk.toggleRepeat();
     } on PlatformException catch (e) {
       setStatus(e.code, message: e.message);
-    } on MissingPluginException catch (e) {
+    } on MissingPluginException {
       setStatus("not implemented");
     }
   }
@@ -121,7 +121,7 @@ class _MyAppState extends State<MyApp> {
       await SpotifySdk.toggleShuffle();
     } on PlatformException catch (e) {
       setStatus(e.code, message: e.message);
-    } on MissingPluginException catch (e) {
+    } on MissingPluginException {
       setStatus("not implemented");
     }
   }
@@ -131,7 +131,7 @@ class _MyAppState extends State<MyApp> {
       await SpotifySdk.play(spotifyUri: "spotify:track:58kNJana4w5BIjlZE2wq5m");
     } on PlatformException catch (e) {
       setStatus(e.code, message: e.message);
-    } on MissingPluginException catch (e) {
+    } on MissingPluginException {
       setStatus("not implemented");
     }
   }
@@ -141,7 +141,7 @@ class _MyAppState extends State<MyApp> {
       await SpotifySdk.pause();
     } on PlatformException catch (e) {
       setStatus(e.code, message: e.message);
-    } on MissingPluginException catch (e) {
+    } on MissingPluginException {
       setStatus("not implemented");
     }
   }
@@ -151,7 +151,7 @@ class _MyAppState extends State<MyApp> {
       await SpotifySdk.resume();
     } on PlatformException catch (e) {
       setStatus(e.code, message: e.message);
-    } on MissingPluginException catch (e) {
+    } on MissingPluginException {
       setStatus("not implemented");
     }
   }
@@ -161,7 +161,7 @@ class _MyAppState extends State<MyApp> {
       await SpotifySdk.skipNext();
     } on PlatformException catch (e) {
       setStatus(e.code, message: e.message);
-    } on MissingPluginException catch (e) {
+    } on MissingPluginException {
       setStatus("not implemented");
     }
   }
@@ -171,7 +171,7 @@ class _MyAppState extends State<MyApp> {
       await SpotifySdk.skipPrevious();
     } on PlatformException catch (e) {
       setStatus(e.code, message: e.message);
-    } on MissingPluginException catch (e) {
+    } on MissingPluginException {
       setStatus("not implemented");
     }
   }
@@ -181,7 +181,7 @@ class _MyAppState extends State<MyApp> {
       await SpotifySdk.seekTo(positionedMilliseconds: 20000);
     } on PlatformException catch (e) {
       setStatus(e.code, message: e.message);
-    } on MissingPluginException catch (e) {
+    } on MissingPluginException {
       setStatus("not implemented");
     }
   }
@@ -191,7 +191,7 @@ class _MyAppState extends State<MyApp> {
       await SpotifySdk.seekToRelativePosition(relativeMilliseconds: 20000);
     } on PlatformException catch (e) {
       setStatus(e.code, message: e.message);
-    } on MissingPluginException catch (e) {
+    } on MissingPluginException {
       setStatus("not implemented");
     }
   }
@@ -202,7 +202,7 @@ class _MyAppState extends State<MyApp> {
           spotifyUri: "spotify:track:58kNJana4w5BIjlZE2wq5m");
     } on PlatformException catch (e) {
       setStatus(e.code, message: e.message);
-    } on MissingPluginException catch (e) {
+    } on MissingPluginException {
       setStatus("not implemented");
     }
   }
@@ -215,7 +215,7 @@ class _MyAppState extends State<MyApp> {
           dimension: ImageDimension.large);
     } on PlatformException catch (e) {
       setStatus(e.code, message: e.message);
-    } on MissingPluginException catch (e) {
+    } on MissingPluginException {
       setStatus("not implemented");
     }
   }
