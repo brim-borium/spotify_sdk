@@ -3,6 +3,11 @@
 
 .packages
 .pub/
-
+doc/api/
 build/
 .vscode
+
+*.iml         // IntelliJ
+*.ipr         // IntelliJ
+*.iws         // IntelliJ
+.idea/        // IntelliJ
