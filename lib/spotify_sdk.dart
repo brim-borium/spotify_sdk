@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -95,9 +96,11 @@ class SpotifySdk {
   /// Throws a [MissingPluginException] if the method is not implemented on any of the native platforms.
   static Future<CrossfadeState> getCrossFadeState() async {
     try {
-      Map<String, dynamic> crossfadeStateMap =
+      var crossfadeStateJson =
           await _channel.invokeMethod(_methodGetCrossfadeState);
-      return CrossfadeState.fromJson(crossfadeStateMap);
+      var crossfadeStateMap = jsonDecode(crossfadeStateJson);
+      var crossfadeState = CrossfadeState.fromJson(crossfadeStateMap);
+      return crossfadeState;
     } on Exception catch (e) {
       _logException(_methodGetCrossfadeState, e);
       throw e;
@@ -110,11 +113,12 @@ class SpotifySdk {
   /// Throws a [MissingPluginException] if the method is not implemented on any of the native platforms.
   static Future<PlayerState> getPlayerState() async {
     try {
-      Map<String, dynamic> playerStateMap =
-          await _channel.invokeMethod(_methodGetPlayerState);
-      return PlayerState.fromJson(playerStateMap);
+      var playerStateJson = await _channel.invokeMethod(_methodGetPlayerState);
+      var playerStateMap = jsonDecode(playerStateJson);
+      var playerState = PlayerState.fromJson(playerStateMap);
+      return playerState;
     } on Exception catch (e) {
-      _logException(_methodGetCrossfadeState, e);
+      _logException(_methodGetPlayerState, e);
       throw e;
     }
   }

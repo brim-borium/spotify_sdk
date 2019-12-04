@@ -14,12 +14,13 @@ class PlayerState {
       this.playbackPosition, this.playbackOptions, this.playbackRestrictions);
 
   PlayerState.fromJson(Map<String, dynamic> json)
-      : track = json["track"],
+      : track = Track.fromJson(json["track"]),
         isPaused = json["isPaused"],
         playbackSpeed = json["playbackSpeed"],
         playbackPosition = json["playbackPosition"],
-        playbackOptions = json["playbackOptions"],
-        playbackRestrictions = json["playbackRestrictions"];
+        playbackOptions = PlayerOptions.fromJson(json["playbackOptions"]),
+        playbackRestrictions =
+            PlayerRestrictions.fromJson(json["playbackRestrictions"]);
 
   Map<String, dynamic> toJson() => {
         'track': track,

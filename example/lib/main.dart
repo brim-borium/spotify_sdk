@@ -44,6 +44,14 @@ class _MyAppState extends State<MyApp> {
           child: Text("getauthtoken"),
           onPressed: () => getAuthenticationToken(),
         ),
+        RaisedButton(
+          child: Text("getPlayerState "),
+          onPressed: () => getPlayerState(),
+        ),
+        RaisedButton(
+          child: Text("getCrossfadeState "),
+          onPressed: () => getCrossfadeState(),
+        ),
         RaisedButton(child: Text("queue"), onPressed: () => queue()),
         RaisedButton(child: Text("play"), onPressed: () => play()),
         RaisedButton(child: Text("pause"), onPressed: () => pause()),
@@ -88,6 +96,26 @@ class _MyAppState extends State<MyApp> {
       setState(() {
         _authenticationToken = authenticationToken;
       });
+    } on PlatformException catch (e) {
+      setStatus(e.code, message: e.message);
+    } on MissingPluginException {
+      setStatus("not implemented");
+    }
+  }
+
+  Future<void> getPlayerState() async {
+    try {
+      var playerState = await SpotifySdk.getPlayerState();
+    } on PlatformException catch (e) {
+      setStatus(e.code, message: e.message);
+    } on MissingPluginException {
+      setStatus("not implemented");
+    }
+  }
+
+  Future<void> getCrossfadeState() async {
+    try {
+      var crossfadeState = await SpotifySdk.getCrossFadeState();
     } on PlatformException catch (e) {
       setStatus(e.code, message: e.message);
     } on MissingPluginException {
