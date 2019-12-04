@@ -1,5 +1,6 @@
 package de.minimalme.spotify_sdk
 
+import com.google.gson.Gson
 import com.spotify.android.appremote.api.SpotifyAppRemote
 import com.spotify.protocol.types.PlaybackSpeed
 import io.flutter.plugin.common.MethodChannel
@@ -26,7 +27,9 @@ class SpotifyPlayerApi(spotifyAppRemote: SpotifyAppRemote?, result: MethodChanne
     internal fun getCrossfadeState() {
         if (playerApi != null) {
             playerApi.crossfadeState
-                    .setResultCallback { crossfadeState -> result.success(crossfadeState) }
+                    .setResultCallback { crossfadeState ->
+                        result.success(Gson().toJson(crossfadeState))
+                    }
                     .setErrorCallback { throwable -> result.error(errorCrossfadeState, "error when getting the current state of crossfade setting", throwable.message) }
         } else {
             spotifyRemoteAppNotSetError()
@@ -36,7 +39,10 @@ class SpotifyPlayerApi(spotifyAppRemote: SpotifyAppRemote?, result: MethodChanne
     internal fun getPlayerState() {
         if (playerApi != null) {
             playerApi.playerState
-                    .setResultCallback { playerState -> result.success(playerState) }
+                    .setResultCallback { playerState ->
+                        result.success(Gson().toJson(playerState))
+
+                    }
                     .setErrorCallback { throwable -> result.error(errorPlayerState, "error when getting the current state of the player", throwable.message) }
         } else {
             spotifyRemoteAppNotSetError()
