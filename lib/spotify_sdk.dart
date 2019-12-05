@@ -41,7 +41,7 @@ class SpotifySdk {
   static const String _paramRelativeMilliseconds = "relativeMilliseconds";
 
   static final Logger _logger = Logger();
-  static const MethodChannel _channel = const MethodChannel('spotify_sdk');
+  static const MethodChannel _channel = MethodChannel('spotify_sdk');
 
   /// Connects to Spotify Remote, returning a [bool] for confirmation
   ///
@@ -55,7 +55,7 @@ class SpotifySdk {
           {_paramClientId: clientId, _paramRedirectUrl: redirectUrl});
     } on Exception catch (e) {
       _logException(_methodConnectToSpotify, e);
-      throw e;
+      rethrow;
     }
   }
 
@@ -73,7 +73,7 @@ class SpotifySdk {
       return authorization;
     } on Exception catch (e) {
       _logException(_methodGetAuthenticationToken, e);
-      throw e;
+      rethrow;
     }
   }
 
@@ -86,7 +86,7 @@ class SpotifySdk {
       await _channel.invokeMethod(_methodLogoutFromSpotify);
     } on Exception catch (e) {
       _logException(_methodLogoutFromSpotify, e);
-      throw e;
+      rethrow;
     }
   }
 
@@ -103,7 +103,7 @@ class SpotifySdk {
       return crossfadeState;
     } on Exception catch (e) {
       _logException(_methodGetCrossfadeState, e);
-      throw e;
+      rethrow;
     }
   }
 
@@ -119,7 +119,7 @@ class SpotifySdk {
       return playerState;
     } on Exception catch (e) {
       _logException(_methodGetPlayerState, e);
-      throw e;
+      rethrow;
     }
   }
 
@@ -134,7 +134,7 @@ class SpotifySdk {
           .invokeMethod(_methodQueueTrack, {_paramSpotifyUri: spotifyUri});
     } on Exception catch (e) {
       _logException(_methodQueueTrack, e);
-      throw e;
+      rethrow;
     }
   }
 
@@ -148,7 +148,7 @@ class SpotifySdk {
       await _channel.invokeMethod(_methodPlay, {_paramSpotifyUri: spotifyUri});
     } on Exception catch (e) {
       _logException(_methodPlay, e);
-      throw e;
+      rethrow;
     }
   }
 
@@ -161,7 +161,7 @@ class SpotifySdk {
       await _channel.invokeMethod(_methodPause);
     } on Exception catch (e) {
       _logException(_methodPause, e);
-      throw e;
+      rethrow;
     }
   }
 
@@ -174,7 +174,7 @@ class SpotifySdk {
       await _channel.invokeMethod(_methodResume);
     } on Exception catch (e) {
       _logException(_methodResume, e);
-      throw e;
+      rethrow;
     }
   }
 
@@ -187,7 +187,7 @@ class SpotifySdk {
       await _channel.invokeMethod(_methodSkipNext);
     } on Exception catch (e) {
       _logException(_methodSkipNext, e);
-      throw e;
+      rethrow;
     }
   }
 
@@ -200,7 +200,7 @@ class SpotifySdk {
       await _channel.invokeMethod(_methodSkipPrevious);
     } on Exception catch (e) {
       _logException(_methodSkipPrevious, e);
-      throw e;
+      rethrow;
     }
   }
 
@@ -215,7 +215,7 @@ class SpotifySdk {
           {_paramPositionedMilliseconds: positionedMilliseconds});
     } on Exception catch (e) {
       _logException(_methodSeekTo, e);
-      throw e;
+      rethrow;
     }
   }
 
@@ -231,7 +231,7 @@ class SpotifySdk {
           {_paramRelativeMilliseconds: relativeMilliseconds});
     } on Exception catch (e) {
       _logException(_methodSeekToRelativePosition, e);
-      throw e;
+      rethrow;
     }
   }
 
@@ -244,7 +244,7 @@ class SpotifySdk {
       await _channel.invokeMethod(_methodToggleShuffle);
     } on Exception catch (e) {
       _logException(_methodToggleShuffle, e);
-      throw e;
+      rethrow;
     }
   }
 
@@ -257,7 +257,7 @@ class SpotifySdk {
       await _channel.invokeMethod(_methodToggleRepeat);
     } on Exception catch (e) {
       _logException(_methodToggleRepeat, e);
-      throw e;
+      rethrow;
     }
   }
 
@@ -271,7 +271,7 @@ class SpotifySdk {
           .invokeMethod(_methodAddToLibrary, {_paramSpotifyUri: spotifyUri});
     } on Exception catch (e) {
       _logException(_methodAddToLibrary, e);
-      throw e;
+      rethrow;
     }
   }
 
@@ -305,7 +305,7 @@ class SpotifySdk {
           {_paramImageUri: imageUri, _paramImageDimension: imageDimension});
     } on Exception catch (e) {
       _logException(_methodGetImage, e);
-      throw e;
+      rethrow;
     }
   }
 

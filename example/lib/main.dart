@@ -76,8 +76,7 @@ class _MyAppState extends State<MyApp> {
   Future<void> connectSpotify() async {
     try {
       var result = await SpotifySdk.connectToSpotifyRemote(
-          clientId: "4ee5e972f7154c3293f4c0fdec99f373",
-          redirectUrl: "https://mysite.com/callback/");
+          clientId: "", redirectUrl: "");
       setStatus(result
           ? "connect to spotify successful"
           : "conntect to spotify failed");
@@ -91,8 +90,7 @@ class _MyAppState extends State<MyApp> {
   Future<void> getAuthenticationToken() async {
     try {
       var authenticationToken = await SpotifySdk.getAuthenticationToken(
-          clientId: "4ee5e972f7154c3293f4c0fdec99f373",
-          redirectUrl: "https://mysite.com/callback/");
+          clientId: "", redirectUrl: "");
       setState(() {
         _authenticationToken = authenticationToken;
       });
@@ -103,9 +101,9 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
-  Future<void> getPlayerState() async {
+  Future getPlayerState() async {
     try {
-      var playerState = await SpotifySdk.getPlayerState();
+      return await SpotifySdk.getPlayerState();
     } on PlatformException catch (e) {
       setStatus(e.code, message: e.message);
     } on MissingPluginException {
@@ -113,9 +111,9 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
-  Future<void> getCrossfadeState() async {
+  Future getCrossfadeState() async {
     try {
-      var crossfadeState = await SpotifySdk.getCrossFadeState();
+      return await SpotifySdk.getCrossFadeState();
     } on PlatformException catch (e) {
       setStatus(e.code, message: e.message);
     } on MissingPluginException {
