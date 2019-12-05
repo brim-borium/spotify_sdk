@@ -1,3 +1,12 @@
+## 0.0.3
+
+* added the following implementations for android:
+    * getCrossfadeState
+    * getPlayerState
+* general refactoring of the native android implementation
+* adds documentation to all methods
+* adds json_annotation: ^3.0.0, build_runner: ^1.0.0, json_serializable: ^3.2.0 to make use of some json serializing functionality for the crossfadeState and PlayerState
+
 ## 0.0.2
 
 * added the following implementations for android:
