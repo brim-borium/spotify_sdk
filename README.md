@@ -26,6 +26,8 @@ tbd
 |  toggleShuffle | Cycles through the shuffle modes |:heavy_check_mark: |  :construction_worker: |
 |  toggleRepeat | Cycles through the repeat modes | :heavy_check_mark: |  :construction_worker: |
 |  addToLibrary | Adds the given spotifyUri to the users library |:heavy_check_mark:  |  :construction_worker: |
+|  getCrossfadeState | Gets the current crossfade state |:heavy_check_mark:  |  :construction_worker: |
+|  getPlayerState | Gets the current player state |:heavy_check_mark:  |  :construction_worker: |
 |  getImage | Get the image from the given spotifyUri |:construction_worker: |  :construction_worker: |
 |  logout | logs the user out and disconnects the app connection |:construction_worker: |  :construction_worker: |
 
