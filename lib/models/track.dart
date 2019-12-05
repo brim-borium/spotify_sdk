@@ -1,7 +1,12 @@
+import 'package:json_annotation/json_annotation.dart';
+
 import 'album.dart';
 import 'artist.dart';
 import 'image_uri.dart';
 
+part 'track.g.dart';
+
+@JsonSerializable()
 class Track {
   final Album album;
   final Artist artist;
@@ -16,38 +21,7 @@ class Track {
   Track(this.album, this.artist, this.artists, this.duration, this.imageUri,
       this.isEpisode, this.isPodcast, this.name, this.uri);
 
-  Track.fromJson(Map<String, dynamic> json)
-      : album = Album.fromJson(json["album"]),
-        artist = Artist.fromJson(json["artist"]),
-        artists = getArtists(json),
-        duration = json["duration"],
-        imageUri = ImageUri.fromJson(json["imageUri"]),
-        isEpisode = json["isEpisode"],
-        isPodcast = json["isPodcast"],
-        name = json["name"],
-        uri = json["uri"];
+  factory Track.fromJson(Map<String, dynamic> json) => _$TrackFromJson(json);
 
-  Map<String, dynamic> toJson() => {
-        'album': album,
-        'artist': artist,
-        'artists': artists,
-        'duration': duration,
-        'imageUri': imageUri,
-        'isEpisode': isEpisode,
-        'isPodcast': isPodcast,
-        'name': name,
-        'uri': uri,
-      };
-
-  static List<Artist> getArtists(Map<String, dynamic> json) {
-    if (json['artists'] == null) {
-      return null;
-    } else {
-      var artists = new List<Artist>();
-      json['artists'].forEach((v) {
-        artists.add(Artist.fromJson(v));
-      });
-      return artists;
-    }
-  }
+  Map<String, dynamic> toJson() => _$TrackToJson(this);
 }

@@ -1,15 +1,14 @@
+import 'package:json_annotation/json_annotation.dart';
+part 'album.g.dart';
+
+@JsonSerializable()
 class Album {
   final String name;
   final String uri;
 
   Album(this.name, this.uri);
 
-  Album.fromJson(Map<String, dynamic> json)
-      : name = json["name"],
-        uri = json["uri"];
+  factory Album.fromJson(Map<String, dynamic> json) => _$AlbumFromJson(json);
 
-  Map<String, dynamic> toJson() => {
-        'name': name,
-        'uri': uri,
-      };
+  Map<String, dynamic> toJson() => _$AlbumToJson(this);
 }
