@@ -8,15 +8,15 @@ part of 'player_options.dart';
 
 PlayerOptions _$PlayerOptionsFromJson(Map<String, dynamic> json) {
   return PlayerOptions(
-    json['isShuffling'] as bool,
-    _$enumDecodeNullable(_$RepeatModeEnumMap, json['repeatMode']),
+    json['shuffle'] as bool,
+    _$enumDecodeNullable(_$RepeatModeEnumMap, json['repeat']),
   );
 }
 
 Map<String, dynamic> _$PlayerOptionsToJson(PlayerOptions instance) =>
     <String, dynamic>{
-      'isShuffling': instance.isShuffling,
-      'repeatMode': _$RepeatModeEnumMap[instance.repeatMode],
+      'shuffle': instance.isShuffling,
+      'repeat': _$RepeatModeEnumMap[instance.repeatMode],
     };
 
 T _$enumDecode<T>(

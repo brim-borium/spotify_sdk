@@ -4,7 +4,9 @@ part 'player_options.g.dart';
 
 @JsonSerializable()
 class PlayerOptions {
+  @JsonKey(name: "shuffle")
   final bool isShuffling;
+  @JsonKey(name: "repeat")
   final RepeatMode repeatMode;
 
   PlayerOptions(this.isShuffling, this.repeatMode);

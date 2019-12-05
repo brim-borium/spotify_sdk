@@ -313,7 +313,6 @@ class SpotifySdk {
     if (e is PlatformException) {
       var message = e.message;
       message += !e.details.isEmpty ? "\n${e.details}" : "";
-
       _logger.i('$method failed with: $message');
     } else if (e is MissingPluginException) {
       _logger.i('$method not implemented');

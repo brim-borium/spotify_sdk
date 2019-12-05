@@ -11,26 +11,26 @@ PlayerState _$PlayerStateFromJson(Map<String, dynamic> json) {
     json['track'] == null
         ? null
         : Track.fromJson(json['track'] as Map<String, dynamic>),
-    json['isPaused'] as bool,
-    (json['playbackSpeed'] as num)?.toDouble(),
-    json['playbackPosition'] as int,
-    json['playbackOptions'] == null
+    json['is_paused'] as bool,
+    (json['playback_speed'] as num)?.toDouble(),
+    json['playback_position'] as int,
+    json['playback_options'] == null
         ? null
         : PlayerOptions.fromJson(
-            json['playbackOptions'] as Map<String, dynamic>),
-    json['playbackRestrictions'] == null
+            json['playback_options'] as Map<String, dynamic>),
+    json['playback_restrictions'] == null
         ? null
         : PlayerRestrictions.fromJson(
-            json['playbackRestrictions'] as Map<String, dynamic>),
+            json['playback_restrictions'] as Map<String, dynamic>),
   );
 }
 
 Map<String, dynamic> _$PlayerStateToJson(PlayerState instance) =>
     <String, dynamic>{
       'track': instance.track,
-      'isPaused': instance.isPaused,
-      'playbackSpeed': instance.playbackSpeed,
-      'playbackPosition': instance.playbackPosition,
-      'playbackOptions': instance.playbackOptions,
-      'playbackRestrictions': instance.playbackRestrictions,
+      'is_paused': instance.isPaused,
+      'playback_speed': instance.playbackSpeed,
+      'playback_position': instance.playbackPosition,
+      'playback_options': instance.playbackOptions,
+      'playback_restrictions': instance.playbackRestrictions,
     };
