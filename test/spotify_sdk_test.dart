@@ -19,7 +19,8 @@ void main() {
 
   test('connectToSpotify', () async {
     expect(
-        await SpotifySdk.connectToSpotifyRemote(clientId: "null", redirectUrl: "null"),
+        await SpotifySdk.connectToSpotifyRemote(
+            clientId: "null", redirectUrl: "null"),
         '42');
   });
 }

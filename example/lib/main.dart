@@ -36,6 +36,11 @@ class _MyAppState extends State<MyApp> {
       children: [
         Text("Status $_currentStatus"),
         Text("Token: $_authenticationToken"),
+        StreamBuilder(
+          stream: SpotifySdk.subscribePlayerState(),
+          initialData: PlayerState.,
+          builder: (BuildContext context, AsyncSnapshot snapshot) {},
+        ),
         RaisedButton(
           child: Text("connectToSpotify"),
           onPressed: () => connectSpotify(),
