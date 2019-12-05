@@ -11,3 +11,4 @@ build/
 *.ipr         // IntelliJ
 *.iws         // IntelliJ
 .idea/        // IntelliJ
+/example/.flutter-plugins-dependencies

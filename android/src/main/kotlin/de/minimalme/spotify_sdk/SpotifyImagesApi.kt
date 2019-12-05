@@ -15,12 +15,10 @@ class SpotifyImagesApi(spotifyAppRemote: SpotifyAppRemote?, result: MethodChanne
 
     internal fun getImage(imageUri: ImageUri?, dimension: Int?) {
         if (imagesApi != null && imageUri != null && dimension != null) {
-            var imagesize = Dimension.values()[dimension]
-            imagesApi.getImage(imageUri, imagesize)
-                    .setResultCallback {
-                        result.success(it)
-                        result.error(errorGetImage, "error when getting the image", "")
-                    }
+            var imageSize = Dimension.values()[dimension]
+            imagesApi.getImage(imageUri, imageSize)
+                    .setResultCallback { bitmap -> result.success(bitmap) }
+                    .setErrorCallback { throwable -> result.error(errorGetImage, "error when getting the image", throwable.message) }
         } else if (imageUri == null) {
             result.error(errorImageUri, "imageUri has invalid format or is not set", "")
         } else if (dimension == null) {
