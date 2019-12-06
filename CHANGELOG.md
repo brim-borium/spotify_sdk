@@ -1,3 +1,10 @@
+## 0.1.0
+
+* android player api implementation finished
+* error handling finished
+* setup instructions for android finished
+* naming for modules finished
+
 ## 0.0.4
 
 * added instructions for android

@@ -78,6 +78,9 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Ev
     private val paramTrackIndex = "trackIndex"
 
     private val errorConnecting = "errorConnecting"
+    private val errorDisconnecting = "errorDisconnecting"
+    private val errorAuthenticationToken = "authenticationTokenError"
+
 
     private val requestCodeAuthentication = 1337
     private val scope = arrayOf(
@@ -141,22 +144,27 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Ev
 
     //-- Method implementations
     private fun connectToSpotify(clientId: String?, redirectUrl: String?, result: Result) {
-        var connectionParams = ConnectionParams.Builder(clientId)
-                .setRedirectUri(redirectUrl)
-                .showAuthView(true)
-                .build()
 
-        SpotifyAppRemote.connect(registrar.context(), connectionParams,
-                object : ConnectionListener {
-                    override fun onConnected(spotifyAppRemoteValue: SpotifyAppRemote) {
-                        spotifyAppRemote = spotifyAppRemoteValue
-                        result.success(true)
-                    }
+        if (clientId.isNullOrBlank() || redirectUrl.isNullOrBlank()) {
+            result.error(errorConnecting, "client id or redirectUrl are not set or have invalid format", "")
+        } else {
+            val connectionParams = ConnectionParams.Builder(clientId)
+                    .setRedirectUri(redirectUrl)
+                    .showAuthView(true)
+                    .build()
 
-                    override fun onFailure(throwable: Throwable) {
-                        result.error(throwable.cause.toString(), throwable.message, "")
-                    }
-                })
+            SpotifyAppRemote.connect(registrar.context(), connectionParams,
+                    object : ConnectionListener {
+                        override fun onConnected(spotifyAppRemoteValue: SpotifyAppRemote) {
+                            spotifyAppRemote = spotifyAppRemoteValue
+                            result.success(true)
+                        }
+
+                        override fun onFailure(throwable: Throwable) {
+                            result.error(errorConnecting, "Something went wrong connecting spotify remote", throwable.message)
+                        }
+                    })
+        }
     }
 
     private fun getAuthenticationToken(clientId: String?, redirectUrl: String?, result: Result) {
@@ -178,8 +186,12 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Ev
     }
 
     private fun logoutFromSpotify(result: Result) {
-        TODO("not implemented")
-        result.notImplemented()
+        if (spotifyAppRemote != null) {
+            SpotifyAppRemote.disconnect(spotifyAppRemote)
+            result.success(true)
+        } else {
+            result.error(errorDisconnecting, "could not disconnect spotify remote", "spotifyAppRemote is not set")
+        }
     }
     //--
 
@@ -206,7 +218,7 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Ev
             AuthenticationResponse.Type.TOKEN -> {
                 result.success(response.accessToken)
             }
-            AuthenticationResponse.Type.ERROR -> result.error("authentication_error", "Authentication went wrong", response.error)
+            AuthenticationResponse.Type.ERROR -> result.error(errorAuthenticationToken, "Authentication went wrong", response.error)
             else -> result.notImplemented()
         }
     }

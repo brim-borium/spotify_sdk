@@ -1,6 +1,6 @@
 # spotify_sdk
 [![](https://img.shields.io/badge/licence-MIT-blue.svg)](https://github.com/IamTobi/spotify_sdk/blob/master/LICENSE)
-[![](https://img.shields.io/badge/pub-v0.0.4-blueviolet.svg)](https://pub.dev/packages/spotify_sdk)
+[![](https://img.shields.io/badge/pub-v0.1.0-blueviolet.svg)](https://pub.dev/packages/spotify_sdk)
 
 ## Description
 
