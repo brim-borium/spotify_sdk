@@ -1,4 +1,4 @@
-include ':app', ':spotify-auth-release', ':spotify-app-remote'
+include ':app', ':spotify-auth', ':spotify-app-remote'
 
 def flutterProjectRoot = rootProject.projectDir.parentFile.toPath()
 

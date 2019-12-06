@@ -42,7 +42,7 @@ android {
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     // -- spotify
-    implementation project(':spotify-auth-release')
+    implementation project(':spotify-auth')
     implementation project(':spotify-app-remote')
     implementation "com.google.code.gson:gson:2.8.5"
     //
