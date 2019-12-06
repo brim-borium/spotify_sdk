@@ -1,3 +1,8 @@
+## 0.0.4
+
+* added instructions for android
+* fixed naming for modules
+
 ## 0.0.3
 
 * added the following implementations for android:
