@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:html';
 
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -12,11 +11,11 @@ import 'models/player_context.dart';
 
 class SpotifySdk {
   // method channel
-  static const MethodChannel _channel = const MethodChannel('spotify_sdk');
+  static const MethodChannel _channel = MethodChannel('spotify_sdk');
   static const EventChannel _playerContextChannel =
-      const EventChannel("player_context_subscription");
+      EventChannel("player_context_subscription");
   static const EventChannel _playerStateChannel =
-      const EventChannel("player_state_subscription");
+      EventChannel("player_state_subscription");
   // connection and auth
   static const String _methodConnectToSpotify = "connectToSpotify";
   static const String _methodGetAuthenticationToken = "getAuthenticationToken";
@@ -227,7 +226,7 @@ class SpotifySdk {
       });
     } on Exception catch (e) {
       _logException(_methodSubscribePlayerContext, e);
-      throw e;
+      rethrow;
     }
   }
 
@@ -246,7 +245,7 @@ class SpotifySdk {
       });
     } on Exception catch (e) {
       _logException(_methodSubscribePlayerState, e);
-      throw e;
+      rethrow;
     }
   }
 

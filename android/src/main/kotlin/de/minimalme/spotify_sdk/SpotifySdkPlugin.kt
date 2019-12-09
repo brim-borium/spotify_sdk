@@ -147,6 +147,8 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Pl
                     object : ConnectionListener {
                         override fun onConnected(spotifyAppRemoteValue: SpotifyAppRemote) {
                             spotifyAppRemote = spotifyAppRemoteValue
+                            playerContextChannel.setStreamHandler(PlayerContextChannel(spotifyAppRemote!!.playerApi))
+                            playerStateChannel.setStreamHandler(PlayerStateChannel(spotifyAppRemote!!.playerApi))
                             result.success(true)
                         }
 
