@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
+import 'package:fluttertoast/fluttertoast.dart';
 
 import 'package:flutter/services.dart';
+import 'package:spotify_sdk/models/crossfade_state.dart';
 import 'package:spotify_sdk/spotify_sdk.dart';
+import 'package:spotify_sdk/models/player_state.dart';
+import 'package:spotify_sdk/models/player_context.dart';
+import 'package:spotify_sdk_example/widgets/sized_icon_button.dart';
 
 void main() => runApp(MyApp());
 
@@ -12,74 +17,217 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(home: Home());
+  }
+}
+
+class Home extends StatefulWidget {
+  @override
+  _HomeState createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
   bool _loading = false;
-  String _authenticationToken = "";
-  String _currentStatus = "";
+  bool _connected = false;
+
+  CrossfadeState crossfadeState;
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Spotify SDK example app'),
-        ),
-        body: Center(child: _sampleFlowWidget),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("SpotifySdk Example"),
       ),
+      body: _sampleFlowWidget(context),
     );
   }
 
-  Widget get _sampleFlowWidget {
-    if (_loading) {
-      return Center(child: CircularProgressIndicator());
-    }
-    return ListView(
+  Widget _sampleFlowWidget(BuildContext context2) {
+    return Stack(
       children: [
-        Text("Status $_currentStatus"),
-        Text("Token: $_authenticationToken"),
-        RaisedButton(
-          child: Text("connectToSpotify"),
-          onPressed: () => connectSpotify(),
+        ListView(
+          padding: EdgeInsets.all(8),
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                FlatButton(
+                  child: Icon(Icons.settings_remote),
+                  onPressed: () => connectToSpotifyRemote(),
+                ),
+                FlatButton(
+                  child: Text("get auth token "),
+                  onPressed: () => getAuthenticationToken(),
+                ),
+              ],
+            ),
+            Divider(),
+            Text("Player State", style: TextStyle(fontSize: 16)),
+            if (_connected)
+              PlayerStateWidget()
+            else
+              Center(
+                child: Text("Not connected"),
+              ),
+            Divider(),
+            Text("Player Context", style: TextStyle(fontSize: 16)),
+            if (_connected)
+              PlayerContextWidget()
+            else
+              Center(
+                child: Text("Not connected"),
+              ),
+            Divider(),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: <Widget>[
+                SizedIconButton(
+                  width: 50,
+                  icon: Icons.skip_previous,
+                  onPressed: () => skipPrevious(),
+                ),
+                SizedIconButton(
+                  width: 50,
+                  icon: Icons.play_arrow,
+                  onPressed: () => resume(),
+                ),
+                SizedIconButton(
+                  width: 50,
+                  icon: Icons.pause,
+                  onPressed: () => pause(),
+                ),
+                SizedIconButton(
+                  width: 50,
+                  icon: Icons.skip_next,
+                  onPressed: () => skipNext(),
+                ),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: <Widget>[
+                SizedIconButton(
+                  width: 50,
+                  icon: Icons.queue_music,
+                  onPressed: () => queue(),
+                ),
+                SizedIconButton(
+                  width: 50,
+                  icon: Icons.play_circle_filled,
+                  onPressed: () => play(),
+                ),
+                SizedIconButton(
+                  width: 50,
+                  icon: Icons.repeat,
+                  onPressed: () => toggleRepeat(),
+                ),
+                SizedIconButton(
+                  width: 50,
+                  icon: Icons.shuffle,
+                  onPressed: () => toggleShuffle(),
+                ),
+              ],
+            ),
+            FlatButton(
+                child: Icon(Icons.favorite), onPressed: () => addToLibrary()),
+            Row(
+              children: <Widget>[
+                FlatButton(child: Text("seek to"), onPressed: () => seekTo()),
+                FlatButton(
+                    child: Text("seek to relative"),
+                    onPressed: () => seekToRelative()),
+              ],
+            ),
+            Divider(),
+            Text("Crossfade State", style: TextStyle(fontSize: 16)),
+            FlatButton(
+                child: Text("getCrossfadeState"),
+                onPressed: () => getCrossfadeState()),
+            Text("Is enabled: ${crossfadeState?.isEnabled}"),
+            Text("Duration: ${crossfadeState?.duration}"),
+          ],
         ),
-        RaisedButton(
-          child: Text("getauthtoken"),
-          onPressed: () => getAuthenticationToken(),
-        ),
-        RaisedButton(
-          child: Text("getPlayerState "),
-          onPressed: () => getPlayerState(),
-        ),
-        RaisedButton(
-          child: Text("getCrossfadeState "),
-          onPressed: () => getCrossfadeState(),
-        ),
-        RaisedButton(child: Text("queue"), onPressed: () => queue()),
-        RaisedButton(child: Text("play"), onPressed: () => play()),
-        RaisedButton(child: Text("pause"), onPressed: () => pause()),
-        RaisedButton(child: Text("resume"), onPressed: () => resume()),
-        RaisedButton(
-            child: Text("toggle repeat"), onPressed: () => toggleRepeat()),
-        RaisedButton(
-            child: Text("toggle shuffle"), onPressed: () => toggleShuffle()),
-        RaisedButton(child: Text("skip next"), onPressed: () => skipNext()),
-        RaisedButton(
-            child: Text("skip previous"), onPressed: () => skipPrevious()),
-        RaisedButton(child: Text("seek to"), onPressed: () => seekTo()),
-        RaisedButton(
-            child: Text("seek to relative"), onPressed: () => seekToRelative()),
-        RaisedButton(
-            child: Text("add to library"), onPressed: () => addToLibrary()),
-        RaisedButton(child: Text("get image"), onPressed: () => getImage()),
+        if (_loading)
+          Container(
+              color: Colors.black12,
+              child: Center(child: CircularProgressIndicator())),
       ],
     );
   }
 
-  Future<void> connectSpotify() async {
+  Widget PlayerStateWidget() {
+    return StreamBuilder<PlayerState>(
+      stream: SpotifySdk.subscribePlayerState(),
+      initialData: PlayerState(null, false, 1, 1, null, null),
+      builder: (BuildContext context, AsyncSnapshot<PlayerState> snapshot) {
+        if (snapshot.data != null && snapshot.data.track != null) {
+          var playerState = snapshot.data;
+          return Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Text(
+                  "${playerState.track.name} by ${playerState.track.artist.name} from the album ${playerState.track.album.name} "),
+              Text("Speed: ${playerState.playbackSpeed}"),
+              Text("IsPaused: ${playerState.isPaused}"),
+              Text("Is Shuffling: ${playerState.playbackOptions.isShuffling}"),
+              Text("RepeatMode: ${playerState.playbackOptions.repeatMode}")
+            ],
+          );
+        } else {
+          return Center(
+            child: Text("Not connected"),
+          );
+        }
+      },
+    );
+  }
+
+  Widget PlayerContextWidget() {
+    return StreamBuilder<PlayerContext>(
+      stream: SpotifySdk.subscribePlayerContext(),
+      initialData: PlayerContext("", "", "", ""),
+      builder: (BuildContext context, AsyncSnapshot<PlayerContext> snapshot) {
+        if (snapshot.data != null && snapshot.data.uri != "") {
+          var playerContext = snapshot.data;
+          return Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Text("Title: ${playerContext.title}"),
+              Text("Subtitle: ${playerContext.subtitle}"),
+              Text("Type: ${playerContext.type}"),
+              Text("Uri: ${playerContext.uri}"),
+            ],
+          );
+        } else {
+          return Center(
+            child: Text("Not connected"),
+          );
+        }
+      },
+    );
+  }
+
+  Future<void> connectToSpotifyRemote() async {
     try {
+      setState(() {
+        _loading = true;
+      });
       var result = await SpotifySdk.connectToSpotifyRemote(
-          clientId: "", redirectUrl: "");
+          clientId: "4ee5e972f7154c3293f4c0fdec99f373",
+          redirectUrl: "https://mysite.com/callback/");
+      setState(() {
+        _connected = result;
+      });
       setStatus(result
           ? "connect to spotify successful"
           : "conntect to spotify failed");
+      setState(() {
+        _loading = false;
+      });
     } on PlatformException catch (e) {
       setStatus(e.code, message: e.message);
     } on MissingPluginException {
@@ -91,9 +239,7 @@ class _MyAppState extends State<MyApp> {
     try {
       var authenticationToken = await SpotifySdk.getAuthenticationToken(
           clientId: "", redirectUrl: "");
-      setState(() {
-        _authenticationToken = authenticationToken;
-      });
+      setStatus("Got a token: $authenticationToken");
     } on PlatformException catch (e) {
       setStatus(e.code, message: e.message);
     } on MissingPluginException {
@@ -113,7 +259,10 @@ class _MyAppState extends State<MyApp> {
 
   Future getCrossfadeState() async {
     try {
-      return await SpotifySdk.getCrossFadeState();
+      var crossfadeStateValue = await SpotifySdk.getCrossFadeState();
+      setState(() {
+        crossfadeState = crossfadeStateValue;
+      });
     } on PlatformException catch (e) {
       setStatus(e.code, message: e.message);
     } on MissingPluginException {
@@ -246,9 +395,14 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
-  void setStatus(String code, {String message}) {
-    setState(() {
-      _currentStatus = "$code \n $message";
-    });
+  void setStatus(String code, {String message = ""}) {
+    Fluttertoast.showToast(
+        msg: "$code $message",
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIos: 2,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+        fontSize: 16.0);
   }
 }

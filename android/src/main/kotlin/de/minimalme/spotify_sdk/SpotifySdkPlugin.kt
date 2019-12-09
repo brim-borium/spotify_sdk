@@ -16,29 +16,28 @@ import io.flutter.plugin.common.PluginRegistry
 import io.flutter.plugin.common.PluginRegistry.Registrar
 
 
-class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, EventChannel.StreamHandler, PluginRegistry.ActivityResultListener {
+class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, PluginRegistry.ActivityResultListener {
 
     companion object {
 
         private const val CHANNEL_NAME = "spotify_sdk"
-        private const val EVENT_CHANNEL_NAME = "events_spotify_sdk"
+        private const val PLAYER_CONTEXT_SUBSCRIPTION = "player_context_subscription"
+        private const val PLAYER_STATE_SUBSCRIPTION = "player_state_subscription"
 
         @JvmStatic
         fun registerWith(registrar: Registrar) {
 
             val channel = MethodChannel(registrar.messenger(), CHANNEL_NAME)
-            val eventChannel = EventChannel(registrar.messenger(), EVENT_CHANNEL_NAME)
 
             val spotifySdkPluginInstance = SpotifySdkPlugin(registrar)
 
             channel.setMethodCallHandler(spotifySdkPluginInstance)
-
-            eventChannel.setStreamHandler(spotifySdkPluginInstance)
-
             registrar.addActivityResultListener(spotifySdkPluginInstance)
-
         }
     }
+
+    private val playerContextChannel = EventChannel(registrar.messenger(), PLAYER_CONTEXT_SUBSCRIPTION)
+    private val playerStateChannel = EventChannel(registrar.messenger(), PLAYER_STATE_SUBSCRIPTION)
 
     //connecting
     private val methodConnectToSpotify = "connectToSpotify"
@@ -128,18 +127,9 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Ev
             methodAddToLibrary -> spotifyUserApi?.addToUserLibrary(call.argument(paramSpotifyUri))
             //image api calls
             methodGetImage -> spotifyImagesApi?.getImage(call.argument(paramImageUri), call.argument(paramImageDimension))
-
             // method call is not implemented yet
             else -> result.notImplemented()
         }
-    }
-
-    override fun onListen(arguments: Any?, events: EventChannel.EventSink?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun onCancel(arguments: Any?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     //-- Method implementations
@@ -157,6 +147,8 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Ev
                     object : ConnectionListener {
                         override fun onConnected(spotifyAppRemoteValue: SpotifyAppRemote) {
                             spotifyAppRemote = spotifyAppRemoteValue
+                            playerContextChannel.setStreamHandler(PlayerContextChannel(spotifyAppRemote!!.playerApi))
+                            playerStateChannel.setStreamHandler(PlayerStateChannel(spotifyAppRemote!!.playerApi))
                             result.success(true)
                         }
 
@@ -175,7 +167,7 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Ev
         if (clientId.isNullOrBlank() || redirectUrl.isNullOrBlank()) {
             result.error(errorConnecting, "client id or redirectUrl are not set or have invalid format", "")
         } else {
-            checkAndSetPendingOperation(methodConnectToSpotify, result)
+            methodConnectToSpotify.checkAndSetPendingOperation(result)
 
             val builder = AuthenticationRequest.Builder(clientId, AuthenticationResponse.Type.TOKEN, redirectUrl)
             builder.setScopes(scope)
@@ -223,13 +215,13 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Ev
         }
     }
 
-    private fun checkAndSetPendingOperation(method: String, result: Result) {
+    private fun String.checkAndSetPendingOperation(result: Result) {
 
         check(pendingOperation == null)
         {
-            "Concurrent operations detected: " + pendingOperation?.method.toString() + ", " + method
+            "Concurrent operations detected: " + pendingOperation?.method.toString() + ", " + this
         }
-        pendingOperation = PendingOperation(method, result)
+        pendingOperation = PendingOperation(this, result)
     }
 
 
