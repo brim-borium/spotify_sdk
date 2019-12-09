@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
+import 'package:fluttertoast/fluttertoast.dart';
 
 import 'package:flutter/services.dart';
 import 'package:spotify_sdk/spotify_sdk.dart';
@@ -28,7 +29,6 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   bool _loading = false;
   bool _connected = false;
-  String _currentStatus = "";
 
   @override
   Widget build(BuildContext context) {
@@ -210,9 +210,7 @@ class _HomeState extends State<Home> {
     try {
       var authenticationToken = await SpotifySdk.getAuthenticationToken(
           clientId: "", redirectUrl: "");
-      setState(() {
-        _authenticationToken = authenticationToken;
-      });
+      setStatus(authenticationToken);
     } on PlatformException catch (e) {
       setStatus(e.code, message: e.message);
     } on MissingPluginException {
@@ -365,9 +363,14 @@ class _HomeState extends State<Home> {
     }
   }
 
-  void setStatus(String code, {String message}) {
-    setState(() {
-      _currentStatus = "$code \n $message";
-    });
+  void setStatus(String code, {String message = ""}) {
+    Fluttertoast.showToast(
+        msg: "$code $message",
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIos: 2,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+        fontSize: 16.0);
   }
 }
