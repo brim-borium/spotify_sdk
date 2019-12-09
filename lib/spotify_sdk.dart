@@ -68,7 +68,8 @@ class SpotifySdk {
 
   /// Returns an authentication token as a [String].
   ///
-  /// Required paramters are the [clientId] and the [redirectUrl] to authenticate with the Spotify Api
+  /// Required paramters are the [clientId] and the [redirectUrl] to authenticate with the Spotify Api.
+  /// The token can be used to communicate with the web api
   /// Throws a [PlatformException] if retrieving the authentication token failed.
   /// Throws a [MissingPluginException] if the method is not implemented on the native platforms.
   static Future<String> getAuthenticationToken(
@@ -211,7 +212,7 @@ class SpotifySdk {
     }
   }
 
-  /// Subscribes to the [PlayerContext]
+  /// Subscribes to the [PlayerContext] and returns it.
   ///
   /// Throws a [PlatformException] if this failes
   /// Throws a [MissingPluginException] if the method is not implemented on the native platforms.
@@ -230,7 +231,7 @@ class SpotifySdk {
     }
   }
 
-  /// Subscribes to the [PlayerState]
+  /// Subscribes to the [PlayerState] and returns it.
   ///
   /// Throws a [PlatformException] if this failes
   /// Throws a [MissingPluginException] if the method is not implemented on the native platforms.
