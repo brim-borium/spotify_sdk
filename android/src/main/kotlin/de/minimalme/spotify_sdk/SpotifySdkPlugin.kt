@@ -167,7 +167,7 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Pl
         if (clientId.isNullOrBlank() || redirectUrl.isNullOrBlank()) {
             result.error(errorConnecting, "client id or redirectUrl are not set or have invalid format", "")
         } else {
-            checkAndSetPendingOperation(methodConnectToSpotify, result)
+            methodConnectToSpotify.checkAndSetPendingOperation(result)
 
             val builder = AuthenticationRequest.Builder(clientId, AuthenticationResponse.Type.TOKEN, redirectUrl)
             builder.setScopes(scope)
@@ -215,13 +215,13 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Pl
         }
     }
 
-    private fun checkAndSetPendingOperation(method: String, result: Result) {
+    private fun String.checkAndSetPendingOperation(result: Result) {
 
         check(pendingOperation == null)
         {
-            "Concurrent operations detected: " + pendingOperation?.method.toString() + ", " + method
+            "Concurrent operations detected: " + pendingOperation?.method.toString() + ", " + this
         }
-        pendingOperation = PendingOperation(method, result)
+        pendingOperation = PendingOperation(this, result)
     }
 
 
