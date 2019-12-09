@@ -27,7 +27,7 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   bool _loading = false;
-  String _authenticationToken = "";
+  bool _connected = false;
   String _currentStatus = "";
 
   @override
@@ -62,32 +62,70 @@ class _HomeState extends State<Home> {
         ),
         Divider(),
         Text("Player State", style: TextStyle(fontSize: 16)),
-        StreamBuilder<PlayerState>(
-          stream: SpotifySdk.subscribePlayerState(),
-          initialData: PlayerState(null, false, 1, 1, null, null),
-          builder: (BuildContext context, AsyncSnapshot<PlayerState> snapshot) {
-            if (snapshot.data != null && snapshot.data.track != null) {
-              var playerState = snapshot.data;
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Text(
-                      "${playerState.track.name} by ${playerState.track.artist.name} from the album ${playerState.track.album.name} "),
-                  Text("Speed: ${playerState.playbackSpeed}"),
-                  Text("IsPaused: ${playerState.isPaused}"),
-                  Text(
-                      "Is Shuffling: ${playerState.playbackOptions.isShuffling}"),
-                  Text("RepeatMode: ${playerState.playbackOptions.repeatMode}")
-                ],
-              );
-            } else {
-              return Center(
-                child: Text("Not connected"),
-              );
-            }
-          },
-        ),
+        if (_connected)
+          StreamBuilder<PlayerState>(
+            stream: SpotifySdk.subscribePlayerState(),
+            initialData: PlayerState(null, false, 1, 1, null, null),
+            builder:
+                (BuildContext context, AsyncSnapshot<PlayerState> snapshot) {
+              if (snapshot.data != null && snapshot.data.track != null) {
+                var playerState = snapshot.data;
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text(
+                        "${playerState.track.name} by ${playerState.track.artist.name} from the album ${playerState.track.album.name} "),
+                    Text("Speed: ${playerState.playbackSpeed}"),
+                    Text("IsPaused: ${playerState.isPaused}"),
+                    Text(
+                        "Is Shuffling: ${playerState.playbackOptions.isShuffling}"),
+                    Text(
+                        "RepeatMode: ${playerState.playbackOptions.repeatMode}")
+                  ],
+                );
+              } else {
+                return Center(
+                  child: Text("Not connected"),
+                );
+              }
+            },
+          )
+        else
+          Center(
+            child: Text("Not connected"),
+          ),
+        Divider(),
+        Text("Player Context", style: TextStyle(fontSize: 16)),
+        if (_connected)
+          StreamBuilder<PlayerContext>(
+            stream: SpotifySdk.subscribePlayerContext(),
+            initialData: PlayerContext("", "", "", ""),
+            builder:
+                (BuildContext context, AsyncSnapshot<PlayerContext> snapshot) {
+              if (snapshot.data != null && snapshot.data.title != "") {
+                var playerContext = snapshot.data;
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text("Title: ${playerContext.title}"),
+                    Text("Subtitle: ${playerContext.subtitle}"),
+                    Text("Type: ${playerContext.type}"),
+                    Text("Uri: ${playerContext.uri}"),
+                  ],
+                );
+              } else {
+                return Center(
+                  child: Text("Not connected"),
+                );
+              }
+            },
+          )
+        else
+          Center(
+            child: Text("Not connected"),
+          ),
         Divider(),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -155,6 +193,9 @@ class _HomeState extends State<Home> {
       var result = await SpotifySdk.connectToSpotifyRemote(
           clientId: "4ee5e972f7154c3293f4c0fdec99f373",
           redirectUrl: "https://mysite.com/callback/");
+      setState(() {
+        _connected = result;
+      });
       setStatus(result
           ? "connect to spotify successful"
           : "conntect to spotify failed");

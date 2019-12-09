@@ -219,7 +219,7 @@ class SpotifySdk {
     try {
       var playerContextSubscription =
           _playerContextChannel.receiveBroadcastStream();
-      return playerContextSubscription.map((playerContextJson) {
+      return playerContextSubscription.asyncMap((playerContextJson) {
         var playerContextMap = jsonDecode(playerContextJson);
         var playerContext = PlayerContext.fromJson(playerContextMap);
         return playerContext;
@@ -238,7 +238,7 @@ class SpotifySdk {
     try {
       var playerStateSubscription =
           _playerStateChannel.receiveBroadcastStream();
-      return playerStateSubscription.map((playerStateJson) {
+      return playerStateSubscription.asyncMap((playerStateJson) {
         var playerStateMap = jsonDecode(playerStateJson);
         var playerState = PlayerState.fromJson(playerStateMap);
         return playerState;
