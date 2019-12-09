@@ -1,3 +1,12 @@
+## 0.2.0
+
+* android player api implementation subscriptions finished
+  * subscribe to playerContext and playerState now possible
+* added more instructions for android
+* code refactoring
+* extended the example
+* extended the documentation
+
 ## 0.1.0
 
 * android player api implementation finished
