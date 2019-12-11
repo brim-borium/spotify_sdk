@@ -62,6 +62,9 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Pl
 
     //user api
     private val methodAddToLibrary = "addToLibrary"
+    private val methodRemoveFromLibrary = "removeFromLibrary"
+    private val methodgetCapabilities = "getCapabilities"
+    private val methodgetLibraryState = "getLibraryState"
 
     //images api
     private val methodGetImage = "getImage"
@@ -125,6 +128,9 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Pl
             methodToggleRepeat -> spotifyPlayerApi?.toggleRepeat()
             //user api calls
             methodAddToLibrary -> spotifyUserApi?.addToUserLibrary(call.argument(paramSpotifyUri))
+            methodRemoveFromLibrary -> spotifyUserApi?.removeFromUserLibrary(call.argument(paramSpotifyUri))
+            methodgetCapabilities -> spotifyUserApi?.getCapabilities()
+            methodgetLibraryState -> spotifyUserApi?.getLibraryState(call.argument(paramSpotifyUri))
             //image api calls
             methodGetImage -> spotifyImagesApi?.getImage(call.argument(paramImageUri), call.argument(paramImageDimension))
             // method call is not implemented yet
