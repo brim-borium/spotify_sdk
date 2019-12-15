@@ -1,11 +1,14 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:isolate';
 
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:logger/logger.dart';
+import 'package:spotify_sdk/models/library_state.dart';
 import 'package:spotify_sdk/models/player_state.dart';
 
+import 'models/capabilities.dart';
 import 'models/crossfade_state.dart';
 import 'models/player_context.dart';
 
@@ -37,6 +40,9 @@ class SpotifySdk {
   static const String _methodToggleShuffle = "toggleShuffle";
   // user api
   static const String _methodAddToLibrary = "addToLibrary";
+  static const String _methodRemoveFromLibrary = "removeFromLibrary";
+  static const String _methodgetCapabilities = "getCapabilities";
+  static const String _methodgetLibraryState = "getLibraryState";
   // images api
   static const String _methodGetImage = "getImage";
   // params
@@ -317,6 +323,48 @@ class SpotifySdk {
           .invokeMethod(_methodAddToLibrary, {_paramSpotifyUri: spotifyUri});
     } on Exception catch (e) {
       _logException(_methodAddToLibrary, e);
+      rethrow;
+    }
+  }
+
+  /// Removes the given [spotifyUri] from the users library
+  ///
+  /// Throws a [PlatformException] if adding failed
+  /// Throws a [MissingPluginException] if the method is not implemented on the native platforms.
+  static Future removeFromLibrary({@required String spotifyUri}) async {
+    try {
+      await _channel.invokeMethod(
+          _methodRemoveFromLibrary, {_paramSpotifyUri: spotifyUri});
+    } on Exception catch (e) {
+      _logException(_methodRemoveFromLibrary, e);
+      rethrow;
+    }
+  }
+
+  static Future<Capabilities> getCapabilities(
+      {@required String spotifyUri}) async {
+    try {
+      var capabilitiesJson =
+          await _channel.invokeMethod(_methodgetCapabilities);
+      var capabilitiesMap = jsonDecode(capabilitiesJson);
+      var capablities = Capabilities.fromJson(capabilitiesMap);
+      return capablities;
+    } on Exception catch (e) {
+      _logException(_methodgetCapabilities, e);
+      rethrow;
+    }
+  }
+
+  static Future<LibraryState> getLibraryState(
+      {@required String spotifyUri}) async {
+    try {
+      var libraryStateJson = await _channel
+          .invokeMethod(_methodgetLibraryState, {_paramSpotifyUri: spotifyUri});
+      var libraryStateMap = jsonDecode(libraryStateJson);
+      var libraryState = LibraryState.fromJson(libraryStateMap);
+      return libraryState;
+    } on Exception catch (e) {
+      _logException(_methodgetLibraryState, e);
       rethrow;
     }
   }
