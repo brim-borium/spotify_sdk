@@ -4,18 +4,27 @@ import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:logger/logger.dart';
+import 'package:spotify_sdk/models/library_state.dart';
 import 'package:spotify_sdk/models/player_state.dart';
+import 'package:spotify_sdk/models/user_status.dart';
 
+import 'models/capabilities.dart';
 import 'models/crossfade_state.dart';
 import 'models/player_context.dart';
 
 class SpotifySdk {
   // method channel
   static const MethodChannel _channel = MethodChannel('spotify_sdk');
+  //player event channels
   static const EventChannel _playerContextChannel =
       EventChannel("player_context_subscription");
   static const EventChannel _playerStateChannel =
       EventChannel("player_state_subscription");
+  // user event channels
+  static const EventChannel _userStatusChannel =
+      EventChannel("user_status_channel");
+  static const EventChannel _capabilitiesChannel =
+      EventChannel("capabilities_channel");
   // connection and auth
   static const String _methodConnectToSpotify = "connectToSpotify";
   static const String _methodGetAuthenticationToken = "getAuthenticationToken";
@@ -37,6 +46,9 @@ class SpotifySdk {
   static const String _methodToggleShuffle = "toggleShuffle";
   // user api
   static const String _methodAddToLibrary = "addToLibrary";
+  static const String _methodRemoveFromLibrary = "removeFromLibrary";
+  static const String _methodgetCapabilities = "getCapabilities";
+  static const String _methodgetLibraryState = "getLibraryState";
   // images api
   static const String _methodGetImage = "getImage";
   // params
@@ -222,8 +234,7 @@ class SpotifySdk {
           _playerContextChannel.receiveBroadcastStream();
       return playerContextSubscription.asyncMap((playerContextJson) {
         var playerContextMap = jsonDecode(playerContextJson);
-        var playerContext = PlayerContext.fromJson(playerContextMap);
-        return playerContext;
+        return PlayerContext.fromJson(playerContextMap);
       });
     } on Exception catch (e) {
       _logException(_methodSubscribePlayerContext, e);
@@ -241,8 +252,7 @@ class SpotifySdk {
           _playerStateChannel.receiveBroadcastStream();
       return playerStateSubscription.asyncMap((playerStateJson) {
         var playerStateMap = jsonDecode(playerStateJson);
-        var playerState = PlayerState.fromJson(playerStateMap);
-        return playerState;
+        return PlayerState.fromJson(playerStateMap);
       });
     } on Exception catch (e) {
       _logException(_methodSubscribePlayerState, e);
@@ -317,6 +327,89 @@ class SpotifySdk {
           .invokeMethod(_methodAddToLibrary, {_paramSpotifyUri: spotifyUri});
     } on Exception catch (e) {
       _logException(_methodAddToLibrary, e);
+      rethrow;
+    }
+  }
+
+  /// Removes the given [spotifyUri] from the users library
+  ///
+  /// Throws a [PlatformException] if adding failed
+  /// Throws a [MissingPluginException] if the method is not implemented on the native platforms.
+  static Future removeFromLibrary({@required String spotifyUri}) async {
+    try {
+      await _channel.invokeMethod(
+          _methodRemoveFromLibrary, {_paramSpotifyUri: spotifyUri});
+    } on Exception catch (e) {
+      _logException(_methodRemoveFromLibrary, e);
+      rethrow;
+    }
+  }
+
+  /// Gets the [Capabilities] of the current user
+  ///
+  /// Throws a [PlatformException] getting the capability failed
+  /// Throws a [MissingPluginException] if the method is not implemented on the native platforms.
+  static Future<Capabilities> getCapabilities(
+      {@required String spotifyUri}) async {
+    try {
+      var capabilitiesJson =
+          await _channel.invokeMethod(_methodgetCapabilities);
+      var capabilitiesMap = jsonDecode(capabilitiesJson);
+      return Capabilities.fromJson(capabilitiesMap);
+    } on Exception catch (e) {
+      _logException(_methodgetCapabilities, e);
+      rethrow;
+    }
+  }
+
+  /// Gets the [LibraryState] of the given [spotifyUri]
+  ///
+  /// Throws a [PlatformException] when getting the library state failed
+  /// Throws a [MissingPluginException] if the method is not implemented on the native platforms.
+  static Future<LibraryState> getLibraryState(
+      {@required String spotifyUri}) async {
+    try {
+      var libraryStateJson = await _channel
+          .invokeMethod(_methodgetLibraryState, {_paramSpotifyUri: spotifyUri});
+      var libraryStateMap = jsonDecode(libraryStateJson);
+      return LibraryState.fromJson(libraryStateMap);
+    } on Exception catch (e) {
+      _logException(_methodgetLibraryState, e);
+      rethrow;
+    }
+  }
+
+  /// Subscribes to the [Capabilities] of the current user
+  ///
+  /// Throws a [PlatformException] getting the capability failed
+  /// Throws a [MissingPluginException] if the method is not implemented on the native platforms.
+  static Stream<Capabilities> subscribeCapabilities() {
+    try {
+      var capabilitiesSubscription =
+          _capabilitiesChannel.receiveBroadcastStream();
+      return capabilitiesSubscription.asyncMap((capabilitiesJson) {
+        var capabilitiesMap = jsonDecode(capabilitiesJson);
+        return Capabilities.fromJson(capabilitiesMap);
+      });
+    } on Exception catch (e) {
+      _logException(_methodSubscribePlayerContext, e);
+      rethrow;
+    }
+  }
+
+  /// Subscribes to the [UserStatus]
+  ///
+  /// Throws a [PlatformException] when getting the userStatus failed
+  /// Throws a [MissingPluginException] if the method is not implemented on the native platforms.
+  static Stream<UserStatus> subscribeUserStatus() {
+    try {
+      var userStatusSubscription = _userStatusChannel.receiveBroadcastStream();
+      return userStatusSubscription.asyncMap((userStatusJson) {
+        var userStatusMap = jsonDecode(userStatusJson);
+        return UserStatus.fromJson(userStatusMap);
+      });
+    } on Exception catch (e) {
+      _logException(_methodSubscribePlayerContext, e);
       rethrow;
     }
   }

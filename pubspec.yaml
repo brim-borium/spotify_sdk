@@ -10,7 +10,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  logger: ^0.7.0+2
+  logger: ^0.8.0
   json_annotation: ^3.0.0
 
 dev_dependencies:
