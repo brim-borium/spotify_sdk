@@ -1,3 +1,7 @@
+## 0.3.1
+
+* fixes wrong links and incorrect docs
+
 ## 0.3.0
 
 * android user api implementation finished
