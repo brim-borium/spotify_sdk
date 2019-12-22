@@ -39,7 +39,7 @@ var authenticationToken = await SpotifySdk.getAuthenticationToken(clientId: "", 
 
 tbd...
 
-Have a look [here](example/lib/spotify_sdk.dart) for a more detailed example.
+Have a look [here](example/lib/main.dart) for a more detailed example.
 
 ### Api
 
