@@ -219,8 +219,7 @@ class _HomeState extends State<Home> {
         _loading = true;
       });
       var result = await SpotifySdk.connectToSpotifyRemote(
-          clientId: "4ee5e972f7154c3293f4c0fdec99f373",
-          redirectUrl: "https://mysite.com/callback/");
+          clientId: "", redirectUrl: "");
       setState(() {
         _connected = result;
       });

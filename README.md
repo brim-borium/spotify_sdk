@@ -1,7 +1,7 @@
 # spotify_sdk
 
 [![licence](https://img.shields.io/badge/licence-MIT-blue.svg)](https://github.com/IamTobi/spotify_sdk/blob/master/LICENSE)
-[![pub package](https://img.shields.io/badge/pub-0.2.0-orange)](https://pub.dev/packages/spotify_sdk)
+[![pub package](https://img.shields.io/badge/pub-0.3.0-orange)](https://pub.dev/packages/spotify_sdk)
 
 ## Description
 
@@ -38,6 +38,8 @@ var authenticationToken = await SpotifySdk.getAuthenticationToken(clientId: "", 
 ```
 
 tbd...
+
+Have a look [here](example/lib/main.dart) for a more detailed example.
 
 ### Api
 
@@ -80,18 +82,27 @@ tbd...
 | Function  | Description| Android | iOS |
 |---|---|---|--|
 |  addToLibrary | Adds the given spotifyUri to the users library |:heavy_check_mark:  |  :construction_worker: |
-|  getCapabilities | tbd |:construction_worker:  |  :construction_worker: |
-|  getLibraryState | tbd |:construction_worker:  |  :construction_worker: |
-|  removeFromLibrary | tbd |:construction_worker:  |  :construction_worker: |
-|  subscribeToCapabilities | tbd |:construction_worker:  |  :construction_worker: |
-|  subscribeToUserStatus | tbd |:construction_worker:  |  :construction_worker: |
+|  getCapabilities | :heavy_check_mark: |:construction_worker:  |  :construction_worker: |
+|  getLibraryState | :heavy_check_mark: |:construction_worker:  |  :construction_worker: |
+|  removeFromLibrary | :heavy_check_mark: |:construction_worker:  |  :construction_worker: |
+|  subscribeToCapabilities | :heavy_check_mark: |:construction_worker:  |  :construction_worker: |
+|  subscribeToUserStatus | :heavy_check_mark: |:construction_worker:  |  :construction_worker: |
+
+#### Connect Api
+
+| Function  | Description| Android | iOS |
+|---|---|---|--|
+|  connectSwitchToLocalDevice | Switch to play music on this (local) device |:construction_worker:  |  :construction_worker: |
+
+#### Content Api
+
+| Function  | Description| Android | iOS |
+|---|---|---|--|
+| getChildrenOfItem | tbd |:construction_worker:  |  :construction_worker: |
+| getRecommendedContentItems | tbd |:construction_worker:  |  :construction_worker: |
+| playContentItem | tbd |:construction_worker:  |  :construction_worker: |
 
 ## Official Spotify Docs
 
-- [Auth](https://spotify.github.io/android-sdk/auth-lib/docs/index.html) 
-- [App Remote](https://spotify.github.io/android-sdk/app-remote-lib/docs/index.html) 
-
-
-
-
-
+- [Auth](https://spotify.github.io/android-sdk/auth-lib/docs/index.html)
+- [App Remote](https://spotify.github.io/android-sdk/app-remote-lib/docs/index.html)
