@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
-import 'package:fluttertoast/fluttertoast.dart';
 
 import 'package:flutter/services.dart';
 import 'package:spotify_sdk/models/crossfade_state.dart';
 import 'package:spotify_sdk/spotify_sdk.dart';
 import 'package:spotify_sdk/models/player_state.dart';
 import 'package:spotify_sdk/models/player_context.dart';
-import 'package:spotify_sdk_example/widgets/sized_icon_button.dart';
+import 'package:logger/logger.dart';
+
+import 'widgets/sized_icon_button.dart';
 
 void main() => runApp(MyApp());
 
@@ -31,6 +32,7 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   bool _loading = false;
   bool _connected = false;
+  final Logger _logger = Logger();
 
   CrossfadeState crossfadeState;
 
@@ -396,13 +398,7 @@ class _HomeState extends State<Home> {
   }
 
   void setStatus(String code, {String message = ""}) {
-    Fluttertoast.showToast(
-        msg: "$code $message",
-        toastLength: Toast.LENGTH_LONG,
-        gravity: ToastGravity.BOTTOM,
-        timeInSecForIos: 2,
-        backgroundColor: Colors.red,
-        textColor: Colors.white,
-        fontSize: 16.0);
+    var text = message.isEmpty ? "" : " : $message";
+    _logger.d("$code + $text");
   }
 }
