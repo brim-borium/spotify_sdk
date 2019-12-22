@@ -82,11 +82,11 @@ Have a look [here](example/lib/main.dart) for a more detailed example.
 | Function  | Description| Android | iOS |
 |---|---|---|--|
 |  addToLibrary | Adds the given spotifyUri to the users library |:heavy_check_mark:  |  :construction_worker: |
-|  getCapabilities | :heavy_check_mark: |:construction_worker:  |  :construction_worker: |
-|  getLibraryState | :heavy_check_mark: |:construction_worker:  |  :construction_worker: |
-|  removeFromLibrary | :heavy_check_mark: |:construction_worker:  |  :construction_worker: |
-|  subscribeToCapabilities | :heavy_check_mark: |:construction_worker:  |  :construction_worker: |
-|  subscribeToUserStatus | :heavy_check_mark: |:construction_worker:  |  :construction_worker: |
+|  getCapabilities | Gets the current users capabilities |:heavy_check_mark:  |  :construction_worker: |
+|  getLibraryState | Gets the current library state |:heavy_check_mark:  |  :construction_worker: |
+|  removeFromLibrary | Removes the given spotifyUri to the users library |:heavy_check_mark:  |  :construction_worker: |
+|  subscribeToCapabilities |  Subscribes to the current users capabilities |:heavy_check_mark:  |  :construction_worker: |
+|  subscribeToUserStatus |  Subscrives to  the current users status |:heavy_check_mark:  |  :construction_worker: |
 
 #### Connect Api
 

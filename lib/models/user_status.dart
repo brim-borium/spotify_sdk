@@ -4,8 +4,8 @@ part 'user_status.g.dart';
 
 @JsonSerializable()
 class UserStatus {
-  final int STATUS_CODE_OK = 0;
-  final int STATUS_CODE_NOT_LOGGED_IN = 1;
+  final int statusCodeOk = 0;
+  final int statusCodeNotLoggedIn = 1;
   @JsonKey(name: "code")
   final int code;
   @JsonKey(name: "short_text")
