@@ -56,6 +56,4 @@ class SpotifyUserApi(spotifyAppRemote: SpotifyAppRemote?, result: MethodChannel.
             spotifyRemoteAppNotSetError()
         }
     }
-
-
 }

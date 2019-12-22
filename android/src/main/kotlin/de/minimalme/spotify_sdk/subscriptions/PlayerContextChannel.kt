@@ -1,4 +1,4 @@
-package de.minimalme.spotify_sdk
+package de.minimalme.spotify_sdk.subscriptions
 
 import com.google.gson.Gson
 import com.spotify.android.appremote.api.PlayerApi

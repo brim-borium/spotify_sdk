@@ -7,6 +7,10 @@ import com.spotify.android.appremote.api.SpotifyAppRemote
 import com.spotify.sdk.android.authentication.AuthenticationClient
 import com.spotify.sdk.android.authentication.AuthenticationRequest
 import com.spotify.sdk.android.authentication.AuthenticationResponse
+import de.minimalme.spotify_sdk.subscriptions.CapabilitiesChannel
+import de.minimalme.spotify_sdk.subscriptions.PlayerContextChannel
+import de.minimalme.spotify_sdk.subscriptions.PlayerStateChannel
+import de.minimalme.spotify_sdk.subscriptions.UserStatusChannel
 import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
@@ -23,6 +27,8 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Pl
         private const val CHANNEL_NAME = "spotify_sdk"
         private const val PLAYER_CONTEXT_SUBSCRIPTION = "player_context_subscription"
         private const val PLAYER_STATE_SUBSCRIPTION = "player_state_subscription"
+        private const val CAPABILITIES__SUBSCRIPTION = "capabilities_subscription"
+        private const val USER_STATUS_SUBSCRIPTION = "user_status_subscription"
 
         @JvmStatic
         fun registerWith(registrar: Registrar) {
@@ -38,6 +44,8 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Pl
 
     private val playerContextChannel = EventChannel(registrar.messenger(), PLAYER_CONTEXT_SUBSCRIPTION)
     private val playerStateChannel = EventChannel(registrar.messenger(), PLAYER_STATE_SUBSCRIPTION)
+    private val capabilitiesChannel = EventChannel(registrar.messenger(), CAPABILITIES__SUBSCRIPTION)
+    private val userStatusChannel = EventChannel(registrar.messenger(), USER_STATUS_SUBSCRIPTION)
 
     //connecting
     private val methodConnectToSpotify = "connectToSpotify"
@@ -63,8 +71,8 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Pl
     //user api
     private val methodAddToLibrary = "addToLibrary"
     private val methodRemoveFromLibrary = "removeFromLibrary"
-    private val methodgetCapabilities = "getCapabilities"
-    private val methodgetLibraryState = "getLibraryState"
+    private val methodGetCapabilities = "getCapabilities"
+    private val methodGetLibraryState = "getLibraryState"
 
     //images api
     private val methodGetImage = "getImage"
@@ -129,8 +137,8 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Pl
             //user api calls
             methodAddToLibrary -> spotifyUserApi?.addToUserLibrary(call.argument(paramSpotifyUri))
             methodRemoveFromLibrary -> spotifyUserApi?.removeFromUserLibrary(call.argument(paramSpotifyUri))
-            methodgetCapabilities -> spotifyUserApi?.getCapabilities()
-            methodgetLibraryState -> spotifyUserApi?.getLibraryState(call.argument(paramSpotifyUri))
+            methodGetCapabilities -> spotifyUserApi?.getCapabilities()
+            methodGetLibraryState -> spotifyUserApi?.getLibraryState(call.argument(paramSpotifyUri))
             //image api calls
             methodGetImage -> spotifyImagesApi?.getImage(call.argument(paramImageUri), call.argument(paramImageDimension))
             // method call is not implemented yet
@@ -155,6 +163,8 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Pl
                             spotifyAppRemote = spotifyAppRemoteValue
                             playerContextChannel.setStreamHandler(PlayerContextChannel(spotifyAppRemote!!.playerApi))
                             playerStateChannel.setStreamHandler(PlayerStateChannel(spotifyAppRemote!!.playerApi))
+                            capabilitiesChannel.setStreamHandler(CapabilitiesChannel(spotifyAppRemote!!.userApi))
+                            userStatusChannel.setStreamHandler(UserStatusChannel(spotifyAppRemote!!.userApi))
                             result.success(true)
                         }
 
