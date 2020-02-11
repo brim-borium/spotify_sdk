@@ -4,9 +4,9 @@ import android.content.Intent
 import com.spotify.android.appremote.api.ConnectionParams
 import com.spotify.android.appremote.api.Connector.ConnectionListener
 import com.spotify.android.appremote.api.SpotifyAppRemote
-import com.spotify.sdk.android.authentication.AuthenticationClient
-import com.spotify.sdk.android.authentication.AuthenticationRequest
-import com.spotify.sdk.android.authentication.AuthenticationResponse
+import com.spotify.sdk.android.auth.AuthorizationClient
+import com.spotify.sdk.android.auth.AuthorizationRequest
+import com.spotify.sdk.android.auth.AuthorizationResponse
 import de.minimalme.spotify_sdk.subscriptions.CapabilitiesChannel
 import de.minimalme.spotify_sdk.subscriptions.PlayerContextChannel
 import de.minimalme.spotify_sdk.subscriptions.PlayerStateChannel
@@ -185,11 +185,11 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Pl
         } else {
             methodConnectToSpotify.checkAndSetPendingOperation(result)
 
-            val builder = AuthenticationRequest.Builder(clientId, AuthenticationResponse.Type.TOKEN, redirectUrl)
+            val builder = AuthorizationRequest.Builder(clientId, AuthorizationResponse.Type.TOKEN, redirectUrl)
             builder.setScopes(scope)
             val request = builder.build()
 
-            AuthenticationClient.openLoginActivity(registrar.activity(), requestCodeAuthentication, request)
+            AuthorizationClient.openLoginActivity(registrar.activity(), requestCodeAuthentication, request)
         }
     }
 
@@ -218,15 +218,15 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Pl
 
     private fun authFlow(resultCode: Int, data: Intent?) {
 
-        val response: AuthenticationResponse = AuthenticationClient.getResponse(resultCode, data)
+        val response: AuthorizationResponse = AuthorizationClient.getResponse(resultCode, data)
         val result = pendingOperation!!.result
         pendingOperation = null
 
         when (response.type) {
-            AuthenticationResponse.Type.TOKEN -> {
+            AuthorizationResponse.Type.TOKEN -> {
                 result.success(response.accessToken)
             }
-            AuthenticationResponse.Type.ERROR -> result.error(errorAuthenticationToken, "Authentication went wrong", response.error)
+            AuthorizationResponse.Type.ERROR -> result.error(errorAuthenticationToken, "Authentication went wrong", response.error)
             else -> result.notImplemented()
         }
     }
