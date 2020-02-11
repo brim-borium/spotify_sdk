@@ -67,20 +67,18 @@ class _HomeState extends State<Home> {
             ),
             Divider(),
             Text("Player State", style: TextStyle(fontSize: 16)),
-            if (_connected)
-              PlayerStateWidget()
-            else
-              Center(
-                child: Text("Not connected"),
-              ),
+            _connected
+            ?  PlayerStateWidget()
+            : Center(
+              child: Text("Not connected"),
+            ),
             Divider(),
             Text("Player Context", style: TextStyle(fontSize: 16)),
-            if (_connected)
-              PlayerContextWidget()
-            else
-              Center(
-                child: Text("Not connected"),
-              ),
+            _connected
+            ? PlayerContextWidget()
+            : Center(
+              child: Text("Not connected"),
+            ),
             Divider(),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -151,10 +149,11 @@ class _HomeState extends State<Home> {
             Text("Duration: ${crossfadeState?.duration}"),
           ],
         ),
-        if (_loading)
-          Container(
+        _loading
+        ? Container(
               color: Colors.black12,
-              child: Center(child: CircularProgressIndicator())),
+              child: Center(child: CircularProgressIndicator()))
+        : SizedBox(),
       ],
     );
   }
