@@ -1,3 +1,8 @@
+## 0.3.2
+
+* fixes compatibility with spotify-auth dependency above version 1.2.0 (thanks [itsMatoosh](https://github.com/itsMatoosh))
+  * spotify introduced some breaking changes: Rename classes from Authentication<code>ClassName</code> to Authorization<code>ClassName</code>
+
 ## 0.3.1
 
 * fixes wrong links and incorrect docs
