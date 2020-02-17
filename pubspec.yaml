@@ -14,6 +14,7 @@ dependencies:
   flutter_web_plugins:
     sdk: flutter
   logger: ^0.8.0
+  dio: any
   json_annotation: ^3.0.0
   js: ^0.6.1+1
 
