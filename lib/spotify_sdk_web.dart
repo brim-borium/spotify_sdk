@@ -334,13 +334,15 @@ class PlayerOptions {
 
   external factory PlayerOptions({String name, Function getOAuthToken, double volume});
 }
-@JS('WebPlaybackPlayer')
+@JS()
+@anonymous
 class WebPlaybackPlayer {
   external String get device_id;
 
   external factory WebPlaybackPlayer({String device_id});
 }
-@JS('WebPlaybackState')
+@JS()
+@anonymous
 class WebPlaybackState  {
   external WebPlayerContext get context;
   external WebPlayerDisallows get disallows;
