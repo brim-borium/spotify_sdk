@@ -54,6 +54,7 @@ class SpotifySdk {
   // params
   static const String _paramClientId = "clientId";
   static const String _paramRedirectUrl = "redirectUrl";
+  static const String _paramPlayerName = "playerName";
   static const String _paramSpotifyUri = "spotifyUri";
   static const String _paramImageUri = "imageUri";
   static const String _paramImageDimension = "imageDimension";
@@ -68,7 +69,7 @@ class SpotifySdk {
   /// Throws a [PlatformException] if connecting to the remote api failed
   /// Throws a [MissingPluginException] if the method is not implemented on the native platforms.
   static Future<bool> connectToSpotifyRemote(
-      {@required String clientId, @required String redirectUrl}) async {
+      {@required String clientId, @required String redirectUrl, String playerName = 'Spotify SDK'}) async {
     try {
       return await _channel.invokeMethod(_methodConnectToSpotify,
           {_paramClientId: clientId, _paramRedirectUrl: redirectUrl});

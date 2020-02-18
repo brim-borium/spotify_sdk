@@ -62,6 +62,7 @@ class SpotifySdkPlugin {
 
   static const String PARAM_CLIENT_ID = "clientId";
   static const String PARAM_REDIRECT_URL = "redirectUrl";
+  static const String PARAM_PLAYER_NAME = "playerName";
   static const String PARAM_SPOTIFY_URI = "spotifyUri";
   static const String PARAM_IMAGE_URI = "imageUri";
   static const String PARAM_IMAGE_DIMENSION = "imageDimension";
@@ -147,8 +148,9 @@ class SpotifySdkPlugin {
         // update the client id and redirect url
         String clientId = call.arguments[PARAM_CLIENT_ID];
         String redirectUrl = call.arguments[PARAM_REDIRECT_URL];
+        String playerName = call.arguments[PARAM_PLAYER_NAME];
         if (!(clientId?.isNotEmpty == true && redirectUrl?.isNotEmpty == true)) {
-          throw PlatformException(message: "client id or redirectUrl are not set or have invalid format", code: "");
+          throw PlatformException(message: "Client id or redirectUrl are not set or have invalid format", code: "Authentication Error");
         }
         cachedClientId = clientId;
         cachedRedirectUrl = redirectUrl;
@@ -159,7 +161,7 @@ class SpotifySdkPlugin {
         // create player
         _currentPlayer = Player(
           PlayerOptions(
-            name: "Test",
+            name: playerName,
             getOAuthToken: allowInterop((Function callback, t) {
               _getSpotifyAuthToken().then((value) {
                 callback(value);
@@ -370,11 +372,11 @@ class SpotifySdkPlugin {
 
         // check output
         if(error != null || hash == null) {
-          throw PlatformException(message: "authorization error: $error", code: "");
+          throw PlatformException(message: "$error", code: "Authentication Error");
         }
         return hash.split('&')[0].split('=')[1];
       } else {
-        throw PlatformException(message: "client id or redirectUrl are not set or have invalid format", code: "");
+        throw PlatformException(message: "Client id or redirectUrl are not set or have invalid format", code: "Authentication Error");
       }
   }
   /// Converts a native WebPlaybackState to the library PlayerState
