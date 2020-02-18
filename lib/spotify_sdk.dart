@@ -72,7 +72,7 @@ class SpotifySdk {
       {@required String clientId, @required String redirectUrl, String playerName = 'Spotify SDK'}) async {
     try {
       return await _channel.invokeMethod(_methodConnectToSpotify,
-          {_paramClientId: clientId, _paramRedirectUrl: redirectUrl});
+          {_paramClientId: clientId, _paramRedirectUrl: redirectUrl, _paramPlayerName: playerName});
     } on Exception catch (e) {
       _logException(_methodConnectToSpotify, e);
       rethrow;
