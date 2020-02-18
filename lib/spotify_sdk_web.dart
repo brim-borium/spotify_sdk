@@ -16,6 +16,7 @@ import 'package:js/js_util.dart';
 import 'package:spotify_sdk/models/album.dart';
 import 'package:spotify_sdk/models/artist.dart';
 import 'package:spotify_sdk/models/image_uri.dart';
+import 'package:spotify_sdk/models/player_context.dart';
 import 'package:spotify_sdk/models/player_options.dart' as options;
 import 'package:spotify_sdk/models/player_restrictions.dart';
 import 'package:spotify_sdk/models/player_state.dart';
@@ -237,6 +238,7 @@ class SpotifySdkPlugin {
         (WebPlaybackState state) {
           if(state == null) return;
           playerStateEventController.add(jsonEncode(toPlayerState(state).toJson()));
+          playerContextEventController.add(jsonEncode(toPlayerContext(state).toJson()));
         }
       )
     );
@@ -375,6 +377,7 @@ class SpotifySdkPlugin {
         throw PlatformException(message: "client id or redirectUrl are not set or have invalid format", code: "");
       }
   }
+  /// Converts a native WebPlaybackState to the library PlayerState
   PlayerState toPlayerState(WebPlaybackState state) {
     if(state == null) return null;
     WebPlaybackTrack trackRaw = state.track_window?.current_track;
@@ -428,6 +431,17 @@ class SpotifySdkPlugin {
         false,
         restrictionsRaw.seeking
       )
+    );
+  }
+  /// Converts a native WebPlaybackState to the library PlayerContext
+  PlayerContext toPlayerContext(WebPlaybackState state) {
+    if(state == null) return null;
+    log(state.context.metadata.title);
+    return PlayerContext(
+     state.context.metadata.title,
+     state.context.metadata.subtitle,
+     state.context.metadata.type,
+     state.context.uri
     );
   }
 }
@@ -562,9 +576,18 @@ class WebPlaybackState  {
 @anonymous
 class WebPlayerContext  {
   external String get uri;
-  external Map get metadata;
+  external WebPlayerContextMetadata get metadata;
 
-  external factory WebPlayerContext({String uri, Map metadata});
+  external factory WebPlayerContext({String uri, WebPlayerContextMetadata metadata});
+}
+@JS()
+@anonymous
+class WebPlayerContextMetadata {
+  external String get title;
+  external String get subtitle;
+  external String get type;
+
+  external factory WebPlayerContextMetadata({String title, String subtitle, String type});
 }
 @JS()
 @anonymous
