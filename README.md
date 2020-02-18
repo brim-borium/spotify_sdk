@@ -86,62 +86,62 @@ Have a look [here](example/lib/main.dart) for a more detailed example.
 
 #### Connecting/Authenticating
 
-| Function  | Description| Android | iOS |
-|---|---|---|--|
-| connectToSpotifyRemote  | Connects the App to Spotify | :heavy_check_mark: | :construction_worker:  |  
-|  getAuthenticationToken | Gets the Authentication Token that you can use to work with the [Web Api](https://developer.spotify.com/documentation/web-api/) |:heavy_check_mark: |  :construction_worker: |  
-|  logout | logs the user out and disconnects the app connection |:construction_worker: |  :construction_worker: |
+| Function  | Description| Android | iOS | Web |
+|---|---|---|---|---|
+| connectToSpotifyRemote  | Connects the App to Spotify | :heavy_check_mark: | :construction_worker: | :heavy_check_mark: |
+|  getAuthenticationToken | Gets the Authentication Token that you can use to work with the [Web Api](https://developer.spotify.com/documentation/web-api/) |:heavy_check_mark: |  :construction_worker: | :heavy_check_mark: |
+|  logout | logs the user out and disconnects the app connection |:construction_worker: |  :construction_worker: | :heavy_check_mark: |
 
 #### Player Api
 
-| Function  | Description| Android | iOS |
-|---|---|---|--|
-|  getCrossfadeState | Gets the current crossfade state |:heavy_check_mark:  |  :construction_worker: |
-|  getPlayerState | Gets the current player state |:heavy_check_mark:  |  :construction_worker: |
-|  pause | Pauses the current track  |:heavy_check_mark: | :construction_worker:  |
-|  play | Plays the given spotifyUri |:heavy_check_mark: |  :construction_worker: |
-|  queue | Queues given spotifyUri |:heavy_check_mark: | :construction_worker:  |
-|  resume | Resumes the current track |:heavy_check_mark: |  :construction_worker: |
-|  skipNext | Skips to next track | :heavy_check_mark: | :construction_worker:  |
-|  skipPrevious | Skips to previous track |:heavy_check_mark:  |  :construction_worker: |
-|  seekTo | Seeks the current track to the given position in milliseconds | :heavy_check_mark:   |:construction_worker: |
-|  seekToRelativePosition | Adds to the current position of the track the given milliseconds |:heavy_check_mark:  |  :construction_worker: |
-|  subscribeToPlayerContext | Subscribes to the current player context |:heavy_check_mark:|:construction_worker: |
-|  subscribeToPlayerState| Subscribes to the current player state |:heavy_check_mark:  |:construction_worker:|
-|  getCrossfadeState | Gets the current crossfade state |:heavy_check_mark:  |  :construction_worker: |
-|  toggleShuffle | Cycles through the shuffle modes |:heavy_check_mark: |  :construction_worker: |
-|  toggleRepeat | Cycles through the repeat modes | :heavy_check_mark: |  :construction_worker: |
+| Function  | Description | Android | iOS | Web |
+|---|---|---|---|---|
+|  getCrossfadeState | Gets the current crossfade state | :heavy_check_mark:  |  :construction_worker: | :x: |
+|  getPlayerState | Gets the current player state |:heavy_check_mark:  |  :construction_worker: | :heavy_check_mark: |
+|  pause | Pauses the current track  |:heavy_check_mark: | :construction_worker:  | :heavy_check_mark: |
+|  play | Plays the given spotifyUri |:heavy_check_mark: |  :construction_worker: | :heavy_check_mark: |
+|  queue | Queues given spotifyUri |:heavy_check_mark: | :construction_worker:  | :x: |
+|  resume | Resumes the current track |:heavy_check_mark: |  :construction_worker: | :heavy_check_mark: |
+|  skipNext | Skips to next track | :heavy_check_mark: | :construction_worker:  | :heavy_check_mark: |
+|  skipPrevious | Skips to previous track |:heavy_check_mark:  |  :construction_worker: | :heavy_check_mark: |
+|  seekTo | Seeks the current track to the given position in milliseconds | :heavy_check_mark: |:construction_worker: | :construction_worker: |
+|  seekToRelativePosition | Adds to the current position of the track the given milliseconds |:heavy_check_mark: |  :construction_worker: | :construction_worker: |
+|  subscribeToPlayerContext | Subscribes to the current player context |:heavy_check_mark:|:construction_worker: | :heavy_check_mark: |
+|  subscribeToPlayerState| Subscribes to the current player state |:heavy_check_mark:  |:construction_worker:| :heavy_check_mark: |
+|  getCrossfadeState | Gets the current crossfade state |:heavy_check_mark:  |  :construction_worker: | :x: |
+|  toggleShuffle | Cycles through the shuffle modes |:heavy_check_mark: |  :construction_worker: | :construction_worker: |
+|  toggleRepeat | Cycles through the repeat modes | :heavy_check_mark: |  :construction_worker: | :construction_worker: |
 
 #### Images Api
 
-| Function  | Description| Android | iOS |
-|---|---|---|--|
-|  getImage | Get the image from the given spotifyUri |:construction_worker: |  :construction_worker: |
+| Function  | Description| Android | iOS | Web |
+|---|---|---|---|---|
+|  getImage | Get the image from the given spotifyUri |:construction_worker: |  :construction_worker: | :construction_worker: |
 
 #### User Api
 
-| Function  | Description| Android | iOS |
-|---|---|---|--|
-|  addToLibrary | Adds the given spotifyUri to the users library |:heavy_check_mark:  |  :construction_worker: |
-|  getCapabilities | Gets the current users capabilities |:heavy_check_mark:  |  :construction_worker: |
-|  getLibraryState | Gets the current library state |:heavy_check_mark:  |  :construction_worker: |
-|  removeFromLibrary | Removes the given spotifyUri to the users library |:heavy_check_mark:  |  :construction_worker: |
-|  subscribeToCapabilities |  Subscribes to the current users capabilities |:heavy_check_mark:  |  :construction_worker: |
-|  subscribeToUserStatus |  Subscrives to  the current users status |:heavy_check_mark:  |  :construction_worker: |
+| Function  | Description| Android | iOS | Web |
+|---|---|---|---|---|
+|  addToLibrary | Adds the given spotifyUri to the users library |:heavy_check_mark:  |  :construction_worker: | :construction_worker: |
+|  getCapabilities | Gets the current users capabilities |:heavy_check_mark:  |  :construction_worker: | :construction_worker: |
+|  getLibraryState | Gets the current library state |:heavy_check_mark:  |  :construction_worker: | :construction_worker: |
+|  removeFromLibrary | Removes the given spotifyUri to the users library |:heavy_check_mark:  |  :construction_worker: | :construction_worker: |
+|  subscribeToCapabilities |  Subscribes to the current users capabilities |:heavy_check_mark:  |  :construction_worker: | :construction_worker: |
+|  subscribeToUserStatus |  Subscrives to  the current users status |:heavy_check_mark:  |  :construction_worker: | :construction_worker: |
 
 #### Connect Api
 
-| Function  | Description| Android | iOS |
-|---|---|---|--|
-|  connectSwitchToLocalDevice | Switch to play music on this (local) device |:construction_worker:  |  :construction_worker: |
+| Function  | Description| Android | iOS | Web |
+|---|---|---|---|---|
+|  connectSwitchToLocalDevice | Switch to play music on this (local) device |:construction_worker:  |  :construction_worker: | :construction_worker: |
 
 #### Content Api
 
-| Function  | Description| Android | iOS |
-|---|---|---|--|
-| getChildrenOfItem | tbd |:construction_worker:  |  :construction_worker: |
-| getRecommendedContentItems | tbd |:construction_worker:  |  :construction_worker: |
-| playContentItem | tbd |:construction_worker:  |  :construction_worker: |
+| Function  | Description| Android | iOS | Web |
+|---|---|---|---|---|
+| getChildrenOfItem | tbd |:construction_worker:  |  :construction_worker: | :construction_worker: |
+| getRecommendedContentItems | tbd |:construction_worker:  |  :construction_worker: | :construction_worker: |
+| playContentItem | tbd |:construction_worker:  |  :construction_worker: | :construction_worker: |
 
 ## Official Spotify Docs
 
