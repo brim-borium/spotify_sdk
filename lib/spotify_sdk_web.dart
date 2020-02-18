@@ -436,7 +436,6 @@ class SpotifySdkPlugin {
   /// Converts a native WebPlaybackState to the library PlayerContext
   PlayerContext toPlayerContext(WebPlaybackState state) {
     if(state == null) return null;
-    log(state.context.metadata.title);
     return PlayerContext(
      state.context.metadata.title,
      state.context.metadata.subtitle,
@@ -450,7 +449,12 @@ class SpotifySdkPlugin {
 @JS('Spotify.Player')
 class Player {
   /// Dio http client
-  final Dio _dio = Dio();
+  final Dio _dio = Dio(
+    BaseOptions(
+      baseUrl: 'https://api.spotify.com/v1/me/player',
+    )
+  );
+
   /// Device id of the player.
   String deviceID;
 
@@ -489,7 +493,7 @@ class Player {
       return;
     }
 
-    await _dio.put('https://api.spotify.com/v1/me/player/play',
+    await _dio.put('/play',
       data: { 'uris': [uri] },
       queryParameters: {
         'device_id': deviceID
