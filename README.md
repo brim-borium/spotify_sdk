@@ -27,7 +27,40 @@ Important here is the naming so that the package can find the modules.
 
 1. Register your app in the [spotify developer portal](https://developer.spotify.com/dashboard/). You need to provide a redirect URL which points to a dedicated page on a website you own.
 
-2. Paste the following onto the webpage, which you linked to in your redirect URL.
+2. Paste the following onto the webpage, which you linked to in your redirect URL.  
+```html
+  <!DOCTYPE html>
+  <html>
+  <head>
+    <title>Authenticating Spotify</title>
+  </head>
+  <body>
+	<p>Please wait while we authenticate Spotify...</p>
+	<script type="text/javascript">
+		if(window.opener) {
+			var error = getParameterByName('error');
+			if(error) {
+				window.opener.postMessage('?' + error, "*");
+			} else {
+				window.opener.postMessage(window.location.hash, "*");
+			}
+		} else {
+			window.close();
+		}
+
+		function getParameterByName(name, url) {
+		    if (!url) url = window.location.href;
+		    name = name.replace(/[\[\]]/g, '\\$&');
+		    var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+		        results = regex.exec(url);
+		    if (!results) return null;
+		    if (!results[2]) return '';
+		    return decodeURIComponent(results[2].replace(/\+/g, ' '));
+		}
+	</script>
+</body>
+</html>
+```
 
 [You need Spotify Premium to access the Web SDK.](https://developer.spotify.com/documentation/web-playback-sdk/quick-start/)
 
