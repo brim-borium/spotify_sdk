@@ -7,6 +7,7 @@ import 'dart:html';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 
 import 'package:js/js.dart';
@@ -72,15 +73,17 @@ class SpotifySdkPlugin {
   // spotify sdk url
   static const String SPOTIFY_SDK_URL = 'https://sdk.scdn.co/spotify-player.js';
 
-  /*private val requestCodeAuthentication = 1337
-  private val scope = arrayOf(
-          "app-remote-control",
-          "user-modify-playback-state",
-          "playlist-read-private",
-          "playlist-modify-public",
-          "user-read-currently-playing")
+  // auth
+  static const int AUTHENTICATION_REQUEST_CODE = 1337;
+  static const List<String> AUTHENTICATION_SCOPES = [
+    "app-remote-control",
+    "user-modify-playback-state",
+    "playlist-read-private",
+    "playlist-modify-public",
+    "user-read-currently-playing"
+  ];
 
-  private var pendingOperation: PendingOperation? = null
+  /*private var pendingOperation: PendingOperation? = null
   private var spotifyAppRemote: SpotifyAppRemote? = null
   private var spotifyPlayerApi: SpotifyPlayerApi? = null
   private var spotifyUserApi: SpotifyUserApi? = null
@@ -91,12 +94,16 @@ class SpotifySdkPlugin {
 
   /// Whether the Spotify SDK was already loaded.
   bool _sdkLoaded = false;
-  /// Current Spotify SDK player instance;
+  /// Current Spotify SDK player instance.
   Player _currentPlayer;
-  /// Current WebPlaybackPlayer instance
+  /// Current WebPlaybackPlayer instance.
   WebPlaybackPlayer _currentPlayerConnection;
-
-  static const String ACCESS_TOKEN = 'BQCphbBlirQlququgGwllsUGqX4IJ5lOSAHw86M2xSRmuQAesZvu3TDr4l2y6fH2dYP7yYLLVbFvvrHoXNOgbYWWcPRZbTqZq_6ohbATCrmfytjzy5sYPTHRgyCi5IcesTxAVTb70MFTCUiUfbGPqVdNON0hQOTWO1L1SM2S6yVEMw';
+  /// Current Spotify auth token.
+  SpotifyToken _spotifyToken;
+  /// Cached client id used when connecting to Spotify.
+  String cachedClientId;
+  /// Cached redirect url used when connecting to Spotify.
+  String cachedRedirectUrl;
 
   SpotifySdkPlugin() {
     _initializeSpotify();
@@ -123,20 +130,32 @@ class SpotifySdkPlugin {
         if(_currentPlayer != null) {
           return true;
         }
+        // update the client id and redirect url
+        String clientId = call.arguments[PARAM_CLIENT_ID];
+        String redirectUrl = call.arguments[PARAM_REDIRECT_URL];
+        if (!(clientId?.isNotEmpty == true && redirectUrl?.isNotEmpty == true)) {
+          throw PlatformException(message: "client id or redirectUrl are not set or have invalid format", code: "");
+        }
+        cachedClientId = clientId;
+        cachedRedirectUrl = redirectUrl;
 
+        // get initial token
+        await _getSpotifyAuthToken();
+
+        // create player
         _currentPlayer = Player(
           PlayerOptions(
             name: "Test",
             getOAuthToken: allowInterop((Function callback, t) {
-              callback(ACCESS_TOKEN);
+              _getSpotifyAuthToken().then((value) {
+                callback(value);
+              });
             })
           )
         );
         
         _registerPlayerEvents(_currentPlayer);
-        var result = await promiseToFuture(_currentPlayer.connect());
-        log('Connection result: $result');
-        return result;
+        return await promiseToFuture(_currentPlayer.connect());
       break;
       case METHOD_LOGOUT_FROM_SPOTIFY:
         log('Disconnecting from Spotify...');
@@ -152,7 +171,7 @@ class SpotifySdkPlugin {
         if(_currentPlayer == null) {
           return false;
         } else {
-          await _playTrack('spotify:track:1DMEzmAoQIikcL52psptQL');
+          await promiseToFuture(_currentPlayer.resume());
           return true;
         }
       break;
@@ -186,7 +205,7 @@ class SpotifySdkPlugin {
       options: Options(
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer ${ACCESS_TOKEN}'
+          'Authorization': 'Bearer ${await _getSpotifyAuthToken()}'
         },
       ),
     );
@@ -291,6 +310,63 @@ class SpotifySdkPlugin {
       'playback_error'
     );
   }
+  /// Gets the current Spotify token or reauthenticates the user if the token expired.
+  Future<String> _getSpotifyAuthToken({String clientId, String redirectUrl}) async {
+    if(_spotifyToken != null && _spotifyToken.expiry > DateTime.now().millisecondsSinceEpoch) {
+      return _spotifyToken.token;
+    }
+
+    if(clientId == null) {
+      clientId = cachedClientId;
+    }
+    if(redirectUrl == null) {
+      redirectUrl = cachedRedirectUrl;
+    }
+    String newToken = await _authenticateSpotify(clientId, redirectUrl);
+    _spotifyToken = SpotifyToken(newToken, DateTime.now().millisecondsSinceEpoch + 3600000);
+    return _spotifyToken.token;
+  }
+  /// Authenticates the user and returns the access token on success.
+  Future<String> _authenticateSpotify(String clientId, String redirectUrl) async {
+    if (clientId?.isNotEmpty == true && redirectUrl?.isNotEmpty == true) {
+        String scopes = AUTHENTICATION_SCOPES.join(' ');
+        String authUrl = 'https://accounts.spotify.com/authorize?client_id=$clientId&response_type=token&scope=$scopes&redirect_uri=$redirectUrl';
+        
+        WindowBase authPopup = window.open(authUrl, "Spotify Authorization");
+        String hash;
+        String error;
+        var sub = window.onMessage.listen(allowInterop((event) {
+          String message = event.data.toString();
+          if(message.startsWith('#')) {
+            log('Hash received: ${event.data}');
+            hash = message;
+          } else if (message.startsWith('?')) {
+            log('Authorization error: ${event.data}');
+            error = message;
+          }
+        }));
+        
+        // loop and wait for auth
+        while(authPopup.closed == false && hash == null && error == null) {
+          // await response from the window
+          await Future.delayed(Duration(milliseconds: 250));
+        }
+
+        // cleanup
+        if(authPopup.closed == false) {
+          authPopup.close();
+        }
+        await sub.cancel();
+
+        // check output
+        if(error != null || hash == null) {
+          throw PlatformException(message: "authorization error: $error", code: "");
+        }
+        return hash.split('&')[0].split('=')[1];
+      } else {
+        throw PlatformException(message: "client id or redirectUrl are not set or have invalid format", code: "");
+      }
+  }
 }
 
 /// Spotify Player Object
@@ -384,7 +460,8 @@ class WebPlayerTrackWindow  {
 
   external factory WebPlayerTrackWindow({WebPlaybackTrack current_track, List<WebPlaybackTrack> previous_tracks, List<WebPlaybackTrack> next_tracks});
 }
-@JS('WebPlaybackTrack')
+@JS()
+@anonymous
 class WebPlaybackTrack {
   external String get uri;
   external String get id;
@@ -421,9 +498,16 @@ class WebPlaybackAlbumImage {
 
   external factory WebPlaybackAlbumImage({String url});
 }
-@JS('WebPlaybackError')
+@JS()
+@anonymous
 class WebPlaybackError {
   external String get message;
 
   external factory WebPlaybackError({String message});
+}
+class SpotifyToken {
+  final String token;
+  final int expiry;
+
+  SpotifyToken(this.token, this.expiry);
 }
