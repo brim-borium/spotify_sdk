@@ -103,6 +103,13 @@ class SpotifySdkPlugin {
   final StreamController playerStateEventController;
   final StreamController playerCapabilitiesEventController;
   final StreamController userStateEventController;
+  
+  /// Dio http client
+  final Dio _dio = Dio(
+    BaseOptions(
+      baseUrl: 'https://api.spotify.com/v1/me/player',
+    )
+  );
 
   SpotifySdkPlugin(this.playerContextEventController, this.playerStateEventController, this.playerCapabilitiesEventController, this.userStateEventController) {
     _initializeSpotify();
@@ -187,7 +194,7 @@ class SpotifySdkPlugin {
         }
       break;
       case METHOD_PLAY:
-        await promiseToFuture(_currentPlayer?.play(call.arguments[PARAM_SPOTIFY_URI], await _getSpotifyAuthToken()));
+        await promiseToFuture(_play(call.arguments[PARAM_SPOTIFY_URI]));
       break;
       case METHOD_RESUME:
         await promiseToFuture(_currentPlayer?.resume());
@@ -379,6 +386,63 @@ class SpotifySdkPlugin {
         throw PlatformException(message: "Client id or redirectUrl are not set or have invalid format", code: "Authentication Error");
       }
   }
+  /// Starts track playback on the device.
+  _play(String uri) async {
+    if(_currentPlayer?.deviceID == null) {
+      throw PlatformException(message: "Spotify player not connected!", code: "Playback Error");
+    }
+
+    await _dio.put('/play',
+      data: { 'uris': [uri] },
+      queryParameters: {
+        'device_id': _currentPlayer.deviceID
+      },
+      options: Options(
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${await _getSpotifyAuthToken()}'
+        },
+      ),
+    );
+  }
+  /// Toggles shuffle on the current player.
+  toggleShuffle(bool state) async {
+    if(_currentPlayer?.deviceID == null) {
+      throw PlatformException(message: "Spotify player not connected!", code: "Playback Error");
+    }
+
+    await _dio.put('https://api.spotify.com/v1/me/player/shuffle',
+      queryParameters: {
+        'state': state,
+        'device_id': _currentPlayer.deviceID
+      },
+      options: Options(
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${await _getSpotifyAuthToken()}'
+        },
+      ),
+    );
+  }
+  /// Toggles repeat on the current player.
+  toggleRepeat(bool state) async {
+    if(_currentPlayer?.deviceID == null) {
+      throw PlatformException(message: "Spotify player not connected!", code: "Playback Error");
+    }
+
+    await _dio.put('https://api.spotify.com/v1/me/player/repeat',
+      queryParameters: {
+        'state': state,
+        'device_id': _currentPlayer.deviceID
+      },
+      options: Options(
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${await _getSpotifyAuthToken()}'
+        },
+      ),
+    );
+  }
   /// Converts a native WebPlaybackState to the library PlayerState
   PlayerState toPlayerState(WebPlaybackState state) {
     if(state == null) return null;
@@ -450,13 +514,6 @@ class SpotifySdkPlugin {
 /// Spotify Player Object
 @JS('Spotify.Player')
 class Player {
-  /// Dio http client
-  final Dio _dio = Dio(
-    BaseOptions(
-      baseUrl: 'https://api.spotify.com/v1/me/player',
-    )
-  );
-
   /// Device id of the player.
   String deviceID;
 
@@ -488,66 +545,6 @@ class Player {
   external dynamic previousTrack();
   /// Skip to the next track in local playback.
   external dynamic nextTrack();
-  /// Starts track playback on the device.
-  play(String uri, String accessToken) async {
-    if(deviceID == null) {
-      log('Spotify player not connected!');
-      return;
-    }
-
-    await _dio.put('/play',
-      data: { 'uris': [uri] },
-      queryParameters: {
-        'device_id': deviceID
-      },
-      options: Options(
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $accessToken'
-        },
-      ),
-    );
-  }
-  /// Toggles shuffle on the current player.
-  toggleShuffle(bool state, String accessToken) async {
-    if(deviceID == null) {
-      log('Spotify player not connected!');
-      return;
-    }
-
-    await _dio.put('https://api.spotify.com/v1/me/player/shuffle',
-      queryParameters: {
-        'state': state,
-        'device_id': deviceID
-      },
-      options: Options(
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $accessToken'
-        },
-      ),
-    );
-  }
-  /// Toggles repeat on the current player.
-  toggleRepeat(bool state, String accessToken) async {
-    if(deviceID == null) {
-      log('Spotify player not connected!');
-      return;
-    }
-
-    await _dio.put('https://api.spotify.com/v1/me/player/repeat',
-      queryParameters: {
-        'state': state,
-        'device_id': deviceID
-      },
-      options: Options(
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $accessToken'
-        },
-      ),
-    );
-  }
 }
 @JS()
 @anonymous
