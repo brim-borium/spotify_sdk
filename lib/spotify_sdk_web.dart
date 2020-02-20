@@ -178,7 +178,19 @@ class SpotifySdkPlugin {
         );
         
         _registerPlayerEvents(_currentPlayer);
-        return await promiseToFuture(_currentPlayer.connect());
+        bool result = await promiseToFuture(_currentPlayer.connect());
+        if(result == false) {
+          return false;
+        } else {
+          // wait for the ready event
+          while(_currentPlayer != null) {
+            if(_currentPlayer.deviceID?.isNotEmpty == true) {
+              return true;
+            }
+            await Future.delayed(Duration(milliseconds: 250));
+          }
+          return false;
+        }
       break;
       case METHOD_GET_AUTHENTICATION_TOKEN:
         return await _getSpotifyAuthToken(clientId: call.arguments[PARAM_CLIENT_ID], redirectUrl: call.arguments[PARAM_REDIRECT_URL]);
@@ -190,6 +202,7 @@ class SpotifySdkPlugin {
         } else {
           _unregisterPlayerEvents(_currentPlayer);
           _currentPlayer.disconnect();
+          _currentPlayer = null;
           return true;
         }
       break;
@@ -278,6 +291,7 @@ class SpotifySdkPlugin {
       allowInterop(
         (WebPlaybackError error) {
           log('initialization_error: ${error.message}');
+          _currentPlayer = null;
         }
       )
     );
@@ -286,6 +300,7 @@ class SpotifySdkPlugin {
       allowInterop(
         (WebPlaybackError error) {
           log('authentication_error: ${error.message}');
+          _currentPlayer = null;
         }
       )
     );
@@ -294,6 +309,7 @@ class SpotifySdkPlugin {
       allowInterop(
         (WebPlaybackError error) {
           log('account_error: ${error.message}');
+          _currentPlayer = null;
         }
       )
     );
