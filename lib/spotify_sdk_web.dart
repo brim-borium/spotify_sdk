@@ -207,7 +207,7 @@ class SpotifySdkPlugin {
         }
       break;
       case METHOD_PLAY:
-        await _play(call.arguments[PARAM_SPOTIFY_URI]);
+        return await _play(call.arguments[PARAM_SPOTIFY_URI]);
       break;
       case METHOD_RESUME:
         await promiseToFuture(_currentPlayer?.resume());
@@ -403,7 +403,7 @@ class SpotifySdkPlugin {
       }
   }
   /// Starts track playback on the device.
-  _play(String uri) async {
+  Future _play(String uri) async {
     if(_currentPlayer?.deviceID == null) {
       throw PlatformException(message: "Spotify player not connected!", code: "Playback Error");
     }
@@ -422,7 +422,7 @@ class SpotifySdkPlugin {
     );
   }
   /// Toggles shuffle on the current player.
-  toggleShuffle(bool state) async {
+  Future toggleShuffle(bool state) async {
     if(_currentPlayer?.deviceID == null) {
       throw PlatformException(message: "Spotify player not connected!", code: "Playback Error");
     }
@@ -441,7 +441,7 @@ class SpotifySdkPlugin {
     );
   }
   /// Toggles repeat on the current player.
-  toggleRepeat(bool state) async {
+  Future toggleRepeat(bool state) async {
     if(_currentPlayer?.deviceID == null) {
       throw PlatformException(message: "Spotify player not connected!", code: "Playback Error");
     }
