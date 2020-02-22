@@ -207,7 +207,7 @@ class SpotifySdkPlugin {
         }
       break;
       case METHOD_PLAY:
-        _play(call.arguments[PARAM_SPOTIFY_URI]);
+        return await _play(call.arguments[PARAM_SPOTIFY_URI]);
       break;
       case METHOD_RESUME:
         await promiseToFuture(_currentPlayer?.resume());
