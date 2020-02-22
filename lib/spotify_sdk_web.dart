@@ -207,11 +207,7 @@ class SpotifySdkPlugin {
         }
       break;
       case METHOD_PLAY:
-<<<<<<< HEAD
         //_play(call.arguments[PARAM_SPOTIFY_URI]);
-=======
-        return await _play(call.arguments[PARAM_SPOTIFY_URI]);
->>>>>>> parent of 2d3fa75... test 1
       break;
       case METHOD_RESUME:
         await promiseToFuture(_currentPlayer?.resume());
