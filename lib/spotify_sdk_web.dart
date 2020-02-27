@@ -209,6 +209,9 @@ class SpotifySdkPlugin {
       case METHOD_PLAY:
         await _play(call.arguments[PARAM_SPOTIFY_URI]);
       break;
+      case METHOD_QUEUE_TRACK:
+        await _queue(call.arguments[PARAM_SPOTIFY_URI]);
+      break;
       case METHOD_RESUME:
         await promiseToFuture(_currentPlayer?.resume());
       break;
@@ -411,6 +414,25 @@ class SpotifySdkPlugin {
     await _dio.put('/play',
       data: { 'uris': [uri] },
       queryParameters: {
+        'device_id': _currentPlayer.deviceID
+      },
+      options: Options(
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${await _getSpotifyAuthToken()}'
+        },
+      ),
+    );
+  }
+  /// Adds a given track to the playback queue.
+  Future _queue(String uri) async {
+    if(_currentPlayer?.deviceID == null) {
+      throw PlatformException(message: "Spotify player not connected!", code: "Playback Error");
+    }
+
+    await _dio.put('/add-to-queue',
+      queryParameters: {
+        'uri': uri,
         'device_id': _currentPlayer.deviceID
       },
       options: Options(
