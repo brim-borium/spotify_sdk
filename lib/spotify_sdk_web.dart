@@ -430,7 +430,7 @@ class SpotifySdkPlugin {
       throw PlatformException(message: "Spotify player not connected!", code: "Playback Error");
     }
 
-    await _dio.put('/add-to-queue',
+    await _dio.post('/add-to-queue',
       queryParameters: {
         'uri': uri,
         'device_id': _currentPlayer.deviceID
