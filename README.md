@@ -100,7 +100,7 @@ Have a look [here](example/lib/main.dart) for a more detailed example.
 |  getPlayerState | Gets the current player state |:heavy_check_mark:  |  :construction_worker: | :heavy_check_mark: |
 |  pause | Pauses the current track  |:heavy_check_mark: | :construction_worker:  | :heavy_check_mark: |
 |  play | Plays the given spotifyUri |:heavy_check_mark: |  :construction_worker: | :heavy_check_mark: |
-|  queue | Queues given spotifyUri |:heavy_check_mark: | :construction_worker:  | :x: |
+|  queue | Queues given spotifyUri |:heavy_check_mark: | :construction_worker:  | :heavy_check_mark: |
 |  resume | Resumes the current track |:heavy_check_mark: |  :construction_worker: | :heavy_check_mark: |
 |  skipNext | Skips to next track | :heavy_check_mark: | :construction_worker:  | :heavy_check_mark: |
 |  skipPrevious | Skips to previous track |:heavy_check_mark:  |  :construction_worker: | :heavy_check_mark: |
