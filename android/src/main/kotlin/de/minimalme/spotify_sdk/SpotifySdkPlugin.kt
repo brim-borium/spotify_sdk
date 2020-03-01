@@ -157,6 +157,8 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Pl
                     .showAuthView(true)
                     .build()
 
+            val replySubmitted = false
+
             SpotifyAppRemote.connect(registrar.context(), connectionParams,
                     object : ConnectionListener {
                         override fun onConnected(spotifyAppRemoteValue: SpotifyAppRemote) {
@@ -166,9 +168,11 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Pl
                             capabilitiesChannel.setStreamHandler(CapabilitiesChannel(spotifyAppRemote!!.userApi))
                             userStatusChannel.setStreamHandler(UserStatusChannel(spotifyAppRemote!!.userApi))
                             result.success(true)
+                            replySubmitted = true
                         }
 
                         override fun onFailure(throwable: Throwable) {
+                            if(replySubmitted) return
                             result.error(errorConnecting, "Something went wrong connecting spotify remote", throwable.message)
                         }
                     })
