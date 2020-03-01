@@ -157,7 +157,7 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Pl
                     .showAuthView(true)
                     .build()
 
-            Boolean replySubmitted = false
+            var replySubmitted = false
 
             SpotifyAppRemote.connect(registrar.context(), connectionParams,
                     object : ConnectionListener {
