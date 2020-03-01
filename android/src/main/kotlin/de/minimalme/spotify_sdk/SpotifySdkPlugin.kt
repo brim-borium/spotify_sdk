@@ -157,7 +157,7 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Pl
                     .showAuthView(true)
                     .build()
 
-            val replySubmitted = false
+            Boolean replySubmitted = false
 
             SpotifyAppRemote.connect(registrar.context(), connectionParams,
                     object : ConnectionListener {
@@ -172,7 +172,7 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Pl
                         }
 
                         override fun onFailure(throwable: Throwable) {
-                            if(replySubmitted) return
+                            if(replySubmitted == true) return
                             result.error(errorConnecting, "Something went wrong connecting spotify remote", throwable.message)
                         }
                     })
