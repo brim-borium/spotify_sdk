@@ -172,9 +172,12 @@ class _HomeState extends State<Home> {
               Text(
                   "${playerState.track.name} by ${playerState.track.artist.name} from the album ${playerState.track.album.name} "),
               Text("Speed: ${playerState.playbackSpeed}"),
+              Text("Progress: ${playerState.playbackPosition}ms/${playerState.track.duration}ms"),
               Text("IsPaused: ${playerState.isPaused}"),
               Text("Is Shuffling: ${playerState.playbackOptions.isShuffling}"),
-              Text("RepeatMode: ${playerState.playbackOptions.repeatMode}")
+              Text("RepeatMode: ${playerState.playbackOptions.repeatMode}"),
+              Text("Image URI: ${playerState.track.imageUri.raw}"),
+              Text("Is episode? ${playerState.track.isEpisode}. Is podcast?: ${playerState.track.isPodcast}"),
             ],
           );
         } else {
