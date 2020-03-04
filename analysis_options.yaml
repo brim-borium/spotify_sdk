@@ -1,4 +1,12 @@
 include: package:pedantic/analysis_options.yaml
+
+linter:
+    rules:
+        # ------ Disable individual rules ----- #
+        #                 ---                   #
+        # Turn off what you don't like.         #
+        # ------------------------------------- #
+        
 analyzer:
     exclude:
     # Ignore generated files

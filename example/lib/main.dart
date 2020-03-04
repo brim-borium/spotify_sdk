@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'dart:async';
 
@@ -6,6 +8,7 @@ import 'package:spotify_sdk/models/crossfade_state.dart';
 import 'package:spotify_sdk/spotify_sdk.dart';
 import 'package:spotify_sdk/models/player_state.dart';
 import 'package:spotify_sdk/models/player_context.dart';
+import 'package:spotify_sdk/models/image_uri.dart';
 import 'package:logger/logger.dart';
 
 import 'widgets/sized_icon_button.dart';
@@ -147,6 +150,10 @@ class _HomeState extends State<Home> {
                 onPressed: () => getCrossfadeState()),
             Text("Is enabled: ${crossfadeState?.isEnabled}"),
             Text("Duration: ${crossfadeState?.duration}"),
+            Divider(),
+            _connected
+                ? SpotifyImageWidget()
+                : Text('Connect to see an image...'),
           ],
         ),
         _loading
@@ -172,9 +179,14 @@ class _HomeState extends State<Home> {
               Text(
                   "${playerState.track.name} by ${playerState.track.artist.name} from the album ${playerState.track.album.name} "),
               Text("Speed: ${playerState.playbackSpeed}"),
+              Text(
+                  "Progress: ${playerState.playbackPosition}ms/${playerState.track.duration}ms"),
               Text("IsPaused: ${playerState.isPaused}"),
               Text("Is Shuffling: ${playerState.playbackOptions.isShuffling}"),
-              Text("RepeatMode: ${playerState.playbackOptions.repeatMode}")
+              Text("RepeatMode: ${playerState.playbackOptions.repeatMode}"),
+              Text("Image URI: ${playerState.track.imageUri.raw}"),
+              Text(
+                  "Is episode? ${playerState.track.isEpisode}. Is podcast?: ${playerState.track.isPodcast}"),
             ],
           );
         } else {
@@ -212,13 +224,41 @@ class _HomeState extends State<Home> {
     );
   }
 
+  Widget SpotifyImageWidget() {
+    return FutureBuilder(
+        future: SpotifySdk.getImage(
+          imageUri: ImageUri(
+              'spotify:image:ab67616d0000b2736b4f6358fbf795b568e7952d'),
+          dimension: ImageDimension.large,
+        ),
+        builder: (BuildContext context, AsyncSnapshot<Uint8List> snapshot) {
+          if (snapshot.hasData) {
+            return Image.memory(snapshot.data);
+          } else if (snapshot.hasError) {
+            setStatus(snapshot.error.toString());
+            return SizedBox(
+              width: ImageDimension.large.value.toDouble(),
+              height: ImageDimension.large.value.toDouble(),
+              child: Center(child: Text('Error getting image')),
+            );
+          } else {
+            return SizedBox(
+              width: ImageDimension.large.value.toDouble(),
+              height: ImageDimension.large.value.toDouble(),
+              child: Center(child: Text('Getting image...')),
+            );
+          }
+        });
+  }
+
   Future<void> connectToSpotifyRemote() async {
     try {
       setState(() {
         _loading = true;
       });
       var result = await SpotifySdk.connectToSpotifyRemote(
-          clientId: "", redirectUrl: "");
+          clientId: "61b2332ab76d45918a33f91c3268ec1e",
+          redirectUrl: "http://mysite.com/callback/");
       setState(() {
         _connected = result;
       });
@@ -375,19 +415,6 @@ class _HomeState extends State<Home> {
     try {
       await SpotifySdk.addToLibrary(
           spotifyUri: "spotify:track:58kNJana4w5BIjlZE2wq5m");
-    } on PlatformException catch (e) {
-      setStatus(e.code, message: e.message);
-    } on MissingPluginException {
-      setStatus("not implemented");
-    }
-  }
-
-  Future<void> getImage() async {
-    try {
-      await SpotifySdk.getImage(
-          imageUri:
-              "https://i.scdn.co/image/ab67616d0000b2734a83c2c7cfba8eeab6242053",
-          dimension: ImageDimension.large);
     } on PlatformException catch (e) {
       setStatus(e.code, message: e.message);
     } on MissingPluginException {

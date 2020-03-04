@@ -18,12 +18,12 @@ Track _$TrackFromJson(Map<String, dynamic> json) {
         ?.map((e) =>
             e == null ? null : Artist.fromJson(e as Map<String, dynamic>))
         ?.toList(),
-    json['duration'] as int,
-    json['imageUri'] == null
+    json['duration_ms'] as int,
+    json['image_id'] == null
         ? null
-        : ImageUri.fromJson(json['imageUri'] as Map<String, dynamic>),
-    json['isEpisode'] as bool,
-    json['isPodcast'] as bool,
+        : ImageUri.fromJson(json['image_id'] as Map<String, dynamic>),
+    json['is_episode'] as bool,
+    json['is_podcast'] as bool,
     json['name'] as String,
     json['uri'] as String,
   );
@@ -33,10 +33,10 @@ Map<String, dynamic> _$TrackToJson(Track instance) => <String, dynamic>{
       'album': instance.album,
       'artist': instance.artist,
       'artists': instance.artists,
-      'duration': instance.duration,
-      'imageUri': instance.imageUri,
-      'isEpisode': instance.isEpisode,
-      'isPodcast': instance.isPodcast,
+      'duration_ms': instance.duration,
+      'image_id': instance.imageUri,
+      'is_episode': instance.isEpisode,
+      'is_podcast': instance.isPodcast,
       'name': instance.name,
       'uri': instance.uri,
     };
