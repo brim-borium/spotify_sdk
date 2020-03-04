@@ -4,6 +4,8 @@ import com.spotify.android.appremote.api.SpotifyAppRemote
 import com.spotify.protocol.types.Image.Dimension
 import com.spotify.protocol.types.ImageUri
 import io.flutter.plugin.common.MethodChannel
+import java.io.ByteArrayOutputStream
+import android.graphics.Bitmap
 
 class SpotifyImagesApi(spotifyAppRemote: SpotifyAppRemote?, result: MethodChannel.Result) : BaseSpotifyApi(spotifyAppRemote, result) {
 
@@ -13,11 +15,14 @@ class SpotifyImagesApi(spotifyAppRemote: SpotifyAppRemote?, result: MethodChanne
 
     private val imagesApi = spotifyAppRemote?.imagesApi
 
-    internal fun getImage(imageUri: ImageUri?, dimension: Int?) {
+    fun getImage(imageUri: String?, dimension: Int?) {
         if (imagesApi != null && imageUri != null && dimension != null) {
-            var imageSize = Dimension.values()[dimension]
-            imagesApi.getImage(imageUri, imageSize)
-                    .setResultCallback { bitmap -> result.success(bitmap) }
+            imagesApi.getImage(ImageUri(imageUri), Dimension.values().first{it.getValue() == dimension})
+                    .setResultCallback { bitmap ->
+                        var stream: ByteArrayOutputStream? = ByteArrayOutputStream()
+                        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
+                        result.success(stream?.toByteArray())
+                    }
                     .setErrorCallback { throwable -> result.error(errorGetImage, "error when getting the image", throwable.message) }
         } else if (imageUri == null) {
             result.error(errorImageUri, "imageUri has invalid format or is not set", "")
