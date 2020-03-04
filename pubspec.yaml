@@ -18,7 +18,7 @@ dev_dependencies:
     sdk: flutter
   build_runner: ^1.0.0
   json_serializable: ^3.2.0
-  lint: ^1.1.1
+  pedantic: ^1.9.0
   
    
 
