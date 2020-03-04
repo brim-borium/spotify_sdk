@@ -75,7 +75,7 @@ Have a look [here](example/lib/main.dart) for a more detailed example.
 
 | Function  | Description| Android | iOS |
 |---|---|---|--|
-|  getImage | Get the image from the given spotifyUri |:construction_worker: |  :construction_worker: |
+|  getImage | Get the image from the given spotifyUri |:heavy_check_mark: |  :construction_worker: |
 
 #### User Api
 
