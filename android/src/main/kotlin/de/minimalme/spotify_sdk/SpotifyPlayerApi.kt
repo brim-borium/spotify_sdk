@@ -30,7 +30,7 @@ class SpotifyPlayerApi(spotifyAppRemote: SpotifyAppRemote?, result: MethodChanne
                     .setResultCallback { crossfadeState ->
                         result.success(Gson().toJson(crossfadeState))
                     }
-                    .setErrorCallback { throwable -> result.error(errorCrossfadeState, "error when getting the current state of crossfade setting", throwable.message) }
+                    .setErrorCallback { throwable -> result.error(errorCrossfadeState, "error when getting the current state of crossfade setting", throwable.toString()) }
         } else {
             spotifyRemoteAppNotSetError()
         }
@@ -43,7 +43,7 @@ class SpotifyPlayerApi(spotifyAppRemote: SpotifyAppRemote?, result: MethodChanne
                         result.success(Gson().toJson(playerState))
 
                     }
-                    .setErrorCallback { throwable -> result.error(errorPlayerState, "error when getting the current state of the player", throwable.message) }
+                    .setErrorCallback { throwable -> result.error(errorPlayerState, "error when getting the current state of the player", throwable.toString()) }
         } else {
             spotifyRemoteAppNotSetError()
         }
@@ -53,7 +53,7 @@ class SpotifyPlayerApi(spotifyAppRemote: SpotifyAppRemote?, result: MethodChanne
         if (playerApi != null && !spotifyUri.isNullOrBlank()) {
             playerApi.queue(spotifyUri)
                     .setResultCallback { result.success(true) }
-                    .setErrorCallback { throwable -> result.error(errorQue, "error when adding uri: $spotifyUri to queue", throwable.message) }
+                    .setErrorCallback { throwable -> result.error(errorQue, "error when adding uri: $spotifyUri to queue", throwable.toString()) }
         } else if (spotifyUri.isNullOrBlank()) {
             result.error(errorQue, "spotifyUri has invalid format or is not set", "")
         } else {
@@ -65,7 +65,7 @@ class SpotifyPlayerApi(spotifyAppRemote: SpotifyAppRemote?, result: MethodChanne
         if (playerApi != null && !spotifyUri.isNullOrBlank()) {
             playerApi.play(spotifyUri)
                     .setResultCallback { result.success(true) }
-                    .setErrorCallback { throwable -> result.error(errorPlay, "error when playing uri: $spotifyUri", throwable.message) }
+                    .setErrorCallback { throwable -> result.error(errorPlay, "error when playing uri: $spotifyUri", throwable.toString()) }
         } else if (spotifyUri.isNullOrBlank()) {
             result.error(errorPlay, "spotifyUri has invalid format or is not set", "")
         } else {
@@ -77,7 +77,7 @@ class SpotifyPlayerApi(spotifyAppRemote: SpotifyAppRemote?, result: MethodChanne
         if (playerApi != null) {
             playerApi.pause()
                     .setResultCallback { result.success(true) }
-                    .setErrorCallback { throwable -> result.error(errorPause, "error when pausing", throwable.message) }
+                    .setErrorCallback { throwable -> result.error(errorPause, "error when pausing", throwable.toString()) }
         } else {
             spotifyRemoteAppNotSetError()
         }
@@ -87,7 +87,7 @@ class SpotifyPlayerApi(spotifyAppRemote: SpotifyAppRemote?, result: MethodChanne
         if (playerApi != null) {
             playerApi.resume()
                     .setResultCallback { result.success(true) }
-                    .setErrorCallback { throwable -> result.error(errorResume, "error when resuming", throwable.message) }
+                    .setErrorCallback { throwable -> result.error(errorResume, "error when resuming", throwable.toString()) }
         } else {
             spotifyRemoteAppNotSetError()
         }
@@ -98,7 +98,7 @@ class SpotifyPlayerApi(spotifyAppRemote: SpotifyAppRemote?, result: MethodChanne
         if (playerApi != null && castedMilliseconds != null) {
             playerApi.seekTo(castedMilliseconds)
                     .setResultCallback { result.success(true) }
-                    .setErrorCallback { throwable -> result.error(errorResume, "error when seeking to: $castedMilliseconds", throwable.message) }
+                    .setErrorCallback { throwable -> result.error(errorResume, "error when seeking to: $castedMilliseconds", throwable.toString()) }
         } else if (castedMilliseconds == null) {
             result.error(errorSeekTo, "positionMS is not set", "")
         } else {
@@ -111,7 +111,7 @@ class SpotifyPlayerApi(spotifyAppRemote: SpotifyAppRemote?, result: MethodChanne
         if (playerApi != null && castedMilliseconds != null) {
             playerApi.seekToRelativePosition(castedMilliseconds)
                     .setResultCallback { result.success(true) }
-                    .setErrorCallback { throwable -> result.error(errorResume, "error when seeking relative to: $castedMilliseconds", throwable.message) }
+                    .setErrorCallback { throwable -> result.error(errorResume, "error when seeking relative to: $castedMilliseconds", throwable.toString()) }
         } else if (castedMilliseconds == null) {
             result.error(errorSeekTo, "milliseconds is not set", "")
         } else {
@@ -126,7 +126,7 @@ class SpotifyPlayerApi(spotifyAppRemote: SpotifyAppRemote?, result: MethodChanne
 
             playerApi.setPodcastPlaybackSpeed(podcastPlaybackSpeed)
                     .setResultCallback { result.success(true) }
-                    .setErrorCallback { throwable -> result.error(errorPodcastPlaybackSpeed, "error when setting the podcastPlaybackSpeed to: $podcastPlaybackSpeed", throwable.message) }
+                    .setErrorCallback { throwable -> result.error(errorPodcastPlaybackSpeed, "error when setting the podcastPlaybackSpeed to: $podcastPlaybackSpeed", throwable.toString()) }
         } else if (podcastPlaybackSpeedValue == null) {
             result.error(errorPodcastPlaybackSpeed, "podcastPlaybackSpeedValue is not set", "")
         } else {
@@ -138,7 +138,7 @@ class SpotifyPlayerApi(spotifyAppRemote: SpotifyAppRemote?, result: MethodChanne
         if (playerApi != null) {
             playerApi.skipNext()
                     .setResultCallback { result.success(true) }
-                    .setErrorCallback { throwable -> result.error(errorSkipNext, "error when skipping next", throwable.message) }
+                    .setErrorCallback { throwable -> result.error(errorSkipNext, "error when skipping next", throwable.toString()) }
         } else {
             spotifyRemoteAppNotSetError()
         }
@@ -148,7 +148,7 @@ class SpotifyPlayerApi(spotifyAppRemote: SpotifyAppRemote?, result: MethodChanne
         if (playerApi != null) {
             playerApi.skipPrevious()
                     .setResultCallback { result.success(true) }
-                    .setErrorCallback { throwable -> result.error(errorSkipPrevious, "error when skipping previous", throwable.message) }
+                    .setErrorCallback { throwable -> result.error(errorSkipPrevious, "error when skipping previous", throwable.toString()) }
         } else {
             spotifyRemoteAppNotSetError()
         }
@@ -158,7 +158,7 @@ class SpotifyPlayerApi(spotifyAppRemote: SpotifyAppRemote?, result: MethodChanne
         if (playerApi != null && !uri.isNullOrBlank() && index != null) {
             playerApi.skipToIndex(uri, index)
                     .setResultCallback { result.success(true) }
-                    .setErrorCallback { throwable -> result.error(errorSkipToIndex, "error when skipping to index", throwable.message) }
+                    .setErrorCallback { throwable -> result.error(errorSkipToIndex, "error when skipping to index", throwable.toString()) }
         } else {
             spotifyRemoteAppNotSetError()
         }
@@ -168,7 +168,7 @@ class SpotifyPlayerApi(spotifyAppRemote: SpotifyAppRemote?, result: MethodChanne
         if (playerApi != null) {
             playerApi.toggleShuffle()
                     .setResultCallback { result.success(true) }
-                    .setErrorCallback { throwable -> result.error(errorToggleShuffle, "error when toggle shuffle", throwable.message) }
+                    .setErrorCallback { throwable -> result.error(errorToggleShuffle, "error when toggle shuffle", throwable.toString()) }
         } else {
             spotifyRemoteAppNotSetError()
         }
@@ -178,7 +178,7 @@ class SpotifyPlayerApi(spotifyAppRemote: SpotifyAppRemote?, result: MethodChanne
         if (playerApi != null) {
             playerApi.toggleRepeat()
                     .setResultCallback { result.success(true) }
-                    .setErrorCallback { throwable -> result.error(errorToggleRepeat, "error when toggle repeat", throwable.message) }
+                    .setErrorCallback { throwable -> result.error(errorToggleRepeat, "error when toggle repeat", throwable.toString()) }
         } else {
             spotifyRemoteAppNotSetError()
         }

@@ -152,8 +152,8 @@ class _HomeState extends State<Home> {
             Text("Duration: ${crossfadeState?.duration}"),
             Divider(),
             _connected
-              ? SpotifyImageWidget()
-              : Text('Connect to see an image...'),
+                ? SpotifyImageWidget()
+                : Text('Connect to see an image...'),
           ],
         ),
         _loading
@@ -179,12 +179,14 @@ class _HomeState extends State<Home> {
               Text(
                   "${playerState.track.name} by ${playerState.track.artist.name} from the album ${playerState.track.album.name} "),
               Text("Speed: ${playerState.playbackSpeed}"),
-              Text("Progress: ${playerState.playbackPosition}ms/${playerState.track.duration}ms"),
+              Text(
+                  "Progress: ${playerState.playbackPosition}ms/${playerState.track.duration}ms"),
               Text("IsPaused: ${playerState.isPaused}"),
               Text("Is Shuffling: ${playerState.playbackOptions.isShuffling}"),
               Text("RepeatMode: ${playerState.playbackOptions.repeatMode}"),
               Text("Image URI: ${playerState.track.imageUri.raw}"),
-              Text("Is episode? ${playerState.track.isEpisode}. Is podcast?: ${playerState.track.isPodcast}"),
+              Text(
+                  "Is episode? ${playerState.track.isEpisode}. Is podcast?: ${playerState.track.isPodcast}"),
             ],
           );
         } else {
@@ -224,33 +226,29 @@ class _HomeState extends State<Home> {
 
   Widget SpotifyImageWidget() {
     return FutureBuilder(
-      future: SpotifySdk.getImage(
-        imageUri: ImageUri('spotify:image:ab67616d0000b2736b4f6358fbf795b568e7952d'),
-        dimension: ImageDimension.large,
-      ),
-      builder: (BuildContext context, AsyncSnapshot<Uint8List> snapshot) {
-        if (snapshot.hasData) {
-          return Image.memory(snapshot.data);
-        } else if (snapshot.hasError) {
-          setStatus(snapshot.error);
-          return SizedBox(
-            width: ImageDimension.large.value.toDouble(),
-            height: ImageDimension.large.value.toDouble(),
-            child: Center(
-              child: Text('Error getting image')
-            ),
-          );
-        } else {
-          return SizedBox(
-            width: ImageDimension.large.value.toDouble(),
-            height: ImageDimension.large.value.toDouble(),
-            child: Center(
-                child: Text('Getting image...')
-            ),
-          );
-        }
-      }
-    );
+        future: SpotifySdk.getImage(
+          imageUri: ImageUri(
+              'spotify:image:ab67616d0000b2736b4f6358fbf795b568e7952d'),
+          dimension: ImageDimension.large,
+        ),
+        builder: (BuildContext context, AsyncSnapshot<Uint8List> snapshot) {
+          if (snapshot.hasData) {
+            return Image.memory(snapshot.data);
+          } else if (snapshot.hasError) {
+            setStatus(snapshot.error);
+            return SizedBox(
+              width: ImageDimension.large.value.toDouble(),
+              height: ImageDimension.large.value.toDouble(),
+              child: Center(child: Text('Error getting image')),
+            );
+          } else {
+            return SizedBox(
+              width: ImageDimension.large.value.toDouble(),
+              height: ImageDimension.large.value.toDouble(),
+              child: Center(child: Text('Getting image...')),
+            );
+          }
+        });
   }
 
   Future<void> connectToSpotifyRemote() async {
@@ -259,7 +257,8 @@ class _HomeState extends State<Home> {
         _loading = true;
       });
       var result = await SpotifySdk.connectToSpotifyRemote(
-          clientId: "", redirectUrl: "");
+          clientId: "4ee5e972f7154c3293f4c0fdec99f373",
+          redirectUrl: "https://mysite.com/callback/");
       setState(() {
         _connected = result;
       });
