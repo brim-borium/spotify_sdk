@@ -235,7 +235,7 @@ class _HomeState extends State<Home> {
           if (snapshot.hasData) {
             return Image.memory(snapshot.data);
           } else if (snapshot.hasError) {
-            setStatus(snapshot.error);
+            setStatus(snapshot.error.toString());
             return SizedBox(
               width: ImageDimension.large.value.toDouble(),
               height: ImageDimension.large.value.toDouble(),
@@ -257,8 +257,8 @@ class _HomeState extends State<Home> {
         _loading = true;
       });
       var result = await SpotifySdk.connectToSpotifyRemote(
-          clientId: "4ee5e972f7154c3293f4c0fdec99f373",
-          redirectUrl: "https://mysite.com/callback/");
+          clientId: "61b2332ab76d45918a33f91c3268ec1e",
+          redirectUrl: "http://mysite.com/callback/");
       setState(() {
         _connected = result;
       });
