@@ -23,7 +23,7 @@ class SpotifyImagesApi(spotifyAppRemote: SpotifyAppRemote?, result: MethodChanne
                         bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
                         result.success(stream?.toByteArray())
                     }
-                    .setErrorCallback { throwable -> result.error(errorGetImage, "error when getting the image", throwable.message) }
+                    .setErrorCallback { throwable -> result.error(errorGetImage, "error when getting the image", throwable.toString()) }
         } else if (imageUri == null) {
             result.error(errorImageUri, "imageUri has invalid format or is not set", "")
         } else if (dimension == null) {

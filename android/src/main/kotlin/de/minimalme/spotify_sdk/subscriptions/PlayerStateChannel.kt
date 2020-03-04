@@ -13,7 +13,7 @@ class PlayerStateChannel(private val playerApi: PlayerApi) : EventChannel.Stream
                     playerState ->  events?.success(Gson().toJson(playerState))
                 }
                 .setErrorCallback {
-                    throwable -> events?.error(errorSubscribePlayerState, "error when subscribing to the player state", throwable.message)
+                    throwable -> events?.error(errorSubscribePlayerState, "error when subscribing to the player state", throwable.toString())
                 }
     }
 

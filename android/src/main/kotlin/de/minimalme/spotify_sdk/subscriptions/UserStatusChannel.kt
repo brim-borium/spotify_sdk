@@ -14,7 +14,7 @@ class UserStatusChannel(private val userApi: UserApi) : EventChannel.StreamHandl
                     userStatus ->  events?.success(Gson().toJson(userStatus))
                 }
                 .setErrorCallback {
-                    throwable -> events?.error(errorSubscribeUserStatus, "error when subscribing to the users status", throwable.message)
+                    throwable -> events?.error(errorSubscribeUserStatus, "error when subscribing to the users status", throwable.toString())
                 }
     }
     
