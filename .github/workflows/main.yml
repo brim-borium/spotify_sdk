@@ -14,4 +14,4 @@ jobs:
         flutter-version: '1.12.x'
     - run: flutter pub get
     - run: flutter test
-    - run: flutter build apk --debug --split-per-abi
+    - run: flutter pub publish --dry-run
