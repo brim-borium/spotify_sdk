@@ -9,7 +9,7 @@ void main() {
 
   setUp(() {
     channel.setMockMethodCallHandler((MethodCall methodCall) async {
-      return '42';
+      return true;
     });
   });
 
@@ -21,6 +21,6 @@ void main() {
     expect(
         await SpotifySdk.connectToSpotifyRemote(
             clientId: "null", redirectUrl: "null"),
-        '42');
+        true);
   });
 }
