@@ -4,13 +4,11 @@ import android.content.Intent
 import com.spotify.android.appremote.api.ConnectionParams
 import com.spotify.android.appremote.api.Connector.ConnectionListener
 import com.spotify.android.appremote.api.SpotifyAppRemote
+import com.spotify.android.appremote.api.error.*
 import com.spotify.sdk.android.auth.AuthorizationClient
 import com.spotify.sdk.android.auth.AuthorizationRequest
 import com.spotify.sdk.android.auth.AuthorizationResponse
-import de.minimalme.spotify_sdk.subscriptions.CapabilitiesChannel
-import de.minimalme.spotify_sdk.subscriptions.PlayerContextChannel
-import de.minimalme.spotify_sdk.subscriptions.PlayerStateChannel
-import de.minimalme.spotify_sdk.subscriptions.UserStatusChannel
+import de.minimalme.spotify_sdk.subscriptions.*
 import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
@@ -22,8 +20,10 @@ import io.flutter.plugin.common.PluginRegistry.Registrar
 
 class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, PluginRegistry.ActivityResultListener {
 
+
     companion object {
 
+        private lateinit var channel: MethodChannel
         private const val CHANNEL_NAME = "spotify_sdk"
         private const val PLAYER_CONTEXT_SUBSCRIPTION = "player_context_subscription"
         private const val PLAYER_STATE_SUBSCRIPTION = "player_state_subscription"
@@ -33,8 +33,7 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Pl
         @JvmStatic
         fun registerWith(registrar: Registrar) {
 
-            val channel = MethodChannel(registrar.messenger(), CHANNEL_NAME)
-
+            channel = MethodChannel(registrar.messenger(), CHANNEL_NAME)
             val spotifySdkPluginInstance = SpotifySdkPlugin(registrar)
 
             channel.setMethodCallHandler(spotifySdkPluginInstance)
@@ -90,6 +89,8 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Pl
     private val errorConnecting = "errorConnecting"
     private val errorDisconnecting = "errorDisconnecting"
     private val errorAuthenticationToken = "authenticationTokenError"
+
+    private val disconnectionException = "disconnectionException"
 
 
     private val requestCodeAuthentication = 1337
@@ -157,6 +158,7 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Pl
                     .showAuthView(true)
                     .build()
 
+            SpotifyAppRemote.disconnect(spotifyAppRemote)
             SpotifyAppRemote.connect(registrar.context(), connectionParams,
                     object : ConnectionListener {
                         override fun onConnected(spotifyAppRemoteValue: SpotifyAppRemote) {
@@ -170,7 +172,42 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Pl
 
                         override fun onFailure(throwable: Throwable) {
                             val errorMessage = throwable.toString()
-                            result.error(errorConnecting, "Something went wrong connecting spotify remote", errorMessage)
+                            when (throwable) {
+                                is SpotifyDisconnectedException, is SpotifyConnectionTerminatedException -> {
+                                    // The Spotify app was/is disconnected by the Spotify app.
+                                    // This indicates typically that the Spotify app was closed by the user or for other reasons.
+                                    // You need to reconnect to continue using Spotify App Remote.
+                                    channel.invokeMethod(disconnectionException,errorMessage)
+                                    result.error(errorDisconnecting, "The Spotify app was/is disconnected by the Spotify app.Reconnect necessary", errorMessage)
+                                }
+                                is CouldNotFindSpotifyApp -> {
+                                    result.error(errorConnecting, "The Spotify app is not installed on the device", errorMessage)
+                                }
+                                is NotLoggedInException -> {
+                                    result.error(errorConnecting, "No one is logged in to the Spotify app on this device.", errorMessage)
+                                }
+                                is AuthenticationFailedException -> {
+                                    result.error(errorConnecting, "Partner app failed to authenticate with Spotify. Check client credentials and make sure your app is registered correctly at developer.spotify.com", errorMessage)
+                                }
+                                is UserNotAuthorizedException -> {
+                                    result.error(errorConnecting, "Indicates the user did not authorize this client of App Remote to use Spotify on the users behalf.", errorMessage)
+                                }
+                                is UnsupportedFeatureVersionException -> {
+                                    result.error(errorConnecting, "Spotify app can't support requested features. User should update Spotify app.", errorMessage)
+                                }
+                                is OfflineModeException -> {
+                                    result.error(errorConnecting, "Spotify user has set their Spotify app to be in offline mode", errorMessage)
+                                }
+                                is LoggedOutException -> {
+                                    result.error(errorConnecting, "User has logged out from Spotify.", errorMessage)
+                                }
+                                is SpotifyRemoteServiceException -> {
+                                    result.error(errorConnecting, "Encapsulates possible SecurityException and IllegalStateException errors.", errorMessage)
+                                }
+                                else -> {
+                                    result.error(errorConnecting, "Something went wrong connecting spotify remote", errorMessage)
+                                }
+                            }
                         }
                     })
         }

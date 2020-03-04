@@ -53,6 +53,8 @@ class SpotifySdk {
   static const String _methodgetLibraryState = "getLibraryState";
   // images api
   static const String _methodGetImage = "getImage";
+  //error callbacks
+  static const String _disconnectionException = "disconnectionException";
   // params
   static const String _paramClientId = "clientId";
   static const String _paramRedirectUrl = "redirectUrl";
@@ -72,12 +74,20 @@ class SpotifySdk {
   static Future<bool> connectToSpotifyRemote(
       {@required String clientId, @required String redirectUrl}) async {
     try {
+      await _channel.setMethodCallHandler(connectionCallbacks);
       return await _channel.invokeMethod(_methodConnectToSpotify,
           {_paramClientId: clientId, _paramRedirectUrl: redirectUrl});
     } on Exception catch (e) {
       _logException(_methodConnectToSpotify, e);
       rethrow;
     }
+  }
+
+  static Future<String> connectionCallbacks(MethodCall methodCall) {
+    if (methodCall.method == _disconnectionException) {
+      return "connection was diconnected";
+    }
+    return null;
   }
 
   /// Returns an authentication token as a [String].
