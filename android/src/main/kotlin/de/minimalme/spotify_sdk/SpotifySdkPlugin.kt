@@ -172,8 +172,8 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Pl
                         }
 
                         override fun onFailure(throwable: Throwable) {
-                            if(replySubmitted == true) return
-                            result.error(errorConnecting, "Something went wrong connecting spotify remote", throwable.message)
+                            val errorMessage = throwable.toString()
+                            result.error(errorConnecting, "Something went wrong connecting spotify remote", errorMessage)
                         }
                     })
         }

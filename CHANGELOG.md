@@ -1,3 +1,9 @@
+## 0.3.3
+
+* adds getImage to get an Image from any spotifyURI (thanks [eddwhite](https://github.com/eddwhite))
+* fixes some minor issues
+* raised dart-sdk version to 2.7.0
+
 ## 0.3.2
 
 * fixes compatibility with spotify-auth dependency above version 1.2.0 (thanks [itsMatoosh](https://github.com/itsMatoosh))
