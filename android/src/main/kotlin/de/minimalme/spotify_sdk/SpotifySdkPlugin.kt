@@ -5,6 +5,7 @@ import com.spotify.android.appremote.api.ConnectionParams
 import com.spotify.android.appremote.api.Connector.ConnectionListener
 import com.spotify.android.appremote.api.SpotifyAppRemote
 import com.spotify.android.appremote.api.error.*
+import com.spotify.protocol.client.Subscription
 import com.spotify.sdk.android.auth.AuthorizationClient
 import com.spotify.sdk.android.auth.AuthorizationRequest
 import com.spotify.sdk.android.auth.AuthorizationResponse
@@ -16,6 +17,9 @@ import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 import io.flutter.plugin.common.PluginRegistry
 import io.flutter.plugin.common.PluginRegistry.Registrar
+import kotlinx.event.SetEvent
+import kotlinx.event.event
+import java.nio.channels.Channel
 
 
 class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, PluginRegistry.ActivityResultListener {
@@ -29,10 +33,10 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Pl
         private const val PLAYER_STATE_SUBSCRIPTION = "player_state_subscription"
         private const val CAPABILITIES__SUBSCRIPTION = "capabilities_subscription"
         private const val USER_STATUS_SUBSCRIPTION = "user_status_subscription"
+        private const val CONNECTION_STATUS_SUBSCRIPTION = "connection_status_subscription"
 
         @JvmStatic
         fun registerWith(registrar: Registrar) {
-
             channel = MethodChannel(registrar.messenger(), CHANNEL_NAME)
             val spotifySdkPluginInstance = SpotifySdkPlugin(registrar)
 
@@ -45,6 +49,7 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Pl
     private val playerStateChannel = EventChannel(registrar.messenger(), PLAYER_STATE_SUBSCRIPTION)
     private val capabilitiesChannel = EventChannel(registrar.messenger(), CAPABILITIES__SUBSCRIPTION)
     private val userStatusChannel = EventChannel(registrar.messenger(), USER_STATUS_SUBSCRIPTION)
+    private val connectionStatusChannel = EventChannel(registrar.messenger(), CONNECTION_STATUS_SUBSCRIPTION)
 
     //connecting
     private val methodConnectToSpotify = "connectToSpotify"
@@ -88,10 +93,10 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Pl
 
     private val errorConnecting = "errorConnecting"
     private val errorDisconnecting = "errorDisconnecting"
+    private val errorConnection = "errorConnection"
     private val errorAuthenticationToken = "authenticationTokenError"
 
-    private val disconnectionException = "disconnectionException"
-
+    private var connStatusEventChannel: SetEvent<ConnectionStatusChannel.ConnectionEvent> = event()
 
     private val requestCodeAuthentication = 1337
     private val scope = arrayOf(
@@ -106,6 +111,10 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Pl
     private var spotifyPlayerApi: SpotifyPlayerApi? = null
     private var spotifyUserApi: SpotifyUserApi? = null
     private var spotifyImagesApi: SpotifyImagesApi? = null
+
+    init {
+        connectionStatusChannel.setStreamHandler(ConnectionStatusChannel(connStatusEventChannel))
+    }
 
     override fun onMethodCall(call: MethodCall, result: Result) {
 
@@ -159,6 +168,7 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Pl
                     .build()
 
             SpotifyAppRemote.disconnect(spotifyAppRemote)
+            var initiallyConnected = false;
             SpotifyAppRemote.connect(registrar.context(), connectionParams,
                     object : ConnectionListener {
                         override fun onConnected(spotifyAppRemoteValue: SpotifyAppRemote) {
@@ -167,46 +177,71 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Pl
                             playerStateChannel.setStreamHandler(PlayerStateChannel(spotifyAppRemote!!.playerApi))
                             capabilitiesChannel.setStreamHandler(CapabilitiesChannel(spotifyAppRemote!!.userApi))
                             userStatusChannel.setStreamHandler(UserStatusChannel(spotifyAppRemote!!.userApi))
+
+                            initiallyConnected = true;
+                            // emit connection established event
+                            connStatusEventChannel(ConnectionStatusChannel.ConnectionEvent(true, "Successfully connected to Spotify.", null, null))
+                            // method success
                             result.success(true)
                         }
 
                         override fun onFailure(throwable: Throwable) {
-                            val errorMessage = throwable.toString()
+                            val errorDetails = throwable.toString()
+                            // determine the error
+                            var errorMessage: String
+                            var errorCode: String
                             when (throwable) {
                                 is SpotifyDisconnectedException, is SpotifyConnectionTerminatedException -> {
                                     // The Spotify app was/is disconnected by the Spotify app.
                                     // This indicates typically that the Spotify app was closed by the user or for other reasons.
                                     // You need to reconnect to continue using Spotify App Remote.
-                                    channel.invokeMethod(disconnectionException,errorMessage)
-                                    result.error(errorDisconnecting, "The Spotify app was/is disconnected by the Spotify app.Reconnect necessary", errorMessage)
+                                    errorMessage = "The Spotify app was/is disconnected by the Spotify app.Reconnect necessary"
+                                    errorCode = "SpotifyDisconnectedException"
                                 }
                                 is CouldNotFindSpotifyApp -> {
-                                    result.error(errorConnecting, "The Spotify app is not installed on the device", errorMessage)
+                                    errorMessage = "The Spotify app is not installed on the device"
+                                    errorCode = "CouldNotFindSpotifyApp"
                                 }
                                 is NotLoggedInException -> {
-                                    result.error(errorConnecting, "No one is logged in to the Spotify app on this device.", errorMessage)
+                                    errorMessage = "No one is logged in to the Spotify app on this device."
+                                    errorCode = "NotLoggedInException"
                                 }
                                 is AuthenticationFailedException -> {
-                                    result.error(errorConnecting, "Partner app failed to authenticate with Spotify. Check client credentials and make sure your app is registered correctly at developer.spotify.com", errorMessage)
+                                    errorMessage = "Partner app failed to authenticate with Spotify. Check client credentials and make sure your app is registered correctly at developer.spotify.com"
+                                    errorCode = "AuthenticationFailedException"
                                 }
                                 is UserNotAuthorizedException -> {
-                                    result.error(errorConnecting, "Indicates the user did not authorize this client of App Remote to use Spotify on the users behalf.", errorMessage)
+                                    errorMessage = "Indicates the user did not authorize this client of App Remote to use Spotify on the users behalf."
+                                    errorCode = "UserNotAuthorizedException"
                                 }
                                 is UnsupportedFeatureVersionException -> {
-                                    result.error(errorConnecting, "Spotify app can't support requested features. User should update Spotify app.", errorMessage)
+                                    errorMessage = "Spotify app can't support requested features. User should update Spotify app."
+                                    errorCode = "UnsupportedFeatureVersionException"
                                 }
                                 is OfflineModeException -> {
-                                    result.error(errorConnecting, "Spotify user has set their Spotify app to be in offline mode", errorMessage)
+                                    errorMessage = "Spotify user has set their Spotify app to be in offline mode"
+                                    errorCode = "OfflineModeException"
                                 }
                                 is LoggedOutException -> {
-                                    result.error(errorConnecting, "User has logged out from Spotify.", errorMessage)
+                                    errorMessage = "User has logged out from Spotify."
+                                    errorCode = "LoggedOutException"
                                 }
                                 is SpotifyRemoteServiceException -> {
-                                    result.error(errorConnecting, "Encapsulates possible SecurityException and IllegalStateException errors.", errorMessage)
+                                    errorMessage = "Encapsulates possible SecurityException and IllegalStateException errors."
+                                    errorCode = "SpotifyRemoteServiceException"
                                 }
                                 else -> {
-                                    result.error(errorConnecting, "Something went wrong connecting spotify remote", errorMessage)
+                                    errorMessage = "Something went wrong connecting spotify remote"
+                                    errorCode = errorConnection
                                 }
+                            }
+                            // notify plugin
+                            if (initiallyConnected) {
+                                // emit connection error event
+                                connStatusEventChannel(ConnectionStatusChannel.ConnectionEvent(false, errorMessage, errorCode, errorDetails))
+                            } else {
+                                // throw exception as the connect method
+                                result.error(errorCode, errorMessage, errorDetails);
                             }
                         }
                     })
@@ -234,6 +269,10 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Pl
     private fun logoutFromSpotify(result: Result) {
         if (spotifyAppRemote != null) {
             SpotifyAppRemote.disconnect(spotifyAppRemote)
+
+            // emit connection terminated event
+            connStatusEventChannel(ConnectionStatusChannel.ConnectionEvent(false, "Successfully disconnected from Spotify.", null, null))
+            // method success
             result.success(true)
         } else {
             result.error(errorDisconnecting, "could not disconnect spotify remote", "spotifyAppRemote is not set")
