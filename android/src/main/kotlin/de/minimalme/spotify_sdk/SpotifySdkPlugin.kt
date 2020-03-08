@@ -191,6 +191,7 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Pl
                             // determine the error
                             var errorMessage: String
                             var errorCode: String
+                            var connected = false
                             when (throwable) {
                                 is SpotifyDisconnectedException, is SpotifyConnectionTerminatedException -> {
                                     // The Spotify app was/is disconnected by the Spotify app.
@@ -218,14 +219,17 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Pl
                                 is UnsupportedFeatureVersionException -> {
                                     errorMessage = "Spotify app can't support requested features. User should update Spotify app."
                                     errorCode = "UnsupportedFeatureVersionException"
+                                    connected = true
                                 }
                                 is OfflineModeException -> {
                                     errorMessage = "Spotify user has set their Spotify app to be in offline mode"
                                     errorCode = "OfflineModeException"
+                                    connected = true
                                 }
                                 is LoggedOutException -> {
                                     errorMessage = "User has logged out from Spotify."
                                     errorCode = "LoggedOutException"
+                                    connected = true
                                 }
                                 is SpotifyRemoteServiceException -> {
                                     errorMessage = "Encapsulates possible SecurityException and IllegalStateException errors."
@@ -238,9 +242,9 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Pl
                             }
                             Log.e("SPOTIFY_SDK", errorMessage)
                             // notify plugin
-                            if (initiallyConnected) {
+                            if (initiallyConnected == true) {
                                 // emit connection error event
-                                connStatusEventChannel(ConnectionStatusChannel.ConnectionEvent(false, errorMessage, errorCode, errorDetails))
+                                connStatusEventChannel(ConnectionStatusChannel.ConnectionEvent(connected, errorMessage, errorCode, errorDetails))
                             } else {
                                 // throw exception as the connect method
                                 result.error(errorCode, errorMessage, errorDetails);
