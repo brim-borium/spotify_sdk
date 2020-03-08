@@ -1,6 +1,7 @@
 package de.minimalme.spotify_sdk
 
 import android.content.Intent
+import android.util.Log
 import com.spotify.android.appremote.api.ConnectionParams
 import com.spotify.android.appremote.api.Connector.ConnectionListener
 import com.spotify.android.appremote.api.SpotifyAppRemote
@@ -235,6 +236,7 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Pl
                                     errorCode = errorConnection
                                 }
                             }
+                            Log.e("SPOTIFY_SDK", errorMessage)
                             // notify plugin
                             if (initiallyConnected) {
                                 // emit connection error event
