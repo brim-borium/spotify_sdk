@@ -6,6 +6,7 @@ buildscript {
     repositories {
         google()
         jcenter()
+        maven { url "https://jitpack.io" }
     }
 
     dependencies {
@@ -18,6 +19,7 @@ rootProject.allprojects {
     repositories {
         google()
         jcenter()
+        maven { url "https://jitpack.io" }
     }
 }
 
@@ -45,5 +47,6 @@ dependencies {
     implementation project(':spotify-auth')
     implementation project(':spotify-app-remote')
     implementation "com.google.code.gson:gson:2.8.5"
-    //
+    // -- events
+    implementation "com.github.stuhlmeier:kotlin-events:v2.0"
 }
