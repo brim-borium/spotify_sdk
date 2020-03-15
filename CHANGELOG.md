@@ -1,3 +1,9 @@
+## 0.3.4
+
+* adds handling of unexpected disconnects from Spotify via subscribeConnectionStatus()-Stream(thanks [itsMatoosh](https://github.com/itsMatoosh))
+* adds usage of .env file for the example project
+* fixes some minor error message issues
+
 ## 0.3.3
 
 * adds getImage to get an Image from any spotifyURI (thanks [eddwhite](https://github.com/eddwhite))
