@@ -28,7 +28,6 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Pl
 
     companion object {
 
-        private lateinit var channel: MethodChannel
         private const val CHANNEL_NAME = "spotify_sdk"
         private const val PLAYER_CONTEXT_SUBSCRIPTION = "player_context_subscription"
         private const val PLAYER_STATE_SUBSCRIPTION = "player_state_subscription"
@@ -38,7 +37,7 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Pl
 
         @JvmStatic
         fun registerWith(registrar: Registrar) {
-            channel = MethodChannel(registrar.messenger(), CHANNEL_NAME)
+            val channel = MethodChannel(registrar.messenger(), CHANNEL_NAME)
             val spotifySdkPluginInstance = SpotifySdkPlugin(registrar)
 
             channel.setMethodCallHandler(spotifySdkPluginInstance)
