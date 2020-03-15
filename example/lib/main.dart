@@ -54,7 +54,7 @@ class _HomeState extends State<Home> {
       stream: SpotifySdk.subscribeConnectionStatus(),
       builder: (context, snapshot) {
         bool _connected = false;
-        if(snapshot.data != null) {
+        if (snapshot.data != null) {
           _connected = snapshot.data.connected;
         }
 
@@ -142,10 +142,12 @@ class _HomeState extends State<Home> {
                   ],
                 ),
                 FlatButton(
-                    child: Icon(Icons.favorite), onPressed: () => addToLibrary()),
+                    child: Icon(Icons.favorite),
+                    onPressed: () => addToLibrary()),
                 Row(
                   children: <Widget>[
-                    FlatButton(child: Text("seek to"), onPressed: () => seekTo()),
+                    FlatButton(
+                        child: Text("seek to"), onPressed: () => seekTo()),
                     FlatButton(
                         child: Text("seek to relative"),
                         onPressed: () => seekToRelative()),
