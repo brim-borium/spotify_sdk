@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 
 import 'package:flutter/services.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:spotify_sdk/models/crossfade_state.dart';
 import 'package:spotify_sdk/spotify_sdk.dart';
 import 'package:spotify_sdk/models/player_state.dart';
@@ -14,7 +15,10 @@ import 'package:logger/logger.dart';
 
 import 'widgets/sized_icon_button.dart';
 
-void main() => runApp(MyApp());
+Future<void> main() async {
+  await DotEnv().load('.env');
+  runApp(MyApp());
+}
 
 class MyApp extends StatefulWidget {
   @override
@@ -269,8 +273,8 @@ class _HomeState extends State<Home> {
         _loading = true;
       });
       var result = await SpotifySdk.connectToSpotifyRemote(
-          clientId: "61b2332ab76d45918a33f91c3268ec1e",
-          redirectUrl: "http://mysite.com/callback/");
+          clientId: DotEnv().env['CLIENT_ID'],
+          redirectUrl: DotEnv().env['REDIRECT_URL']);
       setStatus(result
           ? "connect to spotify successful"
           : "conntect to spotify failed");
