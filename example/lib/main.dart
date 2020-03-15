@@ -11,14 +11,10 @@ import 'package:spotify_sdk/models/player_context.dart';
 import 'package:spotify_sdk/models/connection_status.dart';
 import 'package:spotify_sdk/models/image_uri.dart';
 import 'package:logger/logger.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'widgets/sized_icon_button.dart';
 
-Future main() async {
-  await DotEnv().load('.env');
-  runApp(MyApp());
-}
+void main() => runApp(MyApp());
 
 class MyApp extends StatefulWidget {
   @override
@@ -58,7 +54,7 @@ class _HomeState extends State<Home> {
       stream: SpotifySdk.subscribeConnectionStatus(),
       builder: (context, snapshot) {
         bool _connected = false;
-        if (snapshot.data != null) {
+        if(snapshot.data != null) {
           _connected = snapshot.data.connected;
         }
 
@@ -146,12 +142,10 @@ class _HomeState extends State<Home> {
                   ],
                 ),
                 FlatButton(
-                    child: Icon(Icons.favorite),
-                    onPressed: () => addToLibrary()),
+                    child: Icon(Icons.favorite), onPressed: () => addToLibrary()),
                 Row(
                   children: <Widget>[
-                    FlatButton(
-                        child: Text("seek to"), onPressed: () => seekTo()),
+                    FlatButton(child: Text("seek to"), onPressed: () => seekTo()),
                     FlatButton(
                         child: Text("seek to relative"),
                         onPressed: () => seekToRelative()),
@@ -273,8 +267,8 @@ class _HomeState extends State<Home> {
         _loading = true;
       });
       var result = await SpotifySdk.connectToSpotifyRemote(
-          clientId: DotEnv().env['CLIENT_ID'],
-          redirectUrl: DotEnv().env['REDIRECT_URL']);
+          clientId: "61b2332ab76d45918a33f91c3268ec1e",
+          redirectUrl: "http://mysite.com/callback/");
       setStatus(result
           ? "connect to spotify successful"
           : "conntect to spotify failed");

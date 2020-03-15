@@ -42,4 +42,3 @@ build/
 .project
 .classpath
 .settings
-/example/.env
