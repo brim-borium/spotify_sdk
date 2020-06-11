@@ -62,7 +62,7 @@ class SpotifySdk {
   // params
   static const String _paramClientId = "clientId";
   static const String _paramRedirectUrl = "redirectUrl";
-  static const String _paramScope = "scope";
+  static const String _paramScope = "scope"
   static const String _paramSpotifyUri = "spotifyUri";
   static const String _paramImageUri = "imageUri";
   static const String _paramImageDimension = "imageDimension";
