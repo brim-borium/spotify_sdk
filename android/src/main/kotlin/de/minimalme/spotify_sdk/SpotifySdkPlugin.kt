@@ -84,6 +84,7 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Pl
 
     private val paramClientId = "clientId"
     private val paramRedirectUrl = "redirectUrl"
+    private val paramScope = "scope"
     private val paramSpotifyUri = "spotifyUri"
     private val paramImageUri = "imageUri"
     private val paramImageDimension = "imageDimension"
@@ -100,12 +101,6 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Pl
     private var connStatusEventChannel: SetEvent<ConnectionStatusChannel.ConnectionEvent> = event()
 
     private val requestCodeAuthentication = 1337
-    private val scope = arrayOf(
-            "app-remote-control",
-            "user-modify-playback-state",
-            "playlist-read-private",
-            "playlist-modify-public",
-            "user-read-currently-playing")
 
     private var pendingOperation: PendingOperation? = null
     private var spotifyAppRemote: SpotifyAppRemote? = null
@@ -128,7 +123,7 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Pl
         when (call.method) {
             //connecting to spotify
             methodConnectToSpotify -> connectToSpotify(call.argument(paramClientId), call.argument(paramRedirectUrl), result)
-            methodGetAuthenticationToken -> getAuthenticationToken(call.argument(paramClientId), call.argument(paramRedirectUrl), result)
+            methodGetAuthenticationToken -> getAuthenticationToken(call.argument(paramClientId), call.argument(paramRedirectUrl), call.argument(paramScope), result)
             methodLogoutFromSpotify -> logoutFromSpotify(result)
             //player api calls
             methodGetCrossfadeState -> spotifyPlayerApi?.getCrossfadeState()
@@ -254,7 +249,7 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Pl
         }
     }
 
-    private fun getAuthenticationToken(clientId: String?, redirectUrl: String?, result: Result) {
+    private fun getAuthenticationToken(clientId: String?, redirectUrl: String?, scope = String?, result: Result) {
         if (registrar.activity() == null) {
             throw IllegalStateException("connectToSpotify needs a foreground activity")
         }
@@ -262,10 +257,12 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Pl
         if (clientId.isNullOrBlank() || redirectUrl.isNullOrBlank()) {
             result.error(errorConnecting, "client id or redirectUrl are not set or have invalid format", "")
         } else {
+            //Convert Scope String to Array. Delimiter set as comma ","
+            val scopeArray = scope.split(",").toTypedArray()
             methodConnectToSpotify.checkAndSetPendingOperation(result)
 
             val builder = AuthorizationRequest.Builder(clientId, AuthorizationResponse.Type.TOKEN, redirectUrl)
-            builder.setScopes(scope)
+            builder.setScopes(scopeArray)
             val request = builder.build()
 
             AuthorizationClient.openLoginActivity(registrar.activity(), requestCodeAuthentication, request)
