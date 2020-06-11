@@ -44,3 +44,4 @@ build/
 .settings
 .env*
 *.sqlite
+/.vs/spotify_sdk/v16/.suo
