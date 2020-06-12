@@ -257,8 +257,8 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Pl
         if (clientId.isNullOrBlank() || redirectUrl.isNullOrBlank()) {
             result.error(errorConnecting, "client id or redirectUrl are not set or have invalid format", "")
         } else {
-            //Convert Scope String to Array. Delimiter set as comma ","
-            val scopeArray = scope.split(",").toTypedArray()
+            //Convert String? scope to Array. Delimiter set as comma ","
+            val scopeArray = scope?.split(",")?.toTypedArray()
             methodConnectToSpotify.checkAndSetPendingOperation(result)
 
             val builder = AuthorizationRequest.Builder(clientId, AuthorizationResponse.Type.TOKEN, redirectUrl)
