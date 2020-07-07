@@ -13,7 +13,7 @@ class PlayerContextChannel(private val playerApi: PlayerApi) : EventChannel.Stre
                     playerContext ->  events?.success(Gson().toJson(playerContext))
                 }
                 .setErrorCallback {
-                    throwable -> events?.error(errorSubscribePlayerContext, "error when subscribing to the player context", throwable.message)
+                    throwable -> events?.error(errorSubscribePlayerContext, "error when subscribing to the player context", throwable.toString())
                 }
     }
 

@@ -14,7 +14,7 @@ class CapabilitiesChannel(private val userApi: UserApi) : EventChannel.StreamHan
                     capabilities ->  events?.success(Gson().toJson(capabilities))
                 }
                 .setErrorCallback {
-                    throwable -> events?.error(errorSubscribeCapabilities, "error when subscribing to the users capabilities", throwable.message)
+                    throwable -> events?.error(errorSubscribeCapabilities, "error when subscribing to the users capabilities", throwable.toString())
                 }
     }
 
