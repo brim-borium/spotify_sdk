@@ -6,21 +6,22 @@ issue_tracker: https://github.com/brim-borium/spotify_sdk/issues
 
 environment:
   sdk: ">=2.7.0 <3.0.0"
+  flutter: ">=1.12.0 <2.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
   flutter_web_plugins:
     sdk: flutter
-  logger: ^0.8.0
-  dio: any
+  logger: ^0.9.1
+  dio: ^3.0.9
   json_annotation: ^3.0.0
-  js: ^0.6.1+1
+  js: ^0.6.2
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  build_runner: ^1.0.0
+  build_runner: ^1.10.0
   json_serializable: ^3.2.0
   pedantic: ^1.8.0+1
   
@@ -43,7 +44,6 @@ flutter:
       web:
         pluginClass: SpotifySdkPlugin
         fileName: spotify_sdk_web.dart
-    
 
   # To add assets to your plugin package, add an assets section, like this:
   # assets:
