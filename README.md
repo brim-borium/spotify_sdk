@@ -73,7 +73,7 @@ To start using this package you first have to connect to Spotify. To only connec
 await SpotifySdk.connectToSpotifyRemote(clientId: "", redirectUrl: "")
 ```
 
-If you want to use the web api aswell you have to use this method to get the authentication token. 
+If you want to use the web api as well you have to use this method to get the authentication token. 
 You can specify multiple scopes by seperating them with a comma "," as shown below. For more information on scopes you can refer [Spotify Authorization Scopes Guide](https://developer.spotify.com/documentation/general/guides/scopes/)
 
 ```dart
