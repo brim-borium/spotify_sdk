@@ -74,7 +74,7 @@ await SpotifySdk.connectToSpotifyRemote(clientId: "", redirectUrl: "")
 ```
 
 If you want to use the web api as well you have to use this method to get the authentication token. 
-You can specify multiple scopes by seperating them with a comma "," as shown below. For more information on scopes you can refer [Spotify Authorization Scopes Guide](https://developer.spotify.com/documentation/general/guides/scopes/)
+You can specify multiple scopes by seperating them with a comma "," as shown below. For more information on scopes you can refer to [Spotify Authorization Scopes Guide](https://developer.spotify.com/documentation/general/guides/scopes/)
 
 ```dart
 var authenticationToken = await SpotifySdk.getAuthenticationToken(clientId: "", redirectUrl: "", scope: "app-remote-control,user-modify-playback-state,playlist-read-private");
