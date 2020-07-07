@@ -1,8 +1,8 @@
 on: push
-name: Test and Build
+name: Dry Run
 jobs:
   build:
-    name: Build APK
+    name: Test and Dry-Run
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
