@@ -167,7 +167,7 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Pl
                     .setRedirectUri(redirectUrl)
                     .showAuthView(true)
                     .build()
-
+            var replySubmitted = false
             SpotifyAppRemote.disconnect(spotifyAppRemote)
             var initiallyConnected = false;
             SpotifyAppRemote.connect(registrar.context(), connectionParams,
@@ -184,6 +184,7 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Pl
                             connStatusEventChannel(ConnectionStatusChannel.ConnectionEvent(true, "Successfully connected to Spotify.", null, null))
                             // method success
                             result.success(true)
+                            replySubmitted = true
                         }
 
                         override fun onFailure(throwable: Throwable) {
