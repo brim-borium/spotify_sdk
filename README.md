@@ -1,8 +1,8 @@
 # spotify_sdk
 
-[![pub package](https://img.shields.io/badge/pub-0.3.4-orange)](https://pub.dev/packages/spotify_sdk)]
-[![Dry Run](https://github.com/brim-borium/spotify_sdk/workflows/Dry%20Run/badge.svg?branch=develop)](https://github.com/brim-borium/spotify_sdk/actions?query=workflow%3A%22Dry+Run%22)
-[![licence](https://img.shields.io/badge/licence-MIT-blue.svg)](https://github.com/IamTobi/spotify_sdk/blob/master/LICENSE)]
+[![pub package](https://img.shields.io/badge/pub-0.3.4-orange)](https://pub.dev/packages/spotify_sdk)
+[![Dry Run](https://github.com/brim-borium/spotify_sdk/workflows/Dry%20Run/badge.svg?branch=develop)](https://github.com/brim-borium/spotify_sdk/actions?query=workflow%3A%22Dry+Run%22)]
+[![licence](https://img.shields.io/badge/licence-MIT-blue.svg)](https://github.com/IamTobi/spotify_sdk/blob/master/LICENSE)
 
 ## Description
 
