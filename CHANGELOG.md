@@ -1,3 +1,10 @@
+## 0.5.0
+* adds support for web (thanks [itsMatoosh](https://github.com/itsMatoosh))
+* adds custom scopes for the web api (thanks [arnav-sh](https://github.com/arnav-sh))
+* adds logout functionality for android
+* moved from [pedantic](https://pub.dev/packages/pedantic) to [lint](https://pub.dev/packages/lint) for static analyses
+* some minor bug fixing
+
 ## 0.3.4
 
 * adds handling of unexpected disconnects from Spotify via subscribeConnectionStatus()-Stream(thanks [itsMatoosh](https://github.com/itsMatoosh))

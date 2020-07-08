@@ -177,9 +177,9 @@ class SpotifySdkPlugin {
           return true;
         }
         // update the client id and redirect url
-        String clientId = call.arguments[PARAM_CLIENT_ID];
-        String redirectUrl = call.arguments[PARAM_REDIRECT_URL];
-        String playerName = call.arguments[PARAM_PLAYER_NAME];
+        String clientId = call.arguments[PARAM_CLIENT_ID] as String;
+        String redirectUrl = call.arguments[PARAM_REDIRECT_URL] as String;
+        String playerName = call.arguments[PARAM_PLAYER_NAME] as String;
         if (!(clientId?.isNotEmpty == true &&
             redirectUrl?.isNotEmpty == true)) {
           throw PlatformException(
@@ -219,8 +219,8 @@ class SpotifySdkPlugin {
         break;
       case METHOD_GET_AUTHENTICATION_TOKEN:
         return await _getSpotifyAuthToken(
-            clientId: call.arguments[PARAM_CLIENT_ID],
-            redirectUrl: call.arguments[PARAM_REDIRECT_URL]);
+            clientId: call.arguments[PARAM_CLIENT_ID] as String,
+            redirectUrl: call.arguments[PARAM_REDIRECT_URL] as String);
         break;
       case METHOD_LOGOUT_FROM_SPOTIFY:
         log('Disconnecting from Spotify...');
@@ -234,10 +234,10 @@ class SpotifySdkPlugin {
         }
         break;
       case METHOD_PLAY:
-        await _play(call.arguments[PARAM_SPOTIFY_URI]);
+        await _play(call.arguments[PARAM_SPOTIFY_URI] as String);
         break;
       case METHOD_QUEUE_TRACK:
-        await _queue(call.arguments[PARAM_SPOTIFY_URI]);
+        await _queue(call.arguments[PARAM_SPOTIFY_URI] as String);
         break;
       case METHOD_RESUME:
         await promiseToFuture(_currentPlayer?.resume());

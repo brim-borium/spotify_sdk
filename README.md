@@ -1,6 +1,6 @@
 # spotify_sdk
 
-[![pub package](https://img.shields.io/badge/pub-0.3.4-orange)](https://pub.dev/packages/spotify_sdk)
+[![pub package](https://img.shields.io/badge/pub-0.5.0-orange)](https://pub.dev/packages/spotify_sdk)
 [![Dry Run](https://github.com/brim-borium/spotify_sdk/workflows/Dry%20Run/badge.svg?branch=develop)](https://github.com/brim-borium/spotify_sdk/actions?query=workflow%3A%22Dry+Run%22)
 [![licence](https://img.shields.io/badge/licence-MIT-blue.svg)](https://github.com/IamTobi/spotify_sdk/blob/master/LICENSE)
 
@@ -70,19 +70,17 @@ Important here is the naming so that the package can find the modules.
 To start using this package you first have to connect to Spotify. To only connect you can do this with connectToSpotifyRemote(...) or getAuthenticationToken(...) in both of these methods you need the client id, given in the spotify dashboard and the redirect url you set in the settings on the dashboard.
 
 ```dart
-await SpotifySdk.connectToSpotifyRemote(clientId: "", redirectUrl: "")
+  await SpotifySdk.connectToSpotifyRemote(clientId: "", redirectUrl: "")
 ```
 
 If you want to use the web api as well you have to use this method to get the authentication token. 
-You can specify multiple scopes by seperating them with a comma "," as shown below. For more information on scopes you can refer to [Spotify Authorization Scopes Guide](https://developer.spotify.com/documentation/general/guides/scopes/)
+You can specify multiple scopes by separating them with a comma "," as shown below. For more information on scopes you can refer to [Spotify Authorization Scopes Guide](https://developer.spotify.com/documentation/general/guides/scopes/)
 
 ```dart
-var authenticationToken = await SpotifySdk.getAuthenticationToken(clientId: "", redirectUrl: "", scope: "app-remote-control,user-modify-playback-state,playlist-read-private");
+  var authenticationToken = await SpotifySdk.getAuthenticationToken(clientId: "", redirectUrl: "", scope: "app-remote-control,user-modify-playback-state,playlist-read-private");
 ```
 
-tbd...
-
-Have a look [here](example/lib/main.dart) for a more detailed example.
+Have a look [in the example](example/lib/main.dart) for detailed insights on how you can use this package.
 
 ### Api
 
@@ -92,7 +90,7 @@ Have a look [here](example/lib/main.dart) for a more detailed example.
 |---|---|---|---|---|
 | connectToSpotifyRemote  | Connects the App to Spotify | :heavy_check_mark: | :construction_worker: | :heavy_check_mark: |
 |  getAuthenticationToken | Gets the Authentication Token that you can use to work with the [Web Api](https://developer.spotify.com/documentation/web-api/) |:heavy_check_mark: |  :construction_worker: | :heavy_check_mark: |
-|  logout | logs the user out and disconnects the app connection |:construction_worker: |  :construction_worker: | :heavy_check_mark: |
+|  logout | logs the user out and disconnects the app connection |:heavy_check_mark: |  :construction_worker: | :heavy_check_mark: |
 
 #### Player Api
 
