@@ -6,7 +6,6 @@ import com.spotify.android.appremote.api.ConnectionParams
 import com.spotify.android.appremote.api.Connector.ConnectionListener
 import com.spotify.android.appremote.api.SpotifyAppRemote
 import com.spotify.android.appremote.api.error.*
-import com.spotify.protocol.client.Subscription
 import com.spotify.sdk.android.auth.AuthorizationClient
 import com.spotify.sdk.android.auth.AuthorizationRequest
 import com.spotify.sdk.android.auth.AuthorizationResponse
@@ -20,7 +19,6 @@ import io.flutter.plugin.common.PluginRegistry
 import io.flutter.plugin.common.PluginRegistry.Registrar
 import kotlinx.event.SetEvent
 import kotlinx.event.event
-import java.nio.channels.Channel
 
 
 class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, PluginRegistry.ActivityResultListener {
@@ -84,6 +82,7 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Pl
 
     private val paramClientId = "clientId"
     private val paramRedirectUrl = "redirectUrl"
+    private val paramScope = "scope"
     private val paramSpotifyUri = "spotifyUri"
     private val paramImageUri = "imageUri"
     private val paramImageDimension = "imageDimension"
@@ -100,12 +99,6 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Pl
     private var connStatusEventChannel: SetEvent<ConnectionStatusChannel.ConnectionEvent> = event()
 
     private val requestCodeAuthentication = 1337
-    private val scope = arrayOf(
-            "app-remote-control",
-            "user-modify-playback-state",
-            "playlist-read-private",
-            "playlist-modify-public",
-            "user-read-currently-playing")
 
     private var pendingOperation: PendingOperation? = null
     private var spotifyAppRemote: SpotifyAppRemote? = null
@@ -128,7 +121,7 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Pl
         when (call.method) {
             //connecting to spotify
             methodConnectToSpotify -> connectToSpotify(call.argument(paramClientId), call.argument(paramRedirectUrl), result)
-            methodGetAuthenticationToken -> getAuthenticationToken(call.argument(paramClientId), call.argument(paramRedirectUrl), result)
+            methodGetAuthenticationToken -> getAuthenticationToken(call.argument(paramClientId), call.argument(paramRedirectUrl), call.argument(paramScope), result)
             methodLogoutFromSpotify -> logoutFromSpotify(result)
             //player api calls
             methodGetCrossfadeState -> spotifyPlayerApi?.getCrossfadeState()
@@ -167,9 +160,9 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Pl
                     .setRedirectUri(redirectUrl)
                     .showAuthView(true)
                     .build()
-
+            var replySubmitted = false
             SpotifyAppRemote.disconnect(spotifyAppRemote)
-            var initiallyConnected = false;
+            var initiallyConnected = false
             SpotifyAppRemote.connect(registrar.context(), connectionParams,
                     object : ConnectionListener {
                         override fun onConnected(spotifyAppRemoteValue: SpotifyAppRemote) {
@@ -179,18 +172,19 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Pl
                             capabilitiesChannel.setStreamHandler(CapabilitiesChannel(spotifyAppRemote!!.userApi))
                             userStatusChannel.setStreamHandler(UserStatusChannel(spotifyAppRemote!!.userApi))
 
-                            initiallyConnected = true;
+                            initiallyConnected = true
                             // emit connection established event
                             connStatusEventChannel(ConnectionStatusChannel.ConnectionEvent(true, "Successfully connected to Spotify.", null, null))
                             // method success
                             result.success(true)
+                            replySubmitted = true
                         }
 
                         override fun onFailure(throwable: Throwable) {
                             val errorDetails = throwable.toString()
                             // determine the error
-                            var errorMessage: String
-                            var errorCode: String
+                            val errorMessage: String
+                            val errorCode: String
                             var connected = false
                             when (throwable) {
                                 is SpotifyDisconnectedException, is SpotifyConnectionTerminatedException -> {
@@ -242,19 +236,19 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Pl
                             }
                             Log.e("SPOTIFY_SDK", errorMessage)
                             // notify plugin
-                            if (initiallyConnected == true) {
+                            if (initiallyConnected) {
                                 // emit connection error event
                                 connStatusEventChannel(ConnectionStatusChannel.ConnectionEvent(connected, errorMessage, errorCode, errorDetails))
                             } else {
                                 // throw exception as the connect method
-                                result.error(errorCode, errorMessage, errorDetails);
+                                result.error(errorCode, errorMessage, errorDetails)
                             }
                         }
                     })
         }
     }
 
-    private fun getAuthenticationToken(clientId: String?, redirectUrl: String?, result: Result) {
+    private fun getAuthenticationToken(clientId: String?, redirectUrl: String?, scope: String?, result: Result) {
         if (registrar.activity() == null) {
             throw IllegalStateException("connectToSpotify needs a foreground activity")
         }
@@ -262,10 +256,12 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Pl
         if (clientId.isNullOrBlank() || redirectUrl.isNullOrBlank()) {
             result.error(errorConnecting, "client id or redirectUrl are not set or have invalid format", "")
         } else {
+            //Convert String? scope to Array. Delimiter set as comma ","
+            val scopeArray = scope?.split(",")?.toTypedArray()
             methodConnectToSpotify.checkAndSetPendingOperation(result)
 
             val builder = AuthorizationRequest.Builder(clientId, AuthorizationResponse.Type.TOKEN, redirectUrl)
-            builder.setScopes(scope)
+            builder.setScopes(scopeArray)
             val request = builder.build()
 
             AuthorizationClient.openLoginActivity(registrar.activity(), requestCodeAuthentication, request)
@@ -273,18 +269,21 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Pl
     }
 
     private fun logoutFromSpotify(result: Result) {
-        if (spotifyAppRemote != null) {
+        if (spotifyAppRemote != null && spotifyAppRemote!!.isConnected) {
             SpotifyAppRemote.disconnect(spotifyAppRemote)
 
             // emit connection terminated event
             connStatusEventChannel(ConnectionStatusChannel.ConnectionEvent(false, "Successfully disconnected from Spotify.", null, null))
             // method success
             result.success(true)
-        } else {
+        }
+        else if (!spotifyAppRemote!!.isConnected){
+            result.error(errorDisconnecting, "could not disconnect spotify remote", "you are not connected, no need to disconnect")
+        }
+        else {
             result.error(errorDisconnecting, "could not disconnect spotify remote", "spotifyAppRemote is not set")
         }
     }
-    //--
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?): Boolean {
         if (pendingOperation == null) {

@@ -5,10 +5,10 @@ import 'dart:typed_data';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:logger/logger.dart';
+import 'package:spotify_sdk/models/image_uri.dart';
 import 'package:spotify_sdk/models/library_state.dart';
 import 'package:spotify_sdk/models/player_state.dart';
 import 'package:spotify_sdk/models/user_status.dart';
-import 'package:spotify_sdk/models/image_uri.dart';
 
 import 'models/capabilities.dart';
 import 'models/connection_status.dart';
@@ -49,7 +49,8 @@ class SpotifySdk {
   static const String _methodSeekToRelativePosition = "seekToRelativePosition";
   static const String _methodSubscribePlayerContext = "subscribePlayerContext";
   static const String _methodSubscribePlayerState = "subscribePlayerState";
-  static const String _methodSubscribeConnectionStatus = "subscribeConnectionStatus";
+  static const String _methodSubscribeConnectionStatus =
+      "subscribeConnectionStatus";
   static const String _methodToggleRepeat = "toggleRepeat";
   static const String _methodToggleShuffle = "toggleShuffle";
   // user api
@@ -62,6 +63,8 @@ class SpotifySdk {
   // params
   static const String _paramClientId = "clientId";
   static const String _paramRedirectUrl = "redirectUrl";
+  static const String _paramScope = "scope";
+  static const String _paramPlayerName = "playerName";
   static const String _paramSpotifyUri = "spotifyUri";
   static const String _paramImageUri = "imageUri";
   static const String _paramImageDimension = "imageDimension";
@@ -72,32 +75,45 @@ class SpotifySdk {
 
   /// Connects to Spotify Remote, returning a [bool] for confirmation
   ///
-  /// Required paramters are the [clientId] and the [redirectUrl] to authenticate with the Spotify Api
+  /// Required parameters are the [clientId] and the [redirectUrl] to authenticate with the Spotify Api
   /// Throws a [PlatformException] if connecting to the remote api failed
   /// Throws a [MissingPluginException] if the method is not implemented on the native platforms.
   static Future<bool> connectToSpotifyRemote(
-      {@required String clientId, @required String redirectUrl}) async {
+      {@required String clientId,
+      @required String redirectUrl,
+      String playerName = 'Spotify SDK'}) async {
     try {
-      return await _channel.invokeMethod(_methodConnectToSpotify,
-          {_paramClientId: clientId, _paramRedirectUrl: redirectUrl});
+      return await _channel.invokeMethod(_methodConnectToSpotify, {
+        _paramClientId: clientId,
+        _paramRedirectUrl: redirectUrl,
+        _paramPlayerName: playerName
+      });
     } on Exception catch (e) {
       _logException(_methodConnectToSpotify, e);
       rethrow;
     }
   }
 
-  /// Returns an authentication token as a [String].
+  /// Returns an authentication token as a [String]
   ///
-  /// Required paramters are the [clientId] and the [redirectUrl] to authenticate with the Spotify Api.
+  /// Required parameters are the [clientId] and the [redirectUrl] to authenticate with the Spotify Api.
+  /// Also you have to provide a [scope] like
+  /// "app-remote-control, user-modify-playback-state, playlist-read-private, playlist-modify-public,user-read-currently-playing"
+  /// See https://developer.spotify.com/documentation/general/guides/scopes/ for more scopes and how to use them
   /// The token can be used to communicate with the web api
   /// Throws a [PlatformException] if retrieving the authentication token failed.
   /// Throws a [MissingPluginException] if the method is not implemented on the native platforms.
   static Future<String> getAuthenticationToken(
-      {@required String clientId, @required String redirectUrl}) async {
+      {@required String clientId,
+      @required String redirectUrl,
+      @required String scope}) async {
     try {
       final String authorization = await _channel.invokeMethod(
-          _methodGetAuthenticationToken,
-          {_paramClientId: clientId, _paramRedirectUrl: redirectUrl});
+          _methodGetAuthenticationToken, {
+        _paramClientId: clientId,
+        _paramRedirectUrl: redirectUrl,
+        _paramScope: scope
+      });
       return authorization;
     } on Exception catch (e) {
       _logException(_methodGetAuthenticationToken, e);
@@ -109,9 +125,9 @@ class SpotifySdk {
   ///
   /// Throws a [PlatformException] if logout failed
   /// Throws a [MissingPluginException] if the method is not implemented on the native platforms.
-  static Future logout() async {
+  static Future<bool> logout() async {
     try {
-      await _channel.invokeMethod(_methodLogoutFromSpotify);
+      return await _channel.invokeMethod(_methodLogoutFromSpotify);
     } on Exception catch (e) {
       _logException(_methodLogoutFromSpotify, e);
       rethrow;
