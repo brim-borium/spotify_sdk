@@ -41,6 +41,9 @@ flutter:
       android: 
         package: de.minimalme.spotify_sdk
         pluginClass: SpotifySdkPlugin
+      ios: 
+        package: de.minimalme.spotify_sdk
+        pluginClass: SpotifySdkPlugin
       web:
         pluginClass: SpotifySdkPlugin
         fileName: spotify_sdk_web.dart
