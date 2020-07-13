@@ -24,6 +24,15 @@ Important here is the naming so that the package can find the modules.
 - Remote: spotify-app-remote
 - Auth: spotify-auth
 
+### iOS
+
+From the [Spotify iOS SDK Quick Start](https://developer.spotify.com/documentation/ios/quick-start/). You need two things:
+
+1. Register your app in the [spotify developer portal](https://developer.spotify.com/dashboard/). You also need to register your Bundle ID as well as a Redirect URI.
+2. download the current [Spotify iOS SDK](https://github.com/spotify/ios-sdk/releases). Here you need `SpotifyiOS.framework` from the zip file.
+
+After you are all setup you need to add `SpotifyiOS.framework` to your iOS Project. See the [Spotify iOS SDK Quick Start](https://developer.spotify.com/documentation/ios/quick-start/) for detailed information.
+
 ### Web
 
 1. Register your app in the [spotify developer portal](https://developer.spotify.com/dashboard/). You need to provide a redirect URL which points to a dedicated page on a website you own.
