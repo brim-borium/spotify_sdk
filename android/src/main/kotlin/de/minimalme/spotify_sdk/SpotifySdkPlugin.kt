@@ -6,7 +6,6 @@ import com.spotify.android.appremote.api.ConnectionParams
 import com.spotify.android.appremote.api.Connector.ConnectionListener
 import com.spotify.android.appremote.api.SpotifyAppRemote
 import com.spotify.android.appremote.api.error.*
-import com.spotify.protocol.client.Subscription
 import com.spotify.sdk.android.auth.AuthorizationClient
 import com.spotify.sdk.android.auth.AuthorizationRequest
 import com.spotify.sdk.android.auth.AuthorizationResponse
@@ -20,7 +19,6 @@ import io.flutter.plugin.common.PluginRegistry
 import io.flutter.plugin.common.PluginRegistry.Registrar
 import kotlinx.event.SetEvent
 import kotlinx.event.event
-import java.nio.channels.Channel
 
 
 class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, PluginRegistry.ActivityResultListener {
@@ -164,7 +162,7 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Pl
                     .build()
             var replySubmitted = false
             SpotifyAppRemote.disconnect(spotifyAppRemote)
-            var initiallyConnected = false;
+            var initiallyConnected = false
             SpotifyAppRemote.connect(registrar.context(), connectionParams,
                     object : ConnectionListener {
                         override fun onConnected(spotifyAppRemoteValue: SpotifyAppRemote) {
@@ -174,7 +172,7 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Pl
                             capabilitiesChannel.setStreamHandler(CapabilitiesChannel(spotifyAppRemote!!.userApi))
                             userStatusChannel.setStreamHandler(UserStatusChannel(spotifyAppRemote!!.userApi))
 
-                            initiallyConnected = true;
+                            initiallyConnected = true
                             // emit connection established event
                             connStatusEventChannel(ConnectionStatusChannel.ConnectionEvent(true, "Successfully connected to Spotify.", null, null))
                             // method success
@@ -185,8 +183,8 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Pl
                         override fun onFailure(throwable: Throwable) {
                             val errorDetails = throwable.toString()
                             // determine the error
-                            var errorMessage: String
-                            var errorCode: String
+                            val errorMessage: String
+                            val errorCode: String
                             var connected = false
                             when (throwable) {
                                 is SpotifyDisconnectedException, is SpotifyConnectionTerminatedException -> {
@@ -238,12 +236,12 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Pl
                             }
                             Log.e("SPOTIFY_SDK", errorMessage)
                             // notify plugin
-                            if (initiallyConnected == true) {
+                            if (initiallyConnected) {
                                 // emit connection error event
                                 connStatusEventChannel(ConnectionStatusChannel.ConnectionEvent(connected, errorMessage, errorCode, errorDetails))
                             } else {
                                 // throw exception as the connect method
-                                result.error(errorCode, errorMessage, errorDetails);
+                                result.error(errorCode, errorMessage, errorDetails)
                             }
                         }
                     })
@@ -271,18 +269,21 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Pl
     }
 
     private fun logoutFromSpotify(result: Result) {
-        if (spotifyAppRemote != null) {
+        if (spotifyAppRemote != null && spotifyAppRemote!!.isConnected) {
             SpotifyAppRemote.disconnect(spotifyAppRemote)
 
             // emit connection terminated event
             connStatusEventChannel(ConnectionStatusChannel.ConnectionEvent(false, "Successfully disconnected from Spotify.", null, null))
             // method success
             result.success(true)
-        } else {
+        }
+        else if (!spotifyAppRemote!!.isConnected){
+            result.error(errorDisconnecting, "could not disconnect spotify remote", "you are not connected, no need to disconnect")
+        }
+        else {
             result.error(errorDisconnecting, "could not disconnect spotify remote", "spotifyAppRemote is not set")
         }
     }
-    //--
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?): Boolean {
         if (pendingOperation == null) {
