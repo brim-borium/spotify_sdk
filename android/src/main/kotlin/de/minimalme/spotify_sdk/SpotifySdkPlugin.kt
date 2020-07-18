@@ -83,6 +83,7 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Pl
     private val paramClientId = "clientId"
     private val paramRedirectUrl = "redirectUrl"
     private val paramScope = "scope"
+    private val paramCodeRequest = "isCodeRequest"
     private val paramSpotifyUri = "spotifyUri"
     private val paramImageUri = "imageUri"
     private val paramImageDimension = "imageDimension"
@@ -121,7 +122,7 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Pl
         when (call.method) {
             //connecting to spotify
             methodConnectToSpotify -> connectToSpotify(call.argument(paramClientId), call.argument(paramRedirectUrl), result)
-            methodGetAuthenticationToken -> getAuthenticationToken(call.argument(paramClientId), call.argument(paramRedirectUrl), call.argument(paramScope), result)
+            methodGetAuthenticationToken -> getAuthenticationToken(call.argument(paramClientId), call.argument(paramRedirectUrl), call.argument(paramScope), call.argument(paramCodeRequest), result)
             methodLogoutFromSpotify -> logoutFromSpotify(result)
             //player api calls
             methodGetCrossfadeState -> spotifyPlayerApi?.getCrossfadeState()
@@ -248,7 +249,7 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Pl
         }
     }
 
-    private fun getAuthenticationToken(clientId: String?, redirectUrl: String?, scope: String?, result: Result) {
+    private fun getAuthenticationToken(clientId: String?, redirectUrl: String?, scope: String?, codeRequest: Boolean?, result: Result) {
         if (registrar.activity() == null) {
             throw IllegalStateException("connectToSpotify needs a foreground activity")
         }
@@ -256,11 +257,15 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Pl
         if (clientId.isNullOrBlank() || redirectUrl.isNullOrBlank()) {
             result.error(errorConnecting, "client id or redirectUrl are not set or have invalid format", "")
         } else {
+            val isCodeRequest: Boolean = codeRequest ?: false
+
             //Convert String? scope to Array. Delimiter set as comma ","
             val scopeArray = scope?.split(",")?.toTypedArray()
             methodConnectToSpotify.checkAndSetPendingOperation(result)
 
-            val builder = AuthorizationRequest.Builder(clientId, AuthorizationResponse.Type.TOKEN, redirectUrl)
+            Log.d("SPOTIFY_SDK", "Making a request with type ${if(isCodeRequest) "code" else "token"}")
+
+            val builder = AuthorizationRequest.Builder(clientId, if(isCodeRequest) AuthorizationResponse.Type.CODE else AuthorizationResponse.Type.TOKEN, redirectUrl)
             builder.setScopes(scopeArray)
             val request = builder.build()
 
@@ -307,6 +312,9 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Pl
         when (response.type) {
             AuthorizationResponse.Type.TOKEN -> {
                 result.success(response.accessToken)
+            }
+            AuthorizationResponse.Type.CODE -> {
+                result.success(response.code)
             }
             AuthorizationResponse.Type.ERROR -> result.error(errorAuthenticationToken, "Authentication went wrong", response.error)
             else -> result.notImplemented()

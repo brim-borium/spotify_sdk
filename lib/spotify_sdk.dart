@@ -64,6 +64,7 @@ class SpotifySdk {
   static const String _paramClientId = "clientId";
   static const String _paramRedirectUrl = "redirectUrl";
   static const String _paramScope = "scope";
+  static const String _paramCodeRequest = "isCodeRequest";
   static const String _paramPlayerName = "playerName";
   static const String _paramSpotifyUri = "spotifyUri";
   static const String _paramImageUri = "imageUri";
@@ -106,13 +107,15 @@ class SpotifySdk {
   static Future<String> getAuthenticationToken(
       {@required String clientId,
       @required String redirectUrl,
-      @required String scope}) async {
+      @required String scope,
+      bool codeRequest = false}) async {
     try {
       final String authorization = await _channel.invokeMethod(
           _methodGetAuthenticationToken, {
         _paramClientId: clientId,
         _paramRedirectUrl: redirectUrl,
-        _paramScope: scope
+        _paramScope: scope,
+        _paramCodeRequest: codeRequest
       });
       return authorization;
     } on Exception catch (e) {
