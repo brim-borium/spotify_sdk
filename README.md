@@ -97,7 +97,7 @@ Have a look [in the example](example/lib/main.dart) for detailed insights on how
 
 | Function  | Description| Android | iOS | Web |
 |---|---|---|---|---|
-| connectToSpotifyRemote  | Connects the App to Spotify | :heavy_check_mark: | :construction_worker: | :heavy_check_mark: |
+| connectToSpotifyRemote  | Connects the App to Spotify | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
 |  getAuthenticationToken | Gets the Authentication Token that you can use to work with the [Web Api](https://developer.spotify.com/documentation/web-api/) |:heavy_check_mark: |  :construction_worker: | :heavy_check_mark: |
 |  logout | logs the user out and disconnects the app connection |:heavy_check_mark: |  :construction_worker: | :heavy_check_mark: |
 
@@ -156,3 +156,7 @@ Have a look [in the example](example/lib/main.dart) for detailed insights on how
 
 - [Auth](https://spotify.github.io/android-sdk/auth-lib/docs/index.html)
 - [App Remote](https://spotify.github.io/android-sdk/app-remote-lib/docs/index.html)
+
+## Contribute
+
+In order to setup the project and start messing with the code clone it using `git clone --recurse-submodules https://github.com/brim-borium/spotify_sdk` as the iOS Spotify SDK if included as a git submodule.

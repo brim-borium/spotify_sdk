@@ -1,10 +1,3 @@
-//
-//  SpotfySdkConstants.h
-//  Pods
-//
-//  Created by Foti Dim on 24.07.20.
-//
-
 #ifndef SpotfySdkConstants_h
 #define SpotfySdkConstants_h
 
