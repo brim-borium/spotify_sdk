@@ -17,3 +17,20 @@ class ConnectionStatusHandler: NSObject, FlutterStreamHandler {
     }
 
 }
+
+extension ConnectionStatusHandler: SPTAppRemoteDelegate {
+    func appRemoteDidEstablishConnection(_ appRemote: SPTAppRemote) {
+        // emit connection established event
+        eventSink?("{\"connected\": true}")
+    }
+
+    func appRemote(_ appRemote: SPTAppRemote, didFailConnectionAttemptWithError error: Error?) {
+        //
+    }
+
+    func appRemote(_ appRemote: SPTAppRemote, didDisconnectWithError error: Error?) {
+        eventSink?(FlutterError(code: "UNAVAILABLE", message: "Battery info unavailable", details: nil))
+    }
+
+
+}

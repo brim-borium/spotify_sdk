@@ -5,6 +5,8 @@ import SpotifyiOS
 public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
 
     var appRemote: SPTAppRemote?
+    var connectionStatusHandler = ConnectionStatusHandler()
+
     
     public static func register(with registrar: FlutterPluginRegistrar) {
         let spotifySDKChannel = FlutterMethodChannel(name: "spotify_sdk", binaryMessenger: registrar.messenger())
@@ -14,7 +16,7 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
         registrar.addApplicationDelegate(instance)
 
         registrar.addMethodCallDelegate(instance, channel: spotifySDKChannel)
-        connectionStatusChannel.setStreamHandler(ConnectionStatusHandler())
+        connectionStatusChannel.setStreamHandler(instance.connectionStatusHandler)
     }
 
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
@@ -41,6 +43,7 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
         guard let redirectURL = URL(string: redirectURL) else { return }
         let configuration = SPTConfiguration(clientID: clientId, redirectURL: redirectURL)
         appRemote = SPTAppRemote(configuration: configuration, logLevel: .none)
+        appRemote?.delegate = connectionStatusHandler
 
         // Note: A blank string will play the user's last song or pick a random one.
         if appRemote?.authorizeAndPlayURI("") == false {
