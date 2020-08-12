@@ -1,19 +1,25 @@
-import Flutter
-import UIKit
 import SpotifyiOS
 
-class ConnectionStatusHandler: NSObject, FlutterStreamHandler {
+class ConnectionStatusHandler: StatusHandler, SPTAppRemoteDelegate {
 
-    private var eventSink: FlutterEventSink?
+    private var onConnect: (()->())?
 
-    public func onListen(withArguments arguments: Any?, eventSink events: @escaping FlutterEventSink) -> FlutterError? {
-        eventSink = events
-        return nil
+    init(onConnect: (()->())? ) {
+        super.init()
+        self.onConnect = onConnect
     }
 
-    public func onCancel(withArguments arguments: Any?) -> FlutterError? {
-        eventSink = nil;
-        return nil
+    func appRemoteDidEstablishConnection(_ appRemote: SPTAppRemote) {
+        // emit connection established event
+        eventSink?("{\"connected\": true}")
+        onConnect?()
     }
 
+    func appRemote(_ appRemote: SPTAppRemote, didFailConnectionAttemptWithError error: Error?) {
+        //
+    }
+
+    func appRemote(_ appRemote: SPTAppRemote, didDisconnectWithError error: Error?) {
+        eventSink?(FlutterError(code: "didDisconnectWithError", message: error?.localizedDescription, details: nil))
+    }
 }

@@ -1,20 +1,32 @@
 import Flutter
-import UIKit
 import SpotifyiOS
 
 public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
 
     var appRemote: SPTAppRemote?
-    
+    var connectionStatusHandler: ConnectionStatusHandler?
+
     public static func register(with registrar: FlutterPluginRegistrar) {
         let spotifySDKChannel = FlutterMethodChannel(name: "spotify_sdk", binaryMessenger: registrar.messenger())
         let connectionStatusChannel = FlutterEventChannel(name: "connection_status_subscription", binaryMessenger: registrar.messenger())
+        let playerStateChannel = FlutterEventChannel(name: "player_state_subscription", binaryMessenger: registrar.messenger())
+        let playerContextChannel = FlutterEventChannel(name: "player_context_subscription", binaryMessenger: registrar.messenger())
 
         let instance = SwiftSpotifySdkPlugin()
         registrar.addApplicationDelegate(instance)
 
         registrar.addMethodCallDelegate(instance, channel: spotifySDKChannel)
-        connectionStatusChannel.setStreamHandler(ConnectionStatusHandler())
+
+        instance.connectionStatusHandler = ConnectionStatusHandler(onConnect: {
+            if let appRemote = instance.appRemote {
+                let playerStateHandler = PlayerStateHandler(appRemote: appRemote)
+                playerStateChannel.setStreamHandler(playerStateHandler)
+            }
+
+            playerContextChannel.setStreamHandler(PlayerContextHandler())
+        })
+
+        connectionStatusChannel.setStreamHandler(instance.connectionStatusHandler)
     }
 
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
@@ -32,6 +44,9 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
             }
             connectToSpotify(clientId: clientID, redirectURL: url)
             result(true)
+        case SpotfySdkConstants.methodGetImage:
+//            spotifyImagesApi?.getImage(call.argument(paramImageUri), call.argument(paramImageDimension))
+            result(FlutterMethodNotImplemented)
         default:
             result(FlutterMethodNotImplemented)
         }
@@ -41,6 +56,7 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
         guard let redirectURL = URL(string: redirectURL) else { return }
         let configuration = SPTConfiguration(clientID: clientId, redirectURL: redirectURL)
         appRemote = SPTAppRemote(configuration: configuration, logLevel: .none)
+        appRemote?.delegate = connectionStatusHandler
 
         // Note: A blank string will play the user's last song or pick a random one.
         if appRemote?.authorizeAndPlayURI("") == false {
