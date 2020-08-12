@@ -5,13 +5,13 @@ import 'dart:typed_data';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:logger/logger.dart';
+import 'package:spotify_sdk/models/connection_status.dart';
 import 'package:spotify_sdk/models/image_uri.dart';
 import 'package:spotify_sdk/models/library_state.dart';
 import 'package:spotify_sdk/models/player_state.dart';
 import 'package:spotify_sdk/models/user_status.dart';
 
 import 'models/capabilities.dart';
-import 'models/connection_status.dart';
 import 'models/crossfade_state.dart';
 import 'models/player_context.dart';
 

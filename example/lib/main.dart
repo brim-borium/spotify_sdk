@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:logger/logger.dart';
+import 'package:spotify_sdk/models/connection_status.dart';
 import 'package:spotify_sdk/models/crossfade_state.dart';
 import 'package:spotify_sdk/models/image_uri.dart';
 import 'package:spotify_sdk/models/player_context.dart';
@@ -44,7 +45,7 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder(
+    return StreamBuilder<ConnectionStatus>(
         stream: SpotifySdk.subscribeConnectionStatus(),
         builder: (context, snapshot) {
           _connected = false;
@@ -297,8 +298,8 @@ class _HomeState extends State<Home> {
         _loading = true;
       });
       var result = await SpotifySdk.connectToSpotifyRemote(
-          clientId: DotEnv().env['CLIENT_ID'],
-          redirectUrl: DotEnv().env['REDIRECT_URL']);
+          clientId: DotEnv().env['CLIENT_ID'].toString(),
+          redirectUrl: DotEnv().env['REDIRECT_URL'].toString());
       setStatus(result
           ? "connect to spotify successful"
           : "conntect to spotify failed");
@@ -321,8 +322,8 @@ class _HomeState extends State<Home> {
   Future<void> getAuthenticationToken() async {
     try {
       var authenticationToken = await SpotifySdk.getAuthenticationToken(
-          clientId: DotEnv().env['CLIENT_ID'],
-          redirectUrl: DotEnv().env['REDIRECT_URL'],
+          clientId: DotEnv().env['CLIENT_ID'].toString(),
+          redirectUrl: DotEnv().env['REDIRECT_URL'].toString(),
           scope:
               "app-remote-control, user-modify-playback-state, playlist-read-private, playlist-modify-public,user-read-currently-playing");
       setStatus("Got a token: $authenticationToken");
