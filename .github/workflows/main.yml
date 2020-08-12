@@ -1,17 +1,36 @@
-on: push
+on: 
+  push:
+    paths:
+      - "/**"
+      - ".github/workflows/main.yaml"
+
+  pull_request:
+    paths:
+      - "/**"
+      - ".github/workflows/main.yaml"
 name: Dry Run
 jobs:
   build:
     name: Test and Dry-Run
     runs-on: ubuntu-latest
+    container:
+      image: google/dart:2.8.4
     steps:
-    - uses: actions/checkout@v1
-    - uses: actions/setup-java@v1
+    - uses: actions/checkout@v2
+    - name: Install Dependencies
+      run: pub get
+    - name: Format
+      run: dartfmt --dry-run --set-exit-if-changed .
+    - name: Analyze
+      run: dartanalyzer --fatal-infos --fatal-warnings lib test example
+    - name: Run tests
+      run: pub run test_coverage
+    - name: Check Code Coverage
+      uses: ChicagoFlutter/lcov-cop@v1.0.0
       with:
-        java-version: '12.x'
-    - uses: subosito/flutter-action@v1
+        path: coverage/lcov.info
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v1
       with:
-        flutter-version: '1.12.x'
-    - run: flutter pub get
-    - run: flutter test
+        token: ${{ secrets.CODECOV_TOKEN }}
     - run: flutter pub publish --dry-run
