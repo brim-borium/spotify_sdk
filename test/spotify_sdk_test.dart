@@ -3,7 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:spotify_sdk/spotify_sdk.dart';
 
 void main() {
-  const MethodChannel channel = MethodChannel('spotify_sdk');
+  const channel = MethodChannel('spotify_sdk');
 
   TestWidgetsFlutterBinding.ensureInitialized();
 
@@ -20,7 +20,7 @@ void main() {
   test('connectToSpotify', () async {
     expect(
         await SpotifySdk.connectToSpotifyRemote(
-            clientId: "null", redirectUrl: "null"),
+            clientId: 'null', redirectUrl: 'null'),
         true);
   });
 }

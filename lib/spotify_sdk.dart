@@ -10,6 +10,7 @@ import 'package:spotify_sdk/models/image_uri.dart';
 import 'package:spotify_sdk/models/library_state.dart';
 import 'package:spotify_sdk/models/player_state.dart';
 import 'package:spotify_sdk/models/user_status.dart';
+import 'package:spotify_sdk/platform_channels.dart';
 
 import 'models/capabilities.dart';
 import 'models/crossfade_state.dart';
@@ -17,49 +18,22 @@ import 'models/player_context.dart';
 
 class SpotifySdk {
   // method channel
-  static const MethodChannel _channel = MethodChannel('spotify_sdk');
+  static const MethodChannel _channel =
+      MethodChannel(MethodChannels.spotifySdk);
   //player event channels
   static const EventChannel _playerContextChannel =
-      EventChannel('player_context_subscription');
+      EventChannel(EventChannels.playerContext);
   static const EventChannel _playerStateChannel =
-      EventChannel('player_state_subscription');
+      EventChannel(EventChannels.playerState);
   // user event channels
   static const EventChannel _userStatusChannel =
-      EventChannel('user_status_subscription');
+      EventChannel(EventChannels.userStatus);
   static const EventChannel _capabilitiesChannel =
-      EventChannel('capabilities_subscription');
+      EventChannel(EventChannels.capabilities);
   // connection status channel
   static const EventChannel _connectionStatusChannel =
-      EventChannel('connection_status_subscription');
+      EventChannel(EventChannels.connectionStatus);
 
-  // connection and auth
-  static const String _methodConnectToSpotify = 'connectToSpotify';
-  static const String _methodGetAuthenticationToken = 'getAuthenticationToken';
-  static const String _methodLogoutFromSpotify = 'logoutFromSpotify';
-  // player api
-  static const String _methodGetCrossfadeState = 'getCrossfadeState';
-  static const String _methodGetPlayerState = 'getPlayerState';
-  static const String _methodPlay = 'play';
-  static const String _methodPause = 'pause';
-  static const String _methodQueueTrack = 'queueTrack';
-  static const String _methodResume = 'resume';
-  static const String _methodSkipNext = 'skipNext';
-  static const String _methodSkipPrevious = 'skipPrevious';
-  static const String _methodSeekTo = 'seekTo';
-  static const String _methodSeekToRelativePosition = 'seekToRelativePosition';
-  static const String _methodSubscribePlayerContext = 'subscribePlayerContext';
-  static const String _methodSubscribePlayerState = 'subscribePlayerState';
-  static const String _methodSubscribeConnectionStatus =
-      'subscribeConnectionStatus';
-  static const String _methodToggleRepeat = 'toggleRepeat';
-  static const String _methodToggleShuffle = 'toggleShuffle';
-  // user api
-  static const String _methodAddToLibrary = 'addToLibrary';
-  static const String _methodRemoveFromLibrary = 'removeFromLibrary';
-  static const String _methodGetCapabilities = 'getCapabilities';
-  static const String _methodGetLibraryState = 'getLibraryState';
-  // images api
-  static const String _methodGetImage = 'getImage';
   // params
   static const String _paramClientId = 'clientId';
   static const String _paramRedirectUrl = 'redirectUrl';
@@ -85,13 +59,13 @@ class SpotifySdk {
       @required String redirectUrl,
       String playerName = 'Spotify SDK'}) async {
     try {
-      return await _channel.invokeMethod(_methodConnectToSpotify, {
+      return await _channel.invokeMethod(MethodNames.connectToSpotify, {
         _paramClientId: clientId,
         _paramRedirectUrl: redirectUrl,
         _paramPlayerName: playerName
       });
     } on Exception catch (e) {
-      _logException(_methodConnectToSpotify, e);
+      _logException(MethodNames.connectToSpotify, e);
       rethrow;
     }
   }
@@ -116,14 +90,14 @@ class SpotifySdk {
       @required String scope}) async {
     try {
       final authorization = await _channel.invokeMethod(
-          _methodGetAuthenticationToken, {
+          MethodNames.getAuthenticationToken, {
         _paramClientId: clientId,
         _paramRedirectUrl: redirectUrl,
         _paramScope: scope
       });
       return authorization.toString();
     } on Exception catch (e) {
-      _logException(_methodGetAuthenticationToken, e);
+      _logException(MethodNames.getAuthenticationToken, e);
       rethrow;
     }
   }
@@ -135,9 +109,9 @@ class SpotifySdk {
   /// the native platforms.
   static Future<bool> logout() async {
     try {
-      return await _channel.invokeMethod(_methodLogoutFromSpotify);
+      return await _channel.invokeMethod(MethodNames.logoutFromSpotify);
     } on Exception catch (e) {
-      _logException(_methodLogoutFromSpotify, e);
+      _logException(MethodNames.logoutFromSpotify, e);
       rethrow;
     }
   }
@@ -150,13 +124,13 @@ class SpotifySdk {
   static Future<CrossfadeState> getCrossFadeState() async {
     try {
       var crossfadeStateJson =
-          await _channel.invokeMethod<String>(_methodGetCrossfadeState);
+          await _channel.invokeMethod<String>(MethodNames.getCrossfadeState);
       var crossfadeStateMap =
           jsonDecode(crossfadeStateJson) as Map<String, dynamic>;
       var crossfadeState = CrossfadeState.fromJson(crossfadeStateMap);
       return crossfadeState;
     } on Exception catch (e) {
-      _logException(_methodGetCrossfadeState, e);
+      _logException(MethodNames.getCrossfadeState, e);
       rethrow;
     }
   }
@@ -169,12 +143,12 @@ class SpotifySdk {
   static Future<PlayerState> getPlayerState() async {
     try {
       var playerStateJson =
-          await _channel.invokeMethod<String>(_methodGetPlayerState);
+          await _channel.invokeMethod<String>(MethodNames.getPlayerState);
       var playerStateMap = jsonDecode(playerStateJson) as Map<String, dynamic>;
       var playerState = PlayerState.fromJson(playerStateMap);
       return playerState;
     } on Exception catch (e) {
-      _logException(_methodGetPlayerState, e);
+      _logException(MethodNames.getPlayerState, e);
       rethrow;
     }
   }
@@ -188,9 +162,9 @@ class SpotifySdk {
   static Future queue({@required String spotifyUri}) async {
     try {
       await _channel
-          .invokeMethod(_methodQueueTrack, {_paramSpotifyUri: spotifyUri});
+          .invokeMethod(MethodNames.queueTrack, {_paramSpotifyUri: spotifyUri});
     } on Exception catch (e) {
-      _logException(_methodQueueTrack, e);
+      _logException(MethodNames.queueTrack, e);
       rethrow;
     }
   }
@@ -203,9 +177,10 @@ class SpotifySdk {
   /// the native platforms.
   static Future play({@required String spotifyUri}) async {
     try {
-      await _channel.invokeMethod(_methodPlay, {_paramSpotifyUri: spotifyUri});
+      await _channel
+          .invokeMethod(MethodNames.play, {_paramSpotifyUri: spotifyUri});
     } on Exception catch (e) {
-      _logException(_methodPlay, e);
+      _logException(MethodNames.play, e);
       rethrow;
     }
   }
@@ -217,9 +192,9 @@ class SpotifySdk {
   /// the native platforms.
   static Future pause() async {
     try {
-      await _channel.invokeMethod(_methodPause);
+      await _channel.invokeMethod(MethodNames.pause);
     } on Exception catch (e) {
-      _logException(_methodPause, e);
+      _logException(MethodNames.pause, e);
       rethrow;
     }
   }
@@ -231,9 +206,9 @@ class SpotifySdk {
   /// the native platforms.
   static Future resume() async {
     try {
-      await _channel.invokeMethod(_methodResume);
+      await _channel.invokeMethod(MethodNames.resume);
     } on Exception catch (e) {
-      _logException(_methodResume, e);
+      _logException(MethodNames.resume, e);
       rethrow;
     }
   }
@@ -245,9 +220,9 @@ class SpotifySdk {
   /// the native platforms.
   static Future skipNext() async {
     try {
-      await _channel.invokeMethod(_methodSkipNext);
+      await _channel.invokeMethod(MethodNames.skipNext);
     } on Exception catch (e) {
-      _logException(_methodSkipNext, e);
+      _logException(MethodNames.skipNext, e);
       rethrow;
     }
   }
@@ -259,9 +234,9 @@ class SpotifySdk {
   /// the native platforms.
   static Future skipPrevious() async {
     try {
-      await _channel.invokeMethod(_methodSkipPrevious);
+      await _channel.invokeMethod(MethodNames.skipPrevious);
     } on Exception catch (e) {
-      _logException(_methodSkipPrevious, e);
+      _logException(MethodNames.skipPrevious, e);
       rethrow;
     }
   }
@@ -281,7 +256,7 @@ class SpotifySdk {
         return PlayerContext.fromJson(playerContextMap);
       });
     } on Exception catch (e) {
-      _logException(_methodSubscribePlayerContext, e);
+      _logException(MethodNames.subscribePlayerContext, e);
       rethrow;
     }
   }
@@ -301,7 +276,7 @@ class SpotifySdk {
         return PlayerState.fromJson(playerStateMap);
       });
     } on Exception catch (e) {
-      _logException(_methodSubscribePlayerState, e);
+      _logException(MethodNames.subscribePlayerState, e);
       rethrow;
     }
   }
@@ -321,7 +296,7 @@ class SpotifySdk {
         return ConnectionStatus.fromJson(connectionStatusMap);
       });
     } on Exception catch (e) {
-      _logException(_methodSubscribeConnectionStatus, e);
+      _logException(MethodNames.subscribeConnectionStatus, e);
       rethrow;
     }
   }
@@ -334,10 +309,10 @@ class SpotifySdk {
   /// the native platforms.
   static Future seekTo({@required int positionedMilliseconds}) async {
     try {
-      await _channel.invokeMethod(_methodSeekTo,
+      await _channel.invokeMethod(MethodNames.seekTo,
           {_paramPositionedMilliseconds: positionedMilliseconds});
     } on Exception catch (e) {
-      _logException(_methodSeekTo, e);
+      _logException(MethodNames.seekTo, e);
       rethrow;
     }
   }
@@ -352,10 +327,10 @@ class SpotifySdk {
   static Future seekToRelativePosition(
       {@required int relativeMilliseconds}) async {
     try {
-      await _channel.invokeMethod(_methodSeekToRelativePosition,
+      await _channel.invokeMethod(MethodNames.seekToRelativePosition,
           {_paramRelativeMilliseconds: relativeMilliseconds});
     } on Exception catch (e) {
-      _logException(_methodSeekToRelativePosition, e);
+      _logException(MethodNames.seekToRelativePosition, e);
       rethrow;
     }
   }
@@ -367,9 +342,9 @@ class SpotifySdk {
   /// the native platforms.
   static Future toggleShuffle() async {
     try {
-      await _channel.invokeMethod(_methodToggleShuffle);
+      await _channel.invokeMethod(MethodNames.toggleShuffle);
     } on Exception catch (e) {
-      _logException(_methodToggleShuffle, e);
+      _logException(MethodNames.toggleShuffle, e);
       rethrow;
     }
   }
@@ -381,9 +356,9 @@ class SpotifySdk {
   /// the native platforms.
   static Future toggleRepeat() async {
     try {
-      await _channel.invokeMethod(_methodToggleRepeat);
+      await _channel.invokeMethod(MethodNames.toggleRepeat);
     } on Exception catch (e) {
-      _logException(_methodToggleRepeat, e);
+      _logException(MethodNames.toggleRepeat, e);
       rethrow;
     }
   }
@@ -395,10 +370,10 @@ class SpotifySdk {
   /// the native platforms.
   static Future addToLibrary({@required String spotifyUri}) async {
     try {
-      await _channel
-          .invokeMethod(_methodAddToLibrary, {_paramSpotifyUri: spotifyUri});
+      await _channel.invokeMethod(
+          MethodNames.addToLibrary, {_paramSpotifyUri: spotifyUri});
     } on Exception catch (e) {
-      _logException(_methodAddToLibrary, e);
+      _logException(MethodNames.addToLibrary, e);
       rethrow;
     }
   }
@@ -411,9 +386,9 @@ class SpotifySdk {
   static Future removeFromLibrary({@required String spotifyUri}) async {
     try {
       await _channel.invokeMethod(
-          _methodRemoveFromLibrary, {_paramSpotifyUri: spotifyUri});
+          MethodNames.removeFromLibrary, {_paramSpotifyUri: spotifyUri});
     } on Exception catch (e) {
-      _logException(_methodRemoveFromLibrary, e);
+      _logException(MethodNames.removeFromLibrary, e);
       rethrow;
     }
   }
@@ -427,12 +402,12 @@ class SpotifySdk {
       {@required String spotifyUri}) async {
     try {
       var capabilitiesJson =
-          await _channel.invokeMethod<String>(_methodGetCapabilities);
+          await _channel.invokeMethod<String>(MethodNames.getCapabilities);
       var capabilitiesMap =
           jsonDecode(capabilitiesJson) as Map<String, dynamic>;
       return Capabilities.fromJson(capabilitiesMap);
     } on Exception catch (e) {
-      _logException(_methodGetCapabilities, e);
+      _logException(MethodNames.getCapabilities, e);
       rethrow;
     }
   }
@@ -446,12 +421,12 @@ class SpotifySdk {
       {@required String spotifyUri}) async {
     try {
       var libraryStateJson = await _channel.invokeMethod<String>(
-          _methodGetLibraryState, {_paramSpotifyUri: spotifyUri});
+          MethodNames.getLibraryState, {_paramSpotifyUri: spotifyUri});
       var libraryStateMap =
           jsonDecode(libraryStateJson) as Map<String, dynamic>;
       return LibraryState.fromJson(libraryStateMap);
     } on Exception catch (e) {
-      _logException(_methodGetLibraryState, e);
+      _logException(MethodNames.getLibraryState, e);
       rethrow;
     }
   }
@@ -471,7 +446,7 @@ class SpotifySdk {
         return Capabilities.fromJson(capabilitiesMap);
       });
     } on Exception catch (e) {
-      _logException(_methodSubscribePlayerContext, e);
+      _logException(MethodNames.subscribePlayerContext, e);
       rethrow;
     }
   }
@@ -490,7 +465,7 @@ class SpotifySdk {
         return UserStatus.fromJson(userStatusMap);
       });
     } on Exception catch (e) {
-      _logException(_methodSubscribePlayerContext, e);
+      _logException(MethodNames.subscribePlayerContext, e);
       rethrow;
     }
   }
@@ -507,12 +482,12 @@ class SpotifySdk {
       {@required ImageUri imageUri,
       ImageDimension dimension = ImageDimension.medium}) async {
     try {
-      return _channel.invokeMethod(_methodGetImage, {
+      return _channel.invokeMethod(MethodNames.getImage, {
         _paramImageUri: imageUri.raw,
         _paramImageDimension: dimension.value
       });
     } on Exception catch (e) {
-      _logException(_methodGetImage, e);
+      _logException(MethodNames.getImage, e);
       rethrow;
     }
   }
@@ -530,7 +505,17 @@ class SpotifySdk {
   }
 }
 
-enum ImageDimension { large, medium, small, xSmall, thumbnail }
+enum ImageDimension {
+  large,
+
+  medium,
+
+  small,
+
+  xSmall,
+
+  thumbnail
+}
 
 extension ImageDimensionExtension on ImageDimension {
   static const values = {

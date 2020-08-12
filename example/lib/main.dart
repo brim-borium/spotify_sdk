@@ -16,21 +16,12 @@ import 'widgets/sized_icon_button.dart';
 
 Future<void> main() async {
   await DotEnv().load('.env');
-  runApp(MyApp());
+  runApp(Home());
 }
 
-class MyApp extends StatefulWidget {
-  @override
-  _MyAppState createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(home: Home());
-  }
-}
-
+/// A [StatefulWidget] which uses:
+/// * [spotify_sdk](https://pub.dev/packages/spotify_sdk)
+/// to connect to Spotify and use controls.
 class Home extends StatefulWidget {
   @override
   _HomeState createState() => _HomeState();
@@ -54,11 +45,10 @@ class _HomeState extends State<Home> {
           }
           return Scaffold(
             appBar: AppBar(
-              title: Text("SpotifySdk Example"),
+              title: const Text('SpotifySdk Example'),
               actions: [
                 _connected
-                    ? FlatButton(
-                        child: Text("Logout"), onPressed: () => logout())
+                    ? FlatButton(child: const Text('Logout'), onPressed: logout)
                     : Container()
               ],
             ),
@@ -71,58 +61,58 @@ class _HomeState extends State<Home> {
     return Stack(
       children: [
         ListView(
-          padding: EdgeInsets.all(8),
+          padding: const EdgeInsets.all(8),
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 FlatButton(
-                  child: Icon(Icons.settings_remote),
-                  onPressed: () => connectToSpotifyRemote(),
+                  child: const Icon(Icons.settings_remote),
+                  onPressed: connectToSpotifyRemote,
                 ),
                 FlatButton(
-                  child: Text("get auth token "),
-                  onPressed: () => getAuthenticationToken(),
+                  child: const Text('get auth token '),
+                  onPressed: getAuthenticationToken,
                 ),
               ],
             ),
-            Divider(),
-            Text("Player State", style: TextStyle(fontSize: 16)),
+            const Divider(),
+            const Text('Player State', style: TextStyle(fontSize: 16)),
             _connected
                 ? playerStateWidget()
-                : Center(
-                    child: Text("Not connected"),
+                : const Center(
+                    child: Text('Not connected'),
                   ),
-            Divider(),
-            Text("Player Context", style: TextStyle(fontSize: 16)),
+            const Divider(),
+            const Text('Player Context', style: TextStyle(fontSize: 16)),
             _connected
                 ? playerContextWidget()
-                : Center(
-                    child: Text("Not connected"),
+                : const Center(
+                    child: Text('Not connected'),
                   ),
-            Divider(),
+            const Divider(),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
                 SizedIconButton(
                   width: 50,
                   icon: Icons.skip_previous,
-                  onPressed: () => skipPrevious(),
+                  onPressed: skipPrevious,
                 ),
                 SizedIconButton(
                   width: 50,
                   icon: Icons.play_arrow,
-                  onPressed: () => resume(),
+                  onPressed: resume,
                 ),
                 SizedIconButton(
                   width: 50,
                   icon: Icons.pause,
-                  onPressed: () => pause(),
+                  onPressed: pause,
                 ),
                 SizedIconButton(
                   width: 50,
                   icon: Icons.skip_next,
-                  onPressed: () => skipNext(),
+                  onPressed: skipNext,
                 ),
               ],
             ),
@@ -132,53 +122,55 @@ class _HomeState extends State<Home> {
                 SizedIconButton(
                   width: 50,
                   icon: Icons.queue_music,
-                  onPressed: () => queue(),
+                  onPressed: queue,
                 ),
                 SizedIconButton(
                   width: 50,
                   icon: Icons.play_circle_filled,
-                  onPressed: () => play(),
+                  onPressed: play,
                 ),
                 SizedIconButton(
                   width: 50,
                   icon: Icons.repeat,
-                  onPressed: () => toggleRepeat(),
+                  onPressed: toggleRepeat,
                 ),
                 SizedIconButton(
                   width: 50,
                   icon: Icons.shuffle,
-                  onPressed: () => toggleShuffle(),
+                  onPressed: toggleShuffle,
                 ),
               ],
             ),
             FlatButton(
-                child: Icon(Icons.favorite), onPressed: () => addToLibrary()),
+                child: const Icon(Icons.favorite), onPressed: addToLibrary),
             Row(
               children: <Widget>[
-                FlatButton(child: Text("seek to"), onPressed: () => seekTo()),
+                FlatButton(child: const Text('seek to'), onPressed: seekTo),
                 FlatButton(
-                    child: Text("seek to relative"),
-                    onPressed: () => seekToRelative()),
+                    child: const Text('seek to relative'),
+                    onPressed: seekToRelative),
               ],
             ),
-            Divider(),
-            Text("Crossfade State", style: TextStyle(fontSize: 16)),
+            const Divider(),
+            const Text('Crossfade State', style: TextStyle(fontSize: 16)),
             FlatButton(
-                child: Text("getCrossfadeState"),
-                onPressed: () => getCrossfadeState()),
+                child: const Text('getCrossfadeState'),
+                onPressed: getCrossfadeState),
+            // ignore: prefer_single_quotes
             Text("Is enabled: ${crossfadeState?.isEnabled}"),
+            // ignore: prefer_single_quotes
             Text("Duration: ${crossfadeState?.duration}"),
-            Divider(),
+            const Divider(),
             _connected
                 ? spotifyImageWidget()
-                : Text('Connect to see an image...'),
+                : const Text('Connect to see an image...'),
           ],
         ),
         _loading
             ? Container(
                 color: Colors.black12,
-                child: Center(child: CircularProgressIndicator()))
-            : SizedBox(),
+                child: const Center(child: CircularProgressIndicator()))
+            : const SizedBox(),
       ],
     );
   }
@@ -194,22 +186,25 @@ class _HomeState extends State<Home> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
+              Text('''
+                    ${playerState.track.name} 
+                    by ${playerState.track.artist.name} 
+                    from the album ${playerState.track.album.name} '''),
+              Text('Speed: ${playerState.playbackSpeed}'),
               Text(
-                  "${playerState.track.name} by ${playerState.track.artist.name} from the album ${playerState.track.album.name} "),
-              Text("Speed: ${playerState.playbackSpeed}"),
-              Text(
-                  "Progress: ${playerState.playbackPosition}ms/${playerState.track.duration}ms"),
-              Text("IsPaused: ${playerState.isPaused}"),
-              Text("Is Shuffling: ${playerState.playbackOptions.isShuffling}"),
-              Text("RepeatMode: ${playerState.playbackOptions.repeatMode}"),
-              Text("Image URI: ${playerState.track.imageUri.raw}"),
-              Text(
-                  "Is episode? ${playerState.track.isEpisode}. Is podcast?: ${playerState.track.isPodcast}"),
+                  'Progress: ${playerState.playbackPosition}ms/${playerState.track.duration}ms'),
+              Text('IsPaused: ${playerState.isPaused}'),
+              Text('Is Shuffling: ${playerState.playbackOptions.isShuffling}'),
+              Text('RepeatMode: ${playerState.playbackOptions.repeatMode}'),
+              Text('Image URI: ${playerState.track.imageUri.raw}'),
+              Text('''
+                  Is episode? ${playerState.track.isEpisode}. 
+                  Is podcast?: ${playerState.track.isPodcast}'''),
             ],
           );
         } else {
-          return Center(
-            child: Text("Not connected"),
+          return const Center(
+            child: Text('Not connected'),
           );
         }
       },
@@ -219,23 +214,23 @@ class _HomeState extends State<Home> {
   Widget playerContextWidget() {
     return StreamBuilder<PlayerContext>(
       stream: SpotifySdk.subscribePlayerContext(),
-      initialData: PlayerContext("", "", "", ""),
+      initialData: PlayerContext('', '', '', ''),
       builder: (BuildContext context, AsyncSnapshot<PlayerContext> snapshot) {
-        if (snapshot.data != null && snapshot.data.uri != "") {
+        if (snapshot.data != null && snapshot.data.uri != '') {
           var playerContext = snapshot.data;
           return Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Text("Title: ${playerContext.title}"),
-              Text("Subtitle: ${playerContext.subtitle}"),
-              Text("Type: ${playerContext.type}"),
-              Text("Uri: ${playerContext.uri}"),
+              Text('Title: ${playerContext.title}'),
+              Text('Subtitle: ${playerContext.subtitle}'),
+              Text('Type: ${playerContext.type}'),
+              Text('Uri: ${playerContext.uri}'),
             ],
           );
         } else {
-          return Center(
-            child: Text("Not connected"),
+          return const Center(
+            child: Text('Not connected'),
           );
         }
       },
@@ -257,13 +252,13 @@ class _HomeState extends State<Home> {
             return SizedBox(
               width: ImageDimension.large.value.toDouble(),
               height: ImageDimension.large.value.toDouble(),
-              child: Center(child: Text('Error getting image')),
+              child: const Center(child: Text('Error getting image')),
             );
           } else {
             return SizedBox(
               width: ImageDimension.large.value.toDouble(),
               height: ImageDimension.large.value.toDouble(),
-              child: Center(child: Text('Getting image...')),
+              child: const Center(child: Text('Getting image...')),
             );
           }
         });
@@ -275,7 +270,7 @@ class _HomeState extends State<Home> {
         _loading = true;
       });
       var result = await SpotifySdk.logout();
-      setStatus(result ? "logout successful" : "logout failed");
+      setStatus(result ? 'logout successful' : 'logout failed');
       setState(() {
         _loading = false;
       });
@@ -288,7 +283,7 @@ class _HomeState extends State<Home> {
       setState(() {
         _loading = false;
       });
-      setStatus("not implemented");
+      setStatus('not implemented');
     }
   }
 
@@ -301,8 +296,8 @@ class _HomeState extends State<Home> {
           clientId: DotEnv().env['CLIENT_ID'].toString(),
           redirectUrl: DotEnv().env['REDIRECT_URL'].toString());
       setStatus(result
-          ? "connect to spotify successful"
-          : "conntect to spotify failed");
+          ? 'connect to spotify successful'
+          : 'connect to spotify failed');
       setState(() {
         _loading = false;
       });
@@ -315,7 +310,7 @@ class _HomeState extends State<Home> {
       setState(() {
         _loading = false;
       });
-      setStatus("not implemented");
+      setStatus('not implemented');
     }
   }
 
@@ -324,13 +319,15 @@ class _HomeState extends State<Home> {
       var authenticationToken = await SpotifySdk.getAuthenticationToken(
           clientId: DotEnv().env['CLIENT_ID'].toString(),
           redirectUrl: DotEnv().env['REDIRECT_URL'].toString(),
-          scope:
-              "app-remote-control, user-modify-playback-state, playlist-read-private, playlist-modify-public,user-read-currently-playing");
-      setStatus("Got a token: $authenticationToken");
+          scope: 'app-remote-control, '
+              'user-modify-playback-state, '
+              'playlist-read-private, '
+              'playlist-modify-public,user-read-currently-playing');
+      setStatus('Got a token: $authenticationToken');
     } on PlatformException catch (e) {
       setStatus(e.code, message: e.message);
     } on MissingPluginException {
-      setStatus("not implemented");
+      setStatus('not implemented');
     }
   }
 
@@ -340,7 +337,7 @@ class _HomeState extends State<Home> {
     } on PlatformException catch (e) {
       setStatus(e.code, message: e.message);
     } on MissingPluginException {
-      setStatus("not implemented");
+      setStatus('not implemented');
     }
   }
 
@@ -353,18 +350,18 @@ class _HomeState extends State<Home> {
     } on PlatformException catch (e) {
       setStatus(e.code, message: e.message);
     } on MissingPluginException {
-      setStatus("not implemented");
+      setStatus('not implemented');
     }
   }
 
   Future<void> queue() async {
     try {
       await SpotifySdk.queue(
-          spotifyUri: "spotify:track:58kNJana4w5BIjlZE2wq5m");
+          spotifyUri: 'spotify:track:58kNJana4w5BIjlZE2wq5m');
     } on PlatformException catch (e) {
       setStatus(e.code, message: e.message);
     } on MissingPluginException {
-      setStatus("not implemented");
+      setStatus('not implemented');
     }
   }
 
@@ -374,7 +371,7 @@ class _HomeState extends State<Home> {
     } on PlatformException catch (e) {
       setStatus(e.code, message: e.message);
     } on MissingPluginException {
-      setStatus("not implemented");
+      setStatus('not implemented');
     }
   }
 
@@ -384,17 +381,17 @@ class _HomeState extends State<Home> {
     } on PlatformException catch (e) {
       setStatus(e.code, message: e.message);
     } on MissingPluginException {
-      setStatus("not implemented");
+      setStatus('not implemented');
     }
   }
 
   Future<void> play() async {
     try {
-      await SpotifySdk.play(spotifyUri: "spotify:track:58kNJana4w5BIjlZE2wq5m");
+      await SpotifySdk.play(spotifyUri: 'spotify:track:58kNJana4w5BIjlZE2wq5m');
     } on PlatformException catch (e) {
       setStatus(e.code, message: e.message);
     } on MissingPluginException {
-      setStatus("not implemented");
+      setStatus('not implemented');
     }
   }
 
@@ -404,7 +401,7 @@ class _HomeState extends State<Home> {
     } on PlatformException catch (e) {
       setStatus(e.code, message: e.message);
     } on MissingPluginException {
-      setStatus("not implemented");
+      setStatus('not implemented');
     }
   }
 
@@ -414,7 +411,7 @@ class _HomeState extends State<Home> {
     } on PlatformException catch (e) {
       setStatus(e.code, message: e.message);
     } on MissingPluginException {
-      setStatus("not implemented");
+      setStatus('not implemented');
     }
   }
 
@@ -424,7 +421,7 @@ class _HomeState extends State<Home> {
     } on PlatformException catch (e) {
       setStatus(e.code, message: e.message);
     } on MissingPluginException {
-      setStatus("not implemented");
+      setStatus('not implemented');
     }
   }
 
@@ -434,7 +431,7 @@ class _HomeState extends State<Home> {
     } on PlatformException catch (e) {
       setStatus(e.code, message: e.message);
     } on MissingPluginException {
-      setStatus("not implemented");
+      setStatus('not implemented');
     }
   }
 
@@ -444,7 +441,7 @@ class _HomeState extends State<Home> {
     } on PlatformException catch (e) {
       setStatus(e.code, message: e.message);
     } on MissingPluginException {
-      setStatus("not implemented");
+      setStatus('not implemented');
     }
   }
 
@@ -454,23 +451,23 @@ class _HomeState extends State<Home> {
     } on PlatformException catch (e) {
       setStatus(e.code, message: e.message);
     } on MissingPluginException {
-      setStatus("not implemented");
+      setStatus('not implemented');
     }
   }
 
   Future<void> addToLibrary() async {
     try {
       await SpotifySdk.addToLibrary(
-          spotifyUri: "spotify:track:58kNJana4w5BIjlZE2wq5m");
+          spotifyUri: 'spotify:track:58kNJana4w5BIjlZE2wq5m');
     } on PlatformException catch (e) {
       setStatus(e.code, message: e.message);
     } on MissingPluginException {
-      setStatus("not implemented");
+      setStatus('not implemented');
     }
   }
 
-  void setStatus(String code, {String message = ""}) {
-    var text = message.isEmpty ? "" : " : $message";
-    _logger.d("$code$text");
+  void setStatus(String code, {String message = ''}) {
+    var text = message.isEmpty ? '' : ' : $message';
+    _logger.d('$code$text');
   }
 }

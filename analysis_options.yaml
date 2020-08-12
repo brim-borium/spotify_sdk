@@ -7,7 +7,7 @@ analyzer:
   exclude:
     # Ignore generated files
     - '**/*.g.dart'
-    - 'lib/src/generated/*.dart'
+    - 'lib/generated/**'
     - 'lib/models/**'
 
 linter:
