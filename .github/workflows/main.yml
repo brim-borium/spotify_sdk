@@ -1,17 +1,8 @@
-on: 
-  push:
-    paths:
-      - "/**"
-      - ".github/workflows/main.yaml"
+name: spotify_sdk
+on: [push, pull_request]
 
-  pull_request:
-    paths:
-      - "/**"
-      - ".github/workflows/main.yaml"
-name: Dry Run
 jobs:
   build:
-    name: Test and Dry-Run
     runs-on: ubuntu-latest
     container:
       image: google/dart:2.8.4
