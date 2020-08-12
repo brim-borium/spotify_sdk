@@ -1,0 +1,28 @@
+name: spotify_sdk
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: google/dart:2.8.4
+    steps:
+      - uses: actions/checkout@v2
+      - uses: subosito/flutter-action@v1.3.0
+      - name: Install Dependencies
+        run: flutter packages get
+      - name: Format
+        run: flutter format --set-exit-if-changed lib test example
+      - name: Analyze
+        run: flutter analyze lib test example
+      - name: Run tests
+        run: flutter test --no-pub --coverage --test-randomize-ordering-seed random
+      - name: Check Code Coverage
+        uses: ChicagoFlutter/lcov-cop@v1.0.0
+        with:
+          path: coverage/lcov.info
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+      - run: flutter pub publish --dry-run
