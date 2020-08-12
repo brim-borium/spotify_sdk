@@ -4,6 +4,14 @@ part 'player_restrictions.g.dart';
 
 @JsonSerializable()
 class PlayerRestrictions {
+  PlayerRestrictions(
+      this.canSkipNext,
+      this.canSkipPrevious,
+      this.canRepeatTrack,
+      this.canRepeatContext,
+      this.canToggleShuffle,
+      this.canSeek);
+
   @JsonKey(name: "can_skip_next")
   final bool canSkipNext;
   @JsonKey(name: "can_skip_prev")
@@ -16,14 +24,6 @@ class PlayerRestrictions {
   final bool canToggleShuffle;
   @JsonKey(name: "can_seek")
   final bool canSeek;
-
-  PlayerRestrictions(
-      this.canSkipNext,
-      this.canSkipPrevious,
-      this.canRepeatTrack,
-      this.canRepeatContext,
-      this.canToggleShuffle,
-      this.canSeek);
 
   factory PlayerRestrictions.fromJson(Map<String, dynamic> json) =>
       _$PlayerRestrictionsFromJson(json);

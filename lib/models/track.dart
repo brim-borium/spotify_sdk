@@ -8,6 +8,9 @@ part 'track.g.dart';
 
 @JsonSerializable()
 class Track {
+  Track(this.album, this.artist, this.artists, this.duration, this.imageUri,
+      this.isEpisode, this.isPodcast, this.name, this.uri);
+
   final Album album;
   final Artist artist;
   final List<Artist> artists;
@@ -21,9 +24,6 @@ class Track {
   final bool isPodcast;
   final String name;
   final String uri;
-
-  Track(this.album, this.artist, this.artists, this.duration, this.imageUri,
-      this.isEpisode, this.isPodcast, this.name, this.uri);
 
   factory Track.fromJson(Map<String, dynamic> json) => _$TrackFromJson(json);
 

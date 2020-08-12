@@ -8,6 +8,9 @@ part 'player_state.g.dart';
 
 @JsonSerializable()
 class PlayerState {
+  PlayerState(this.track, this.isPaused, this.playbackSpeed,
+      this.playbackPosition, this.playbackOptions, this.playbackRestrictions);
+
   final Track track;
   @JsonKey(name: "is_paused")
   final bool isPaused;
@@ -19,9 +22,6 @@ class PlayerState {
   final PlayerOptions playbackOptions;
   @JsonKey(name: "playback_restrictions")
   final PlayerRestrictions playbackRestrictions;
-
-  PlayerState(this.track, this.isPaused, this.playbackSpeed,
-      this.playbackPosition, this.playbackOptions, this.playbackRestrictions);
 
   factory PlayerState.fromJson(Map<String, dynamic> json) =>
       _$PlayerStateFromJson(json);

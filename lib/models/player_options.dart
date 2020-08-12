@@ -4,12 +4,12 @@ part 'player_options.g.dart';
 
 @JsonSerializable()
 class PlayerOptions {
+  PlayerOptions(this.isShuffling, this.repeatMode);
+
   @JsonKey(name: "shuffle")
   final bool isShuffling;
   @JsonKey(name: "repeat")
   final RepeatMode repeatMode;
-
-  PlayerOptions(this.isShuffling, this.repeatMode);
 
   factory PlayerOptions.fromJson(Map<String, dynamic> json) =>
       _$PlayerOptionsFromJson(json);

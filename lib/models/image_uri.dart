@@ -4,9 +4,9 @@ part 'image_uri.g.dart';
 
 @JsonSerializable()
 class ImageUri {
-  final String raw;
-
   ImageUri(this.raw);
+
+  final String raw;
 
   factory ImageUri.fromJson(Map<String, dynamic> json) =>
       _$ImageUriFromJson(json);
