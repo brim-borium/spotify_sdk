@@ -6,6 +6,7 @@ analyzer:
     implicit-dynamic: true
   errors:
     close_sinks: ignore
+    avoid_types_on_closure_parameters: ignore
   exclude:
     # Ignore generated files
     - '**/*.g.dart'
