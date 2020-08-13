@@ -1,10 +1,14 @@
 import 'package:json_annotation/json_annotation.dart';
+import 'package:flutter/foundation.dart';
 
 part 'player_options.g.dart';
 
 @JsonSerializable()
 class PlayerOptions {
-  PlayerOptions(this.isShuffling, this.repeatMode);
+  PlayerOptions(
+    this.repeatMode, {
+    @required this.isShuffling,
+  });
 
   @JsonKey(name: 'shuffle')
   final bool isShuffling;
@@ -19,9 +23,9 @@ class PlayerOptions {
 
 enum RepeatMode {
   @JsonValue(0)
-  Off,
+  off,
   @JsonValue(1)
-  Track,
+  track,
   @JsonValue(2)
-  Context
+  context
 }

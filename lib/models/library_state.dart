@@ -1,10 +1,15 @@
 import 'package:json_annotation/json_annotation.dart';
+import 'package:flutter/foundation.dart';
 
 part 'library_state.g.dart';
 
 @JsonSerializable()
 class LibraryState {
-  LibraryState(this.uri, this.isSaved, this.canSave);
+  LibraryState(
+    this.uri, {
+    @required this.isSaved,
+    @required this.canSave,
+  });
 
   @JsonKey(name: 'uri')
   final String uri;

@@ -8,6 +8,7 @@ import 'dart:html';
 import 'dart:js';
 
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 import 'package:js/js.dart';
@@ -395,7 +396,9 @@ class SpotifySdkPlugin {
   }
 
   /// Toggles shuffle on the current player.
-  Future toggleShuffle(bool state) async {
+  Future toggleShuffle({
+    @required bool state,
+  }) async {
     if (_currentPlayer?.deviceID == null) {
       throw PlatformException(
           message: 'Spotify player not connected!', code: 'Playback Error');
@@ -414,7 +417,9 @@ class SpotifySdkPlugin {
   }
 
   /// Toggles repeat on the current player.
-  Future toggleRepeat(bool state) async {
+  Future toggleRepeat({
+    @required bool state,
+  }) async {
     if (_currentPlayer?.deviceID == null) {
       throw PlatformException(
           message: 'Spotify player not connected!', code: 'Playback Error');
@@ -447,40 +452,46 @@ class SpotifySdkPlugin {
     options.RepeatMode repeatMode;
     switch (state.repeatMode) {
       case 1:
-        repeatMode = options.RepeatMode.Context;
+        repeatMode = options.RepeatMode.context;
         break;
       case 2:
-        repeatMode = options.RepeatMode.Track;
+        repeatMode = options.RepeatMode.track;
         break;
       default:
-        repeatMode = options.RepeatMode.Off;
+        repeatMode = options.RepeatMode.off;
         break;
     }
 
     return PlayerState(
-        trackRaw != null
-            ? Track(
-                Album(albumRaw.name, albumRaw.uri),
-                artists[0],
-                artists,
-                null,
-                ImageUri(albumRaw.images[0].url),
-                false,
-                false,
-                trackRaw.name,
-                trackRaw.uri)
-            : null,
-        state.paused,
-        1.0,
-        state.position,
-        options.PlayerOptions(state.shuffle, repeatMode),
-        PlayerRestrictions(
-            restrictionsRaw.skippingNext,
-            restrictionsRaw.skippingPrev,
-            false,
-            false,
-            false,
-            restrictionsRaw.seeking));
+      trackRaw != null
+          ? Track(
+              Album(albumRaw.name, albumRaw.uri),
+              artists[0],
+              artists,
+              null,
+              ImageUri(albumRaw.images[0].url),
+              trackRaw.name,
+              trackRaw.uri,
+              isEpisode: false,
+              isPodcast: false,
+            )
+          : null,
+      1.0,
+      state.position,
+      options.PlayerOptions(
+        repeatMode,
+        isShuffling: state.shuffle,
+      ),
+      PlayerRestrictions(
+        canSkipNext: restrictionsRaw.skippingNext,
+        canSkipPrevious: restrictionsRaw.skippingPrev,
+        canRepeatTrack: false,
+        canRepeatContext: false,
+        canToggleShuffle: false,
+        canSeek: restrictionsRaw.seeking,
+      ),
+      isPaused: state.paused,
+    );
   }
 
   /// Converts a native WebPlaybackState to the library PlayerContext

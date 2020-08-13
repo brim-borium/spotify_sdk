@@ -22,10 +22,10 @@ Track _$TrackFromJson(Map<String, dynamic> json) {
     json['image_id'] == null
         ? null
         : ImageUri.fromJson(json['image_id'] as Map<String, dynamic>),
-    json['is_episode'] as bool,
-    json['is_podcast'] as bool,
     json['name'] as String,
     json['uri'] as String,
+    isEpisode: json['is_episode'] as bool,
+    isPodcast: json['is_podcast'] as bool,
   );
 }
 

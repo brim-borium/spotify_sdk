@@ -1,10 +1,14 @@
 import 'package:json_annotation/json_annotation.dart';
+import 'package:flutter/foundation.dart';
 
 part 'crossfade_state.g.dart';
 
 @JsonSerializable()
 class CrossfadeState {
-  CrossfadeState(this.isEnabled, this.duration);
+  CrossfadeState(
+    this.duration, {
+    @required this.isEnabled,
+  });
 
   final bool isEnabled;
   final int duration;
