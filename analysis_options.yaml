@@ -7,6 +7,8 @@ analyzer:
   errors:
     close_sinks: ignore
     avoid_types_on_closure_parameters: ignore
+    # TODO: remove the class only housing static functions
+    avoid_classes_with_only_static_members: ignore
   exclude:
     # Ignore generated files
     - '**/*.g.dart'
