@@ -8,11 +8,11 @@ class UserStatus {
 
   final int statusCodeOk = 0;
   final int statusCodeNotLoggedIn = 1;
-  @JsonKey(name: "code")
+  @JsonKey(name: 'code')
   final int code;
-  @JsonKey(name: "short_text")
+  @JsonKey(name: 'short_text')
   final String shortMessage;
-  @JsonKey(name: "long_text")
+  @JsonKey(name: 'long_text')
   final String longMessage;
 
   @JsonKey(ignore: true)

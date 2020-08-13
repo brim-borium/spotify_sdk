@@ -6,9 +6,9 @@ part 'player_options.g.dart';
 class PlayerOptions {
   PlayerOptions(this.isShuffling, this.repeatMode);
 
-  @JsonKey(name: "shuffle")
+  @JsonKey(name: 'shuffle')
   final bool isShuffling;
-  @JsonKey(name: "repeat")
+  @JsonKey(name: 'repeat')
   final RepeatMode repeatMode;
 
   factory PlayerOptions.fromJson(Map<String, dynamic> json) =>

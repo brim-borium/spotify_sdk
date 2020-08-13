@@ -16,6 +16,11 @@ import 'models/capabilities.dart';
 import 'models/crossfade_state.dart';
 import 'models/player_context.dart';
 
+///
+/// [SpotifySdk] holds the functionality to connect via spotify remote or
+/// get an authToken to control the spotify playback and use the functionality
+/// described [here](https://pub.dev/packages/spotify_sdk#usage)
+///
 class SpotifySdk {
   // method channel
   static const MethodChannel _channel =
@@ -34,16 +39,6 @@ class SpotifySdk {
   static const EventChannel _connectionStatusChannel =
       EventChannel(EventChannels.connectionStatus);
 
-  // params
-  static const String _paramClientId = 'clientId';
-  static const String _paramRedirectUrl = 'redirectUrl';
-  static const String _paramScope = 'scope';
-  static const String _paramPlayerName = 'playerName';
-  static const String _paramSpotifyUri = 'spotifyUri';
-  static const String _paramImageUri = 'imageUri';
-  static const String _paramImageDimension = 'imageDimension';
-  static const String _paramPositionedMilliseconds = 'positionedMilliseconds';
-  static const String _paramRelativeMilliseconds = 'relativeMilliseconds';
   //logging
   static final Logger _logger = Logger();
 
@@ -60,9 +55,9 @@ class SpotifySdk {
       String playerName = 'Spotify SDK'}) async {
     try {
       return await _channel.invokeMethod(MethodNames.connectToSpotify, {
-        _paramClientId: clientId,
-        _paramRedirectUrl: redirectUrl,
-        _paramPlayerName: playerName
+        ParamNames.clientId: clientId,
+        ParamNames.redirectUrl: redirectUrl,
+        ParamNames.playerName: playerName
       });
     } on Exception catch (e) {
       _logException(MethodNames.connectToSpotify, e);
@@ -89,11 +84,11 @@ class SpotifySdk {
       @required String redirectUrl,
       @required String scope}) async {
     try {
-      final authorization = await _channel.invokeMethod(
-          MethodNames.getAuthenticationToken, {
-        _paramClientId: clientId,
-        _paramRedirectUrl: redirectUrl,
-        _paramScope: scope
+      final authorization =
+          await _channel.invokeMethod(MethodNames.getAuthenticationToken, {
+        ParamNames.clientId: clientId,
+        ParamNames.redirectUrl: redirectUrl,
+        ParamNames.scope: scope
       });
       return authorization.toString();
     } on Exception catch (e) {
@@ -161,8 +156,8 @@ class SpotifySdk {
   /// the native platforms.
   static Future queue({@required String spotifyUri}) async {
     try {
-      await _channel
-          .invokeMethod(MethodNames.queueTrack, {_paramSpotifyUri: spotifyUri});
+      await _channel.invokeMethod(
+          MethodNames.queueTrack, {ParamNames.spotifyUri: spotifyUri});
     } on Exception catch (e) {
       _logException(MethodNames.queueTrack, e);
       rethrow;
@@ -178,7 +173,7 @@ class SpotifySdk {
   static Future play({@required String spotifyUri}) async {
     try {
       await _channel
-          .invokeMethod(MethodNames.play, {_paramSpotifyUri: spotifyUri});
+          .invokeMethod(MethodNames.play, {ParamNames.spotifyUri: spotifyUri});
     } on Exception catch (e) {
       _logException(MethodNames.play, e);
       rethrow;
@@ -310,7 +305,7 @@ class SpotifySdk {
   static Future seekTo({@required int positionedMilliseconds}) async {
     try {
       await _channel.invokeMethod(MethodNames.seekTo,
-          {_paramPositionedMilliseconds: positionedMilliseconds});
+          {ParamNames.positionedMilliseconds: positionedMilliseconds});
     } on Exception catch (e) {
       _logException(MethodNames.seekTo, e);
       rethrow;
@@ -328,7 +323,7 @@ class SpotifySdk {
       {@required int relativeMilliseconds}) async {
     try {
       await _channel.invokeMethod(MethodNames.seekToRelativePosition,
-          {_paramRelativeMilliseconds: relativeMilliseconds});
+          {ParamNames.relativeMilliseconds: relativeMilliseconds});
     } on Exception catch (e) {
       _logException(MethodNames.seekToRelativePosition, e);
       rethrow;
@@ -371,7 +366,7 @@ class SpotifySdk {
   static Future addToLibrary({@required String spotifyUri}) async {
     try {
       await _channel.invokeMethod(
-          MethodNames.addToLibrary, {_paramSpotifyUri: spotifyUri});
+          MethodNames.addToLibrary, {ParamNames.spotifyUri: spotifyUri});
     } on Exception catch (e) {
       _logException(MethodNames.addToLibrary, e);
       rethrow;
@@ -386,7 +381,7 @@ class SpotifySdk {
   static Future removeFromLibrary({@required String spotifyUri}) async {
     try {
       await _channel.invokeMethod(
-          MethodNames.removeFromLibrary, {_paramSpotifyUri: spotifyUri});
+          MethodNames.removeFromLibrary, {ParamNames.spotifyUri: spotifyUri});
     } on Exception catch (e) {
       _logException(MethodNames.removeFromLibrary, e);
       rethrow;
@@ -421,7 +416,7 @@ class SpotifySdk {
       {@required String spotifyUri}) async {
     try {
       var libraryStateJson = await _channel.invokeMethod<String>(
-          MethodNames.getLibraryState, {_paramSpotifyUri: spotifyUri});
+          MethodNames.getLibraryState, {ParamNames.spotifyUri: spotifyUri});
       var libraryStateMap =
           jsonDecode(libraryStateJson) as Map<String, dynamic>;
       return LibraryState.fromJson(libraryStateMap);
@@ -483,8 +478,8 @@ class SpotifySdk {
       ImageDimension dimension = ImageDimension.medium}) async {
     try {
       return _channel.invokeMethod(MethodNames.getImage, {
-        _paramImageUri: imageUri.raw,
-        _paramImageDimension: dimension.value
+        ParamNames.imageUri: imageUri.raw,
+        ParamNames.imageDimension: dimension.value
       });
     } on Exception catch (e) {
       _logException(MethodNames.getImage, e);
@@ -505,19 +500,27 @@ class SpotifySdk {
   }
 }
 
+/// Holds the values from the spotify api for supported Image dimensions
 enum ImageDimension {
+  /// large image
   large,
 
+  ///medium image
   medium,
 
+  /// small image
   small,
 
+  ///xsmall image
   xSmall,
 
+  /// thumbnail image
   thumbnail
 }
 
+/// Extension for formatting the ImageDimension enum to value
 extension ImageDimensionExtension on ImageDimension {
+  ///maps the value to the specified enum
   static const values = {
     ImageDimension.large: 720,
     ImageDimension.medium: 480,
@@ -526,5 +529,6 @@ extension ImageDimensionExtension on ImageDimension {
     ImageDimension.thumbnail: 144,
   };
 
+  /// returns the value
   int get value => values[this];
 }

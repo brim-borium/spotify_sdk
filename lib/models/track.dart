@@ -14,13 +14,13 @@ class Track {
   final Album album;
   final Artist artist;
   final List<Artist> artists;
-  @JsonKey(name: "duration_ms")
+  @JsonKey(name: 'duration_ms')
   final int duration;
-  @JsonKey(name: "image_id")
+  @JsonKey(name: 'image_id')
   final ImageUri imageUri;
-  @JsonKey(name: "is_episode")
+  @JsonKey(name: 'is_episode')
   final bool isEpisode;
-  @JsonKey(name: "is_podcast")
+  @JsonKey(name: 'is_podcast')
   final bool isPodcast;
   final String name;
   final String uri;
