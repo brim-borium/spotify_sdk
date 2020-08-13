@@ -12,15 +12,15 @@ import 'package:flutter/services.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 import 'package:js/js.dart';
 import 'package:js/js_util.dart';
-import 'package:spotify_sdk/models/album.dart';
-import 'package:spotify_sdk/models/artist.dart';
-import 'package:spotify_sdk/models/image_uri.dart';
-import 'package:spotify_sdk/models/player_context.dart';
-import 'package:spotify_sdk/models/player_options.dart' as options;
-import 'package:spotify_sdk/models/player_restrictions.dart';
-import 'package:spotify_sdk/models/player_state.dart';
-import 'package:spotify_sdk/models/track.dart';
-import 'package:spotify_sdk/platform_channels.dart';
+import 'models/album.dart';
+import 'models/artist.dart';
+import 'models/image_uri.dart';
+import 'models/player_context.dart';
+import 'models/player_options.dart' as options;
+import 'models/player_restrictions.dart';
+import 'models/player_state.dart';
+import 'models/track.dart';
+import 'platform_channels.dart';
 
 ///
 /// [SpotifySdkPlugin] holds the functionality to connect via spotify remote or
