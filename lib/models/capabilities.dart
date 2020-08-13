@@ -4,10 +4,10 @@ part 'capabilities.g.dart';
 
 @JsonSerializable()
 class Capabilities {
-  @JsonKey(name: "can_play_on_demand")
-  final bool canPlayOnDemand;
-
   Capabilities(this.canPlayOnDemand);
+
+  @JsonKey(name: 'can_play_on_demand')
+  final bool canPlayOnDemand;
 
   factory Capabilities.fromJson(Map<String, dynamic> json) =>
       _$CapabilitiesFromJson(json);

@@ -4,14 +4,14 @@ part 'library_state.g.dart';
 
 @JsonSerializable()
 class LibraryState {
-  @JsonKey(name: "uri")
-  final String uri;
-  @JsonKey(name: "saved")
-  final bool isSaved;
-  @JsonKey(name: "can_save")
-  final bool canSave;
-
   LibraryState(this.uri, this.isSaved, this.canSave);
+
+  @JsonKey(name: 'uri')
+  final String uri;
+  @JsonKey(name: 'saved')
+  final bool isSaved;
+  @JsonKey(name: 'can_save')
+  final bool canSave;
 
   factory LibraryState.fromJson(Map<String, dynamic> json) =>
       _$LibraryStateFromJson(json);

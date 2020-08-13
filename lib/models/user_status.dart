@@ -4,16 +4,16 @@ part 'user_status.g.dart';
 
 @JsonSerializable()
 class UserStatus {
+  UserStatus(this.code, this.shortMessage, this.longMessage);
+
   final int statusCodeOk = 0;
   final int statusCodeNotLoggedIn = 1;
-  @JsonKey(name: "code")
+  @JsonKey(name: 'code')
   final int code;
-  @JsonKey(name: "short_text")
+  @JsonKey(name: 'short_text')
   final String shortMessage;
-  @JsonKey(name: "long_text")
+  @JsonKey(name: 'long_text')
   final String longMessage;
-
-  UserStatus(this.code, this.shortMessage, this.longMessage);
 
   @JsonKey(ignore: true)
   bool isLoggedIn() {
