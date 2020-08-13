@@ -17,7 +17,7 @@ class UserStatus {
 
   @JsonKey(ignore: true)
   bool isLoggedIn() {
-    return this.code == 0;
+    return code == 0;
   }
 
   factory UserStatus.fromJson(Map<String, dynamic> json) =>
