@@ -1,6 +1,7 @@
 # spotify_sdk
 
 [![pub package](https://img.shields.io/badge/pub-0.5.0-orange)](https://pub.dev/packages/spotify_sdk)
+[![codecov](https://codecov.io/gh/brim-borium/spotify_sdk/branch/master/graph/badge.svg)](https://codecov.io/gh/brim-borium/spotify_sdk)
 [![Dry Run](https://github.com/brim-borium/spotify_sdk/workflows/Dry%20Run/badge.svg?branch=develop)](https://github.com/brim-borium/spotify_sdk/actions?query=workflow%3A%22Dry+Run%22)
 [![licence](https://img.shields.io/badge/licence-MIT-blue.svg)](https://github.com/IamTobi/spotify_sdk/blob/master/LICENSE)
 
@@ -23,6 +24,15 @@ Important here is the naming so that the package can find the modules.
 
 - Remote: spotify-app-remote
 - Auth: spotify-auth
+
+### iOS
+
+From the [Spotify iOS SDK Quick Start](https://developer.spotify.com/documentation/ios/quick-start/). You need two things:
+
+1. Register your app in the [spotify developer portal](https://developer.spotify.com/dashboard/). You also need to register your Bundle ID as well as a Redirect URI.
+2. download the current [Spotify iOS SDK](https://github.com/spotify/ios-sdk/releases). Here you need `SpotifyiOS.framework` from the zip file.
+
+After you are all setup you need to add `SpotifyiOS.framework` to your iOS Project. See the [Spotify iOS SDK Quick Start](https://developer.spotify.com/documentation/ios/quick-start/) for detailed information.
 
 ### Web
 
@@ -88,7 +98,7 @@ Have a look [in the example](example/lib/main.dart) for detailed insights on how
 
 | Function  | Description| Android | iOS | Web |
 |---|---|---|---|---|
-| connectToSpotifyRemote  | Connects the App to Spotify | :heavy_check_mark: | :construction_worker: | :heavy_check_mark: |
+| connectToSpotifyRemote  | Connects the App to Spotify | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
 |  getAuthenticationToken | Gets the Authentication Token that you can use to work with the [Web Api](https://developer.spotify.com/documentation/web-api/) |:heavy_check_mark: |  :construction_worker: | :heavy_check_mark: |
 |  logout | logs the user out and disconnects the app connection |:heavy_check_mark: |  :construction_worker: | :heavy_check_mark: |
 
@@ -147,3 +157,7 @@ Have a look [in the example](example/lib/main.dart) for detailed insights on how
 
 - [Auth](https://spotify.github.io/android-sdk/auth-lib/docs/index.html)
 - [App Remote](https://spotify.github.io/android-sdk/app-remote-lib/docs/index.html)
+
+## Contribute
+
+In order to setup the project and start messing with the code clone it using `git clone --recurse-submodules https://github.com/brim-borium/spotify_sdk` as the iOS Spotify SDK if included as a git submodule.

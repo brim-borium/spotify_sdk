@@ -2,7 +2,7 @@
 
 Demonstrates how to use the spotify_sdk plugin.
 
-Create a `.env` file in the root of the example project with the following content:
+You can edit the `.env` file in the root of the example project with your own `CLIENT_ID` and `REDIRECT_URL` or keep it as is to use the sample ones. Make sure that you don't push your credentials to a public repository.
 
 ```sh
 CLIENT_ID=Your Client Id
