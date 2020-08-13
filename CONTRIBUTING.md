@@ -20,15 +20,16 @@ track of the issue.
 
 ## What do I do before creating a pull request
 
-1. Fork the repository and create your branch from `master`.
-1. Install all dependencies (`flutter packages get` or `pub get`).
-1. Squash your commits and ensure you have a meaningful commit message.
+1. Fork the repository and create your branch from `master`, use feature/ , bug/ or task/ to differentiate your branch
+1. Install all dependencies (`flutter packages get` or `pub get`)
+1. Squash your commits and ensure you have a meaningful commit message, use [imperative mood](https://chris.beams.io/posts/git-commit/#imperative)
 1. If you’ve fixed a bug or added code that should be tested, add tests!
 1. If you've changed the public API, make sure to update/add documentation (for now that is the [Readme](README.md))
-1. Format your code (`dartfmt -w .`).
-1. Analyze your code (`dartanalyzer --fatal-infos --fatal-warnings .`).
-1. Create the Pull Request.
-1. Verify that all status checks are passing.
+1. If you've made breaking changes give us a heads up in the pull request
+1. Format your code (`dartfmt -w .`)
+1. Analyze your code (`flutter analyze`)
+1. Create the Pull Request
+1. Verify that all status checks are passing
 
 While the prerequisites above must be satisfied prior to having your
 pull request reviewed, the reviewer(s) may ask you to complete additional
