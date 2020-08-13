@@ -9,8 +9,8 @@ part of 'library_state.dart';
 LibraryState _$LibraryStateFromJson(Map<String, dynamic> json) {
   return LibraryState(
     json['uri'] as String,
-    json['saved'] as bool,
-    json['can_save'] as bool,
+    isSaved: json['saved'] as bool,
+    canSave: json['can_save'] as bool,
   );
 }
 

@@ -8,8 +8,8 @@ part of 'player_options.dart';
 
 PlayerOptions _$PlayerOptionsFromJson(Map<String, dynamic> json) {
   return PlayerOptions(
-    json['shuffle'] as bool,
     _$enumDecodeNullable(_$RepeatModeEnumMap, json['repeat']),
+    isShuffling: json['shuffle'] as bool,
   );
 }
 
@@ -52,7 +52,7 @@ T _$enumDecodeNullable<T>(
 }
 
 const _$RepeatModeEnumMap = {
-  RepeatMode.Off: 0,
-  RepeatMode.Track: 1,
-  RepeatMode.Context: 2,
+  RepeatMode.off: 0,
+  RepeatMode.track: 1,
+  RepeatMode.context: 2,
 };

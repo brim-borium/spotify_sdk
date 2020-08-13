@@ -8,12 +8,12 @@ part of 'player_restrictions.dart';
 
 PlayerRestrictions _$PlayerRestrictionsFromJson(Map<String, dynamic> json) {
   return PlayerRestrictions(
-    json['can_skip_next'] as bool,
-    json['can_skip_prev'] as bool,
-    json['can_repeat_track'] as bool,
-    json['can_repeat_context'] as bool,
-    json['can_toggle_shuffle'] as bool,
-    json['can_seek'] as bool,
+    canSkipNext: json['can_skip_next'] as bool,
+    canSkipPrevious: json['can_skip_prev'] as bool,
+    canRepeatTrack: json['can_repeat_track'] as bool,
+    canRepeatContext: json['can_repeat_context'] as bool,
+    canToggleShuffle: json['can_toggle_shuffle'] as bool,
+    canSeek: json['can_seek'] as bool,
   );
 }
 
