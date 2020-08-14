@@ -178,7 +178,14 @@ class _HomeState extends State<Home> {
   Widget playerStateWidget() {
     return StreamBuilder<PlayerState>(
       stream: SpotifySdk.subscribePlayerState(),
-      initialData: PlayerState(null, false, 1, 1, null, null),
+      initialData: PlayerState(
+        null,
+        1,
+        1,
+        null,
+        null,
+        isPaused: false,
+      ),
       builder: (BuildContext context, AsyncSnapshot<PlayerState> snapshot) {
         if (snapshot.data != null && snapshot.data.track != null) {
           var playerState = snapshot.data;

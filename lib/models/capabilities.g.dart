@@ -8,7 +8,7 @@ part of 'capabilities.dart';
 
 Capabilities _$CapabilitiesFromJson(Map<String, dynamic> json) {
   return Capabilities(
-    json['can_play_on_demand'] as bool,
+    canPlayOnDemand: json['can_play_on_demand'] as bool,
   );
 }
 

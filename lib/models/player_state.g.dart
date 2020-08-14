@@ -11,7 +11,6 @@ PlayerState _$PlayerStateFromJson(Map<String, dynamic> json) {
     json['track'] == null
         ? null
         : Track.fromJson(json['track'] as Map<String, dynamic>),
-    json['is_paused'] as bool,
     (json['playback_speed'] as num)?.toDouble(),
     json['playback_position'] as int,
     json['playback_options'] == null
@@ -22,6 +21,7 @@ PlayerState _$PlayerStateFromJson(Map<String, dynamic> json) {
         ? null
         : PlayerRestrictions.fromJson(
             json['playback_restrictions'] as Map<String, dynamic>),
+    isPaused: json['is_paused'] as bool,
   );
 }
 

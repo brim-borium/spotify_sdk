@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 import 'album.dart';
@@ -8,8 +9,17 @@ part 'track.g.dart';
 
 @JsonSerializable()
 class Track {
-  Track(this.album, this.artist, this.artists, this.duration, this.imageUri,
-      this.isEpisode, this.isPodcast, this.name, this.uri);
+  Track(
+    this.album,
+    this.artist,
+    this.artists,
+    this.duration,
+    this.imageUri,
+    this.name,
+    this.uri, {
+    @required this.isEpisode,
+    @required this.isPodcast,
+  });
 
   final Album album;
   final Artist artist;

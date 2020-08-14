@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'connection_status.g.dart';
@@ -5,7 +6,11 @@ part 'connection_status.g.dart';
 @JsonSerializable()
 class ConnectionStatus {
   ConnectionStatus(
-      this.connected, this.message, this.errorCode, this.errorDetails);
+    this.message,
+    this.errorCode,
+    this.errorDetails, {
+    @required this.connected,
+  });
 
   @JsonKey(name: 'connected')
   final bool connected;
