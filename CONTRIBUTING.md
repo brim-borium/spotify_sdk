@@ -22,7 +22,8 @@ track of the issue.
 
 1. Fork the repository and branch out of `master`, prefixing your branch's name with `feature/`, `bug/` or `task/` to indicate the scope of the PR.
 1. Install all dependencies (`flutter packages get` or `pub get`)
-1. Squash your commits and ensure you have a meaningful commit message, use [imperative mood](https://chris.beams.io/posts/git-commit/#imperative)
+1. Ensure you have a meaningful PR name using the [imperative mood](https://chris.beams.io/posts/git-commit/#imperative) as all your commits will be squashed upon merge and the PR's name will be used as the merge commit's message.
+1. If the PR can be broken down into multiple meaningful PRs please do so so that it is easier to review.
 1. If you’ve fixed a bug or added code that should be tested, add tests!
 1. If you've changed the public API, make sure to update/add documentation (for now that is the [Readme](README.md))
 1. If you've made breaking changes give us a heads up in the pull request. Try to provide a compatibility path for the deprecated APIs and if necessary provide migration instructions in the [Readme](README.md).
