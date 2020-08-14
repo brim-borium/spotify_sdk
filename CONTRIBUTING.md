@@ -25,7 +25,7 @@ track of the issue.
 1. Squash your commits and ensure you have a meaningful commit message, use [imperative mood](https://chris.beams.io/posts/git-commit/#imperative)
 1. If you’ve fixed a bug or added code that should be tested, add tests!
 1. If you've changed the public API, make sure to update/add documentation (for now that is the [Readme](README.md))
-1. If you've made breaking changes give us a heads up in the pull request
+1. If you've made breaking changes give us a heads up in the pull request. Try to provide a compatibility path for the deprecated APIs and if necessary provide migration instructions in the [Readme](README.md).
 1. Format your code (`dartfmt -w .`)
 1. Analyze your code (`flutter analyze`)
 1. Create the Pull Request
