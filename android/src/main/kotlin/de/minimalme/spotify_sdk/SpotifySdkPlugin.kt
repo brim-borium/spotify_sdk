@@ -223,7 +223,6 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Pl
                                 is LoggedOutException -> {
                                     errorMessage = "User has logged out from Spotify."
                                     errorCode = "LoggedOutException"
-                                    connected = true
                                 }
                                 is SpotifyRemoteServiceException -> {
                                     errorMessage = "Encapsulates possible SecurityException and IllegalStateException errors."
