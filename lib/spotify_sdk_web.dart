@@ -190,9 +190,9 @@ class SpotifySdkPlugin {
         }
         log('Connecting to Spotify...');
         // update the client id and redirect url
-        String clientId = call.arguments[PARAM_CLIENT_ID];
-        String redirectUrl = call.arguments[PARAM_REDIRECT_URL];
-        String playerName = call.arguments[PARAM_PLAYER_NAME];
+        String clientId = call.arguments[PARAM_CLIENT_ID] as String;
+        String redirectUrl = call.arguments[PARAM_REDIRECT_URL] as String;
+        String playerName = call.arguments[PARAM_PLAYER_NAME] as String;
         if (!(clientId?.isNotEmpty == true &&
             redirectUrl?.isNotEmpty == true)) {
           throw PlatformException(
@@ -229,8 +229,8 @@ class SpotifySdkPlugin {
         break;
       case METHOD_GET_AUTHENTICATION_TOKEN:
         return await _getSpotifyAuthToken(
-            clientId: call.arguments[PARAM_CLIENT_ID],
-            redirectUrl: call.arguments[PARAM_REDIRECT_URL]);
+            clientId: call.arguments[PARAM_CLIENT_ID] as String,
+            redirectUrl: call.arguments[PARAM_REDIRECT_URL] as String);
         break;
       case METHOD_LOGOUT_FROM_SPOTIFY:
         log('Disconnecting from Spotify...');
@@ -243,10 +243,10 @@ class SpotifySdkPlugin {
         }
         break;
       case METHOD_PLAY:
-        await _play(call.arguments[PARAM_SPOTIFY_URI]);
+        await _play(call.arguments[PARAM_SPOTIFY_URI] as String);
         break;
       case METHOD_QUEUE_TRACK:
-        await _queue(call.arguments[PARAM_SPOTIFY_URI]);
+        await _queue(call.arguments[PARAM_SPOTIFY_URI] as String);
         break;
       case METHOD_RESUME:
         await promiseToFuture(_currentPlayer?.resume());
@@ -351,8 +351,12 @@ class SpotifySdkPlugin {
     _currentPlayer.deviceID = deviceId;
 
     // emit connected event
-    connectionStatusEventController.add(jsonEncode(
-        ConnectionStatus(true, "Spotify SDK connected", null, null).toJson()));
+    connectionStatusEventController.add(jsonEncode(ConnectionStatus(
+      "Spotify SDK connected",
+      null,
+      null,
+      connected: true,
+    ).toJson()));
   }
 
   /// Called when the plugin disconects from the spotify sdk.
@@ -367,7 +371,8 @@ class SpotifySdkPlugin {
 
     // emit not connected event
     connectionStatusEventController.add(jsonEncode(ConnectionStatus(
-            false, "Spotify SDK disconnected", errorCode, errorDetails)
+            "Spotify SDK disconnected", errorCode, errorDetails,
+            connected: false)
         .toJson()));
   }
 
@@ -543,40 +548,42 @@ class SpotifySdkPlugin {
     options.RepeatMode repeatMode;
     switch (state.repeat_mode) {
       case 1:
-        repeatMode = options.RepeatMode.Context;
+        repeatMode = options.RepeatMode.context;
         break;
       case 2:
-        repeatMode = options.RepeatMode.Track;
+        repeatMode = options.RepeatMode.track;
         break;
       default:
-        repeatMode = options.RepeatMode.Off;
+        repeatMode = options.RepeatMode.off;
         break;
     }
 
     return PlayerState(
-        trackRaw != null
-            ? Track(
-                Album(albumRaw.name, albumRaw.uri),
-                artists[0],
-                artists,
-                null,
-                ImageUri(albumRaw.images[0]?.url),
-                trackRaw.type == 'episode',
-                trackRaw.type == 'episode',
-                trackRaw.name,
-                trackRaw.uri)
-            : null,
-        state.paused,
-        1.0,
-        state.position,
-        options.PlayerOptions(state.shuffle, repeatMode),
-        PlayerRestrictions(
-            restrictionsRaw.skipping_next,
-            restrictionsRaw.skipping_prev,
-            false,
-            false,
-            false,
-            restrictionsRaw.seeking));
+      trackRaw != null
+          ? Track(
+              Album(albumRaw.name, albumRaw.uri),
+              artists[0],
+              artists,
+              null,
+              ImageUri(albumRaw.images[0]?.url),
+              trackRaw.name,
+              trackRaw.uri,
+              isEpisode: trackRaw.type == 'episode',
+              isPodcast: trackRaw.type == 'episode',
+            )
+          : null,
+      1.0,
+      state.position,
+      options.PlayerOptions(repeatMode, isShuffling: state.shuffle),
+      PlayerRestrictions(
+          canSkipNext: restrictionsRaw.skipping_next,
+          canSkipPrevious: restrictionsRaw.skipping_prev,
+          canSeek: restrictionsRaw.seeking,
+          canRepeatTrack: true,
+          canRepeatContext: true,
+          canToggleShuffle: true),
+      isPaused: state.paused,
+    );
   }
 
   /// Converts a native WebPlaybackState to the library PlayerContext
