@@ -22,133 +22,12 @@ import 'models/player_options.dart' as options;
 import 'models/player_restrictions.dart';
 import 'models/player_state.dart';
 import 'models/track.dart';
+import 'platform_channels.dart';
 
 ///
 /// [SpotifySdkPlugin] is the web implementation of the Spotify SDK plugin.
 ///
 class SpotifySdkPlugin {
-  /// flutter event channel name
-  static const String channelName = "spotify_sdk";
-
-  /// player context subscription id
-  static const String playerContextSubscription = "player_context_subscription";
-
-  /// player state subscription id
-  static const String playerStateSubscription = "player_state_subscription";
-
-  /// player capabilities subscription id
-  static const String playerCapabilitiesSubscription =
-      "capabilities_subscription";
-
-  /// user status subscription id
-  static const String userStatusSubscription = "user_status_subscription";
-
-  /// connection status subscription id
-  static const String connectionStatusSubscription =
-      "connection_status_subscription";
-
-  /// connect method id
-  static const String methodConnectToSpotify = "connectToSpotify";
-
-  /// get authentication token method id
-  static const String methodGetAuthenticationToken = "getAuthenticationToken";
-
-  /// logout method id
-  static const String methodLogoutFromSpotify = "logoutFromSpotify";
-
-  /// get crossfade method id
-  static const String methodGetCrossfadeState = "getCrossfadeState";
-
-  /// get crossfade method id
-  static const String methodGetPlayerState = "getPlayerState";
-
-  /// play method id
-  static const String methodPlay = "play";
-
-  /// pause method id
-  static const String mathodPause = "pause";
-
-  /// queue track method id
-  static const String methodQueueTrack = "queueTrack";
-
-  /// resume method id
-  static const String methodResume = "resume";
-
-  /// seek to relative position method id
-  static const String methodSeekToRelativePosition = "seekToRelativePosition";
-
-  /// set podcast playback speed method id
-  static const String methodSetPodcastPlaybackSpeed = "setPodcastPlaybackSpeed";
-
-  /// skip next method id
-  static const String methodSkipNext = "skipNext";
-
-  /// skip previous method id
-  static const String methodSkipPrevious = "skipPrevious";
-
-  /// skip to index method id
-  static const String methodSkipToIndex = "skipToIndex";
-
-  /// seek to method id
-  static const String methodSeekTo = "seekTo";
-
-  /// toggle repeat method id
-  static const String methodToggleRepeat = "toggleRepeat";
-
-  /// toggle shuffle method id
-  static const String methodToggleShuffle = "toggleShuffle";
-
-  /// add to library method id
-  static const methodAddToLibrary = "addToLibrary";
-
-  /// remove from library method id
-  static const methodRemoveFromLibrary = "removeFromLibrary";
-
-  /// get capabilities method id
-  static const methodGetCapabilities = "getCapabilities";
-
-  /// get library state method id
-  static const methodGetLibraryState = "getLibraryState";
-
-  /// get track image method id
-  static const methodGetImage = "getImage";
-
-  /// client id param id
-  static const String paramClientId = "clientId";
-
-  /// redirect url param id
-  static const String paramRedirectUrl = "redirectUrl";
-
-  /// player name param id
-  static const String paramPlayerName = "playerName";
-
-  /// spotify uri param id
-  static const String paramSpotifyUri = "spotifyUri";
-
-  /// image uri param id
-  static const String paramImageUri = "imageUri";
-
-  /// image dimension param id
-  static const String paramImageDimension = "imageDimension";
-
-  /// positioned milliseconds param id
-  static const String paramPositionedMilliseconds = "positionedMilliseconds";
-
-  /// relative milliseconds param id
-  static const String paramRelativeMilliseconds = "relativeMilliseconds";
-
-  /// podcast playback speed param id
-  static const String paramPodcastPlaybackSpeed = "podcastPlaybackSpeed";
-
-  /// track index param id
-  static const String paramTrackIndex = "trackIndex";
-
-  /// connection error id
-  static const String errorConnecting = "errorConnecting";
-
-  /// disconnection error id
-  static const String errorDisconnecting = "errorDisconnecting";
-
   /// authentication token error id
   static const String errorAuthenticationTokenError =
       "authenticationTokenError";
@@ -213,26 +92,27 @@ class SpotifySdkPlugin {
   /// registers plugin method channels
   static void registerWith(Registrar registrar) {
     // method channel
-    final channel = MethodChannel(
-        channelName, const StandardMethodCodec(), registrar.messenger);
+    final channel = MethodChannel(MethodChannels.spotifySdk,
+        const StandardMethodCodec(), registrar.messenger);
     // event channels
     final playerContextEventChannel =
-        PluginEventChannel(playerContextSubscription);
+        PluginEventChannel(EventChannels.playerContext);
     final playerContextEventController = StreamController.broadcast();
     playerContextEventChannel.controller = playerContextEventController;
-    final playerStateEventChannel = PluginEventChannel(playerStateSubscription);
+    final playerStateEventChannel =
+        PluginEventChannel(EventChannels.playerState);
     final playerStateEventController = StreamController.broadcast();
     playerStateEventChannel.controller = playerStateEventController;
     final playerCapabilitiesEventChannel =
-        PluginEventChannel(playerCapabilitiesSubscription);
+        PluginEventChannel(EventChannels.capabilities);
     final playerCapabilitiesEventController = StreamController.broadcast();
     playerCapabilitiesEventChannel.controller =
         playerCapabilitiesEventController;
-    final userStatusEventChannel = PluginEventChannel(userStatusSubscription);
+    final userStatusEventChannel = PluginEventChannel(EventChannels.userStatus);
     final userStatusEventController = StreamController.broadcast();
     userStatusEventChannel.controller = userStatusEventController;
     final connectionStatusEventChannel =
-        PluginEventChannel(connectionStatusSubscription);
+        PluginEventChannel(EventChannels.connectionStatus);
     final connectionStatusEventController = StreamController.broadcast();
     connectionStatusEventChannel.controller = connectionStatusEventController;
 
@@ -256,15 +136,15 @@ class SpotifySdkPlugin {
     }
 
     switch (call.method) {
-      case methodConnectToSpotify:
+      case MethodNames.connectToSpotify:
         if (_currentPlayer != null) {
           return true;
         }
         log('Connecting to Spotify...');
         // update the client id and redirect url
-        var clientId = call.arguments[paramClientId] as String;
-        var redirectUrl = call.arguments[paramRedirectUrl] as String;
-        var playerName = call.arguments[paramPlayerName] as String;
+        var clientId = call.arguments[ParamNames.clientId] as String;
+        var redirectUrl = call.arguments[ParamNames.redirectUrl] as String;
+        var playerName = call.arguments[ParamNames.playerName] as String;
         if (!(clientId?.isNotEmpty == true &&
             redirectUrl?.isNotEmpty == true)) {
           throw PlatformException(
@@ -299,12 +179,12 @@ class SpotifySdkPlugin {
           return false;
         }
         break;
-      case methodGetAuthenticationToken:
+      case MethodNames.getAuthenticationToken:
         return await _getSpotifyAuthToken(
-            clientId: call.arguments[paramClientId] as String,
-            redirectUrl: call.arguments[paramRedirectUrl] as String);
+            clientId: call.arguments[ParamNames.clientId] as String,
+            redirectUrl: call.arguments[ParamNames.redirectUrl] as String);
         break;
-      case methodLogoutFromSpotify:
+      case MethodNames.logoutFromSpotify:
         log('Disconnecting from Spotify...');
         if (_currentPlayer == null) {
           return true;
@@ -314,35 +194,25 @@ class SpotifySdkPlugin {
           return true;
         }
         break;
-      case methodPlay:
-        await _play(call.arguments[paramSpotifyUri] as String);
+      case MethodNames.play:
+        await _play(call.arguments[ParamNames.spotifyUri] as String);
         break;
-      case methodQueueTrack:
-        await _queue(call.arguments[paramSpotifyUri] as String);
+      case MethodNames.queueTrack:
+        await _queue(call.arguments[ParamNames.spotifyUri] as String);
         break;
-      case methodResume:
+      case MethodNames.resume:
         await promiseToFuture(_currentPlayer?.resume());
         break;
-      case mathodPause:
+      case MethodNames.pause:
         await promiseToFuture(_currentPlayer?.pause());
         break;
-      case methodSkipNext:
+      case MethodNames.skipNext:
         await promiseToFuture(_currentPlayer?.nextTrack());
         break;
-      case methodSkipPrevious:
+      case MethodNames.skipPrevious:
         await promiseToFuture(_currentPlayer?.previousTrack());
         break;
-      /*case METHOD_TOGGLE_SHUFFLE:
-        // ignore: todo
-        //TODO: Needs a state parameter (true/false)
-        //await _currentPlayer?.toggleShuffle(state, await _getSpotifyAuthToken());
-      break;*/
-      /*case METHOD_TOGGLE_REPEAT:
-        // ignore: todo
-        //TODO: Needs a state parameter (true/false)
-        //await _currentPlayer?.toggleRepeat(state, await _getSpotifyAuthToken());
-      break;*/
-      case methodGetPlayerState:
+      case MethodNames.getPlayerState:
         var stateRaw = await promiseToFuture(_currentPlayer?.getCurrentState())
             as WebPlaybackState;
         if (stateRaw == null) return null;
