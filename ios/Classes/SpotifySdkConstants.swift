@@ -25,6 +25,7 @@ public class SpotfySdkConstants
     public static let methodSkipPrevious = "skipPrevious"
     public static let methodSeekTo = "seekTo"
     public static let methodSeekToRelativePosition = "seekToRelativePosition"
+    public static let methodGetPlayerState = "getPlayerState"
 
     //user api
     public static let methodAddToLibrary = "addToLibrary"

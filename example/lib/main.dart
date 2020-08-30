@@ -36,25 +36,28 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<ConnectionStatus>(
-        stream: SpotifySdk.subscribeConnectionStatus(),
-        builder: (context, snapshot) {
-          _connected = false;
-          if (snapshot.data != null) {
-            _connected = snapshot.data.connected;
-          }
-          return Scaffold(
-            appBar: AppBar(
-              title: const Text('SpotifySdk Example'),
-              actions: [
-                _connected
-                    ? FlatButton(child: const Text('Logout'), onPressed: logout)
-                    : Container()
-              ],
-            ),
-            body: _sampleFlowWidget(context),
-          );
-        });
+    return MaterialApp(
+      home: StreamBuilder<ConnectionStatus>(
+          stream: SpotifySdk.subscribeConnectionStatus(),
+          builder: (context, snapshot) {
+            _connected = false;
+            if (snapshot.data != null) {
+              _connected = snapshot.data.connected;
+            }
+            return Scaffold(
+              appBar: AppBar(
+                title: const Text('SpotifySdk Example'),
+                actions: [
+                  _connected
+                      ? FlatButton(
+                          child: const Text('Logout'), onPressed: logout)
+                      : Container()
+                ],
+              ),
+              body: _sampleFlowWidget(context),
+            );
+          }),
+    );
   }
 
   Widget _sampleFlowWidget(BuildContext context2) {
@@ -321,7 +324,7 @@ class _HomeState extends State<Home> {
     }
   }
 
-  Future<void> getAuthenticationToken() async {
+  Future<String> getAuthenticationToken() async {
     try {
       var authenticationToken = await SpotifySdk.getAuthenticationToken(
           clientId: DotEnv().env['CLIENT_ID'].toString(),
@@ -331,10 +334,13 @@ class _HomeState extends State<Home> {
               'playlist-read-private, '
               'playlist-modify-public,user-read-currently-playing');
       setStatus('Got a token: $authenticationToken');
+      return authenticationToken;
     } on PlatformException catch (e) {
       setStatus(e.code, message: e.message);
+      return Future.error('$e.code: $e.message');
     } on MissingPluginException {
       setStatus('not implemented');
+      return Future.error('not implemented');
     }
   }
 

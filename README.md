@@ -99,15 +99,15 @@ Have a look [in the example](example/lib/main.dart) for detailed insights on how
 | Function  | Description| Android | iOS | Web |
 |---|---|---|---|---|
 | connectToSpotifyRemote  | Connects the App to Spotify | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
-|  getAuthenticationToken | Gets the Authentication Token that you can use to work with the [Web Api](https://developer.spotify.com/documentation/web-api/) |:heavy_check_mark: |  :construction_worker: | :heavy_check_mark: |
-|  logout | logs the user out and disconnects the app connection |:heavy_check_mark: |  :construction_worker: | :heavy_check_mark: |
+|  getAuthenticationToken | Gets the Authentication Token that you can use to work with the [Web Api](https://developer.spotify.com/documentation/web-api/) |:heavy_check_mark: |  :heavy_check_mark: | :heavy_check_mark: |
+|  logout | logs the user out and disconnects the app connection |:heavy_check_mark: |  :heavy_check_mark: | :heavy_check_mark: |
 
 #### Player Api
 
 | Function  | Description | Android | iOS | Web |
 |---|---|---|---|---|
 |  getCrossfadeState | Gets the current crossfade state | :heavy_check_mark:  |  :construction_worker: | :x: |
-|  getPlayerState | Gets the current player state |:heavy_check_mark:  |  :construction_worker: | :heavy_check_mark: |
+|  getPlayerState | Gets the current player state |:heavy_check_mark:  |  :heavy_check_mark: | :heavy_check_mark: |
 |  pause | Pauses the current track  |:heavy_check_mark: | :construction_worker:  | :heavy_check_mark: |
 |  play | Plays the given spotifyUri |:heavy_check_mark: |  :construction_worker: | :heavy_check_mark: |
 |  queue | Queues given spotifyUri |:heavy_check_mark: | :construction_worker:  | :heavy_check_mark: |
@@ -116,8 +116,8 @@ Have a look [in the example](example/lib/main.dart) for detailed insights on how
 |  skipPrevious | Skips to previous track |:heavy_check_mark:  |  :construction_worker: | :heavy_check_mark: |
 |  seekTo | Seeks the current track to the given position in milliseconds | :heavy_check_mark: |:construction_worker: | :construction_worker: |
 |  seekToRelativePosition | Adds to the current position of the track the given milliseconds |:heavy_check_mark: |  :construction_worker: | :construction_worker: |
-|  subscribeToPlayerContext | Subscribes to the current player context |:heavy_check_mark:|:construction_worker: | :heavy_check_mark: |
-|  subscribeToPlayerState| Subscribes to the current player state |:heavy_check_mark:  |:construction_worker:| :heavy_check_mark: |
+|  subscribeToPlayerContext | Subscribes to the current player context |:heavy_check_mark:|:heavy_check_mark: | :heavy_check_mark: |
+|  subscribeToPlayerState| Subscribes to the current player state |:heavy_check_mark:  | :heavy_check_mark: | :heavy_check_mark: |
 |  getCrossfadeState | Gets the current crossfade state |:heavy_check_mark:  |  :construction_worker: | :x: |
 |  toggleShuffle | Cycles through the shuffle modes |:heavy_check_mark: |  :construction_worker: | :construction_worker: |
 |  toggleRepeat | Cycles through the repeat modes | :heavy_check_mark: |  :construction_worker: | :construction_worker: |
@@ -126,7 +126,7 @@ Have a look [in the example](example/lib/main.dart) for detailed insights on how
 
 | Function  | Description| Android | iOS | Web |
 |---|---|---|---|---|
-|  getImage | Get the image from the given spotifyUri |:heavy_check_mark: |  :construction_worker: | :construction_worker: |
+|  getImage | Get the image from the given spotifyUri |:heavy_check_mark: |  :heavy_check_mark: | :construction_worker: |
 
 #### User Api
 
