@@ -170,6 +170,15 @@ class SpotifySdkPlugin {
         _registerPlayerEvents(_currentPlayer);
         var result = await promiseToFuture(_currentPlayer.connect());
         if (result == true) {
+          // wait for the confirmation
+          num time = 0;
+          while (_currentPlayer.deviceID == null) {
+            await Future.delayed(Duration(milliseconds: 200));
+            time += 200;
+            if (time > 10000) {
+              return false;
+            }
+          }
           return true;
         } else {
           // disconnected
