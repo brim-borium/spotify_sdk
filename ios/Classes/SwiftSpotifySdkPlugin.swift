@@ -83,6 +83,7 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
         case SpotfySdkConstants.methodLogoutFromSpotify:
             appRemote?.disconnect()
 //            appRemote?.connectionParameters.accessToken = nil
+            result(true)
         default:
             result(FlutterMethodNotImplemented)
         }
