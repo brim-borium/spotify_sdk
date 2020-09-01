@@ -46,18 +46,21 @@ class SpotifySdk {
   ///
   /// Required parameters are the [clientId] and the [redirectUrl] to
   /// authenticate with the Spotify Api
+  /// You can optionally pass an [accessToken] in case you have it persisted
   /// Throws a [PlatformException] if connecting to the remote api failed
   /// Throws a [MissingPluginException] if the method is not implemented on
   /// the native platforms.
   static Future<bool> connectToSpotifyRemote(
       {@required String clientId,
       @required String redirectUrl,
-      String playerName = 'Spotify SDK'}) async {
+      String playerName = 'Spotify SDK',
+      String accessToken}) async {
     try {
       return await _channel.invokeMethod(MethodNames.connectToSpotify, {
         ParamNames.clientId: clientId,
         ParamNames.redirectUrl: redirectUrl,
-        ParamNames.playerName: playerName
+        ParamNames.playerName: playerName,
+        ParamNames.accessToken: accessToken
       });
     } on Exception catch (e) {
       _logException(MethodNames.connectToSpotify, e);

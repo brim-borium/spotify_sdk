@@ -40,6 +40,6 @@ public class SpotfySdkConstants
     public static let paramImageDimension = "imageDimension"
     public static let paramPositionedMilliseconds = "positionedMilliseconds"
     public static let paramRelativeMilliseconds = "relativeMilliseconds"
+    public static let paramAccessToken = "accessToken"
+    
 }
-
-

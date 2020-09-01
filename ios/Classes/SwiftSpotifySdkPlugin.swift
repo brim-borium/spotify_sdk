@@ -29,15 +29,22 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         switch call.method {
         case SpotfySdkConstants.methodConnectToSpotify:
-            guard let swiftArguments = call.arguments as? [String:Any], let clientID = swiftArguments[SpotfySdkConstants.paramClientId] as? String,
+            guard let swiftArguments = call.arguments as? [String:Any],
+                let clientID = swiftArguments[SpotfySdkConstants.paramClientId] as? String,
                 let url = swiftArguments[SpotfySdkConstants.paramRedirectUrl] as? String else {
                     result(FlutterError(code: "Arguments Error", message: "One or more arguments are missing", details: nil))
                     return
             }
-            connectToSpotify(clientId: clientID, redirectURL: url)
+            if let accessToken = swiftArguments[SpotfySdkConstants.paramAccessToken] as? String, let appRemote = appRemote {
+                appRemote.connectionParameters.accessToken = accessToken
+                appRemote.connect()
+            } else {
+                connectToSpotify(clientId: clientID, redirectURL: url)
+            }
             result(true)
         case SpotfySdkConstants.methodGetAuthenticationToken:
-            guard let swiftArguments = call.arguments as? [String:Any], let clientID = swiftArguments[SpotfySdkConstants.paramClientId] as? String,
+            guard let swiftArguments = call.arguments as? [String:Any],
+                let clientID = swiftArguments[SpotfySdkConstants.paramClientId] as? String,
                 let url = swiftArguments[SpotfySdkConstants.paramRedirectUrl] as? String else {
                     result(FlutterError(code: "Arguments Error", message: "One or more arguments are missing", details: nil))
                     return
@@ -45,7 +52,8 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
             self.result = result
             connectToSpotify(clientId: clientID, redirectURL: url)
         case SpotfySdkConstants.methodGetImage:
-            guard let swiftArguments = call.arguments as? [String:Any], let paramImageUri = swiftArguments[SpotfySdkConstants.paramImageUri] as? String,
+            guard let swiftArguments = call.arguments as? [String:Any],
+                let paramImageUri = swiftArguments[SpotfySdkConstants.paramImageUri] as? String,
                 let paramImageDimension = swiftArguments[SpotfySdkConstants.paramImageDimension] as? Int else {
                     result(FlutterError(code: "Arguments Error", message: "One or more arguments are missing", details: nil))
                     return
@@ -89,7 +97,7 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
         }
     }
 
-    private func connectToSpotify(clientId: String, redirectURL: String) {
+    private func connectToSpotify(clientId: String, redirectURL: String, accessToken: String? = nil) {
         guard let redirectURL = URL(string: redirectURL) else { return }
         let configuration = SPTConfiguration(clientID: clientId, redirectURL: redirectURL)
         let appRemote = SPTAppRemote(configuration: configuration, logLevel: .none)
