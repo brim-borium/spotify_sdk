@@ -78,7 +78,7 @@ After you are all setup you need to add `SpotifyiOS.framework` to your iOS Proje
 ## Usage
 
 To start using this package you first have to connect to Spotify. To only connect you can do this with connectToSpotifyRemote(...) or getAuthenticationToken(...) in both of these methods you need the client id, given in the spotify dashboard and the redirect url you set in the settings on the dashboard.
-
+You can also optionally pass an accessToken and on iOS it avoids having to switch to the Spotify app for establishing the connection.
 ```dart
   await SpotifySdk.connectToSpotifyRemote(clientId: "", redirectUrl: "")
 ```
