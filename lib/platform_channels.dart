@@ -125,4 +125,7 @@ class ParamNames {
 
   /// param name for [accessToken]
   static const String accessToken = 'accessToken';
+
+  /// param name for [asRadio]
+  static const String asRadio = 'asRadio';
 }

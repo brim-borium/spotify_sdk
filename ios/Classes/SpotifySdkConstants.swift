@@ -29,6 +29,7 @@ public class SpotfySdkConstants
 
     //user api
     public static let methodAddToLibrary = "addToLibrary"
+    public static let methodRemoveFromLibrary = "removeFromLibrary"
 
     //images api
     public static let methodGetImage = "getImage"
@@ -36,6 +37,7 @@ public class SpotfySdkConstants
     public static let paramClientId = "clientId"
     public static let paramRedirectUrl = "redirectUrl"
     public static let paramSpotifyUri = "spotifyUri"
+    public static let paramAsRadio = "asRadio"
     public static let paramImageUri = "imageUri"
     public static let paramImageDimension = "imageDimension"
     public static let paramPositionedMilliseconds = "positionedMilliseconds"

@@ -170,13 +170,19 @@ class SpotifySdk {
   /// Plays the given [spotifyUri]
   ///
   /// The [spotifyUri] can be an artist, album, playlist and track
+  /// On iOS set [asRadio] to true to start radio for track URI. Default: false
   /// Throws a [PlatformException] if playing failed
   /// Throws a [MissingPluginException] if the method is not implemented on
   /// the native platforms.
-  static Future play({@required String spotifyUri}) async {
+  static Future play({
+    @required String spotifyUri,
+    bool asRadio = false,
+  }) async {
     try {
-      await _channel
-          .invokeMethod(MethodNames.play, {ParamNames.spotifyUri: spotifyUri});
+      await _channel.invokeMethod(MethodNames.play, {
+        ParamNames.spotifyUri: spotifyUri,
+        ParamNames.asRadio: asRadio,
+      });
     } on Exception catch (e) {
       _logException(MethodNames.play, e);
       rethrow;
