@@ -106,21 +106,22 @@ Have a look [in the example](example/lib/main.dart) for detailed insights on how
 
 | Function  | Description | Android | iOS | Web |
 |---|---|---|---|---|
-|  getCrossfadeState | Gets the current crossfade state | :heavy_check_mark:  |  :construction_worker: | :x: |
 |  getPlayerState | Gets the current player state |:heavy_check_mark:  |  :heavy_check_mark: | :heavy_check_mark: |
 |  pause | Pauses the current track  |:heavy_check_mark: | :heavy_check_mark:  | :heavy_check_mark: |
 |  play | Plays the given spotifyUri |:heavy_check_mark: |  :heavy_check_mark: | :heavy_check_mark: |
-|  queue | Queues given spotifyUri |:heavy_check_mark: | :construction_worker:  | :heavy_check_mark: |
+|  queue | Queues given spotifyUri |:heavy_check_mark: | :heavy_check_mark:  | :heavy_check_mark: |
 |  resume | Resumes the current track |:heavy_check_mark: |  :heavy_check_mark: | :heavy_check_mark: |
 |  skipNext | Skips to next track | :heavy_check_mark: | :heavy_check_mark:  | :heavy_check_mark: |
 |  skipPrevious | Skips to previous track |:heavy_check_mark:  |  :heavy_check_mark: | :heavy_check_mark: |
-|  seekTo | Seeks the current track to the given position in milliseconds | :heavy_check_mark: |:construction_worker: | :construction_worker: |
-|  seekToRelativePosition | Adds to the current position of the track the given milliseconds |:heavy_check_mark: |  :construction_worker: | :construction_worker: |
+|  seekTo | Seeks the current track to the given position in milliseconds | :heavy_check_mark: |:heavy_check_mark: | :construction_worker: |
+|  seekToRelativePosition | Adds to the current position of the track the given milliseconds |:x: |  :heavy_check_mark: | :construction_worker: |
 |  subscribeToPlayerContext | Subscribes to the current player context |:heavy_check_mark:|:heavy_check_mark: | :heavy_check_mark: |
 |  subscribeToPlayerState| Subscribes to the current player state |:heavy_check_mark:  | :heavy_check_mark: | :heavy_check_mark: |
-|  getCrossfadeState | Gets the current crossfade state |:heavy_check_mark:  |  :construction_worker: | :x: |
-|  toggleShuffle | Cycles through the shuffle modes |:heavy_check_mark: |  :construction_worker: | :construction_worker: |
-|  toggleRepeat | Cycles through the repeat modes | :heavy_check_mark: |  :construction_worker: | :construction_worker: |
+|  getCrossfadeState | Gets the current crossfade state |:heavy_check_mark:  |  :heavy_check_mark: | :x: |
+|  toggleShuffle | Cycles through the shuffle modes |:heavy_check_mark: |  :x: | :construction_worker: |
+|  setShuffle | Set the shuffle mode |:construction_worker::construction_worker: |  :construction_worker: | :construction_worker: |
+|  toggleRepeat | Cycles through the repeat modes | :heavy_check_mark: |  :heavy_check_mark: | :construction_worker: |
+|  setRepeatMode | Set the repeat mode | :construction_worker: |  :construction_worker: | :construction_worker: |
 
 #### Images Api
 

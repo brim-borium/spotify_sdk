@@ -496,6 +496,40 @@ class SpotifySdk {
     }
   }
 
+  /// Sets the shuffle mode
+  ///
+  /// Set [shuffle] to true or false.
+  /// Throws a [PlatformException] if adding failed
+  /// Throws a [MissingPluginException] if the method is not implemented on
+  /// the native platforms.
+  static Future setShuffle({@required bool shuffle}) async {
+    try {
+      return _channel.invokeMethod(MethodNames.setShuffle, {
+        ParamNames.shuffle: shuffle,
+      });
+    } on Exception catch (e) {
+      _logException(MethodNames.setShuffle, e);
+      rethrow;
+    }
+  }
+
+  /// Sets the repeat mode
+  ///
+  /// Set [repeatMode] to a value of [RepeatMode] either [off, track, context].
+  /// Throws a [PlatformException] if adding failed
+  /// Throws a [MissingPluginException] if the method is not implemented on
+  /// the native platforms.
+  static Future setRepeatMode(
+      {@required RepeatMode repeatMode}) async {
+    try {
+      return _channel.invokeMethod(
+          MethodNames.setRepeatMode, {ParamNames.repeatMode: repeatMode.index});
+    } on Exception catch (e) {
+      _logException(MethodNames.setRepeatMode, e);
+      rethrow;
+    }
+  }
+
   static void _logException(String method, Exception e) {
     if (e is PlatformException) {
       var message = e.message;
@@ -540,4 +574,16 @@ extension ImageDimensionExtension on ImageDimension {
 
   /// returns the value
   int get value => values[this];
+}
+
+/// Holds the values from the spotify api for RepeatModes
+enum RepeatMode {
+  /// repeat is off
+  off,
+
+  /// repeats the current track
+  track,
+
+  /// repeats the current context
+  context,
 }

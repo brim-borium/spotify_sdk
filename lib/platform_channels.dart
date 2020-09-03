@@ -92,6 +92,12 @@ class MethodNames {
 
   /// method name for [getImage]
   static const String getImage = 'getImage';
+
+  /// method name for [setShuffle]
+  static const String setShuffle = 'setShuffle';
+
+  /// method name for [setRepeatMode]
+  static const String setRepeatMode = 'setRepeatMode';
 }
 
 /// Holds the names for all parameters that are used in the package
@@ -128,4 +134,10 @@ class ParamNames {
 
   /// param name for [asRadio]
   static const String asRadio = 'asRadio';
+
+  /// param name for [shuffle]
+  static const String shuffle = 'shuffle';
+
+  /// param name for [repeatMode]
+  static const String repeatMode = 'repeatMode';
 }
