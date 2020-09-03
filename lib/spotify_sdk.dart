@@ -519,8 +519,7 @@ class SpotifySdk {
   /// Throws a [PlatformException] if adding failed
   /// Throws a [MissingPluginException] if the method is not implemented on
   /// the native platforms.
-  static Future setRepeatMode(
-      {@required RepeatMode repeatMode}) async {
+  static Future setRepeatMode({@required RepeatMode repeatMode}) async {
     try {
       return _channel.invokeMethod(
           MethodNames.setRepeatMode, {ParamNames.repeatMode: repeatMode.index});
