@@ -44,3 +44,5 @@ build/
 .settings
 *.sqlite
 /.vs/spotify_sdk/v16/.suo
+
+SpotifyiOS.framework
