@@ -193,7 +193,7 @@ class SpotifySdkPlugin {
             clientId: call.arguments[ParamNames.clientId] as String,
             redirectUrl: call.arguments[ParamNames.redirectUrl] as String);
         break;
-      case MethodNames.logoutFromSpotify:
+      case MethodNames.disconnectFromSpotify:
         log('Disconnecting from Spotify...');
         if (_currentPlayer == null) {
           return true;

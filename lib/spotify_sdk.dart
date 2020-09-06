@@ -102,14 +102,14 @@ class SpotifySdk {
 
   /// Logs the user out and disconnects the app from the users spotify account
   ///
-  /// Throws a [PlatformException] if logout failed
+  /// Throws a [PlatformException] if disconnect failed
   /// Throws a [MissingPluginException] if the method is not implemented on
   /// the native platforms.
-  static Future<bool> logout() async {
+  static Future<bool> disconnect() async {
     try {
-      return await _channel.invokeMethod(MethodNames.logoutFromSpotify);
+      return await _channel.invokeMethod(MethodNames.disconnectFromSpotify);
     } on Exception catch (e) {
-      _logException(MethodNames.logoutFromSpotify, e);
+      _logException(MethodNames.disconnectFromSpotify, e);
       rethrow;
     }
   }
