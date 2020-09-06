@@ -114,7 +114,7 @@ Have a look [in the example](example/lib/main.dart) for detailed insights on how
 |  skipNext | Skips to next track | :heavy_check_mark: | :heavy_check_mark:  | :heavy_check_mark: |
 |  skipPrevious | Skips to previous track |:heavy_check_mark:  |  :heavy_check_mark: | :heavy_check_mark: |
 |  seekTo | Seeks the current track to the given position in milliseconds | :heavy_check_mark: |:heavy_check_mark: | :construction_worker: |
-|  seekToRelativePosition | Adds to the current position of the track the given milliseconds |:x: |  :heavy_check_mark: | :construction_worker: |
+|  seekToRelativePosition | Adds to the current position of the track the given milliseconds |:heavy_check_mark: |  :x: | :construction_worker: |
 |  subscribeToPlayerContext | Subscribes to the current player context |:heavy_check_mark:|:heavy_check_mark: | :heavy_check_mark: |
 |  subscribeToPlayerState| Subscribes to the current player state |:heavy_check_mark:  | :heavy_check_mark: | :heavy_check_mark: |
 |  getCrossfadeState | Gets the current crossfade state |:heavy_check_mark:  |  :heavy_check_mark: | :x: |
