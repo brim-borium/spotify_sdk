@@ -50,7 +50,8 @@ class _HomeState extends State<Home> {
                 actions: [
                   _connected
                       ? FlatButton(
-                          child: const Text('Disconnect'), onPressed: disconnect)
+                          child: const Text('Disconnect'),
+                          onPressed: disconnect)
                       : Container()
                 ],
               ),
