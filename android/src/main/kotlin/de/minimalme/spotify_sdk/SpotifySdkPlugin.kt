@@ -220,10 +220,9 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Pl
                                     errorCode = "OfflineModeException"
                                     connected = true
                                 }
-                                is LoggedOutException -> {
+                                is NotLoggedInException -> {
                                     errorMessage = "User has logged out from Spotify."
-                                    errorCode = "LoggedOutException"
-                                    connected = true
+                                    errorCode = "NotLoggedInException"
                                 }
                                 is SpotifyRemoteServiceException -> {
                                     errorMessage = "Encapsulates possible SecurityException and IllegalStateException errors."
