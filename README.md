@@ -108,12 +108,12 @@ Have a look [in the example](example/lib/main.dart) for detailed insights on how
 |---|---|---|---|---|
 |  getCrossfadeState | Gets the current crossfade state | :heavy_check_mark:  |  :construction_worker: | :x: |
 |  getPlayerState | Gets the current player state |:heavy_check_mark:  |  :heavy_check_mark: | :heavy_check_mark: |
-|  pause | Pauses the current track  |:heavy_check_mark: | :construction_worker:  | :heavy_check_mark: |
-|  play | Plays the given spotifyUri |:heavy_check_mark: |  :construction_worker: | :heavy_check_mark: |
+|  pause | Pauses the current track  |:heavy_check_mark: | :heavy_check_mark:  | :heavy_check_mark: |
+|  play | Plays the given spotifyUri |:heavy_check_mark: |  :heavy_check_mark: | :heavy_check_mark: |
 |  queue | Queues given spotifyUri |:heavy_check_mark: | :construction_worker:  | :heavy_check_mark: |
-|  resume | Resumes the current track |:heavy_check_mark: |  :construction_worker: | :heavy_check_mark: |
-|  skipNext | Skips to next track | :heavy_check_mark: | :construction_worker:  | :heavy_check_mark: |
-|  skipPrevious | Skips to previous track |:heavy_check_mark:  |  :construction_worker: | :heavy_check_mark: |
+|  resume | Resumes the current track |:heavy_check_mark: |  :heavy_check_mark: | :heavy_check_mark: |
+|  skipNext | Skips to next track | :heavy_check_mark: | :heavy_check_mark:  | :heavy_check_mark: |
+|  skipPrevious | Skips to previous track |:heavy_check_mark:  |  :heavy_check_mark: | :heavy_check_mark: |
 |  seekTo | Seeks the current track to the given position in milliseconds | :heavy_check_mark: |:construction_worker: | :construction_worker: |
 |  seekToRelativePosition | Adds to the current position of the track the given milliseconds |:heavy_check_mark: |  :construction_worker: | :construction_worker: |
 |  subscribeToPlayerContext | Subscribes to the current player context |:heavy_check_mark:|:heavy_check_mark: | :heavy_check_mark: |
@@ -132,10 +132,10 @@ Have a look [in the example](example/lib/main.dart) for detailed insights on how
 
 | Function  | Description| Android | iOS | Web |
 |---|---|---|---|---|
-|  addToLibrary | Adds the given spotifyUri to the users library |:heavy_check_mark:  |  :construction_worker: | :construction_worker: |
+|  addToLibrary | Adds the given spotifyUri to the users library |:heavy_check_mark:  |  :heavy_check_mark: | :construction_worker: |
 |  getCapabilities | Gets the current users capabilities |:heavy_check_mark:  |  :construction_worker: | :construction_worker: |
 |  getLibraryState | Gets the current library state |:heavy_check_mark:  |  :construction_worker: | :construction_worker: |
-|  removeFromLibrary | Removes the given spotifyUri to the users library |:heavy_check_mark:  |  :construction_worker: | :construction_worker: |
+|  removeFromLibrary | Removes the given spotifyUri to the users library |:heavy_check_mark:  |  :heavy_check_mark: | :construction_worker: |
 |  subscribeToCapabilities |  Subscribes to the current users capabilities |:heavy_check_mark:  |  :construction_worker: | :construction_worker: |
 |  subscribeToUserStatus |  Subscrives to  the current users status |:heavy_check_mark:  |  :construction_worker: | :construction_worker: |
 

@@ -27,6 +27,18 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
     }
 
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+        var defaultPlayAPICallback: SPTAppRemoteCallback {
+            get {
+                return {_, error in
+                    if let error = error {
+                        result(FlutterError(code: "PlayerAPI Error", message: error.localizedDescription, details: nil))
+                    } else {
+                        result(true)
+                    }
+                }
+            }
+        }
+
         switch call.method {
         case SpotfySdkConstants.methodConnectToSpotify:
             guard let swiftArguments = call.arguments as? [String:Any],
@@ -92,6 +104,42 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
             appRemote?.disconnect()
 //            appRemote?.connectionParameters.accessToken = nil
             result(true)
+        case SpotfySdkConstants.methodPlay:
+            guard let swiftArguments = call.arguments as? [String:Any],
+                let uri = swiftArguments[SpotfySdkConstants.paramSpotifyUri] as? String else {
+                    result(FlutterError(code: "URI Error", message: "No URI was specified", details: nil))
+                    return
+            }
+            let asRadio: Bool = (swiftArguments[SpotfySdkConstants.paramAsRadio] as? Bool) ?? false
+            appRemote?.playerAPI?.play(uri, asRadio: asRadio, callback: defaultPlayAPICallback)
+        case SpotfySdkConstants.methodPause:
+            appRemote?.playerAPI?.pause(defaultPlayAPICallback)
+        case SpotfySdkConstants.methodResume:
+            appRemote?.playerAPI?.resume(defaultPlayAPICallback)
+        case SpotfySdkConstants.methodSkipNext:
+            appRemote?.playerAPI?.skip(toNext: defaultPlayAPICallback)
+        case SpotfySdkConstants.methodSkipPrevious:
+            appRemote?.playerAPI?.skip(toNext: { (spotifyResult, error) in
+                if let error = error {
+                    result(FlutterError(code: "PlayerAPI Error", message: error.localizedDescription, details: nil))
+                    return
+                }
+                result(true)
+            })
+        case SpotfySdkConstants.methodAddToLibrary:
+            guard let swiftArguments = call.arguments as? [String:Any],
+                let uri = swiftArguments[SpotfySdkConstants.paramSpotifyUri] as? String else {
+                    result(FlutterError(code: "URI Error", message: "No URI was specified", details: nil))
+                    return
+            }
+            appRemote?.userAPI?.addItemToLibrary(withURI: uri, callback: defaultPlayAPICallback)
+        case SpotfySdkConstants.methodRemoveFromLibrary:
+            guard let swiftArguments = call.arguments as? [String:Any],
+                let uri = swiftArguments[SpotfySdkConstants.paramSpotifyUri] as? String else {
+                    result(FlutterError(code: "URI Error", message: "No URI was specified", details: nil))
+                    return
+            }
+            appRemote?.userAPI?.removeItemFromLibrary(withURI: uri, callback: defaultPlayAPICallback)
         default:
             result(FlutterMethodNotImplemented)
         }
