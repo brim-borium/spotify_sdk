@@ -12,7 +12,7 @@ public class SpotfySdkConstants
     //connecting
     public static let methodConnectToSpotify = "connectToSpotify"
     public static let methodGetAuthenticationToken = "getAuthenticationToken"
-    public static let methodLogoutFromSpotify = "logoutFromSpotify"
+    public static let methodDisconnectFromSpotify = "disconnectFromSpotify"
 
     //player api
     public static let methodQueueTrack = "queueTrack"

@@ -100,7 +100,7 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
                 }
                 result(State.playerStateDictionary(playerState).json)
             })
-        case SpotfySdkConstants.methodLogoutFromSpotify:
+        case SpotfySdkConstants.methodDisconnectFromSpotify:
             appRemote?.disconnect()
 //            appRemote?.connectionParameters.accessToken = nil
             result(true)

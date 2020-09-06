@@ -30,8 +30,8 @@ class MethodNames {
   /// method name for [getAuthenticationToken]
   static const String getAuthenticationToken = 'getAuthenticationToken';
 
-  /// method name for [logoutFromSpotify]
-  static const String logoutFromSpotify = 'logoutFromSpotify';
+  /// method name for [disconnectFromSpotify]
+  static const String disconnectFromSpotify = 'disconnectFromSpotify';
 
   /// method name for [getCrossfadeState]
   static const String getCrossfadeState = 'getCrossfadeState';

@@ -100,7 +100,7 @@ Have a look [in the example](example/lib/main.dart) for detailed insights on how
 |---|---|---|---|---|
 | connectToSpotifyRemote  | Connects the App to Spotify | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
 |  getAuthenticationToken | Gets the Authentication Token that you can use to work with the [Web Api](https://developer.spotify.com/documentation/web-api/) |:heavy_check_mark: |  :heavy_check_mark: | :heavy_check_mark: |
-|  logout | logs the user out and disconnects the app connection |:heavy_check_mark: |  :heavy_check_mark: | :heavy_check_mark: |
+|  disconnect | disconnects the app connection |:heavy_check_mark: |  :heavy_check_mark: | :heavy_check_mark: |
 
 #### Player Api
 

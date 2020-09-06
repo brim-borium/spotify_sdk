@@ -53,7 +53,7 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Pl
     //connecting
     private val methodConnectToSpotify = "connectToSpotify"
     private val methodGetAuthenticationToken = "getAuthenticationToken"
-    private val methodLogoutFromSpotify = "logoutFromSpotify"
+    private val methodDisconnectFromSpotify = "disconnectFromSpotify"
 
     //player api
     private val methodGetCrossfadeState = "getCrossfadeState"
@@ -122,7 +122,7 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Pl
             //connecting to spotify
             methodConnectToSpotify -> connectToSpotify(call.argument(paramClientId), call.argument(paramRedirectUrl), result)
             methodGetAuthenticationToken -> getAuthenticationToken(call.argument(paramClientId), call.argument(paramRedirectUrl), call.argument(paramScope), result)
-            methodLogoutFromSpotify -> logoutFromSpotify(result)
+            methodDisconnectFromSpotify -> disconnectFromSpotify(result)
             //player api calls
             methodGetCrossfadeState -> spotifyPlayerApi?.getCrossfadeState()
             methodGetPlayerState -> spotifyPlayerApi?.getPlayerState()
@@ -267,7 +267,7 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Pl
         }
     }
 
-    private fun logoutFromSpotify(result: Result) {
+    private fun disconnectFromSpotify(result: Result) {
         if (spotifyAppRemote != null && spotifyAppRemote!!.isConnected) {
             SpotifyAppRemote.disconnect(spotifyAppRemote)
 

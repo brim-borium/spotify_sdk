@@ -50,7 +50,7 @@ class _HomeState extends State<Home> {
                 actions: [
                   _connected
                       ? FlatButton(
-                          child: const Text('Logout'), onPressed: logout)
+                          child: const Text('Disconnect'), onPressed: disconnect)
                       : Container()
                 ],
               ),
@@ -274,13 +274,13 @@ class _HomeState extends State<Home> {
         });
   }
 
-  Future<void> logout() async {
+  Future<void> disconnect() async {
     try {
       setState(() {
         _loading = true;
       });
-      var result = await SpotifySdk.logout();
-      setStatus(result ? 'logout successful' : 'logout failed');
+      var result = await SpotifySdk.disconnect();
+      setStatus(result ? 'disconnect successful' : 'disconnect failed');
       setState(() {
         _loading = false;
       });
