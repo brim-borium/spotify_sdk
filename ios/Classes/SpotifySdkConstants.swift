@@ -19,13 +19,13 @@ public class SpotfySdkConstants
     public static let methodPlay = "play"
     public static let methodPause = "pause"
     public static let methodResume = "resume"
-    public static let methodToggleRepeat = "toggleRepeat"
-    public static let methodToggleShuffle = "toggleShuffle"
     public static let methodSkipNext = "skipNext"
     public static let methodSkipPrevious = "skipPrevious"
     public static let methodSeekTo = "seekTo"
-    public static let methodSeekToRelativePosition = "seekToRelativePosition"
     public static let methodGetPlayerState = "getPlayerState"
+    public static let methodGetCrossfadeState = "getCrossfadeState"
+    public static let methodSetShuffle = "setShuffle"
+    public static let methodSetRepeatMode = "setRepeatMode"
 
     //user api
     public static let methodAddToLibrary = "addToLibrary"
@@ -43,5 +43,7 @@ public class SpotfySdkConstants
     public static let paramPositionedMilliseconds = "positionedMilliseconds"
     public static let paramRelativeMilliseconds = "relativeMilliseconds"
     public static let paramAccessToken = "accessToken"
+    public static let paramShuffle = "shuffle"
+    public static let paramRepeatMode = "repeatMode"
     
 }

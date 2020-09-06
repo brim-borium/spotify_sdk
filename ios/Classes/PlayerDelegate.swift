@@ -8,7 +8,7 @@ class PlayerDelegate: NSObject, SPTAppRemotePlayerStateDelegate {
 
     func playerStateDidChange(_ playerState: SPTAppRemotePlayerState) {
         print("playerStateDidChange")
-        playerStateSink?(PlayerState.stateJson(playerState).json)
-        playerContextSink?(PlayerState.contextJson(playerState).json)
+        playerStateSink?(State.playerStateDictionary(playerState).json)
+        playerContextSink?(State.playerContextDictionary(playerState).json)
     }
 }

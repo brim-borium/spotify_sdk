@@ -98,7 +98,7 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
                     result(FlutterError(code: "PlayerAPI Error", message: "PlayerState is empty", details: nil))
                     return
                 }
-                result(PlayerState.stateJson(playerState).json)
+                result(State.playerStateDictionary(playerState).json)
             })
         case SpotfySdkConstants.methodLogoutFromSpotify:
             appRemote?.disconnect()
@@ -140,6 +140,47 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
                     return
             }
             appRemote?.userAPI?.removeItemFromLibrary(withURI: uri, callback: defaultPlayAPICallback)
+        case SpotfySdkConstants.methodQueueTrack:
+            guard let swiftArguments = call.arguments as? [String:Any],
+                let uri = swiftArguments[SpotfySdkConstants.paramSpotifyUri] as? String else {
+                    result(FlutterError(code: "URI Error", message: "No URI was specified", details: nil))
+                    return
+            }
+            appRemote?.playerAPI?.enqueueTrackUri(uri, callback: defaultPlayAPICallback)
+        case SpotfySdkConstants.methodSeekTo:
+            guard let swiftArguments = call.arguments as? [String:Any],
+                let position = swiftArguments[SpotfySdkConstants.paramPositionedMilliseconds] as? Int else {
+                    result(FlutterError(code: "position Error", message: "No URI was specified", details: nil))
+                    return
+            }
+            appRemote?.playerAPI?.seek(toPosition: position, callback: defaultPlayAPICallback)
+        case SpotfySdkConstants.methodGetCrossfadeState:
+            appRemote?.playerAPI?.getCrossfadeState({ (crossfadeState, error) in
+                guard error == nil else {
+                    result(FlutterError(code: "PlayerAPI Error", message: error?.localizedDescription, details: nil))
+                    return
+                }
+                guard let crossfadeState = crossfadeState as? SPTAppRemoteCrossfadeState else {
+                    result(FlutterError(code: "PlayerAPI Error", message: "PlayerState is empty", details: nil))
+                    return
+                }
+                result(State.crossfadeStateDictionary(crossfadeState).json)
+            })
+        case SpotfySdkConstants.methodSetShuffle:
+            guard let swiftArguments = call.arguments as? [String:Any],
+                let shuffle = swiftArguments[SpotfySdkConstants.paramShuffle] as? Bool else {
+                    result(FlutterError(code: "position Error", message: "No URI was specified", details: nil))
+                    return
+            }
+            appRemote?.playerAPI?.setShuffle(shuffle, callback: defaultPlayAPICallback)
+        case SpotfySdkConstants.methodSetRepeatMode:
+            guard let swiftArguments = call.arguments as? [String:Any],
+                let repeatModeIndex = swiftArguments[SpotfySdkConstants.paramRepeatMode] as? UInt,
+                let repeatMode = SPTAppRemotePlaybackOptionsRepeatMode(rawValue: repeatModeIndex)else {
+                    result(FlutterError(code: "position Error", message: "No URI was specified", details: nil))
+                    return
+            }
+            appRemote?.playerAPI?.setRepeatMode(repeatMode, callback: defaultPlayAPICallback)
         default:
             result(FlutterMethodNotImplemented)
         }

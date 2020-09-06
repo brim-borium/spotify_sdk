@@ -1,7 +1,7 @@
 import SpotifyiOS
 
-struct PlayerState {
-    static func stateJson(_ playerState: SPTAppRemotePlayerState) -> [String : Any] {
+struct State {
+    static func playerStateDictionary(_ playerState: SPTAppRemotePlayerState) -> [String : Any] {
         let artist = [
             "name" : playerState.track.artist.name,
             "uri" : playerState.track.artist.uri
@@ -53,12 +53,19 @@ struct PlayerState {
         ]
     }
 
-    static func contextJson(_ playerState: SPTAppRemotePlayerState) -> [String : Any] {
+    static func playerContextDictionary(_ playerState: SPTAppRemotePlayerState) -> [String : Any] {
         return [
             "title" : playerState.contextTitle,
             "subtitle" : playerState.contextTitle,
             "type" : playerState.contextURI.absoluteString.components(separatedBy: ":")[1],
             "uri" : playerState.contextURI.absoluteString
+        ]
+    }
+
+    static func crossfadeStateDictionary(_ crossfadeState: SPTAppRemoteCrossfadeState) -> [String : Any] {
+        return [
+            "duration": crossfadeState.duration,
+            "isEnabled": crossfadeState.isEnabled,
         ]
     }
 }
