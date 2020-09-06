@@ -6,8 +6,15 @@ else
 BASE_DIR=$(exec pwd)
 fi
 
-BASE_DIR="${BASE_DIR}/ios-sdk"
+rm -fR ios-sdk
+mkdir ios-sdk
+wget -c https://github.com/spotify/ios-sdk/archive/v1.2.2.zip
+unzip -o v1.2.2.zip
+mv ios-sdk-1.2.2/SpotifyiOS.framework ios-sdk
+rm v1.2.2.zip
+rm -fR ios-sdk-1.2.2
 
+BASE_DIR="${BASE_DIR}/ios-sdk"
 echo "BASE_DIR: ${BASE_DIR}"
 
 MODULE_DIR="${BASE_DIR}/SpotifyiOS.framework"

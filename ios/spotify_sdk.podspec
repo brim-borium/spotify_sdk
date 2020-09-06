@@ -23,5 +23,5 @@ Unofficial Spotify Flutter SDK.
   s.preserve_paths = 'ios-sdk/SpotifyiOS.framework'
   s.xcconfig = { 'OTHER_LDFLAGS' => '-framework SpotifyiOS' }
   s.vendored_frameworks = 'ios-sdk/SpotifyiOS.framework'
-  s.prepare_command = './modulemap.sh'
+  s.prepare_command = './prepare-iOS-SDK.sh'
   end

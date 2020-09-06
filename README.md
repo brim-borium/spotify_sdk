@@ -158,7 +158,3 @@ Have a look [in the example](example/lib/main.dart) for detailed insights on how
 
 - [Auth](https://spotify.github.io/android-sdk/auth-lib/docs/index.html)
 - [App Remote](https://spotify.github.io/android-sdk/app-remote-lib/docs/index.html)
-
-## Contribute
-
-In order to setup the project and start messing with the code clone it using `git clone --recurse-submodules https://github.com/brim-borium/spotify_sdk` as the iOS Spotify SDK if included as a git submodule.
