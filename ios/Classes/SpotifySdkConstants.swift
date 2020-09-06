@@ -25,6 +25,7 @@ public class SpotfySdkConstants
     public static let methodSkipPrevious = "skipPrevious"
     public static let methodSeekTo = "seekTo"
     public static let methodSeekToRelativePosition = "seekToRelativePosition"
+    public static let methodGetPlayerState = "getPlayerState"
 
     //user api
     public static let methodAddToLibrary = "addToLibrary"
@@ -39,6 +40,6 @@ public class SpotfySdkConstants
     public static let paramImageDimension = "imageDimension"
     public static let paramPositionedMilliseconds = "positionedMilliseconds"
     public static let paramRelativeMilliseconds = "relativeMilliseconds"
+    public static let paramAccessToken = "accessToken"
+    
 }
-
-

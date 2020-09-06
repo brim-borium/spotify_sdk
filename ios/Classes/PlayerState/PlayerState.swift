@@ -1,37 +1,7 @@
 import SpotifyiOS
 
-class PlayerStateHandler: StatusHandler, SPTAppRemotePlayerStateDelegate {
-
-    private var appRemote: SPTAppRemote
-    private var subscribedToPlayerState = false
-
-    init (appRemote: SPTAppRemote) {
-        self.appRemote = appRemote
-        super.init()
-    }
-
-    func playerStateDidChange(_ playerState: SPTAppRemotePlayerState) {
-        print("playerStateDidChange")
-        eventSink?(stateJson(playerState).json)
-    }
-
-    func subscribeToPlayerState() {
-        print("Subscribed to player state")
-        guard !subscribedToPlayerState else { return }
-        appRemote.playerAPI!.delegate = self
-        appRemote.playerAPI?.subscribe { (_, error) -> Void in
-            guard error == nil else { return }
-            self.subscribedToPlayerState = true
-        }
-    }
-
-    override func onListen(withArguments arguments: Any?, eventSink events: @escaping FlutterEventSink) -> FlutterError? {
-        _ = super.onListen(withArguments: arguments, eventSink: events)
-        subscribeToPlayerState()
-        return nil
-    }
-
-    private func stateJson(_ playerState: SPTAppRemotePlayerState) -> [String : Any] {
+struct PlayerState {
+    static func stateJson(_ playerState: SPTAppRemotePlayerState) -> [String : Any] {
         let artist = [
             "name" : playerState.track.artist.name,
             "uri" : playerState.track.artist.uri
@@ -82,17 +52,13 @@ class PlayerStateHandler: StatusHandler, SPTAppRemotePlayerStateDelegate {
             "playback_restrictions" : playbackRestrictions
         ]
     }
-}
 
-extension Dictionary {
-
-    var json: String {
-        let invalidJson = "Invalid JSON"
-        do {
-            let jsonData = try JSONSerialization.data(withJSONObject: self, options: .prettyPrinted)
-            return String(bytes: jsonData, encoding: String.Encoding.utf8) ?? invalidJson
-        } catch {
-            return invalidJson
-        }
+    static func contextJson(_ playerState: SPTAppRemotePlayerState) -> [String : Any] {
+        return [
+            "title" : playerState.contextTitle,
+            "subtitle" : playerState.contextTitle,
+            "type" : playerState.contextURI.absoluteString.components(separatedBy: ":")[1],
+            "uri" : playerState.contextURI.absoluteString
+        ]
     }
 }

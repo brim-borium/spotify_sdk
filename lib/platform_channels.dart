@@ -122,4 +122,7 @@ class ParamNames {
 
   /// param name for [relativeMilliseconds]
   static const String relativeMilliseconds = 'relativeMilliseconds';
+
+  /// param name for [accessToken]
+  static const String accessToken = 'accessToken';
 }
