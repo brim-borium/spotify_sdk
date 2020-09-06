@@ -31,21 +31,21 @@ import 'spotify_sdk.dart';
 class SpotifySdkPlugin {
   /// authentication token error id
   static const String errorAuthenticationTokenError =
-      "authenticationTokenError";
+      'authenticationTokenError';
 
   /// spotify sdk url
   static const String spotifySdkUrl = 'https://sdk.scdn.co/spotify-player.js';
 
   /// spotify auth scopes
   static const List<String> authenticationScopes = [
-    "streaming",
-    "user-read-email",
-    "user-read-private",
-    "app-remote-control",
-    "user-modify-playback-state",
-    "playlist-read-private",
-    "playlist-modify-public",
-    "user-read-currently-playing"
+  'streaming',
+  'user-read-email',
+  'user-read-private',
+    'app-remote-control',
+    'user-modify-playback-state',
+    'playlist-read-private',
+    'playlist-modify-public',
+    'user-read-currently-playing'
   ];
 
   /// Whether the Spotify SDK is loaded.
@@ -153,8 +153,8 @@ class SpotifySdkPlugin {
             redirectUrl?.isNotEmpty == true)) {
           throw PlatformException(
               message:
-                  "Client id or redirectUrl are not set or have invalid format",
-              code: "Authentication Error");
+                  'Client id or redirectUrl are not set or have invalid format',
+              code: 'Authentication Error');
         }
         cachedClientId = clientId;
         cachedRedirectUrl = redirectUrl;
@@ -187,8 +187,8 @@ class SpotifySdkPlugin {
         } else {
           // disconnected
           _onSpotifyDisconected(
-              errorCode: "Initialization Error",
-              errorDetails: "Attempt to connect to the Spotify SDK failed");
+              errorCode: 'Initialization Error',
+              errorDetails: 'Attempt to connect to the Spotify SDK failed');
           return false;
         }
         break;
@@ -247,7 +247,7 @@ class SpotifySdkPlugin {
   }
 
   /// Loads the Spotify SDK library.
-  _initializeSpotify() {
+  void _initializeSpotify() {
     if (context['onSpotifyWebPlaybackSDKReady'] == null) {
       // load spotify sdk
       context['onSpotifyWebPlaybackSDKReady'] =
@@ -261,7 +261,7 @@ class SpotifySdkPlugin {
   }
 
   /// Registers Spotify event handlers.
-  _registerPlayerEvents(Player player) {
+  void _registerPlayerEvents(Player player) {
     // player state
     player.addListener('player_state_changed',
         allowInterop((WebPlaybackState state) {
@@ -278,8 +278,8 @@ class SpotifySdkPlugin {
     }));
     player.addListener('not_ready', allowInterop((event) {
       _onSpotifyDisconected(
-          errorCode: "Spotify SDK not ready",
-          errorDetails: "Spotify SDK is not ready to take requests");
+          errorCode: 'Spotify SDK not ready',
+          errorDetails: 'Spotify SDK is not ready to take requests');
     }));
 
     // errors
@@ -291,7 +291,7 @@ class SpotifySdkPlugin {
     player.addListener('authentication_error',
         allowInterop((WebPlaybackError error) {
       _onSpotifyDisconected(
-          errorCode: "Authentication Error", errorDetails: error.message);
+          errorCode: 'Authentication Error', errorDetails: error.message);
     }));
     player.addListener('account_error', allowInterop((WebPlaybackError error) {
       _onSpotifyDisconected(
@@ -303,18 +303,18 @@ class SpotifySdkPlugin {
   }
 
   /// Called when the Spotify SDK is first loaded.
-  _onSpotifyInitialized() {
+  void _onSpotifyInitialized() {
     log('Spotify SDK loaded!');
     _sdkLoaded = true;
   }
 
   /// Called when the plugin successfully connects to the spotify web sdk.
-  _onSpotifyConnected(String deviceId) {
+  void _onSpotifyConnected(String deviceId) {
     _currentPlayer.deviceID = deviceId;
 
     // emit connected event
     connectionStatusEventController.add(jsonEncode(ConnectionStatus(
-      "Spotify SDK connected",
+      'Spotify SDK connected',
       null,
       null,
       connected: true,
@@ -322,7 +322,7 @@ class SpotifySdkPlugin {
   }
 
   /// Called when the plugin disconects from the spotify sdk.
-  _onSpotifyDisconected({String errorCode, String errorDetails}) {
+  void _onSpotifyDisconected({String errorCode, String errorDetails}) {
     _unregisterPlayerEvents(_currentPlayer);
     _currentPlayer = null;
 
@@ -333,12 +333,12 @@ class SpotifySdkPlugin {
 
     // emit not connected event
     connectionStatusEventController.add(jsonEncode(ConnectionStatus(
-            "Spotify SDK disconnected", errorCode, errorDetails,
+            'Spotify SDK disconnected', errorCode, errorDetails,
             connected: false)
         .toJson()));
   }
 
-  _unregisterPlayerEvents(Player player) {
+  void _unregisterPlayerEvents(Player player) {
     player.removeListener('player_state_changed');
     player.removeListener('ready');
     player.removeListener('not_ready');
@@ -357,12 +357,8 @@ class SpotifySdkPlugin {
       return _spotifyToken.token;
     }
 
-    if (clientId == null) {
-      clientId = cachedClientId;
-    }
-    if (redirectUrl == null) {
-      redirectUrl = cachedRedirectUrl;
-    }
+    clientId ??= cachedClientId;
+    redirectUrl ??= cachedRedirectUrl;
     var newToken = await _authenticateSpotify(clientId, redirectUrl);
     _spotifyToken =
         SpotifyToken(newToken, DateTime.now().millisecondsSinceEpoch + 3600000);
@@ -377,7 +373,7 @@ class SpotifySdkPlugin {
       var authUrl =
           'https://accounts.spotify.com/authorize?client_id=$clientId&response_type=token&scope=$scopes&redirect_uri=$redirectUrl';
 
-      var authPopup = window.open(authUrl, "Spotify Authorization");
+      var authPopup = window.open(authUrl, 'Spotify Authorization');
       String hash;
       String error;
       var sub = window.onMessage.listen(allowInterop((event) {
@@ -406,14 +402,14 @@ class SpotifySdkPlugin {
       // check output
       if (error != null || hash == null) {
         throw PlatformException(
-            message: "$error", code: "Authentication Error");
+            message: '$error', code: 'Authentication Error');
       }
       return hash.split('&')[0].split('=')[1];
     } else {
       throw PlatformException(
           message:
-              "Client id or redirectUrl are not set or have invalid format",
-          code: "Authentication Error");
+              'Client id or redirectUrl are not set or have invalid format',
+          code: 'Authentication Error');
     }
   }
 
@@ -421,7 +417,7 @@ class SpotifySdkPlugin {
   Future _play(String uri) async {
     if (_currentPlayer?.deviceID == null) {
       throw PlatformException(
-          message: "Spotify player not connected!", code: "Playback Error");
+          message: 'Spotify player not connected!', code: 'Playback Error');
     }
 
     await _dio.put(
@@ -443,7 +439,7 @@ class SpotifySdkPlugin {
   Future _queue(String uri) async {
     if (_currentPlayer?.deviceID == null) {
       throw PlatformException(
-          message: "Spotify player not connected!", code: "Playback Error");
+          message: 'Spotify player not connected!', code: 'Playback Error');
     }
 
     await _dio.post(
@@ -507,7 +503,7 @@ class SpotifySdkPlugin {
   Future toggleShuffle({bool state}) async {
     if (_currentPlayer?.deviceID == null) {
       throw PlatformException(
-          message: "Spotify player not connected!", code: "Playback Error");
+          message: 'Spotify player not connected!', code: 'Playback Error');
     }
 
     await _dio.put(
@@ -526,7 +522,7 @@ class SpotifySdkPlugin {
   Future toggleRepeat({bool state}) async {
     if (_currentPlayer?.deviceID == null) {
       throw PlatformException(
-          message: "Spotify player not connected!", code: "Playback Error");
+          message: 'Spotify player not connected!', code: 'Playback Error');
     }
 
     await _dio.put(
