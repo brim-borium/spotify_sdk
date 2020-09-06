@@ -6,7 +6,8 @@ else
 BASE_DIR=$(exec pwd)
 fi
 
-mkdir -p ios-sdk
+rm -fR ios-sdk
+mkdir ios-sdk
 wget -c https://github.com/spotify/ios-sdk/archive/v1.2.2.zip
 unzip -o v1.2.2.zip
 mv ios-sdk-1.2.2/SpotifyiOS.framework ios-sdk
