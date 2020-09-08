@@ -51,7 +51,13 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
                 appRemote.connectionParameters.accessToken = accessToken
                 appRemote.connect()
             } else {
-                connectToSpotify(clientId: clientID, redirectURL: url)
+                do {
+                    try connectToSpotify(clientId: clientID, redirectURL: url)
+                }
+                catch {
+                    result(FlutterError(code: "CouldNotFindSpotifyApp", message: "The Spotify app is not installed on the device", details: nil))
+                    return
+                }
             }
             result(true)
         case SpotfySdkConstants.methodGetAuthenticationToken:
@@ -62,7 +68,13 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
                     return
             }
             self.result = result
-            connectToSpotify(clientId: clientID, redirectURL: url)
+            do {
+                try connectToSpotify(clientId: clientID, redirectURL: url)
+            }
+            catch {
+                result(FlutterError(code: "CouldNotFindSpotifyApp", message: "The Spotify app is not installed on the device", details: nil))
+                return
+            }
         case SpotfySdkConstants.methodGetImage:
             guard let swiftArguments = call.arguments as? [String:Any],
                 let paramImageUri = swiftArguments[SpotfySdkConstants.paramImageUri] as? String,
@@ -150,7 +162,7 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
         case SpotfySdkConstants.methodSeekTo:
             guard let swiftArguments = call.arguments as? [String:Any],
                 let position = swiftArguments[SpotfySdkConstants.paramPositionedMilliseconds] as? Int else {
-                    result(FlutterError(code: "position Error", message: "No URI was specified", details: nil))
+                    result(FlutterError(code: "Position error", message: "No URI was specified", details: nil))
                     return
             }
             appRemote?.playerAPI?.seek(toPosition: position, callback: defaultPlayAPICallback)
@@ -169,7 +181,7 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
         case SpotfySdkConstants.methodSetShuffle:
             guard let swiftArguments = call.arguments as? [String:Any],
                 let shuffle = swiftArguments[SpotfySdkConstants.paramShuffle] as? Bool else {
-                    result(FlutterError(code: "position Error", message: "No URI was specified", details: nil))
+                    result(FlutterError(code: "Position error", message: "No URI was specified", details: nil))
                     return
             }
             appRemote?.playerAPI?.setShuffle(shuffle, callback: defaultPlayAPICallback)
@@ -177,7 +189,7 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
             guard let swiftArguments = call.arguments as? [String:Any],
                 let repeatModeIndex = swiftArguments[SpotfySdkConstants.paramRepeatMode] as? UInt,
                 let repeatMode = SPTAppRemotePlaybackOptionsRepeatMode(rawValue: repeatModeIndex)else {
-                    result(FlutterError(code: "position Error", message: "No URI was specified", details: nil))
+                    result(FlutterError(code: "Position error", message: "No URI was specified", details: nil))
                     return
             }
             appRemote?.playerAPI?.setRepeatMode(repeatMode, callback: defaultPlayAPICallback)
@@ -186,7 +198,11 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
         }
     }
 
-    private func connectToSpotify(clientId: String, redirectURL: String, accessToken: String? = nil) {
+    private func connectToSpotify(clientId: String, redirectURL: String, accessToken: String? = nil) throws {
+        enum SpotifyError: Error {
+            case spotifyNotInstalledError
+        }
+
         guard let redirectURL = URL(string: redirectURL) else { return }
         let configuration = SPTConfiguration(clientID: clientId, redirectURL: redirectURL)
         let appRemote = SPTAppRemote(configuration: configuration, logLevel: .none)
@@ -202,12 +218,7 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
 
         // Note: A blank string will play the user's last song or pick a random one.
         if self.appRemote?.authorizeAndPlayURI("") == false {
-
-            /*
-             * The Spotify app is not installed.
-             * Use SKStoreProductViewController with [SPTAppRemote spotifyItunesItemIdentifier] to present the user
-             * with a way to install the Spotify app.
-             */
+            throw SpotifyError.spotifyNotInstalledError
         }
     }
 }
