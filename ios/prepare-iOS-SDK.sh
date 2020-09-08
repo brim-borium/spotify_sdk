@@ -8,7 +8,7 @@ fi
 
 rm -fR ios-sdk
 mkdir ios-sdk
-wget -c https://github.com/spotify/ios-sdk/archive/v1.2.2.zip
+curl -OL https://github.com/spotify/ios-sdk/archive/v1.2.2.zip
 unzip -o v1.2.2.zip
 mv ios-sdk-1.2.2/SpotifyiOS.framework ios-sdk
 rm v1.2.2.zip
