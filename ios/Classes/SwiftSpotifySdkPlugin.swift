@@ -224,8 +224,21 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
     }
 }
 
-extension SwiftSpotifySdkPlugin: UIApplicationDelegate {
+extension SwiftSpotifySdkPlugin {
     public func application(_ application: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+        setAccessTokenFromURL(url: url)
+        return true
+    }
+
+    public func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([Any]) -> Void) -> Bool {
+        guard userActivity.activityType == NSUserActivityTypeBrowsingWeb,
+            let url = userActivity.webpageURL
+            else {
+                connectionResult?(FlutterError(code: "Authentication Error", message: "No callback URL found", details: nil))
+                tokenResult?(FlutterError(code: "Authentication Error", message: "No callback URL found", details: nil))
+                return false
+        }
+
         setAccessTokenFromURL(url: url)
         return true
     }
@@ -237,14 +250,14 @@ extension SwiftSpotifySdkPlugin: UIApplicationDelegate {
         }
 
         guard let appRemote = appRemote else {
+            connectionResult?(FlutterError(code: "AppRemote Error", message: "AppRemote is null", details: nil))
             tokenResult?(FlutterError(code: "AppRemote Error", message: "AppRemote is null", details: nil))
-            connectionResult?(false)
             return
         }
 
         guard let token = appRemote.authorizationParameters(from: url)?[SPTAppRemoteAccessTokenKey] else {
+            connectionResult?(FlutterError(code: "AppRemote Error", message: "AppRemote is null", details: nil))
             tokenResult?(FlutterError(code: "Authentication Error", message: appRemote.authorizationParameters(from: url)?[SPTAppRemoteErrorDescriptionKey], details: nil))
-            connectionResult?(false)
             return
         }
 
