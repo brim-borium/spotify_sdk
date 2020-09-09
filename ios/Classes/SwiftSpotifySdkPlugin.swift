@@ -9,7 +9,8 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
     private var playerContextHandler: PlayerContextHandler?
     private static var playerStateChannel: FlutterEventChannel?
     private static var playerContextChannel: FlutterEventChannel?
-    private var result: FlutterResult?
+    private var connectionResult: FlutterResult?
+    private var tokenResult: FlutterResult?
 
     public static func register(with registrar: FlutterPluginRegistrar) {
         let spotifySDKChannel = FlutterMethodChannel(name: "spotify_sdk", binaryMessenger: registrar.messenger())
@@ -51,6 +52,7 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
                 appRemote.connectionParameters.accessToken = accessToken
                 appRemote.connect()
             } else {
+                self.connectionResult = result
                 do {
                     try connectToSpotify(clientId: clientID, redirectURL: url)
                 }
@@ -59,7 +61,6 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
                     return
                 }
             }
-            result(true)
         case SpotfySdkConstants.methodGetAuthenticationToken:
             guard let swiftArguments = call.arguments as? [String:Any],
                 let clientID = swiftArguments[SpotfySdkConstants.paramClientId] as? String,
@@ -67,7 +68,7 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
                     result(FlutterError(code: "Arguments Error", message: "One or more arguments are missing", details: nil))
                     return
             }
-            self.result = result
+            self.tokenResult = result
             do {
                 try connectToSpotify(clientId: clientID, redirectURL: url)
             }
@@ -231,21 +232,25 @@ extension SwiftSpotifySdkPlugin: UIApplicationDelegate {
 
     private func setAccessTokenFromURL(url: URL) {
         defer {
-            self.result = nil
+            self.connectionResult = nil
+            self.tokenResult = nil
         }
 
         guard let appRemote = appRemote else {
-            result?(FlutterError(code: "AppRemote Error", message: "AppRemote is null", details: nil))
+            tokenResult?(FlutterError(code: "AppRemote Error", message: "AppRemote is null", details: nil))
+            connectionResult?(false)
             return
         }
 
         guard let token = appRemote.authorizationParameters(from: url)?[SPTAppRemoteAccessTokenKey] else {
-            result?(FlutterError(code: "Authentication Error", message: appRemote.authorizationParameters(from: url)?[SPTAppRemoteErrorDescriptionKey], details: nil))
+            tokenResult?(FlutterError(code: "Authentication Error", message: appRemote.authorizationParameters(from: url)?[SPTAppRemoteErrorDescriptionKey], details: nil))
+            connectionResult?(false)
             return
         }
 
         appRemote.connectionParameters.accessToken = token
         appRemote.connect()
-        result?(token)
+        connectionResult?(true)
+        tokenResult?(token)
     }
 }
