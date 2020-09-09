@@ -234,8 +234,8 @@ extension SwiftSpotifySdkPlugin {
         guard userActivity.activityType == NSUserActivityTypeBrowsingWeb,
             let url = userActivity.webpageURL
             else {
-                connectionResult?(FlutterError(code: "Authentication Error", message: "No callback URL found", details: nil))
-                tokenResult?(FlutterError(code: "Authentication Error", message: "No callback URL found", details: nil))
+                connectionResult?(FlutterError(code: "errorConnecting", message: "client id or redirectUrl are not set or have invalid format", details: nil))
+                tokenResult?(FlutterError(code: "errorConnecting", message: "client id or redirectUrl are not set or have invalid format", details: nil))
                 return false
         }
 
@@ -250,14 +250,14 @@ extension SwiftSpotifySdkPlugin {
         }
 
         guard let appRemote = appRemote else {
-            connectionResult?(FlutterError(code: "AppRemote Error", message: "AppRemote is null", details: nil))
-            tokenResult?(FlutterError(code: "AppRemote Error", message: "AppRemote is null", details: nil))
+            connectionResult?(FlutterError(code: "errorConnection", message: "AppRemote is null", details: nil))
+            tokenResult?(FlutterError(code: "errorConnection", message: "AppRemote is null", details: nil))
             return
         }
 
         guard let token = appRemote.authorizationParameters(from: url)?[SPTAppRemoteAccessTokenKey] else {
-            connectionResult?(FlutterError(code: "AppRemote Error", message: "AppRemote is null", details: nil))
-            tokenResult?(FlutterError(code: "Authentication Error", message: appRemote.authorizationParameters(from: url)?[SPTAppRemoteErrorDescriptionKey], details: nil))
+            connectionResult?(FlutterError(code: "authenticationTokenError", message: appRemote.authorizationParameters(from: url)?[SPTAppRemoteErrorDescriptionKey], details: nil))
+            tokenResult?(FlutterError(code: "authenticationTokenError", message: appRemote.authorizationParameters(from: url)?[SPTAppRemoteErrorDescriptionKey], details: nil))
             return
         }
 
