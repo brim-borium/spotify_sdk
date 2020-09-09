@@ -230,15 +230,22 @@ extension SwiftSpotifySdkPlugin: UIApplicationDelegate {
     }
 
     private func setAccessTokenFromURL(url: URL) {
-        let params = appRemote?.authorizationParameters(from: url)
-        if let token = params?[SPTAppRemoteAccessTokenKey] {
-            self.appRemote?.connectionParameters.accessToken = token
-            self.appRemote?.connect()
-            self.result?(token)
+        defer {
             self.result = nil
         }
-        else if let error = params?[SPTAppRemoteErrorDescriptionKey] {
-            print(error)
+
+        guard let appRemote = appRemote else {
+            result?(FlutterError(code: "AppRemote Error", message: "AppRemote is null", details: nil))
+            return
         }
+
+        guard let token = appRemote.authorizationParameters(from: url)?[SPTAppRemoteAccessTokenKey] else {
+            result?(FlutterError(code: "Authentication Error", message: appRemote.authorizationParameters(from: url)?[SPTAppRemoteErrorDescriptionKey], details: nil))
+            return
+        }
+
+        appRemote.connectionParameters.accessToken = token
+        appRemote.connect()
+        result?(token)
     }
 }
