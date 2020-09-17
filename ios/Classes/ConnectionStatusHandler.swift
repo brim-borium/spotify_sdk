@@ -2,7 +2,17 @@ import SpotifyiOS
 
 class ConnectionStatusHandler: StatusHandler, SPTAppRemoteDelegate {
 
+    let pluginInstance : SwiftSpotifySdkPlugin
+    init(pluginInstance: SwiftSpotifySdkPlugin){
+        self.pluginInstance = pluginInstance
+    }
+    
     func appRemoteDidEstablishConnection(_ appRemote: SPTAppRemote) {
+        defer {
+            pluginInstance.connectionResult = nil
+        }
+        
+        pluginInstance.connectionResult?(true)
         eventSink?("{\"connected\": true}")
     }
 

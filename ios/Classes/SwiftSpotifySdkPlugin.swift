@@ -22,7 +22,7 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
         registrar.addApplicationDelegate(instance)
         registrar.addMethodCallDelegate(instance, channel: spotifySDKChannel)
 
-        instance.connectionStatusHandler = ConnectionStatusHandler()
+        instance.connectionStatusHandler = ConnectionStatusHandler(instance)
 
         connectionStatusChannel.setStreamHandler(instance.connectionStatusHandler)
     }
@@ -293,6 +293,8 @@ extension SwiftSpotifySdkPlugin {
             else {
                 connectionResult?(FlutterError(code: "errorConnecting", message: "client id or redirectUrl are not set or have invalid format", details: nil))
                 tokenResult?(FlutterError(code: "errorConnecting", message: "client id or redirectUrl are not set or have invalid format", details: nil))
+                self.connectionResult = nil
+                self.tokenResult = nil
                 return false
         }
 
@@ -302,25 +304,25 @@ extension SwiftSpotifySdkPlugin {
 
     private func setAccessTokenFromURL(url: URL) {
         defer {
-            self.connectionResult = nil
             self.tokenResult = nil
         }
-
+        
         guard let appRemote = appRemote else {
             connectionResult?(FlutterError(code: "errorConnection", message: "AppRemote is null", details: nil))
             tokenResult?(FlutterError(code: "errorConnection", message: "AppRemote is null", details: nil))
+            self.connectionResult = nil
             return
         }
 
         guard let token = appRemote.authorizationParameters(from: url)?[SPTAppRemoteAccessTokenKey] else {
             connectionResult?(FlutterError(code: "authenticationTokenError", message: appRemote.authorizationParameters(from: url)?[SPTAppRemoteErrorDescriptionKey], details: nil))
             tokenResult?(FlutterError(code: "authenticationTokenError", message: appRemote.authorizationParameters(from: url)?[SPTAppRemoteErrorDescriptionKey], details: nil))
+            self.connectionResult = nil
             return
         }
 
         appRemote.connectionParameters.accessToken = token
         appRemote.connect()
-        connectionResult?(true)
         tokenResult?(token)
     }
 }
