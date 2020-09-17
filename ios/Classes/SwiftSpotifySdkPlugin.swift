@@ -9,7 +9,7 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
     private var playerContextHandler: PlayerContextHandler?
     private static var playerStateChannel: FlutterEventChannel?
     private static var playerContextChannel: FlutterEventChannel?
-    private var connectionResult: FlutterResult?
+    internal var connectionResult: FlutterResult?
     private var tokenResult: FlutterResult?
 
     public static func register(with registrar: FlutterPluginRegistrar) {
@@ -22,7 +22,7 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
         registrar.addApplicationDelegate(instance)
         registrar.addMethodCallDelegate(instance, channel: spotifySDKChannel)
 
-        instance.connectionStatusHandler = ConnectionStatusHandler(instance)
+        instance.connectionStatusHandler = ConnectionStatusHandler(pluginInstance: instance)
 
         connectionStatusChannel.setStreamHandler(instance.connectionStatusHandler)
     }
