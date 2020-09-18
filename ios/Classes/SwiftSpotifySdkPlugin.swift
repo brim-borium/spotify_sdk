@@ -9,7 +9,8 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
     private var playerContextHandler: PlayerContextHandler?
     private static var playerStateChannel: FlutterEventChannel?
     private static var playerContextChannel: FlutterEventChannel?
-    private var result: FlutterResult?
+    internal var connectionResult: FlutterResult?
+    private var tokenResult: FlutterResult?
 
     public static func register(with registrar: FlutterPluginRegistrar) {
         let spotifySDKChannel = FlutterMethodChannel(name: "spotify_sdk", binaryMessenger: registrar.messenger())
@@ -21,7 +22,7 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
         registrar.addApplicationDelegate(instance)
         registrar.addMethodCallDelegate(instance, channel: spotifySDKChannel)
 
-        instance.connectionStatusHandler = ConnectionStatusHandler()
+        instance.connectionStatusHandler = ConnectionStatusHandler(pluginInstance: instance)
 
         connectionStatusChannel.setStreamHandler(instance.connectionStatusHandler)
     }
@@ -51,9 +52,15 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
                 appRemote.connectionParameters.accessToken = accessToken
                 appRemote.connect()
             } else {
-                connectToSpotify(clientId: clientID, redirectURL: url)
+                self.connectionResult = result
+                do {
+                    try connectToSpotify(clientId: clientID, redirectURL: url)
+                }
+                catch {
+                    result(FlutterError(code: "CouldNotFindSpotifyApp", message: "The Spotify app is not installed on the device", details: nil))
+                    return
+                }
             }
-            result(true)
         case SpotfySdkConstants.methodGetAuthenticationToken:
             guard let swiftArguments = call.arguments as? [String:Any],
                 let clientID = swiftArguments[SpotfySdkConstants.paramClientId] as? String,
@@ -61,9 +68,19 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
                     result(FlutterError(code: "Arguments Error", message: "One or more arguments are missing", details: nil))
                     return
             }
-            self.result = result
-            connectToSpotify(clientId: clientID, redirectURL: url)
+            self.tokenResult = result
+            do {
+                try connectToSpotify(clientId: clientID, redirectURL: url)
+            }
+            catch {
+                result(FlutterError(code: "CouldNotFindSpotifyApp", message: "The Spotify app is not installed on the device", details: nil))
+                return
+            }
         case SpotfySdkConstants.methodGetImage:
+            guard let appRemote = appRemote else {
+                result(FlutterError(code: "Connection Error", message: "AppRemote is null", details: nil))
+                return
+            }
             guard let swiftArguments = call.arguments as? [String:Any],
                 let paramImageUri = swiftArguments[SpotfySdkConstants.paramImageUri] as? String,
                 let paramImageDimension = swiftArguments[SpotfySdkConstants.paramImageDimension] as? Int else {
@@ -77,7 +94,7 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
 
             let imageObject = ImageObject()
             imageObject.imageIdentifier = paramImageUri
-            appRemote?.imageAPI?.fetchImage(forItem: imageObject, with: CGSize(width: paramImageDimension, height: paramImageDimension), callback: { (image, error) in
+            appRemote.imageAPI?.fetchImage(forItem: imageObject, with: CGSize(width: paramImageDimension, height: paramImageDimension), callback: { (image, error) in
                 guard error == nil else {
                     result(FlutterError(code: "ImageAPI Error", message: error?.localizedDescription, details: nil))
                     return
@@ -89,7 +106,12 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
                 result(imageData)
             })
         case SpotfySdkConstants.methodGetPlayerState:
-            appRemote?.playerAPI?.getPlayerState({ (playerState, error) in
+            guard let appRemote = appRemote else {
+                result(FlutterError(code: "Connection Error", message: "AppRemote is null", details: nil))
+                return
+            }
+            
+            appRemote.playerAPI?.getPlayerState({ (playerState, error) in
                 guard error == nil else {
                     result(FlutterError(code: "PlayerAPI Error", message: error?.localizedDescription, details: nil))
                     return
@@ -105,21 +127,41 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
 //            appRemote?.connectionParameters.accessToken = nil
             result(true)
         case SpotfySdkConstants.methodPlay:
+            guard let appRemote = appRemote else {
+                result(FlutterError(code: "Connection Error", message: "AppRemote is null", details: nil))
+                return
+            }
             guard let swiftArguments = call.arguments as? [String:Any],
                 let uri = swiftArguments[SpotfySdkConstants.paramSpotifyUri] as? String else {
                     result(FlutterError(code: "URI Error", message: "No URI was specified", details: nil))
                     return
             }
             let asRadio: Bool = (swiftArguments[SpotfySdkConstants.paramAsRadio] as? Bool) ?? false
-            appRemote?.playerAPI?.play(uri, asRadio: asRadio, callback: defaultPlayAPICallback)
+            appRemote.playerAPI?.play(uri, asRadio: asRadio, callback: defaultPlayAPICallback)
         case SpotfySdkConstants.methodPause:
-            appRemote?.playerAPI?.pause(defaultPlayAPICallback)
+            guard let appRemote = appRemote else {
+                result(FlutterError(code: "Connection Error", message: "AppRemote is null", details: nil))
+                return
+            }
+            appRemote.playerAPI?.pause(defaultPlayAPICallback)
         case SpotfySdkConstants.methodResume:
-            appRemote?.playerAPI?.resume(defaultPlayAPICallback)
+            guard let appRemote = appRemote else {
+                result(FlutterError(code: "Connection Error", message: "AppRemote is null", details: nil))
+                return
+            }
+            appRemote.playerAPI?.resume(defaultPlayAPICallback)
         case SpotfySdkConstants.methodSkipNext:
-            appRemote?.playerAPI?.skip(toNext: defaultPlayAPICallback)
+            guard let appRemote = appRemote else {
+                result(FlutterError(code: "Connection Error", message: "AppRemote is null", details: nil))
+                return
+            }
+            appRemote.playerAPI?.skip(toNext: defaultPlayAPICallback)
         case SpotfySdkConstants.methodSkipPrevious:
-            appRemote?.playerAPI?.skip(toNext: { (spotifyResult, error) in
+            guard let appRemote = appRemote else {
+                result(FlutterError(code: "Connection Error", message: "AppRemote is null", details: nil))
+                return
+            }
+            appRemote.playerAPI?.skip(toNext: { (spotifyResult, error) in
                 if let error = error {
                     result(FlutterError(code: "PlayerAPI Error", message: error.localizedDescription, details: nil))
                     return
@@ -127,35 +169,55 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
                 result(true)
             })
         case SpotfySdkConstants.methodAddToLibrary:
+            guard let appRemote = appRemote else {
+                result(FlutterError(code: "Connection Error", message: "AppRemote is null", details: nil))
+                return
+            }
             guard let swiftArguments = call.arguments as? [String:Any],
                 let uri = swiftArguments[SpotfySdkConstants.paramSpotifyUri] as? String else {
                     result(FlutterError(code: "URI Error", message: "No URI was specified", details: nil))
                     return
             }
-            appRemote?.userAPI?.addItemToLibrary(withURI: uri, callback: defaultPlayAPICallback)
+            appRemote.userAPI?.addItemToLibrary(withURI: uri, callback: defaultPlayAPICallback)
         case SpotfySdkConstants.methodRemoveFromLibrary:
+            guard let appRemote = appRemote else {
+                result(FlutterError(code: "Connection Error", message: "AppRemote is null", details: nil))
+                return
+            }
             guard let swiftArguments = call.arguments as? [String:Any],
                 let uri = swiftArguments[SpotfySdkConstants.paramSpotifyUri] as? String else {
                     result(FlutterError(code: "URI Error", message: "No URI was specified", details: nil))
                     return
             }
-            appRemote?.userAPI?.removeItemFromLibrary(withURI: uri, callback: defaultPlayAPICallback)
+            appRemote.userAPI?.removeItemFromLibrary(withURI: uri, callback: defaultPlayAPICallback)
         case SpotfySdkConstants.methodQueueTrack:
+            guard let appRemote = appRemote else {
+                result(FlutterError(code: "Connection Error", message: "AppRemote is null", details: nil))
+                return
+            }
             guard let swiftArguments = call.arguments as? [String:Any],
                 let uri = swiftArguments[SpotfySdkConstants.paramSpotifyUri] as? String else {
                     result(FlutterError(code: "URI Error", message: "No URI was specified", details: nil))
                     return
             }
-            appRemote?.playerAPI?.enqueueTrackUri(uri, callback: defaultPlayAPICallback)
+            appRemote.playerAPI?.enqueueTrackUri(uri, callback: defaultPlayAPICallback)
         case SpotfySdkConstants.methodSeekTo:
+            guard let appRemote = appRemote else {
+                result(FlutterError(code: "Connection Error", message: "AppRemote is null", details: nil))
+                return
+            }
             guard let swiftArguments = call.arguments as? [String:Any],
                 let position = swiftArguments[SpotfySdkConstants.paramPositionedMilliseconds] as? Int else {
-                    result(FlutterError(code: "position Error", message: "No URI was specified", details: nil))
+                    result(FlutterError(code: "Position error", message: "No URI was specified", details: nil))
                     return
             }
-            appRemote?.playerAPI?.seek(toPosition: position, callback: defaultPlayAPICallback)
+            appRemote.playerAPI?.seek(toPosition: position, callback: defaultPlayAPICallback)
         case SpotfySdkConstants.methodGetCrossfadeState:
-            appRemote?.playerAPI?.getCrossfadeState({ (crossfadeState, error) in
+            guard let appRemote = appRemote else {
+                result(FlutterError(code: "Connection Error", message: "AppRemote is null", details: nil))
+                return
+            }
+            appRemote.playerAPI?.getCrossfadeState({ (crossfadeState, error) in
                 guard error == nil else {
                     result(FlutterError(code: "PlayerAPI Error", message: error?.localizedDescription, details: nil))
                     return
@@ -167,26 +229,38 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
                 result(State.crossfadeStateDictionary(crossfadeState).json)
             })
         case SpotfySdkConstants.methodSetShuffle:
+            guard let appRemote = appRemote else {
+                result(FlutterError(code: "Connection Error", message: "AppRemote is null", details: nil))
+                return
+            }
             guard let swiftArguments = call.arguments as? [String:Any],
                 let shuffle = swiftArguments[SpotfySdkConstants.paramShuffle] as? Bool else {
-                    result(FlutterError(code: "position Error", message: "No URI was specified", details: nil))
+                    result(FlutterError(code: "Position error", message: "No URI was specified", details: nil))
                     return
             }
-            appRemote?.playerAPI?.setShuffle(shuffle, callback: defaultPlayAPICallback)
+            appRemote.playerAPI?.setShuffle(shuffle, callback: defaultPlayAPICallback)
         case SpotfySdkConstants.methodSetRepeatMode:
+            guard let appRemote = appRemote else {
+                result(FlutterError(code: "Connection Error", message: "AppRemote is null", details: nil))
+                return
+            }
             guard let swiftArguments = call.arguments as? [String:Any],
                 let repeatModeIndex = swiftArguments[SpotfySdkConstants.paramRepeatMode] as? UInt,
                 let repeatMode = SPTAppRemotePlaybackOptionsRepeatMode(rawValue: repeatModeIndex)else {
-                    result(FlutterError(code: "position Error", message: "No URI was specified", details: nil))
+                    result(FlutterError(code: "Position error", message: "No URI was specified", details: nil))
                     return
             }
-            appRemote?.playerAPI?.setRepeatMode(repeatMode, callback: defaultPlayAPICallback)
+            appRemote.playerAPI?.setRepeatMode(repeatMode, callback: defaultPlayAPICallback)
         default:
             result(FlutterMethodNotImplemented)
         }
     }
 
-    private func connectToSpotify(clientId: String, redirectURL: String, accessToken: String? = nil) {
+    private func connectToSpotify(clientId: String, redirectURL: String, accessToken: String? = nil) throws {
+        enum SpotifyError: Error {
+            case spotifyNotInstalledError
+        }
+
         guard let redirectURL = URL(string: redirectURL) else { return }
         let configuration = SPTConfiguration(clientID: clientId, redirectURL: redirectURL)
         let appRemote = SPTAppRemote(configuration: configuration, logLevel: .none)
@@ -202,32 +276,53 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
 
         // Note: A blank string will play the user's last song or pick a random one.
         if self.appRemote?.authorizeAndPlayURI("") == false {
-
-            /*
-             * The Spotify app is not installed.
-             * Use SKStoreProductViewController with [SPTAppRemote spotifyItunesItemIdentifier] to present the user
-             * with a way to install the Spotify app.
-             */
+            throw SpotifyError.spotifyNotInstalledError
         }
     }
 }
 
-extension SwiftSpotifySdkPlugin: UIApplicationDelegate {
+extension SwiftSpotifySdkPlugin {
     public func application(_ application: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
         setAccessTokenFromURL(url: url)
         return true
     }
 
+    public func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([Any]) -> Void) -> Bool {
+        guard userActivity.activityType == NSUserActivityTypeBrowsingWeb,
+            let url = userActivity.webpageURL
+            else {
+                connectionResult?(FlutterError(code: "errorConnecting", message: "client id or redirectUrl are not set or have invalid format", details: nil))
+                tokenResult?(FlutterError(code: "errorConnecting", message: "client id or redirectUrl are not set or have invalid format", details: nil))
+                self.connectionResult = nil
+                self.tokenResult = nil
+                return false
+        }
+
+        setAccessTokenFromURL(url: url)
+        return true
+    }
+
     private func setAccessTokenFromURL(url: URL) {
-        let params = appRemote?.authorizationParameters(from: url)
-        if let token = params?[SPTAppRemoteAccessTokenKey] {
-            self.appRemote?.connectionParameters.accessToken = token
-            self.appRemote?.connect()
-            self.result?(token)
-            self.result = nil
+        defer {
+            self.tokenResult = nil
         }
-        else if let error = params?[SPTAppRemoteErrorDescriptionKey] {
-            print(error)
+        
+        guard let appRemote = appRemote else {
+            connectionResult?(FlutterError(code: "errorConnection", message: "AppRemote is null", details: nil))
+            tokenResult?(FlutterError(code: "errorConnection", message: "AppRemote is null", details: nil))
+            self.connectionResult = nil
+            return
         }
+
+        guard let token = appRemote.authorizationParameters(from: url)?[SPTAppRemoteAccessTokenKey] else {
+            connectionResult?(FlutterError(code: "authenticationTokenError", message: appRemote.authorizationParameters(from: url)?[SPTAppRemoteErrorDescriptionKey], details: nil))
+            tokenResult?(FlutterError(code: "authenticationTokenError", message: appRemote.authorizationParameters(from: url)?[SPTAppRemoteErrorDescriptionKey], details: nil))
+            self.connectionResult = nil
+            return
+        }
+
+        appRemote.connectionParameters.accessToken = token
+        appRemote.connect()
+        tokenResult?(token)
     }
 }
