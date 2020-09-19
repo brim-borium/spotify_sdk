@@ -2,17 +2,12 @@ import SpotifyiOS
 
 class ConnectionStatusHandler: StatusHandler, SPTAppRemoteDelegate {
 
-    let pluginInstance : SwiftSpotifySdkPlugin
-    init(pluginInstance: SwiftSpotifySdkPlugin){
-        self.pluginInstance = pluginInstance
-    }
+    var tokenResult: FlutterResult?
+    var connectionResult: FlutterResult?
     
     func appRemoteDidEstablishConnection(_ appRemote: SPTAppRemote) {
-        defer {
-            pluginInstance.connectionResult = nil
-        }
-        
-        pluginInstance.connectionResult?(true)
+        connectionResult?(true)
+        tokenResult?(appRemote.connectionParameters.accessToken)
         eventSink?("{\"connected\": true}")
     }
 
@@ -20,9 +15,13 @@ class ConnectionStatusHandler: StatusHandler, SPTAppRemoteDelegate {
         if error != nil {
             // report spotify remote error to plugin
             eventSink?("{\"connected\": false, \"errorCode\": \"\(error!._code)\", \"errorDetails\": \"\(error!.localizedDescription)\"}")
+            connectionResult?(FlutterError(code: String(error!._code), message: error!.localizedDescription, details: nil))
+            tokenResult?(FlutterError(code: String(error!._code), message: error!.localizedDescription, details: nil))
         } else {
             // report disconnection to plugin
             eventSink?("{\"connected\": false}")
+            connectionResult?(FlutterError(code: "errorConnection", message: "Failed Connection Attempt", details: nil))
+            tokenResult?(FlutterError(code: "errorConnection", message: "Failed Connection Attempt", details: nil))
         }
     }
 
@@ -30,9 +29,13 @@ class ConnectionStatusHandler: StatusHandler, SPTAppRemoteDelegate {
         if error != nil {
             // report spotify remote error to plugin
             eventSink?("{\"connected\": false, \"errorCode\": \"\(error!._code)\", \"errorDetails\": \"\(error!.localizedDescription)\"}")
+            connectionResult?(FlutterError(code: String(error!._code), message: error!.localizedDescription, details: nil))
+            tokenResult?(FlutterError(code: String(error!._code), message: error!.localizedDescription, details: nil))
         } else {
             // report disconnection to plugin
             eventSink?("{\"connected\": false}")
+            connectionResult?(FlutterError(code: String(error!._code), message: error!.localizedDescription, details: nil))
+            tokenResult?(FlutterError(code: "errorConnection", message: "Failed Connection Attempt", details: nil))
         }
     }
 }
