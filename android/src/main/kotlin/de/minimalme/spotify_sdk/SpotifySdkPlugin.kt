@@ -70,6 +70,7 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Pl
     private val methodSeekTo = "seekTo"
     private val methodToggleRepeat = "toggleRepeat"
     private val methodToggleShuffle = "toggleShuffle"
+    private val methodSetRepeatMode = "SetRepeatMode"
 
     //user api
     private val methodAddToLibrary = "addToLibrary"
@@ -90,6 +91,7 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Pl
     private val paramRelativeMilliseconds = "relativeMilliseconds"
     private val paramPodcastPlaybackSpeed = "podcastPlaybackSpeed"
     private val paramTrackIndex = "trackIndex"
+    private val paramRepeatMode = "repeatMode"
 
     private val errorConnecting = "errorConnecting"
     private val errorDisconnecting = "errorDisconnecting"
@@ -138,6 +140,7 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Pl
             methodSkipToIndex -> spotifyPlayerApi?.skipToIndex(call.argument(paramSpotifyUri), call.argument(paramTrackIndex))
             methodToggleShuffle -> spotifyPlayerApi?.toggleShuffle()
             methodToggleRepeat -> spotifyPlayerApi?.toggleRepeat()
+            methodSetRepeatMode -> spotifyPlayerApi?.setRepeatMode(call.argument(paramRepeatMode))
             //user api calls
             methodAddToLibrary -> spotifyUserApi?.addToUserLibrary(call.argument(paramSpotifyUri))
             methodRemoveFromLibrary -> spotifyUserApi?.removeFromUserLibrary(call.argument(paramSpotifyUri))

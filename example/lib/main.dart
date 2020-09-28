@@ -389,6 +389,18 @@ class _HomeState extends State<Home> {
     }
   }
 
+  Future<void> setRepeatMode() async {
+    try {
+      await SpotifySdk.setRepeatMode(
+        repeatMode: RepeatMode.track,
+      );
+    } on PlatformException catch (e) {
+      setStatus(e.code, message: e.message);
+    } on MissingPluginException {
+      setStatus('not implemented');
+    }
+  }
+
   Future<void> toggleShuffle() async {
     try {
       await SpotifySdk.toggleShuffle();

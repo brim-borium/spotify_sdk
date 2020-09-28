@@ -183,4 +183,16 @@ class SpotifyPlayerApi(spotifyAppRemote: SpotifyAppRemote?, result: MethodChanne
             spotifyRemoteAppNotSetError()
         }
     }
+
+    internal fun setRepeatMode(repeatMode: Int?) {
+        if (playerApi != null && repeatMode != null) {
+            playerApi.setRepeat(repeatMode)
+                    .setResultCallback { result.success(true) }
+                    .setErrorCallback { throwable -> result.error(errorToggleRepeat, "error when toggle repeat", throwable.toString()) }
+        } else if (repeatMode == null) {
+            result.error(errorQue, "repeatMode has invalid format or is not set", "")
+        } else {
+            spotifyRemoteAppNotSetError()
+        }
+    }
 }
