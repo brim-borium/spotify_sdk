@@ -174,6 +174,18 @@ class SpotifyPlayerApi(spotifyAppRemote: SpotifyAppRemote?, result: MethodChanne
         }
     }
 
+    internal fun setShuffle(shuffle: Boolean?) {
+        if (playerApi != null && shuffle != null) {
+            playerApi.setShuffle(shuffle)
+                    .setResultCallback { result.success(true) }
+                    .setErrorCallback { throwable -> result.error(errorToggleRepeat, "error when toggle shuffle", throwable.toString()) }
+        } else if (shuffle == null) {
+            result.error(errorQue, "shuffle has invalid format or is not set", "")
+        } else {
+            spotifyRemoteAppNotSetError()
+        }
+    }
+
     internal fun toggleRepeat() {
         if (playerApi != null) {
             playerApi.toggleRepeat()

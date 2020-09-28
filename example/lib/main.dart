@@ -141,7 +141,7 @@ class _HomeState extends State<Home> {
                 SizedIconButton(
                   width: 50,
                   icon: Icons.shuffle,
-                  onPressed: toggleShuffle,
+                  onPressed: setShuffle,
                 ),
               ],
             ),
@@ -393,6 +393,18 @@ class _HomeState extends State<Home> {
     try {
       await SpotifySdk.setRepeatMode(
         repeatMode: RepeatMode.track,
+      );
+    } on PlatformException catch (e) {
+      setStatus(e.code, message: e.message);
+    } on MissingPluginException {
+      setStatus('not implemented');
+    }
+  }
+
+  Future<void> setShuffle() async {
+    try {
+      await SpotifySdk.setShuffle(
+        shuffle: true,
       );
     } on PlatformException catch (e) {
       setStatus(e.code, message: e.message);

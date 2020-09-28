@@ -70,7 +70,8 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Pl
     private val methodSeekTo = "seekTo"
     private val methodToggleRepeat = "toggleRepeat"
     private val methodToggleShuffle = "toggleShuffle"
-    private val methodSetRepeatMode = "SetRepeatMode"
+    private val methodSetShuffle = "setShuffle"
+    private val methodSetRepeatMode = "setRepeatMode"
 
     //user api
     private val methodAddToLibrary = "addToLibrary"
@@ -92,6 +93,7 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Pl
     private val paramPodcastPlaybackSpeed = "podcastPlaybackSpeed"
     private val paramTrackIndex = "trackIndex"
     private val paramRepeatMode = "repeatMode"
+    private val paramShuffle = "shuffle"
 
     private val errorConnecting = "errorConnecting"
     private val errorDisconnecting = "errorDisconnecting"
@@ -139,6 +141,7 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Pl
             methodSkipPrevious -> spotifyPlayerApi?.skipPrevious()
             methodSkipToIndex -> spotifyPlayerApi?.skipToIndex(call.argument(paramSpotifyUri), call.argument(paramTrackIndex))
             methodToggleShuffle -> spotifyPlayerApi?.toggleShuffle()
+            methodSetShuffle -> spotifyPlayerApi?.setShuffle(call.argument(paramShuffle))
             methodToggleRepeat -> spotifyPlayerApi?.toggleRepeat()
             methodSetRepeatMode -> spotifyPlayerApi?.setRepeatMode(call.argument(paramRepeatMode))
             //user api calls
@@ -278,11 +281,9 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Pl
             connStatusEventChannel(ConnectionStatusChannel.ConnectionEvent(false, "Successfully disconnected from Spotify.", null, null))
             // method success
             result.success(true)
-        }
-        else if (!spotifyAppRemote!!.isConnected){
+        } else if (!spotifyAppRemote!!.isConnected) {
             result.error(errorDisconnecting, "could not disconnect spotify remote", "you are not connected, no need to disconnect")
-        }
-        else {
+        } else {
             result.error(errorDisconnecting, "could not disconnect spotify remote", "spotifyAppRemote is not set")
         }
     }
