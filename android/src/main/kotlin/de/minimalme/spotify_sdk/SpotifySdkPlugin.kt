@@ -204,10 +204,6 @@ class SpotifySdkPlugin(private val registrar: Registrar) : MethodCallHandler, Pl
                                     errorMessage = "The Spotify app is not installed on the device"
                                     errorCode = "CouldNotFindSpotifyApp"
                                 }
-                                is NotLoggedInException -> {
-                                    errorMessage = "No one is logged in to the Spotify app on this device."
-                                    errorCode = "NotLoggedInException"
-                                }
                                 is AuthenticationFailedException -> {
                                     errorMessage = "Partner app failed to authenticate with Spotify. Check client credentials and make sure your app is registered correctly at developer.spotify.com"
                                     errorCode = "AuthenticationFailedException"
