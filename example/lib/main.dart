@@ -141,7 +141,7 @@ class _HomeState extends State<Home> {
                 SizedIconButton(
                   width: 50,
                   icon: Icons.shuffle,
-                  onPressed: setShuffle,
+                  onPressed: toggleShuffle,
                 ),
               ],
             ),
@@ -154,6 +154,41 @@ class _HomeState extends State<Home> {
                     child: const Text('seek to relative'),
                     onPressed: seekToRelative),
               ],
+            ),
+            const Divider(),
+            DropdownButton<RepeatMode>(
+              hint: Text('Repeat Mode'),
+              items: [
+                DropdownMenuItem(
+                  value: RepeatMode.off,
+                  child: Text('off'),
+                ),
+                DropdownMenuItem(
+                  value: RepeatMode.track,
+                  child: Text('track'),
+                ),
+                DropdownMenuItem(
+                  value: RepeatMode.context,
+                  child: Text('context'),
+                ),
+              ],
+              onChanged: setRepeatMode,
+            ),
+            DropdownButton<bool>(
+              hint: Text('Set Shuffle'),
+              items: [
+                DropdownMenuItem(
+                  value: false,
+                  child: Text('false'),
+                ),
+                DropdownMenuItem(
+                  value: true,
+                  child: Text('true'),
+                ),
+              ],
+              onChanged: (bool shuffle) => setShuffle(
+                shuffle: shuffle,
+              ),
             ),
             const Divider(),
             const Text('Crossfade State', style: TextStyle(fontSize: 16)),
@@ -389,10 +424,10 @@ class _HomeState extends State<Home> {
     }
   }
 
-  Future<void> setRepeatMode() async {
+  Future<void> setRepeatMode(RepeatMode repeatMode) async {
     try {
       await SpotifySdk.setRepeatMode(
-        repeatMode: RepeatMode.track,
+        repeatMode: repeatMode,
       );
     } on PlatformException catch (e) {
       setStatus(e.code, message: e.message);
@@ -401,10 +436,10 @@ class _HomeState extends State<Home> {
     }
   }
 
-  Future<void> setShuffle() async {
+  Future<void> setShuffle({bool shuffle}) async {
     try {
       await SpotifySdk.setShuffle(
-        shuffle: true,
+        shuffle: shuffle,
       );
     } on PlatformException catch (e) {
       setStatus(e.code, message: e.message);
