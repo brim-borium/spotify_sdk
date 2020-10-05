@@ -38,26 +38,26 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: StreamBuilder<ConnectionStatus>(
-          stream: SpotifySdk.subscribeConnectionStatus(),
-          builder: (context, snapshot) {
-            _connected = false;
-            if (snapshot.data != null) {
-              _connected = snapshot.data.connected;
-            }
-            return Scaffold(
-              appBar: AppBar(
-                title: const Text('SpotifySdk Example'),
-                actions: [
-                  _connected
-                      ? FlatButton(
-                          child: const Text('Disconnect'),
-                          onPressed: disconnect)
-                      : Container()
-                ],
-              ),
-              body: _sampleFlowWidget(context),
-            );
-          }),
+        stream: SpotifySdk.subscribeConnectionStatus(),
+        builder: (context, snapshot) {
+          _connected = false;
+          if (snapshot.data != null) {
+            _connected = snapshot.data.connected;
+          }
+          return Scaffold(
+            appBar: AppBar(
+              title: const Text('SpotifySdk Example'),
+              actions: [
+                _connected
+                    ? FlatButton(
+                        child: const Text('Disconnect'), onPressed: disconnect)
+                    : Container()
+              ],
+            ),
+            body: _sampleFlowWidget(context),
+          );
+        },
+      ),
     );
   }
 
@@ -156,7 +156,12 @@ class _HomeState extends State<Home> {
               ],
             ),
             const Divider(),
-            const Text('Crossfade State', style: TextStyle(fontSize: 16)),
+            const Text(
+              'Crossfade State',
+              style: TextStyle(
+                fontSize: 16,
+              ),
+            ),
             FlatButton(
                 child: const Text('getCrossfadeState'),
                 onPressed: getCrossfadeState),
@@ -211,6 +216,53 @@ class _HomeState extends State<Home> {
               Text('''
                   Is episode? ${playerState.track.isEpisode}. 
                   Is podcast?: ${playerState.track.isPodcast}'''),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Divider(),
+                  const Text(
+                    'Set Shuffle and Repeat',
+                    style: TextStyle(fontSize: 16),
+                  ),
+                  Row(
+                    children: [
+                      const Text(
+                        'Repeat Mode:',
+                      ),
+                      DropdownButton<RepeatMode>(
+                        value: RepeatMode.values[
+                            playerState.playbackOptions.repeatMode.index],
+                        items: [
+                          DropdownMenuItem(
+                            value: RepeatMode.off,
+                            child: Text('off'),
+                          ),
+                          DropdownMenuItem(
+                            value: RepeatMode.track,
+                            child: Text('track'),
+                          ),
+                          DropdownMenuItem(
+                            value: RepeatMode.context,
+                            child: Text('context'),
+                          ),
+                        ],
+                        onChanged: setRepeatMode,
+                      ),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Text("Set shuffle: "),
+                      Switch.adaptive(
+                        value: playerState.playbackOptions.isShuffling,
+                        onChanged: (bool shuffle) => setShuffle(
+                          shuffle: shuffle,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ],
           );
         } else {
@@ -382,6 +434,30 @@ class _HomeState extends State<Home> {
   Future<void> toggleRepeat() async {
     try {
       await SpotifySdk.toggleRepeat();
+    } on PlatformException catch (e) {
+      setStatus(e.code, message: e.message);
+    } on MissingPluginException {
+      setStatus('not implemented');
+    }
+  }
+
+  Future<void> setRepeatMode(RepeatMode repeatMode) async {
+    try {
+      await SpotifySdk.setRepeatMode(
+        repeatMode: repeatMode,
+      );
+    } on PlatformException catch (e) {
+      setStatus(e.code, message: e.message);
+    } on MissingPluginException {
+      setStatus('not implemented');
+    }
+  }
+
+  Future<void> setShuffle({bool shuffle}) async {
+    try {
+      await SpotifySdk.setShuffle(
+        shuffle: shuffle,
+      );
     } on PlatformException catch (e) {
       setStatus(e.code, message: e.message);
     } on MissingPluginException {

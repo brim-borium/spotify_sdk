@@ -174,11 +174,35 @@ class SpotifyPlayerApi(spotifyAppRemote: SpotifyAppRemote?, result: MethodChanne
         }
     }
 
+    internal fun setShuffle(shuffle: Boolean?) {
+        if (playerApi != null && shuffle != null) {
+            playerApi.setShuffle(shuffle)
+                    .setResultCallback { result.success(true) }
+                    .setErrorCallback { throwable -> result.error(errorToggleRepeat, "error when toggle shuffle", throwable.toString()) }
+        } else if (shuffle == null) {
+            result.error(errorQue, "shuffle has invalid format or is not set", "")
+        } else {
+            spotifyRemoteAppNotSetError()
+        }
+    }
+
     internal fun toggleRepeat() {
         if (playerApi != null) {
             playerApi.toggleRepeat()
                     .setResultCallback { result.success(true) }
                     .setErrorCallback { throwable -> result.error(errorToggleRepeat, "error when toggle repeat", throwable.toString()) }
+        } else {
+            spotifyRemoteAppNotSetError()
+        }
+    }
+
+    internal fun setRepeatMode(repeatMode: Int?) {
+        if (playerApi != null && repeatMode != null) {
+            playerApi.setRepeat(repeatMode)
+                    .setResultCallback { result.success(true) }
+                    .setErrorCallback { throwable -> result.error(errorToggleRepeat, "error when toggle repeat", throwable.toString()) }
+        } else if (repeatMode == null) {
+            result.error(errorQue, "repeatMode has invalid format or is not set", "")
         } else {
             spotifyRemoteAppNotSetError()
         }
