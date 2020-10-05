@@ -118,10 +118,10 @@ Have a look [in the example](example/lib/main.dart) for detailed insights on how
 |  subscribeToPlayerContext | Subscribes to the current player context |:heavy_check_mark:|:heavy_check_mark: | :heavy_check_mark: |
 |  subscribeToPlayerState| Subscribes to the current player state |:heavy_check_mark:  | :heavy_check_mark: | :heavy_check_mark: |
 |  getCrossfadeState | Gets the current crossfade state |:heavy_check_mark:  |  :heavy_check_mark: | :x: |
-|  toggleShuffle | Cycles through the shuffle modes |:heavy_check_mark: |  :x: | :construction_worker: |
+|  toggleShuffle | Cycles through the shuffle modes |:heavy_check_mark: |  :x: | :x: |
 |  setShuffle | Set the shuffle mode | :heavy_check_mark: |  :heavy_check_mark: | :heavy_check_mark: |
-|  toggleRepeat | Cycles through the repeat modes | :heavy_check_mark: |  :heavy_check_mark: | :heavy_check_mark: |
-|  setRepeatMode | Set the repeat mode | :heavy_check_mark: |  :heavy_check_mark: | :construction_worker: |
+|  toggleRepeat | Cycles through the repeat modes | :heavy_check_mark: |  :heavy_check_mark: | :x: |
+|  setRepeatMode | Set the repeat mode | :heavy_check_mark: |  :heavy_check_mark: | :heavy_check_mark: |
 
 #### Images Api
 
