@@ -1,3 +1,10 @@
+## 1.0.0
+* adds support for iOS (thanks [fotiDim](https://github.com/fotiDim))
+* adapts to breaking changes in the spotify android sdk (thanks [itsMatoosh](https://github.com/itsMatoosh))
+* extends usage of the spotify android sdk functionalities 
+* renames logout to disconnect
+* some minor bug fixing
+
 ## 0.5.0
 * adds support for web (thanks [itsMatoosh](https://github.com/itsMatoosh))
 * adds custom scopes for the web api (thanks [arnav-sh](https://github.com/arnav-sh))
