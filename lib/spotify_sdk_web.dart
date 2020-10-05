@@ -37,8 +37,8 @@ class SpotifySdkPlugin {
 
   /// spotify auth scopes
   static const List<String> authenticationScopes = [
-    "streaming", 
-    "user-read-email", 
+    "streaming",
+    "user-read-email",
     "user-read-private",
     "app-remote-control",
     "user-modify-playback-state",
