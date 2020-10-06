@@ -458,7 +458,7 @@ class SpotifySdkPlugin {
   Future _setShuffle(bool shuffleEnabled) async {
     if (_currentPlayer?.deviceID == null) {
       throw PlatformException(
-          message: "Spotify player not connected!", code: "Set Shuffle Error");
+          message: 'Spotify player not connected!', code: 'Set Shuffle Error');
     }
 
     await _dio.put(
@@ -480,8 +480,8 @@ class SpotifySdkPlugin {
   Future _setRepeatMode(RepeatMode repeatMode) async {
     if (_currentPlayer?.deviceID == null) {
       throw PlatformException(
-          message: "Spotify player not connected!",
-          code: "Set Repeat Mode Error");
+          message: 'Spotify player not connected!',
+          code: 'Set Repeat Mode Error');
     }
 
     await _dio.put(
