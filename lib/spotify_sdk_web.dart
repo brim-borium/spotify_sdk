@@ -1,5 +1,5 @@
 @JS()
-library spotify_sdk;
+library spotify_sdk_web;
 
 import 'dart:async';
 import 'dart:convert';
@@ -23,6 +23,7 @@ import 'models/player_restrictions.dart';
 import 'models/player_state.dart';
 import 'models/track.dart';
 import 'platform_channels.dart';
+import 'spotify_sdk.dart';
 
 ///
 /// [SpotifySdkPlugin] is the web implementation of the Spotify SDK plugin.
@@ -211,6 +212,13 @@ class SpotifySdkPlugin {
         break;
       case MethodNames.queueTrack:
         await _queue(call.arguments[ParamNames.spotifyUri] as String);
+        break;
+      case MethodNames.setShuffle:
+        await _setShuffle(call.arguments[ParamNames.shuffle] as bool);
+        break;
+      case MethodNames.setRepeatMode:
+        await _setRepeatMode(
+            call.arguments[ParamNames.repeatMode] as RepeatMode);
         break;
       case MethodNames.resume:
         await promiseToFuture(_currentPlayer?.resume());
@@ -441,6 +449,51 @@ class SpotifySdkPlugin {
     await _dio.post(
       '/add-to-queue',
       queryParameters: {'uri': uri, 'device_id': _currentPlayer.deviceID},
+      options: Options(
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${await _getSpotifyAuthToken()}'
+        },
+      ),
+    );
+  }
+
+  /// Sets whether shuffle should be enabled.
+  Future _setShuffle(bool shuffleEnabled) async {
+    if (_currentPlayer?.deviceID == null) {
+      throw PlatformException(
+          message: "Spotify player not connected!", code: "Set Shuffle Error");
+    }
+
+    await _dio.put(
+      '/shuffle',
+      queryParameters: {
+        'state': shuffleEnabled,
+        'device_id': _currentPlayer.deviceID
+      },
+      options: Options(
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${await _getSpotifyAuthToken()}'
+        },
+      ),
+    );
+  }
+
+  /// Sets the repeat mode.
+  Future _setRepeatMode(RepeatMode repeatMode) async {
+    if (_currentPlayer?.deviceID == null) {
+      throw PlatformException(
+          message: "Spotify player not connected!",
+          code: "Set Repeat Mode Error");
+    }
+
+    await _dio.put(
+      '/repeat',
+      queryParameters: {
+        'state': repeatMode.toString().substring(11),
+        'device_id': _currentPlayer.deviceID
+      },
       options: Options(
         headers: {
           'Content-Type': 'application/json',
