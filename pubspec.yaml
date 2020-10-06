@@ -17,6 +17,7 @@ dependencies:
   dio: ^3.0.10
   json_annotation: ^3.0.0
   js: ^0.6.2
+  crypto: ^2.1.5
 
 dev_dependencies:
   flutter_test:
