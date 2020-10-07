@@ -449,19 +449,18 @@ class SpotifySdkPlugin {
   /// Refreshes the Spotify access token using the refresh token.
   Future<dynamic> _refreshSpotifyToken(
       String clientId, String refreshToken) async {
-    var response = await _authDio.post('https://accounts.spotify.com/api/token',
-        data: {
-          'grant_type': 'refresh_token',
-          'refresh_token': refreshToken,
-          'client_id': clientId,
-        },
-        options: Options(contentType: Headers.formUrlEncodedContentType));
-
-    if (response.statusCode == 200) {
-      return response.data;
-    } else {
-      throw PlatformException(
-          message: "${response.data}", code: "Token Refresh Error");
+    try {
+      return (await _authDio.post('https://accounts.spotify.com/api/token',
+              data: {
+                'grant_type': 'refresh_token',
+                'refresh_token': refreshToken,
+                'client_id': clientId,
+              },
+              options: Options(contentType: Headers.formUrlEncodedContentType)))
+          .data;
+    } on DioError catch (e) {
+      print('Token refresh error: ${e.response?.data}');
+      rethrow;
     }
   }
 
@@ -541,7 +540,7 @@ class SpotifySdkPlugin {
     }
 
     await _dio.put(
-      'https://api.spotify.com/v1/me/player/shuffle',
+      '/shuffle',
       queryParameters: {'state': state, 'device_id': _currentPlayer.deviceID},
       options: Options(
         headers: {
@@ -560,7 +559,7 @@ class SpotifySdkPlugin {
     }
 
     await _dio.put(
-      'https://api.spotify.com/v1/me/player/repeat',
+      '/repeat',
       queryParameters: {'state': state, 'device_id': _currentPlayer.deviceID},
       options: Options(
         headers: {
