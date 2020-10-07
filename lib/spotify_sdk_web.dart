@@ -343,7 +343,8 @@ class SpotifySdkPlugin {
   /// reauthenticates the user if the token expired.
   Future<String> _getSpotifyAuthToken(
       {String clientId, String redirectUrl}) async {
-    if (_spotifyToken?.accessToken != null) {
+    if (_spotifyToken?.accessToken != null &&
+        _spotifyToken?.refreshToken != null) {
       // attempt to use the previously authorized credentials
       if (_spotifyToken.expiry > DateTime.now().millisecondsSinceEpoch / 1000) {
         // access token valid
@@ -460,7 +461,7 @@ class SpotifySdkPlugin {
       return response.data;
     } else {
       throw PlatformException(
-          message: "Token exchange failed", code: "Authentication Error");
+          message: "${response.data}", code: "Token Refresh Error");
     }
   }
 
