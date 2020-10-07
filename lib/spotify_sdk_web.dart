@@ -10,6 +10,7 @@ import 'dart:js';
 import 'dart:math' as math;
 
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 import 'package:js/js.dart';
@@ -343,17 +344,17 @@ class SpotifySdkPlugin {
   /// reauthenticates the user if the token expired.
   Future<String> _getSpotifyAuthToken(
       {String clientId, String redirectUrl}) async {
-    if (_spotifyToken?.accessToken != null &&
-        _spotifyToken?.refreshToken != null) {
+    if (_spotifyToken?.accessToken != null) {
       // attempt to use the previously authorized credentials
       if (_spotifyToken.expiry > DateTime.now().millisecondsSinceEpoch / 1000) {
         // access token valid
         return _spotifyToken.accessToken;
       } else {
         // access token invalid, refresh it
-        var newToken =
-            await _refreshSpotifyToken(clientId, _spotifyToken.refreshToken);
+        var newToken = await _refreshSpotifyToken(
+            _spotifyToken.clientId, _spotifyToken.refreshToken);
         _spotifyToken = SpotifyToken(
+            clientId: _spotifyToken.clientId,
             accessToken: newToken['access_token'] as String,
             refreshToken: newToken['refresh_token'] as String,
             expiry: (DateTime.now().millisecondsSinceEpoch / 1000).round() +
@@ -364,6 +365,7 @@ class SpotifySdkPlugin {
       // new authorization
       var newToken = await _authorizeSpotify(clientId, redirectUrl);
       _spotifyToken = SpotifyToken(
+          clientId: clientId,
           accessToken: newToken['access_token'] as String,
           refreshToken: newToken['refresh_token'] as String,
           expiry: (DateTime.now().millisecondsSinceEpoch / 1000).round() +
@@ -919,6 +921,9 @@ class WebPlaybackError {
 
 /// Spotify token object.
 class SpotifyToken {
+  /// Currently used client id.
+  final String clientId;
+
   /// Access token data.
   final String accessToken;
 
@@ -929,5 +934,9 @@ class SpotifyToken {
   final int expiry;
 
   // ignore: public_member_api_docs
-  SpotifyToken({this.accessToken, this.refreshToken, this.expiry});
+  SpotifyToken(
+      {@required this.clientId,
+      @required this.accessToken,
+      @required this.refreshToken,
+      @required this.expiry});
 }
