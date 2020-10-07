@@ -1,5 +1,5 @@
 @JS()
-library spotify_sdk;
+library spotify_sdk_web;
 
 import 'dart:async';
 import 'dart:convert';
