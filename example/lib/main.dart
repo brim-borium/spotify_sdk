@@ -252,7 +252,7 @@ class _HomeState extends State<Home> {
                   ),
                   Row(
                     children: [
-                      Text("Set shuffle: "),
+                      Text('Set shuffle: '),
                       Switch.adaptive(
                         value: playerState.playbackOptions.isShuffling,
                         onChanged: (bool shuffle) => setShuffle(
