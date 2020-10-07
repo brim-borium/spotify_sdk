@@ -423,22 +423,21 @@ class SpotifySdkPlugin {
       await sub.cancel();
 
       // exchange auth code for access and refresh tokens
-      var response =
-          await _authDio.post('https://accounts.spotify.com/api/token',
-              data: {
-                'client_id': clientId,
-                'grant_type': 'authorization_code',
-                'code': parsedMessage.queryParameters['code'],
-                'redirect_uri': redirectUrl,
-                'code_verifier': codeVerifier
-              },
-              options: Options(contentType: Headers.formUrlEncodedContentType));
-
-      if (response.statusCode == 200) {
-        return response.data;
-      } else {
-        throw PlatformException(
-            message: "Token exchange failed", code: "Authentication Error");
+      try {
+        return (await _authDio.post('https://accounts.spotify.com/api/token',
+                data: {
+                  'client_id': clientId,
+                  'grant_type': 'authorization_code',
+                  'code': parsedMessage.queryParameters['code'],
+                  'redirect_uri': redirectUrl,
+                  'code_verifier': codeVerifier
+                },
+                options:
+                    Options(contentType: Headers.formUrlEncodedContentType)))
+            .data;
+      } on DioError catch (e) {
+        print('Spotify auth error: ${e.response?.data}');
+        rethrow;
       }
     } else {
       throw PlatformException(
