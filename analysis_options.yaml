@@ -1,14 +1,6 @@
-include: package:effective_dart/analysis_options.1.2.0.yaml
+include: package:pedantic/analysis_options.yaml
 
 analyzer:
-  strong-mode:
-    implicit-casts: false
-    implicit-dynamic: true
-  errors:
-    close_sinks: ignore
-    avoid_types_on_closure_parameters: ignore
-    # TODO: remove the class only housing static functions
-    avoid_classes_with_only_static_members: ignore
   exclude:
     # Ignore generated files
     - '**/*.g.dart'
