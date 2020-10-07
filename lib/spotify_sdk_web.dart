@@ -395,7 +395,7 @@ class SpotifySdkPlugin {
           'https://accounts.spotify.com/authorize?client_id=$clientId&response_type=code&redirect_uri=$redirectUrl&code_challenge_method=S256&code_challenge=$codeChallenge&state=$state&scope=$scopes';
 
       // opening auth window
-      var authPopup = window.open(authorizationUri, "Spotify Authorization");
+      var authPopup = window.open(authorizationUri, 'Spotify Authorization');
       String message;
       var sub = window.onMessage.listen(allowInterop((event) {
         message = event.data.toString();
@@ -413,7 +413,7 @@ class SpotifySdkPlugin {
       // check if state is the same
       if (state != parsedMessage.queryParameters['state']) {
         throw PlatformException(
-            message: "Invalid state", code: "Authentication Error");
+            message: 'Invalid state', code: 'Authentication Error');
       }
 
       // check for error
@@ -421,7 +421,7 @@ class SpotifySdkPlugin {
           parsedMessage.queryParameters['code'] == null) {
         throw PlatformException(
             message: "${parsedMessage.queryParameters['error']}",
-            code: "Authentication Error");
+            code: 'Authentication Error');
       }
 
       // close auth window
@@ -484,7 +484,7 @@ class SpotifySdkPlugin {
   String _createCodeChallenge(String codeVerifier) {
     return base64Url
         .encode(sha256.convert(ascii.encode(codeVerifier)).bytes)
-        .replaceAll("=", "");
+        .replaceAll('=', '');
   }
 
   /// Creates a random string unique to a given authentication session.
