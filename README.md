@@ -40,8 +40,8 @@ After you are all setup you need to add `SpotifyiOS.framework` to your iOS Proje
 
 2. Paste the following onto the webpage, which you linked to in your redirect URL.  
 ```html
-  <!DOCTYPE html>
-  <html>
+<!DOCTYPE html>
+<html>
   <head>
     <title>Authenticating Spotify</title>
   </head>
@@ -49,27 +49,12 @@ After you are all setup you need to add `SpotifyiOS.framework` to your iOS Proje
 	<p>Please wait while we authenticate Spotify...</p>
 	<script type="text/javascript">
 		if(window.opener) {
-			var error = getParameterByName('error');
-			if(error) {
-				window.opener.postMessage('?' + error, "*");
-			} else {
-				window.opener.postMessage(window.location.hash, "*");
-			}
+			window.opener.postMessage('?' + window.location.href.split('?')[1], "*");
 		} else {
 			window.close();
 		}
-
-		function getParameterByName(name, url) {
-		    if (!url) url = window.location.href;
-		    name = name.replace(/[\[\]]/g, '\\$&');
-		    var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
-		        results = regex.exec(url);
-		    if (!results) return null;
-		    if (!results[2]) return '';
-		    return decodeURIComponent(results[2].replace(/\+/g, ' '));
-		}
 	</script>
-</body>
+  </body>
 </html>
 ```
 
