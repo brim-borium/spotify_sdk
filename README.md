@@ -6,11 +6,17 @@
 
 ## Description
 
-This will be a spotify_sdk package for flutter using both the spotify-app-remote sdk and spotify-auth library. The auth library is needed to get the authentication token to work with the web api.
+This is a flutter package that wraps the native [iOS](https://github.com/spotify/ios-sdk) and [Android](https://github.com/spotify/android-sdk) Spotify "remote" SDKs as well as the [Spotify Web Playback SDK](https://developer.spotify.com/documentation/web-playback-sdk/) for web.
+
+## Installation
+
+To use this plugin, add `spotify_sdk` as a [dependency in your pubspec.yaml file](https://flutter.io/using-packages/).
 
 ## Setup
 
 ### Android
+
+This package is using both the spotify-app-remote sdk and spotify-auth library. The auth library is needed to get the authentication token to work with the web api.
 
 From the [Spotify Android SDK Quick Start](https://developer.spotify.com/documentation/android/quick-start/). You need two things:
 
@@ -26,12 +32,9 @@ Important here is the naming so that the package can find the modules.
 
 ### iOS
 
-From the [Spotify iOS SDK Quick Start](https://developer.spotify.com/documentation/ios/quick-start/). You need two things:
+Register your app in the [spotify developer portal](https://developer.spotify.com/dashboard/). You also need to register your Bundle ID as well as a Redirect URI.
 
-1. Register your app in the [spotify developer portal](https://developer.spotify.com/dashboard/). You also need to register your Bundle ID as well as a Redirect URI.
-2. download the current [Spotify iOS SDK](https://github.com/spotify/ios-sdk/releases). Here you need `SpotifyiOS.framework` from the zip file.
-
-After you are all setup you need to add `SpotifyiOS.framework` to your iOS Project. See the [Spotify iOS SDK Quick Start](https://developer.spotify.com/documentation/ios/quick-start/) for detailed information.
+Follow the instructions in the section `Setup the iOS SDK` of [Spotify iOS SDK Quick Start](https://developer.spotify.com/documentation/ios/quick-start/).
 
 ### Web
 
