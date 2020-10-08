@@ -2,7 +2,7 @@
 * __adds support for iOS__ 🎉 (thanks [fotiDim](https://github.com/fotiDim))
 * adapts to breaking changes in the spotify android sdk (thanks [itsMatoosh](https://github.com/itsMatoosh))
 * implemented PKCE auth flow for the web implementation (thanks [itsMatoosh](https://github.com/itsMatoosh))
-* extends usage of the spotify android sdk functionalities (thanks [Joran-Dob](https://github.com/Joran-Dob))
+* adds the `setShuffle()` and `setRepeatMode()` APIs for android (thanks [Joran-Dob](https://github.com/Joran-Dob))
 * renames logout to disconnect
 * some minor bug fixing
 
