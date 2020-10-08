@@ -4,6 +4,7 @@
 * implemented PKCE auth flow for the web implementation (thanks [itsMatoosh](https://github.com/itsMatoosh))
 * adds the `setShuffle()` and `setRepeatMode()` APIs for android (thanks [Joran-Dob](https://github.com/Joran-Dob))
 * renames logout to disconnect
+* Adds `accessToken` as an optional parameter to `connectToSpotifyRemote()` (only supported on iOS)
 * some minor bug fixing
 
 ## 0.5.0
