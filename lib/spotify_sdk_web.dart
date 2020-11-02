@@ -16,6 +16,7 @@ import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 import 'package:js/js.dart';
 import 'package:js/js_util.dart';
 import 'package:crypto/crypto.dart';
+import 'package:synchronized/synchronized.dart' as synchronized;
 
 import 'models/album.dart';
 import 'models/artist.dart';
@@ -81,6 +82,9 @@ class SpotifySdkPlugin {
     baseUrl: 'https://api.spotify.com/v1/me/player',
   ));
   final Dio _authDio = Dio(BaseOptions());
+
+  /// Lock for getting the token
+  final synchronized.Lock _getTokenLock = synchronized.Lock(reentrant: true);
 
   /// constructor
   SpotifySdkPlugin(
@@ -352,34 +356,37 @@ class SpotifySdkPlugin {
   /// reauthenticates the user if the token expired.
   Future<String> _getSpotifyAuthToken(
       {String clientId, String redirectUrl}) async {
-    if (_spotifyToken?.accessToken != null) {
-      // attempt to use the previously authorized credentials
-      if (_spotifyToken.expiry > DateTime.now().millisecondsSinceEpoch / 1000) {
-        // access token valid
-        return _spotifyToken.accessToken;
+    return await _getTokenLock.synchronized<String>(() async {
+      if (_spotifyToken?.accessToken != null) {
+        // attempt to use the previously authorized credentials
+        if (_spotifyToken.expiry >
+            DateTime.now().millisecondsSinceEpoch / 1000) {
+          // access token valid
+          return _spotifyToken.accessToken;
+        } else {
+          // access token invalid, refresh it
+          var newToken = await _refreshSpotifyToken(
+              _spotifyToken.clientId, _spotifyToken.refreshToken);
+          _spotifyToken = SpotifyToken(
+              clientId: _spotifyToken.clientId,
+              accessToken: newToken['access_token'] as String,
+              refreshToken: newToken['refresh_token'] as String,
+              expiry: (DateTime.now().millisecondsSinceEpoch / 1000).round() +
+                  (newToken['expires_in'] as int));
+          return _spotifyToken.accessToken;
+        }
       } else {
-        // access token invalid, refresh it
-        var newToken = await _refreshSpotifyToken(
-            _spotifyToken.clientId, _spotifyToken.refreshToken);
+        // new authorization
+        var newToken = await _authorizeSpotify(clientId, redirectUrl);
         _spotifyToken = SpotifyToken(
-            clientId: _spotifyToken.clientId,
+            clientId: clientId,
             accessToken: newToken['access_token'] as String,
             refreshToken: newToken['refresh_token'] as String,
             expiry: (DateTime.now().millisecondsSinceEpoch / 1000).round() +
                 (newToken['expires_in'] as int));
         return _spotifyToken.accessToken;
       }
-    } else {
-      // new authorization
-      var newToken = await _authorizeSpotify(clientId, redirectUrl);
-      _spotifyToken = SpotifyToken(
-          clientId: clientId,
-          accessToken: newToken['access_token'] as String,
-          refreshToken: newToken['refresh_token'] as String,
-          expiry: (DateTime.now().millisecondsSinceEpoch / 1000).round() +
-              (newToken['expires_in'] as int));
-      return _spotifyToken.accessToken;
-    }
+    });
   }
 
   /// Authenticates the user and returns the access token on success.

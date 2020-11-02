@@ -18,6 +18,7 @@ dependencies:
   json_annotation: ^3.1.0
   js: ^0.6.2
   crypto: ^2.1.5
+  synchronized: ^2.2.0+2
 
 dev_dependencies:
   flutter_test:
