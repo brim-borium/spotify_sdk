@@ -566,7 +566,7 @@ enum ImageDimension {
   thumbnail
 }
 
-/// Extension for formatting the ImageDimension enum to value
+///Extension for formatting the ImageDimension enum to value
 extension ImageDimensionExtension on ImageDimension {
   ///maps the value to the specified enum
   static const values = {
