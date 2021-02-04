@@ -45,7 +45,5 @@ public class SpotfySdkConstants
     public static let paramAccessToken = "accessToken"
     public static let paramShuffle = "shuffle"
     public static let paramRepeatMode = "repeatMode"
-    public static let asRadio = "asRadio"
     public static let scope = "scope"
-    
 }

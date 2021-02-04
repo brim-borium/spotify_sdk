@@ -42,8 +42,7 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
         case SpotfySdkConstants.methodConnectToSpotify:
             guard let swiftArguments = call.arguments as? [String:Any],
                 let clientID = swiftArguments[SpotfySdkConstants.paramClientId] as? String,
-                let url = swiftArguments[SpotfySdkConstants.paramRedirectUrl] as? String,
-                let asRadio = swiftArguments[SpotfySdkConstants.asRadio] as? Bool else {
+                let url = swiftArguments[SpotfySdkConstants.paramRedirectUrl] as? String else {
                     result(FlutterError(code: "Arguments Error", message: "One or more arguments are missing", details: nil))
                     return
             }
@@ -53,7 +52,7 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
             } else {
                 connectionStatusHandler?.connectionResult = result
                 do {
-                    try connectToSpotify(clientId: clientID, redirectURL: url, asRadio: asRadio, additionalScope: swiftArguments[SpotfySdkConstants.scope] as? String)
+                    try connectToSpotify(clientId: clientID, redirectURL: url, asRadio: swiftArguments[SpotfySdkConstants.paramAsRadio] as? Bool, additionalScopes: swiftArguments[SpotfySdkConstants.scope] as? String)
                 }
                 catch {
                     result(FlutterError(code: "CouldNotFindSpotifyApp", message: "The Spotify app is not installed on the device", details: nil))
@@ -63,14 +62,13 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
         case SpotfySdkConstants.methodGetAuthenticationToken:
             guard let swiftArguments = call.arguments as? [String:Any],
                 let clientID = swiftArguments[SpotfySdkConstants.paramClientId] as? String,
-                let url = swiftArguments[SpotfySdkConstants.paramRedirectUrl] as? String
-                let asRadio = swiftArguments[SpotfySdkConstants.asRadio] as? Bool else {
+                let url = swiftArguments[SpotfySdkConstants.paramRedirectUrl] as? String else {
                     result(FlutterError(code: "Arguments Error", message: "One or more arguments are missing", details: nil))
                     return
             }
             connectionStatusHandler?.tokenResult = result
             do {
-                try connectToSpotify(clientId: clientID, redirectURL: url, asRadio: asRadio, additionalScope: swiftArguments[SpotfySdkConstants.scope] as? String)
+                try connectToSpotify(clientId: clientID, redirectURL: url, asRadio: swiftArguments[SpotfySdkConstants.paramAsRadio] as? Bool, additionalScopes: swiftArguments[SpotfySdkConstants.scope] as? String)
             }
             catch {
                 result(FlutterError(code: "CouldNotFindSpotifyApp", message: "The Spotify app is not installed on the device", details: nil))
@@ -256,7 +254,7 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
         }
     }
 
-    private func connectToSpotify(clientId: String, redirectURL: String, accessToken: String? = nil, asRadio: Bool, additionalScope: [String]? = nil) throws {
+    private func connectToSpotify(clientId: String, redirectURL: String, accessToken: String? = nil, asRadio: Bool?, additionalScopes: String? = nil) throws {
         enum SpotifyError: Error {
             case spotifyNotInstalledError
         }
@@ -274,8 +272,17 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
 
         self.appRemote = appRemote
 
+        var scopes: [String]?
+        if let additionalScopes = additionalScopes {
+            scopes = additionalScopes.components(separatedBy: ",")
+        }
+        var playAsRadio = false
+        if let asRadio = asRadio {
+            playAsRadio = asRadio
+        }
+
         // Note: A blank string will play the user's last song or pick a random one.
-        if self.appRemote?.authorizeAndPlayURI("",asRadio: asRadio, additionalScopes: additionalScopes) == false {
+        if self.appRemote?.authorizeAndPlayURI("", asRadio: playAsRadio, additionalScopes: scopes) == false {
             throw SpotifyError.spotifyNotInstalledError
         }
     }
