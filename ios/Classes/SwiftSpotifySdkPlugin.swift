@@ -264,7 +264,7 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
         }
     }
 
-    private func connectToSpotify(clientId: String, redirectURL: String, accessToken: String? = nil) throws {
+    private func connectToSpotify(clientId: String, redirectURL: String, accessToken: String? = nil, asRadio: Bool?, additionalScopes: String? = nil) throws {
         guard let redirectURL = URL(string: redirectURL) else {
             throw SpotifyError.redirectURLInvalid
         }
