@@ -1,3 +1,8 @@
+## 1.0.1
+* improves error reporting on iOS
+* supports adding additional scopes for iOS
+* offers option to start radio while connecting to Spotify
+
 ## 1.0.0
 * __adds support for iOS__ 🎉 (thanks [fotiDim](https://github.com/fotiDim))
 * adapts to breaking changes in the spotify android sdk (thanks [itsMatoosh](https://github.com/itsMatoosh))

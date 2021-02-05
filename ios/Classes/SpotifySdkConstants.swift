@@ -1,10 +1,3 @@
-//
-//  SpotifySdkConstants.swift
-//  Pods-Runner
-//
-//  Created by Steffen Gruschka on 29.11.19.
-//
-
 import Foundation
 
 public class SpotfySdkConstants
