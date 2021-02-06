@@ -276,10 +276,6 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
         if let additionalScopes = additionalScopes {
             scopes = additionalScopes.components(separatedBy: ",")
         }
-        var playAsRadio = false
-        if let asRadio = asRadio {
-            playAsRadio = asRadio
-        }
 
         // Note: A blank string will play the user's last song or pick a random one.
         if self.appRemote?.authorizeAndPlayURI("", asRadio: playAsRadio, additionalScopes: scopes) == false {
