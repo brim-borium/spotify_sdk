@@ -52,7 +52,7 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
             } else {
                 connectionStatusHandler?.connectionResult = result
                 do {
-                    try connectToSpotify(clientId: clientID, redirectURL: url)
+                    try connectToSpotify(clientId: clientID, redirectURL: url, asRadio: swiftArguments[SpotfySdkConstants.paramAsRadio] as? Bool, additionalScopes: swiftArguments[SpotfySdkConstants.scope] as? String)
                 }
                 catch {
                     result(FlutterError(code: "CouldNotFindSpotifyApp", message: "The Spotify app is not installed on the device", details: nil))
@@ -68,7 +68,7 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
             }
             connectionStatusHandler?.tokenResult = result
             do {
-                try connectToSpotify(clientId: clientID, redirectURL: url)
+                try connectToSpotify(clientId: clientID, redirectURL: url, asRadio: swiftArguments[SpotfySdkConstants.paramAsRadio] as? Bool, additionalScopes: swiftArguments[SpotfySdkConstants.scope] as? String)
             }
             catch {
                 result(FlutterError(code: "CouldNotFindSpotifyApp", message: "The Spotify app is not installed on the device", details: nil))
@@ -254,7 +254,7 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
         }
     }
 
-    private func connectToSpotify(clientId: String, redirectURL: String, accessToken: String? = nil) throws {
+    private func connectToSpotify(clientId: String, redirectURL: String, accessToken: String? = nil, asRadio: Bool?, additionalScopes: String? = nil) throws {
         enum SpotifyError: Error {
             case spotifyNotInstalledError
         }
@@ -272,8 +272,13 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
 
         self.appRemote = appRemote
 
+        var scopes: [String]?
+        if let additionalScopes = additionalScopes {
+            scopes = additionalScopes.components(separatedBy: ",")
+        }
+
         // Note: A blank string will play the user's last song or pick a random one.
-        if self.appRemote?.authorizeAndPlayURI("") == false {
+        if self.appRemote?.authorizeAndPlayURI("", asRadio: asRadio ?? false, additionalScopes: scopes) == false {
             throw SpotifyError.spotifyNotInstalledError
         }
     }

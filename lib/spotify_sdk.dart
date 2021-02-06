@@ -53,6 +53,8 @@ class SpotifySdk {
   static Future<bool> connectToSpotifyRemote(
       {@required String clientId,
       @required String redirectUrl,
+      bool asRadio,
+      String scope,
       String playerName = 'Spotify SDK',
       String accessToken}) async {
     try {
@@ -60,7 +62,9 @@ class SpotifySdk {
         ParamNames.clientId: clientId,
         ParamNames.redirectUrl: redirectUrl,
         ParamNames.playerName: playerName,
-        ParamNames.accessToken: accessToken
+        ParamNames.accessToken: accessToken,
+        ParamNames.scope: scope,
+        ParamNames.asRadio: asRadio,
       });
     } on Exception catch (e) {
       _logException(MethodNames.connectToSpotify, e);
@@ -85,13 +89,15 @@ class SpotifySdk {
   static Future<String> getAuthenticationToken(
       {@required String clientId,
       @required String redirectUrl,
-      @required String scope}) async {
+      bool asRadio,
+      String scope}) async {
     try {
       final authorization =
           await _channel.invokeMethod(MethodNames.getAuthenticationToken, {
         ParamNames.clientId: clientId,
         ParamNames.redirectUrl: redirectUrl,
-        ParamNames.scope: scope
+        ParamNames.scope: scope,
+        ParamNames.asRadio: asRadio,
       });
       return authorization.toString();
     } on Exception catch (e) {
