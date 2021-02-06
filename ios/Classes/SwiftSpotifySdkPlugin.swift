@@ -278,7 +278,7 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
         }
 
         // Note: A blank string will play the user's last song or pick a random one.
-        if self.appRemote?.authorizeAndPlayURI("", asRadio: playAsRadio, additionalScopes: scopes) == false {
+        if self.appRemote?.authorizeAndPlayURI("", asRadio: asRadio ?? false, additionalScopes: scopes) == false {
             throw SpotifyError.spotifyNotInstalledError
         }
     }
