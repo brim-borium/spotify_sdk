@@ -41,11 +41,18 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
         switch call.method {
         case SpotfySdkConstants.methodConnectToSpotify:
             guard let swiftArguments = call.arguments as? [String:Any],
-                let clientID = swiftArguments[SpotfySdkConstants.paramClientId] as? String,
-                let url = swiftArguments[SpotfySdkConstants.paramRedirectUrl] as? String else {
-                    result(FlutterError(code: "Arguments Error", message: "One or more arguments are missing", details: nil))
-                    return
+                  let clientID = swiftArguments[SpotfySdkConstants.paramClientId] as? String,
+                  !clientID.isEmpty else {
+                result(FlutterError(code: "Argument Error", message: "Client ID is not set", details: nil))
+                return
             }
+
+            guard let url = swiftArguments[SpotfySdkConstants.paramRedirectUrl] as? String,
+                  !url.isEmpty else {
+                result(FlutterError(code: "Argument Error", message: "Redirect URL is not set", details: nil))
+                return
+            }
+
             if let accessToken = swiftArguments[SpotfySdkConstants.paramAccessToken] as? String, let appRemote = appRemote {
                 appRemote.connectionParameters.accessToken = accessToken
                 appRemote.connect()
@@ -53,6 +60,9 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
                 connectionStatusHandler?.connectionResult = result
                 do {
                     try connectToSpotify(clientId: clientID, redirectURL: url, asRadio: swiftArguments[SpotfySdkConstants.paramAsRadio] as? Bool, additionalScopes: swiftArguments[SpotfySdkConstants.scope] as? String)
+                }
+                catch SpotifyError.redirectURLInvalid {
+                    result(FlutterError(code: "errorConnecting", message: "Redirect URL is not set or has invalid format", details: nil))
                 }
                 catch {
                     result(FlutterError(code: "CouldNotFindSpotifyApp", message: "The Spotify app is not installed on the device", details: nil))
@@ -255,11 +265,9 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
     }
 
     private func connectToSpotify(clientId: String, redirectURL: String, accessToken: String? = nil, asRadio: Bool?, additionalScopes: String? = nil) throws {
-        enum SpotifyError: Error {
-            case spotifyNotInstalledError
+        guard let redirectURL = URL(string: redirectURL) else {
+            throw SpotifyError.redirectURLInvalid
         }
-
-        guard let redirectURL = URL(string: redirectURL) else { return }
         let configuration = SPTConfiguration(clientID: clientId, redirectURL: redirectURL)
         let appRemote = SPTAppRemote(configuration: configuration, logLevel: .none)
         appRemote.delegate = connectionStatusHandler
@@ -294,8 +302,8 @@ extension SwiftSpotifySdkPlugin {
         guard userActivity.activityType == NSUserActivityTypeBrowsingWeb,
             let url = userActivity.webpageURL
             else {
-                connectionStatusHandler?.connectionResult?(FlutterError(code: "errorConnecting", message: "client id or redirectUrl are not set or have invalid format", details: nil))
-                connectionStatusHandler?.tokenResult?(FlutterError(code: "errorConnecting", message: "client id or redirectUrl are not set or have invalid format", details: nil))
+                connectionStatusHandler?.connectionResult?(FlutterError(code: "errorConnecting", message: "client id or redirectUrl is invalid", details: nil))
+                connectionStatusHandler?.tokenResult?(FlutterError(code: "errorConnecting", message: "client id or redirectUrl is invalid", details: nil))
                 connectionStatusHandler?.connectionResult = nil
                 connectionStatusHandler?.tokenResult = nil
                 return false
