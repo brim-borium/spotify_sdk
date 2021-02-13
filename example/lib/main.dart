@@ -15,7 +15,7 @@ import 'package:spotify_sdk/spotify_sdk.dart';
 import 'widgets/sized_icon_button.dart';
 
 Future<void> main() async {
-  await DotEnv().load('.env');
+  await load(fileName: '.env');
   runApp(Home());
 }
 
@@ -49,7 +49,7 @@ class _HomeState extends State<Home> {
               title: const Text('SpotifySdk Example'),
               actions: [
                 _connected
-                    ? FlatButton(
+                    ? TextButton(
                         child: const Text('Disconnect'), onPressed: disconnect)
                     : Container()
               ],
@@ -70,11 +70,11 @@ class _HomeState extends State<Home> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
-                FlatButton(
+                TextButton(
                   child: const Icon(Icons.settings_remote),
                   onPressed: connectToSpotifyRemote,
                 ),
-                FlatButton(
+                TextButton(
                   child: const Text('get auth token '),
                   onPressed: getAuthenticationToken,
                 ),
@@ -145,12 +145,12 @@ class _HomeState extends State<Home> {
                 ),
               ],
             ),
-            FlatButton(
+            TextButton(
                 child: const Icon(Icons.favorite), onPressed: addToLibrary),
             Row(
               children: <Widget>[
-                FlatButton(child: const Text('seek to'), onPressed: seekTo),
-                FlatButton(
+                TextButton(child: const Text('seek to'), onPressed: seekTo),
+                TextButton(
                     child: const Text('seek to relative'),
                     onPressed: seekToRelative),
               ],
@@ -162,7 +162,7 @@ class _HomeState extends State<Home> {
                 fontSize: 16,
               ),
             ),
-            FlatButton(
+            TextButton(
                 child: const Text('getCrossfadeState'),
                 onPressed: getCrossfadeState),
             // ignore: prefer_single_quotes
@@ -356,8 +356,8 @@ class _HomeState extends State<Home> {
         _loading = true;
       });
       var result = await SpotifySdk.connectToSpotifyRemote(
-          clientId: DotEnv().env['CLIENT_ID'].toString(),
-          redirectUrl: DotEnv().env['REDIRECT_URL'].toString());
+          clientId: env['CLIENT_ID'].toString(),
+          redirectUrl: env['REDIRECT_URL'].toString());
       setStatus(result
           ? 'connect to spotify successful'
           : 'connect to spotify failed');
@@ -380,8 +380,8 @@ class _HomeState extends State<Home> {
   Future<String> getAuthenticationToken() async {
     try {
       var authenticationToken = await SpotifySdk.getAuthenticationToken(
-          clientId: DotEnv().env['CLIENT_ID'].toString(),
-          redirectUrl: DotEnv().env['REDIRECT_URL'].toString(),
+          clientId: env['CLIENT_ID'].toString(),
+          redirectUrl: env['REDIRECT_URL'].toString(),
           scope: 'app-remote-control, '
               'user-modify-playback-state, '
               'playlist-read-private, '

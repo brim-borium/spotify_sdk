@@ -29,7 +29,7 @@ class SizedIconButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       width: width,
-      child: FlatButton(
+      child: TextButton(
         child: Icon(icon),
         onPressed: onPressed,
       ),
