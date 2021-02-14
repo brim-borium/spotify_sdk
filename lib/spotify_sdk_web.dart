@@ -18,6 +18,7 @@ import 'package:js/js.dart';
 import 'package:js/js_util.dart';
 import 'package:synchronized/synchronized.dart' as synchronized;
 
+import 'enums/repeat_mode_enum.dart';
 import 'models/album.dart';
 import 'models/artist.dart';
 import 'models/connection_status.dart';
@@ -28,7 +29,10 @@ import 'models/player_restrictions.dart';
 import 'models/player_state.dart';
 import 'models/track.dart';
 import 'platform_channels.dart';
-import 'spotify_sdk.dart';
+
+export 'package:spotify_sdk/enums/image_dimension_enum.dart';
+export 'package:spotify_sdk/enums/repeat_mode_enum.dart';
+export 'package:spotify_sdk/extensions/image_dimension_extension.dart';
 
 ///
 /// [SpotifySdkPlugin] is the web implementation of the Spotify SDK plugin.
