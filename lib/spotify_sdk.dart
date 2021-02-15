@@ -6,6 +6,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:logger/logger.dart';
 
+import 'enums/image_dimension_enum.dart';
+import 'enums/repeat_mode_enum.dart';
 import 'models/capabilities.dart';
 import 'models/connection_status.dart';
 import 'models/crossfade_state.dart';
@@ -15,6 +17,10 @@ import 'models/player_context.dart';
 import 'models/player_state.dart';
 import 'models/user_status.dart';
 import 'platform_channels.dart';
+
+export 'package:spotify_sdk/enums/image_dimension_enum.dart';
+export 'package:spotify_sdk/enums/repeat_mode_enum.dart';
+export 'package:spotify_sdk/extensions/image_dimension_extension.dart';
 
 ///
 /// [SpotifySdk] holds the functionality to connect via spotify remote or
@@ -494,7 +500,7 @@ class SpotifySdk {
     try {
       return _channel.invokeMethod(MethodNames.getImage, {
         ParamNames.imageUri: imageUri.raw,
-        ParamNames.imageDimension: dimension.value
+        ParamNames.imageDimension: dimension
       });
     } on Exception catch (e) {
       _logException(MethodNames.getImage, e);
@@ -546,49 +552,4 @@ class SpotifySdk {
       _logger.i('$method throws unhandled exception: ${e.toString()}');
     }
   }
-}
-
-/// Holds the values from the spotify api for supported Image dimensions
-enum ImageDimension {
-  /// large image
-  large,
-
-  ///medium image
-  medium,
-
-  /// small image
-  small,
-
-  ///xsmall image
-  xSmall,
-
-  /// thumbnail image
-  thumbnail
-}
-
-/// Extension for formatting the ImageDimension enum to value
-extension ImageDimensionExtension on ImageDimension {
-  ///maps the value to the specified enum
-  static const values = {
-    ImageDimension.large: 720,
-    ImageDimension.medium: 480,
-    ImageDimension.small: 360,
-    ImageDimension.xSmall: 240,
-    ImageDimension.thumbnail: 144,
-  };
-
-  /// returns the value
-  int get value => values[this];
-}
-
-/// Holds the values from the spotify api for RepeatModes
-enum RepeatMode {
-  /// repeat is off
-  off,
-
-  /// repeats the current track
-  track,
-
-  /// repeats the current context
-  context,
 }
