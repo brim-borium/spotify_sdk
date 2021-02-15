@@ -104,28 +104,27 @@ class SpotifySdkPlugin {
   static void registerWith(Registrar registrar) {
     // method channel
     final channel = MethodChannel(
-        MethodChannels.spotifySdk, const StandardMethodCodec(), registrar);
+        MethodChannels.spotifySdk, const StandardMethodCodec(), registrar.messenger);
     // event channels
     final playerContextEventChannel =
         PluginEventChannel(EventChannels.playerContext);
     final playerContextEventController = StreamController.broadcast();
-    playerContextEventChannel.setController(playerContextEventController);
+    playerContextEventChannel.controller = playerContextEventController;
     final playerStateEventChannel =
         PluginEventChannel(EventChannels.playerState);
     final playerStateEventController = StreamController.broadcast();
-    playerStateEventChannel.setController(playerStateEventController);
+    playerStateEventChannel.controller = playerStateEventController;
     final playerCapabilitiesEventChannel =
         PluginEventChannel(EventChannels.capabilities);
     final playerCapabilitiesEventController = StreamController.broadcast();
-    playerCapabilitiesEventChannel
-        .setController(playerCapabilitiesEventController);
+    playerCapabilitiesEventChannel.controller = playerCapabilitiesEventController;
     final userStatusEventChannel = PluginEventChannel(EventChannels.userStatus);
     final userStatusEventController = StreamController.broadcast();
-    userStatusEventChannel.setController(userStatusEventController);
+    userStatusEventChannel.controller = userStatusEventController;
     final connectionStatusEventChannel =
         PluginEventChannel(EventChannels.connectionStatus);
     final connectionStatusEventController = StreamController.broadcast();
-    connectionStatusEventChannel.setController(connectionStatusEventController);
+    connectionStatusEventChannel.controller = connectionStatusEventController;
 
     final instance = SpotifySdkPlugin(
         playerContextEventController,
