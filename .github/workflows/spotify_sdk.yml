@@ -1,5 +1,5 @@
 name: spotify_sdk
-on: [push]
+on: pull-request
 
 jobs:
   build:
