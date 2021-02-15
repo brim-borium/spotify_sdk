@@ -3,12 +3,12 @@ description: Demonstrates how to use the spotify_sdk plugin.
 publish_to: 'none'
 
 environment:
-  sdk: ">=2.11.0 <3.0.0"
+  sdk: ">=2.7.0 <3.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
-  logger: ^0.9.4
+  logger: ^0.9.3
   flutter_dotenv: ^3.1.0
   cupertino_icons: ^1.0.2
 
