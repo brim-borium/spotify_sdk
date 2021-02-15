@@ -2,6 +2,7 @@
 * improves error reporting on iOS
 * supports adding additional scopes for iOS
 * offers option to start radio while connecting to Spotify
+* updates packages
 
 ## 1.0.0
 * __adds support for iOS__ 🎉 (thanks [fotiDim](https://github.com/fotiDim))
