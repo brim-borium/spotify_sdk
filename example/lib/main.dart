@@ -50,7 +50,9 @@ class _HomeState extends State<Home> {
               actions: [
                 _connected
                     ? TextButton(
-                        child: const Text('Disconnect'), onPressed: disconnect)
+                        onPressed: disconnect,
+                        child: const Text('Disconnect'),
+                      )
                     : Container()
               ],
             ),
@@ -71,12 +73,12 @@ class _HomeState extends State<Home> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 TextButton(
-                  child: const Icon(Icons.settings_remote),
                   onPressed: connectToSpotifyRemote,
+                  child: const Icon(Icons.settings_remote),
                 ),
                 TextButton(
-                  child: const Text('get auth token '),
                   onPressed: getAuthenticationToken,
+                  child: const Text('get auth token '),
                 ),
               ],
             ),
@@ -146,13 +148,19 @@ class _HomeState extends State<Home> {
               ],
             ),
             TextButton(
-                child: const Icon(Icons.favorite), onPressed: addToLibrary),
+              onPressed: addToLibrary,
+              child: const Icon(Icons.favorite),
+            ),
             Row(
               children: <Widget>[
-                TextButton(child: const Text('seek to'), onPressed: seekTo),
                 TextButton(
-                    child: const Text('seek to relative'),
-                    onPressed: seekToRelative),
+                  onPressed: seekTo,
+                  child: const Text('seek to'),
+                ),
+                TextButton(
+                  onPressed: seekToRelative,
+                  child: const Text('seek to relative'),
+                ),
               ],
             ),
             const Divider(),
@@ -163,8 +171,9 @@ class _HomeState extends State<Home> {
               ),
             ),
             TextButton(
-                child: const Text('getCrossfadeState'),
-                onPressed: getCrossfadeState),
+              onPressed: getCrossfadeState,
+              child: const Text('getCrossfadeState'),
+            ),
             // ignore: prefer_single_quotes
             Text("Is enabled: ${crossfadeState?.isEnabled}"),
             // ignore: prefer_single_quotes

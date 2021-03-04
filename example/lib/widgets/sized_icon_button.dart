@@ -30,8 +30,8 @@ class SizedIconButton extends StatelessWidget {
     return SizedBox(
       width: width,
       child: TextButton(
-        child: Icon(icon),
         onPressed: onPressed,
+        child: Icon(icon),
       ),
     );
   }
