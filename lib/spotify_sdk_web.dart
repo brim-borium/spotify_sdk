@@ -103,29 +103,29 @@ class SpotifySdkPlugin {
   /// registers plugin method channels
   static void registerWith(Registrar registrar) {
     // method channel
-    final channel = MethodChannel(MethodChannels.spotifySdk,
-        const StandardMethodCodec(), registrar.messenger);
+    final channel = MethodChannel(
+        MethodChannels.spotifySdk, const StandardMethodCodec(), registrar);
     // event channels
     final playerContextEventChannel =
         PluginEventChannel(EventChannels.playerContext);
     final playerContextEventController = StreamController.broadcast();
-    playerContextEventChannel.controller = playerContextEventController;
+    playerContextEventChannel.setController(playerContextEventController);
     final playerStateEventChannel =
         PluginEventChannel(EventChannels.playerState);
     final playerStateEventController = StreamController.broadcast();
-    playerStateEventChannel.controller = playerStateEventController;
+    playerStateEventChannel.setController(playerStateEventController);
     final playerCapabilitiesEventChannel =
         PluginEventChannel(EventChannels.capabilities);
     final playerCapabilitiesEventController = StreamController.broadcast();
-    playerCapabilitiesEventChannel.controller =
-        playerCapabilitiesEventController;
+    playerCapabilitiesEventChannel
+        .setController(playerCapabilitiesEventController);
     final userStatusEventChannel = PluginEventChannel(EventChannels.userStatus);
     final userStatusEventController = StreamController.broadcast();
-    userStatusEventChannel.controller = userStatusEventController;
+    userStatusEventChannel.setController(userStatusEventController);
     final connectionStatusEventChannel =
         PluginEventChannel(EventChannels.connectionStatus);
     final connectionStatusEventController = StreamController.broadcast();
-    connectionStatusEventChannel.controller = connectionStatusEventController;
+    connectionStatusEventChannel.setController(connectionStatusEventController);
 
     final instance = SpotifySdkPlugin(
         playerContextEventController,
