@@ -3,6 +3,9 @@ include: package:pedantic/analysis_options.yaml
 analyzer:
   exclude:
     # Ignore generated files
-    - '**/*.g.dart'
-    - 'lib/generated/**'
-    - 'lib/models/**'
+    - "**/*.g.dart"
+    - "lib/generated/**"
+    - "lib/models/**"
+linter:
+  rules:
+    unsafe_html: false
