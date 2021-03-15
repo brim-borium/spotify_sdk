@@ -8,6 +8,7 @@ import 'package:logger/logger.dart';
 
 import 'enums/image_dimension_enum.dart';
 import 'enums/repeat_mode_enum.dart';
+import 'extensions/image_dimension_extension.dart';
 import 'models/capabilities.dart';
 import 'models/connection_status.dart';
 import 'models/crossfade_state.dart';
@@ -500,7 +501,7 @@ class SpotifySdk {
     try {
       return _channel.invokeMethod(MethodNames.getImage, {
         ParamNames.imageUri: imageUri.raw,
-        ParamNames.imageDimension: dimension
+        ParamNames.imageDimension: dimension.value
       });
     } on Exception catch (e) {
       _logException(MethodNames.getImage, e);

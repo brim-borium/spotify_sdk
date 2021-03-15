@@ -1,3 +1,6 @@
+## 1.0.2
+* fixes image dimension exception on getImage
+
 ## 1.0.1
 * improves error reporting on iOS
 * supports adding additional scopes for iOS
