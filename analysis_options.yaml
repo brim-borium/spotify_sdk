@@ -6,3 +6,9 @@ analyzer:
     - '**/*.g.dart'
     - 'lib/generated/**'
     - 'lib/models/**'
+  errors:
+    close_sinks: ignore
+
+linter:
+  rules:
+    unsafe_html: false
