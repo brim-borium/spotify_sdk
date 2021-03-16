@@ -1,5 +1,6 @@
-import 'package:json_annotation/json_annotation.dart';
 import 'package:flutter/foundation.dart';
+import 'package:json_annotation/json_annotation.dart';
+
 import 'player_options.dart';
 import 'player_restrictions.dart';
 import 'track.dart';
@@ -17,7 +18,7 @@ class PlayerState {
     @required this.isPaused,
   });
 
-  final Track track;
+  final Track? track;
   @JsonKey(name: 'is_paused')
   final bool isPaused;
   @JsonKey(name: 'playback_speed')

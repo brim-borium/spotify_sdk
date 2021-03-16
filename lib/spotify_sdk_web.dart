@@ -11,7 +11,6 @@ import 'dart:math' as math;
 
 import 'package:crypto/crypto.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 import 'package:js/js.dart';
@@ -61,10 +60,10 @@ class SpotifySdkPlugin {
   bool _sdkLoaded = false;
 
   /// Current Spotify SDK player instance.
-  Player _currentPlayer;
+  Player? _currentPlayer;
 
   /// Current Spotify auth token.
-  SpotifyToken _spotifyToken;
+  SpotifyToken? _spotifyToken;
 
   /// player context event stream controller
   final StreamController playerContextEventController;
@@ -153,9 +152,9 @@ class SpotifySdkPlugin {
         }
         log('Connecting to Spotify...');
         // update the client id and redirect url
-        var clientId = call.arguments[ParamNames.clientId] as String;
-        var redirectUrl = call.arguments[ParamNames.redirectUrl] as String;
-        var playerName = call.arguments[ParamNames.playerName] as String;
+        var clientId = call.arguments[ParamNames.clientId] as String?;
+        var redirectUrl = call.arguments[ParamNames.redirectUrl] as String?;
+        var playerName = call.arguments[ParamNames.playerName] as String?;
         if (!(clientId?.isNotEmpty == true &&
             redirectUrl?.isNotEmpty == true)) {
           throw PlatformException(
@@ -178,12 +177,12 @@ class SpotifySdkPlugin {
               });
             })));
 
-        _registerPlayerEvents(_currentPlayer);
-        var result = await promiseToFuture(_currentPlayer.connect());
+        _registerPlayerEvents(_currentPlayer!);
+        var result = await promiseToFuture(_currentPlayer!.connect());
         if (result == true) {
           // wait for the confirmation
           num time = 0;
-          while (_currentPlayer.deviceID == null) {
+          while (_currentPlayer!.deviceID == null) {
             await Future.delayed(Duration(milliseconds: 200));
             time += 200;
             if (time > 10000) {
@@ -193,7 +192,7 @@ class SpotifySdkPlugin {
           return true;
         } else {
           // disconnected
-          _onSpotifyDisconected(
+          _onSpotifyDisconnected(
               errorCode: 'Initialization Error',
               errorDetails: 'Attempt to connect to the Spotify SDK failed');
           return false;
@@ -201,8 +200,8 @@ class SpotifySdkPlugin {
         break;
       case MethodNames.getAuthenticationToken:
         return await _getSpotifyAuthToken(
-            clientId: call.arguments[ParamNames.clientId] as String,
-            redirectUrl: call.arguments[ParamNames.redirectUrl] as String);
+            clientId: call.arguments[ParamNames.clientId] as String?,
+            redirectUrl: call.arguments[ParamNames.redirectUrl] as String?);
         break;
       case MethodNames.disconnectFromSpotify:
         log('Disconnecting from Spotify...');
@@ -210,23 +209,23 @@ class SpotifySdkPlugin {
         if (_currentPlayer == null) {
           return true;
         } else {
-          _currentPlayer.disconnect();
-          _onSpotifyDisconected();
+          _currentPlayer!.disconnect();
+          _onSpotifyDisconnected();
           return true;
         }
         break;
       case MethodNames.play:
-        await _play(call.arguments[ParamNames.spotifyUri] as String);
+        await _play(call.arguments[ParamNames.spotifyUri] as String?);
         break;
       case MethodNames.queueTrack:
-        await _queue(call.arguments[ParamNames.spotifyUri] as String);
+        await _queue(call.arguments[ParamNames.spotifyUri] as String?);
         break;
       case MethodNames.setShuffle:
-        await _setShuffle(call.arguments[ParamNames.shuffle] as bool);
+        await _setShuffle(call.arguments[ParamNames.shuffle] as bool?);
         break;
       case MethodNames.setRepeatMode:
         await _setRepeatMode(
-            call.arguments[ParamNames.repeatMode] as RepeatMode);
+            call.arguments[ParamNames.repeatMode] as RepeatMode?);
         break;
       case MethodNames.resume:
         await promiseToFuture(_currentPlayer?.resume());
@@ -242,9 +241,9 @@ class SpotifySdkPlugin {
         break;
       case MethodNames.getPlayerState:
         var stateRaw = await promiseToFuture(_currentPlayer?.getCurrentState())
-            as WebPlaybackState;
+            as WebPlaybackState?;
         if (stateRaw == null) return null;
-        return jsonEncode(toPlayerState(stateRaw).toJson());
+        return jsonEncode(toPlayerState(stateRaw)!.toJson());
         break;
       default:
         throw PlatformException(
@@ -260,7 +259,7 @@ class SpotifySdkPlugin {
       // load spotify sdk
       context['onSpotifyWebPlaybackSDKReady'] =
           allowInterop(_onSpotifyInitialized);
-      querySelector('body').children.add(ScriptElement()..src = spotifySdkUrl);
+      querySelector('body')!.children.add(ScriptElement()..src = spotifySdkUrl);
     } else {
       // spotify sdk already loaded
       log('Reusing loaded Spotify SDK!');
@@ -272,11 +271,12 @@ class SpotifySdkPlugin {
   void _registerPlayerEvents(Player player) {
     // player state
     player.addListener('player_state_changed',
-        allowInterop((WebPlaybackState state) {
+        allowInterop((WebPlaybackState? state) {
       if (state == null) return;
-      playerStateEventController.add(jsonEncode(toPlayerState(state).toJson()));
+      playerStateEventController
+          .add(jsonEncode(toPlayerState(state)!.toJson()));
       playerContextEventController
-          .add(jsonEncode(toPlayerContext(state).toJson()));
+          .add(jsonEncode(toPlayerContext(state)!.toJson()));
     }));
 
     // ready/not ready
@@ -285,7 +285,7 @@ class SpotifySdkPlugin {
       _onSpotifyConnected(player.device_id);
     }));
     player.addListener('not_ready', allowInterop((event) {
-      _onSpotifyDisconected(
+      _onSpotifyDisconnected(
           errorCode: 'Spotify SDK not ready',
           errorDetails: 'Spotify SDK is not ready to take requests');
     }));
@@ -293,16 +293,16 @@ class SpotifySdkPlugin {
     // errors
     player.addListener('initialization_error',
         allowInterop((WebPlaybackError error) {
-      _onSpotifyDisconected(
+      _onSpotifyDisconnected(
           errorCode: 'Initialization Error', errorDetails: error.message);
     }));
     player.addListener('authentication_error',
         allowInterop((WebPlaybackError error) {
-      _onSpotifyDisconected(
+      _onSpotifyDisconnected(
           errorCode: 'Authentication Error', errorDetails: error.message);
     }));
     player.addListener('account_error', allowInterop((WebPlaybackError error) {
-      _onSpotifyDisconected(
+      _onSpotifyDisconnected(
           errorCode: 'Account Error', errorDetails: error.message);
     }));
     player.addListener('playback_error', allowInterop((WebPlaybackError error) {
@@ -318,20 +318,20 @@ class SpotifySdkPlugin {
 
   /// Called when the plugin successfully connects to the spotify web sdk.
   void _onSpotifyConnected(String deviceId) {
-    _currentPlayer.deviceID = deviceId;
+    _currentPlayer!.deviceID = deviceId;
 
     // emit connected event
     connectionStatusEventController.add(jsonEncode(ConnectionStatus(
       'Spotify SDK connected',
-      null,
-      null,
+      '',
+      '',
       connected: true,
     ).toJson()));
   }
 
-  /// Called when the plugin disconects from the spotify sdk.
-  void _onSpotifyDisconected({String errorCode, String errorDetails}) {
-    _unregisterPlayerEvents(_currentPlayer);
+  /// Called when the plugin disconnects from the spotify sdk.
+  void _onSpotifyDisconnected({String? errorCode, String? errorDetails}) {
+    _unregisterPlayerEvents(_currentPlayer!);
     _currentPlayer = null;
 
     if (errorCode != null) {
@@ -341,7 +341,7 @@ class SpotifySdkPlugin {
 
     // emit not connected event
     connectionStatusEventController.add(jsonEncode(ConnectionStatus(
-            'Spotify SDK disconnected', errorCode, errorDetails,
+            'Spotify SDK disconnected', errorCode!, errorDetails!,
             connected: false)
         .toJson()));
   }
@@ -358,43 +358,44 @@ class SpotifySdkPlugin {
 
   /// Gets the current Spotify token or
   /// reauthenticates the user if the token expired.
-  Future<String> _getSpotifyAuthToken(
-      {String clientId, String redirectUrl}) async {
-    return await _getTokenLock.synchronized<String>(() async {
+  Future<String?> _getSpotifyAuthToken(
+      {String? clientId, String? redirectUrl}) async {
+    return await _getTokenLock.synchronized<String?>(() async {
       if (_spotifyToken?.accessToken != null) {
         // attempt to use the previously authorized credentials
-        if (_spotifyToken.expiry >
+        if (_spotifyToken!.expiry >
             DateTime.now().millisecondsSinceEpoch / 1000) {
           // access token valid
-          return _spotifyToken.accessToken;
+          return _spotifyToken!.accessToken;
         } else {
           // access token invalid, refresh it
           var newToken = await _refreshSpotifyToken(
-              _spotifyToken.clientId, _spotifyToken.refreshToken);
+              _spotifyToken!.clientId, _spotifyToken!.refreshToken);
           _spotifyToken = SpotifyToken(
-              clientId: _spotifyToken.clientId,
-              accessToken: newToken['access_token'] as String,
-              refreshToken: newToken['refresh_token'] as String,
+              clientId: _spotifyToken!.clientId,
+              accessToken: newToken['access_token'] as String?,
+              refreshToken: newToken['refresh_token'] as String?,
               expiry: (DateTime.now().millisecondsSinceEpoch / 1000).round() +
                   (newToken['expires_in'] as int));
-          return _spotifyToken.accessToken;
+          return _spotifyToken!.accessToken;
         }
       } else {
         // new authorization
         var newToken = await _authorizeSpotify(clientId, redirectUrl);
         _spotifyToken = SpotifyToken(
             clientId: clientId,
-            accessToken: newToken['access_token'] as String,
-            refreshToken: newToken['refresh_token'] as String,
+            accessToken: newToken['access_token'] as String?,
+            refreshToken: newToken['refresh_token'] as String?,
             expiry: (DateTime.now().millisecondsSinceEpoch / 1000).round() +
                 (newToken['expires_in'] as int));
-        return _spotifyToken.accessToken;
+        return _spotifyToken!.accessToken;
       }
     });
   }
 
   /// Authenticates the user and returns the access token on success.
-  Future<dynamic> _authorizeSpotify(String clientId, String redirectUrl) async {
+  Future<dynamic> _authorizeSpotify(
+      String? clientId, String? redirectUrl) async {
     if (clientId?.isNotEmpty == true && redirectUrl?.isNotEmpty == true) {
       // creating auth uri
       var codeVerifier = _createCodeVerifier();
@@ -407,7 +408,7 @@ class SpotifySdkPlugin {
 
       // opening auth window
       var authPopup = window.open(authorizationUri, 'Spotify Authorization');
-      String message;
+      String? message;
       var sub = window.onMessage.listen(allowInterop((event) {
         message = event.data.toString();
       }));
@@ -419,7 +420,7 @@ class SpotifySdkPlugin {
       }
 
       // parse the returned parameters
-      var parsedMessage = Uri.parse(message);
+      var parsedMessage = Uri.parse(message!);
 
       // check if state is the same
       if (state != parsedMessage.queryParameters['state']) {
@@ -468,7 +469,7 @@ class SpotifySdkPlugin {
 
   /// Refreshes the Spotify access token using the refresh token.
   Future<dynamic> _refreshSpotifyToken(
-      String clientId, String refreshToken) async {
+      String? clientId, String? refreshToken) async {
     try {
       return (await _authDio.post('https://accounts.spotify.com/api/token',
               data: {
@@ -512,7 +513,7 @@ class SpotifySdkPlugin {
   }
 
   /// Starts track playback on the device.
-  Future _play(String uri) async {
+  Future _play(String? uri) async {
     if (_currentPlayer?.deviceID == null) {
       throw PlatformException(
           message: 'Spotify player not connected!', code: 'Playback Error');
@@ -523,7 +524,7 @@ class SpotifySdkPlugin {
       data: {
         'uris': [uri]
       },
-      queryParameters: {'device_id': _currentPlayer.deviceID},
+      queryParameters: {'device_id': _currentPlayer!.deviceID},
       options: Options(
         headers: {
           'Content-Type': 'application/json',
@@ -534,7 +535,7 @@ class SpotifySdkPlugin {
   }
 
   /// Adds a given track to the playback queue.
-  Future _queue(String uri) async {
+  Future _queue(String? uri) async {
     if (_currentPlayer?.deviceID == null) {
       throw PlatformException(
           message: 'Spotify player not connected!', code: 'Playback Error');
@@ -542,7 +543,7 @@ class SpotifySdkPlugin {
 
     await _dio.post(
       '/add-to-queue',
-      queryParameters: {'uri': uri, 'device_id': _currentPlayer.deviceID},
+      queryParameters: {'uri': uri, 'device_id': _currentPlayer!.deviceID},
       options: Options(
         headers: {
           'Content-Type': 'application/json',
@@ -553,7 +554,7 @@ class SpotifySdkPlugin {
   }
 
   /// Sets whether shuffle should be enabled.
-  Future _setShuffle(bool shuffleEnabled) async {
+  Future _setShuffle(bool? shuffleEnabled) async {
     if (_currentPlayer?.deviceID == null) {
       throw PlatformException(
           message: 'Spotify player not connected!', code: 'Set Shuffle Error');
@@ -563,7 +564,7 @@ class SpotifySdkPlugin {
       '/shuffle',
       queryParameters: {
         'state': shuffleEnabled,
-        'device_id': _currentPlayer.deviceID
+        'device_id': _currentPlayer!.deviceID
       },
       options: Options(
         headers: {
@@ -575,7 +576,7 @@ class SpotifySdkPlugin {
   }
 
   /// Sets the repeat mode.
-  Future _setRepeatMode(RepeatMode repeatMode) async {
+  Future _setRepeatMode(RepeatMode? repeatMode) async {
     if (_currentPlayer?.deviceID == null) {
       throw PlatformException(
           message: 'Spotify player not connected!',
@@ -586,7 +587,7 @@ class SpotifySdkPlugin {
       '/repeat',
       queryParameters: {
         'state': repeatMode.toString().substring(11),
-        'device_id': _currentPlayer.deviceID
+        'device_id': _currentPlayer!.deviceID
       },
       options: Options(
         headers: {
@@ -598,7 +599,7 @@ class SpotifySdkPlugin {
   }
 
   /// Toggles shuffle on the current player.
-  Future toggleShuffle({bool state}) async {
+  Future toggleShuffle({bool? state}) async {
     if (_currentPlayer?.deviceID == null) {
       throw PlatformException(
           message: 'Spotify player not connected!', code: 'Playback Error');
@@ -606,7 +607,7 @@ class SpotifySdkPlugin {
 
     await _dio.put(
       '/shuffle',
-      queryParameters: {'state': state, 'device_id': _currentPlayer.deviceID},
+      queryParameters: {'state': state, 'device_id': _currentPlayer!.deviceID},
       options: Options(
         headers: {
           'Content-Type': 'application/json',
@@ -617,7 +618,7 @@ class SpotifySdkPlugin {
   }
 
   /// Toggles repeat on the current player.
-  Future toggleRepeat({bool state}) async {
+  Future toggleRepeat({bool? state}) async {
     if (_currentPlayer?.deviceID == null) {
       throw PlatformException(
           message: 'Spotify player not connected!', code: 'Playback Error');
@@ -625,7 +626,7 @@ class SpotifySdkPlugin {
 
     await _dio.put(
       '/repeat',
-      queryParameters: {'state': state, 'device_id': _currentPlayer.deviceID},
+      queryParameters: {'state': state, 'device_id': _currentPlayer!.deviceID},
       options: Options(
         headers: {
           'Content-Type': 'application/json',
@@ -636,14 +637,17 @@ class SpotifySdkPlugin {
   }
 
   /// Converts a native WebPlaybackState to the library PlayerState
-  PlayerState toPlayerState(WebPlaybackState state) {
+  PlayerState? toPlayerState(WebPlaybackState? state) {
     if (state == null) return null;
-    var trackRaw = state.track_window?.current_track;
+    var trackRaw = state.track_window.current_track;
     var albumRaw = trackRaw?.album;
     var restrictionsRaw = state.disallows;
     var artists = <Artist>[];
-    for (var artist in trackRaw.artists) {
-      artists.add(Artist(artist.name, artist.uri));
+
+    if (trackRaw != null) {
+      for (var artist in trackRaw.artists) {
+        artists.add(Artist(artist.name, artist.uri));
+      }
     }
 
     // getting repeat mode
@@ -663,11 +667,11 @@ class SpotifySdkPlugin {
     return PlayerState(
       trackRaw != null
           ? Track(
-              Album(albumRaw.name, albumRaw.uri),
+              Album(albumRaw!.name, albumRaw.uri),
               artists[0],
               artists,
-              null,
-              ImageUri(albumRaw.images[0]?.url),
+              -1,
+              ImageUri(albumRaw.images[0].url),
               trackRaw.name,
               trackRaw.uri,
               isEpisode: trackRaw.type == 'episode',
@@ -689,7 +693,7 @@ class SpotifySdkPlugin {
   }
 
   /// Converts a native WebPlaybackState to the library PlayerContext
-  PlayerContext toPlayerContext(WebPlaybackState state) {
+  PlayerContext? toPlayerContext(WebPlaybackState? state) {
     if (state == null) return null;
     return PlayerContext(
         state.context.metadata.title,
@@ -703,7 +707,7 @@ class SpotifySdkPlugin {
 @JS('Spotify.Player')
 class Player {
   /// Device id of the player.
-  String deviceID;
+  String? deviceID;
 
   /// The main constructor for initializing the Web Playback SDK.
   /// It should contain an object with the player name, volume and access token.
@@ -766,7 +770,7 @@ class PlayerOptions {
 
   // ignore: public_member_api_docs
   external factory PlayerOptions(
-      {String name, Function getOAuthToken, double volume});
+      {String? name, Function? getOAuthToken, double? volume});
 }
 
 /// Spotify playback object
@@ -776,7 +780,7 @@ class WebPlaybackPlayer {
   // ignore: public_member_api_docs, non_constant_identifier_names
   external String get device_id;
   // ignore: public_member_api_docs, non_constant_identifier_names
-  external factory WebPlaybackPlayer({String device_id});
+  external factory WebPlaybackPlayer({String? device_id});
 }
 
 /// Spotify playback state object
@@ -800,15 +804,15 @@ class WebPlaybackState {
 
   // ignore: public_member_api_docs
   external factory WebPlaybackState(
-      {WebPlayerContext context,
-      WebPlayerDisallows disallows,
-      bool paysed,
-      int position,
+      {WebPlayerContext? context,
+      WebPlayerDisallows? disallows,
+      bool? paysed,
+      int? position,
       // ignore: non_constant_identifier_names
-      int repeat_mode,
-      bool shuffle,
+      int? repeat_mode,
+      bool? shuffle,
       // ignore: non_constant_identifier_names
-      WebPlayerTrackWindow track_window});
+      WebPlayerTrackWindow? track_window});
 }
 
 /// Spotify player context object
@@ -822,7 +826,7 @@ class WebPlayerContext {
 
   // ignore: public_member_api_docs
   external factory WebPlayerContext(
-      {String uri, WebPlayerContextMetadata metadata});
+      {String? uri, WebPlayerContextMetadata? metadata});
 }
 
 /// Spotify player context metadata object
@@ -838,7 +842,7 @@ class WebPlayerContextMetadata {
 
   // ignore: public_member_api_docs
   external factory WebPlayerContextMetadata(
-      {String title, String subtitle, String type});
+      {String? title, String? subtitle, String? type});
 }
 
 /// Spotify player disallows object
@@ -862,17 +866,17 @@ class WebPlayerDisallows {
 
   // ignore: public_member_api_docs
   external factory WebPlayerDisallows(
-      {bool pausing,
+      {bool? pausing,
       // ignore: non_constant_identifier_names
-      bool peeking_next,
+      bool? peeking_next,
       // ignore: non_constant_identifier_names
-      bool peeking_prev,
-      bool resuming,
-      bool seeking,
+      bool? peeking_prev,
+      bool? resuming,
+      bool? seeking,
       // ignore: non_constant_identifier_names
-      bool skipping_next,
+      bool? skipping_next,
       // ignore: non_constant_identifier_names
-      bool skipping_prev});
+      bool? skipping_prev});
 }
 
 /// Spotify player track window object
@@ -880,20 +884,20 @@ class WebPlayerDisallows {
 @anonymous
 class WebPlayerTrackWindow {
   // ignore: public_member_api_docs, non_constant_identifier_names
-  external WebPlaybackTrack get current_track;
+  external WebPlaybackTrack? get current_track;
   // ignore: public_member_api_docs, non_constant_identifier_names
-  external List<WebPlaybackTrack> get previous_tracks;
+  external List<WebPlaybackTrack>? get previous_tracks;
   // ignore: public_member_api_docs, non_constant_identifier_names
-  external List<WebPlaybackTrack> get next_tracks;
+  external List<WebPlaybackTrack>? get next_tracks;
 
   // ignore: public_member_api_docs
   external factory WebPlayerTrackWindow(
       // ignore: non_constant_identifier_names
-      {WebPlaybackTrack current_track,
+      {WebPlaybackTrack? current_track,
       // ignore: non_constant_identifier_names
-      List<WebPlaybackTrack> previous_tracks,
+      List<WebPlaybackTrack>? previous_tracks,
       // ignore: non_constant_identifier_names
-      List<WebPlaybackTrack> next_tracks});
+      List<WebPlaybackTrack>? next_tracks});
 }
 
 /// Spotify playback track object
@@ -919,16 +923,16 @@ class WebPlaybackTrack {
 
   // ignore: public_member_api_docs
   external factory WebPlaybackTrack(
-      {String uri,
-      String id,
-      String type,
+      {String? uri,
+      String? id,
+      String? type,
       // ignore: non_constant_identifier_names
-      String media_type,
-      String name,
+      String? media_type,
+      String? name,
       // ignore: non_constant_identifier_names
-      bool is_playable,
-      WebPlaybackAlbum album,
-      List<WebPlaybackArtist> artists});
+      bool? is_playable,
+      WebPlaybackAlbum? album,
+      List<WebPlaybackArtist>? artists});
 }
 
 /// Spotify playback album object
@@ -944,7 +948,7 @@ class WebPlaybackAlbum {
 
   // ignore: public_member_api_docs
   external factory WebPlaybackAlbum(
-      {String uri, String name, List<WebPlaybackAlbumImage> images});
+      {String? uri, String? name, List<WebPlaybackAlbumImage>? images});
 }
 
 /// Spotify artist object
@@ -957,7 +961,7 @@ class WebPlaybackArtist {
   external String get name;
 
   // ignore: public_member_api_docs
-  external factory WebPlaybackArtist({String uri, String name});
+  external factory WebPlaybackArtist({String? uri, String? name});
 }
 
 /// Spotify album image object
@@ -968,7 +972,7 @@ class WebPlaybackAlbumImage {
   external String get url;
 
   // ignore: public_member_api_docs
-  external factory WebPlaybackAlbumImage({String url});
+  external factory WebPlaybackAlbumImage({String? url});
 }
 
 /// Spotify playback error object
@@ -979,27 +983,27 @@ class WebPlaybackError {
   external String get message;
 
   // ignore: public_member_api_docs
-  external factory WebPlaybackError({String message});
+  external factory WebPlaybackError({String? message});
 }
 
 /// Spotify token object.
 class SpotifyToken {
   /// Currently used client id.
-  final String clientId;
+  final String? clientId;
 
   /// Access token data.
-  final String accessToken;
+  final String? accessToken;
 
   /// Refresh token data.
-  final String refreshToken;
+  final String? refreshToken;
 
   /// Token expiry time in unix seconds.
   final int expiry;
 
   // ignore: public_member_api_docs
   SpotifyToken(
-      {@required this.clientId,
-      @required this.accessToken,
-      @required this.refreshToken,
-      @required this.expiry});
+      {required this.clientId,
+      required this.accessToken,
+      required this.refreshToken,
+      required this.expiry});
 }

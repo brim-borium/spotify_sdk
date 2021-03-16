@@ -15,5 +15,5 @@ extension ImageDimensionExtension on ImageDimension {
 
   /// returns the value
   ///@nodoc
-  int get value => values[this];
+  int get value => values[this]!;
 }
