@@ -8,20 +8,13 @@ part of 'track.dart';
 
 Track _$TrackFromJson(Map<String, dynamic> json) {
   return Track(
-    json['album'] == null
-        ? null
-        : Album.fromJson(json['album'] as Map<String, dynamic>),
-    json['artist'] == null
-        ? null
-        : Artist.fromJson(json['artist'] as Map<String, dynamic>),
-    (json['artists'] as List)
-        ?.map((e) =>
-            e == null ? null : Artist.fromJson(e as Map<String, dynamic>))
-        ?.toList(),
+    Album.fromJson(json['album'] as Map<String, dynamic>),
+    Artist.fromJson(json['artist'] as Map<String, dynamic>),
+    (json['artists'] as List<dynamic>)
+        .map((e) => Artist.fromJson(e as Map<String, dynamic>))
+        .toList(),
     json['duration_ms'] as int,
-    json['image_id'] == null
-        ? null
-        : ImageUri.fromJson(json['image_id'] as Map<String, dynamic>),
+    ImageUri.fromJson(json['image_id'] as Map<String, dynamic>),
     json['name'] as String,
     json['uri'] as String,
     isEpisode: json['is_episode'] as bool,

@@ -1,5 +1,4 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:flutter/foundation.dart';
 
 part 'library_state.g.dart';
 
@@ -7,8 +6,8 @@ part 'library_state.g.dart';
 class LibraryState {
   LibraryState(
     this.uri, {
-    @required this.isSaved,
-    @required this.canSave,
+    required this.isSaved,
+    required this.canSave,
   });
 
   @JsonKey(name: 'uri')
