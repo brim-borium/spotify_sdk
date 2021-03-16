@@ -197,12 +197,10 @@ class SpotifySdkPlugin {
               errorDetails: 'Attempt to connect to the Spotify SDK failed');
           return false;
         }
-        break;
       case MethodNames.getAuthenticationToken:
         return await _getSpotifyAuthToken(
             clientId: call.arguments[ParamNames.clientId] as String?,
             redirectUrl: call.arguments[ParamNames.redirectUrl] as String?);
-        break;
       case MethodNames.disconnectFromSpotify:
         log('Disconnecting from Spotify...');
         _spotifyToken = null;
@@ -213,7 +211,6 @@ class SpotifySdkPlugin {
           _onSpotifyDisconnected();
           return true;
         }
-        break;
       case MethodNames.play:
         await _play(call.arguments[ParamNames.spotifyUri] as String?);
         break;
@@ -244,7 +241,6 @@ class SpotifySdkPlugin {
             as WebPlaybackState?;
         if (stateRaw == null) return null;
         return jsonEncode(toPlayerState(stateRaw)!.toJson());
-        break;
       default:
         throw PlatformException(
             code: 'Unimplemented',
