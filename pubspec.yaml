@@ -13,10 +13,10 @@ dependencies:
     sdk: flutter
   flutter_web_plugins:
     sdk: flutter
-  logger: ^1.0.0-nullsafety.0
-  dio: ^4.0.0-beta7
+  logger: ^1.0.0
+  dio: ^4.0.0-prev2
   json_annotation: ^4.0.0
-  js: ^0.6.2
+  js: ^0.6.3
   crypto: ^3.0.0
   synchronized: ^3.0.0
 

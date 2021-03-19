@@ -164,15 +164,13 @@ class SpotifySdkPlugin {
         }
 
         // get initial token
-        await _getSpotifyAuthToken(
-            clientId: clientId, redirectUrl: redirectUrl);
+        await _authorizeSpotify(clientId: clientId!, redirectUrl: redirectUrl!);
 
         // create player
         _currentPlayer = Player(PlayerOptions(
             name: playerName,
             getOAuthToken: allowInterop((Function callback, t) {
-              _getSpotifyAuthToken(clientId: clientId, redirectUrl: redirectUrl)
-                  .then((value) {
+              _getSpotifyAuthToken().then((value) {
                 callback(value);
               });
             })));
@@ -198,9 +196,9 @@ class SpotifySdkPlugin {
           return false;
         }
       case MethodNames.getAuthenticationToken:
-        return await _getSpotifyAuthToken(
-            clientId: call.arguments[ParamNames.clientId] as String?,
-            redirectUrl: call.arguments[ParamNames.redirectUrl] as String?);
+        return await _authorizeSpotify(
+            clientId: call.arguments[ParamNames.clientId] as String,
+            redirectUrl: call.arguments[ParamNames.redirectUrl] as String);
       case MethodNames.disconnectFromSpotify:
         log('Disconnecting from Spotify...');
         _spotifyToken = null;
@@ -255,7 +253,10 @@ class SpotifySdkPlugin {
       // load spotify sdk
       context['onSpotifyWebPlaybackSDKReady'] =
           allowInterop(_onSpotifyInitialized);
-      querySelector('body')!.children.add(ScriptElement()..src = spotifySdkUrl);
+      var scriptElement = ScriptElement();
+      scriptElement.src = spotifySdkUrl;
+      scriptElement.defer = true;
+      querySelector('body')!.children.add(scriptElement);
     } else {
       // spotify sdk already loaded
       log('Reusing loaded Spotify SDK!');
@@ -353,10 +354,9 @@ class SpotifySdkPlugin {
   }
 
   /// Gets the current Spotify token or
-  /// reauthenticates the user if the token expired.
-  Future<String?> _getSpotifyAuthToken(
-      {String? clientId, String? redirectUrl}) async {
-    return await _getTokenLock.synchronized<String?>(() async {
+  /// refreshes the token if it expired.
+  Future<String> _getSpotifyAuthToken() async {
+    return await _getTokenLock.synchronized<String>(() async {
       if (_spotifyToken?.accessToken != null) {
         // attempt to use the previously authorized credentials
         if (_spotifyToken!.expiry >
@@ -369,98 +369,93 @@ class SpotifySdkPlugin {
               _spotifyToken!.clientId, _spotifyToken!.refreshToken);
           _spotifyToken = SpotifyToken(
               clientId: _spotifyToken!.clientId,
-              accessToken: newToken['access_token'] as String?,
-              refreshToken: newToken['refresh_token'] as String?,
+              accessToken: newToken['access_token'] as String,
+              refreshToken: newToken['refresh_token'] as String,
               expiry: (DateTime.now().millisecondsSinceEpoch / 1000).round() +
                   (newToken['expires_in'] as int));
           return _spotifyToken!.accessToken;
         }
       } else {
-        // new authorization
-        var newToken = await _authorizeSpotify(clientId, redirectUrl);
-        _spotifyToken = SpotifyToken(
-            clientId: clientId,
-            accessToken: newToken['access_token'] as String?,
-            refreshToken: newToken['refresh_token'] as String?,
-            expiry: (DateTime.now().millisecondsSinceEpoch / 1000).round() +
-                (newToken['expires_in'] as int));
-        return _spotifyToken!.accessToken;
+        throw PlatformException(
+            message: 'Spotify user not logged in!',
+            code: 'Authentication Error');
       }
     });
   }
 
-  /// Authenticates the user and returns the access token on success.
-  Future<dynamic> _authorizeSpotify(
-      String? clientId, String? redirectUrl) async {
-    if (clientId?.isNotEmpty == true && redirectUrl?.isNotEmpty == true) {
-      // creating auth uri
-      var codeVerifier = _createCodeVerifier();
-      var codeChallenge = _createCodeChallenge(codeVerifier);
-      var state = _createAuthState();
+  /// Authenticates a new user with Spotify and stores access token.
+  Future<String> _authorizeSpotify(
+      {required String clientId, required String redirectUrl}) async {
+    // creating auth uri
+    var codeVerifier = _createCodeVerifier();
+    var codeChallenge = _createCodeChallenge(codeVerifier);
+    var state = _createAuthState();
+    var scopes = authenticationScopes.join(' ');
+    var authorizationUri =
+        'https://accounts.spotify.com/authorize?client_id=$clientId&response_type=code&redirect_uri=$redirectUrl&code_challenge_method=S256&code_challenge=$codeChallenge&state=$state&scope=$scopes';
 
-      var scopes = authenticationScopes.join(' ');
-      var authorizationUri =
-          'https://accounts.spotify.com/authorize?client_id=$clientId&response_type=code&redirect_uri=$redirectUrl&code_challenge_method=S256&code_challenge=$codeChallenge&state=$state&scope=$scopes';
+    // opening auth window
+    var authPopup = window.open(authorizationUri, 'Spotify Authorization');
+    String? message;
+    var sub = window.onMessage.listen(allowInterop((event) {
+      message = event.data.toString();
+    }));
 
-      // opening auth window
-      var authPopup = window.open(authorizationUri, 'Spotify Authorization');
-      String? message;
-      var sub = window.onMessage.listen(allowInterop((event) {
-        message = event.data.toString();
-      }));
+    // loop and wait for auth
+    while (authPopup.closed == false && message == null) {
+      // await response from the window
+      await Future.delayed(Duration(milliseconds: 250));
+    }
 
-      // loop and wait for auth
-      while (authPopup.closed == false && message == null) {
-        // await response from the window
-        await Future.delayed(Duration(milliseconds: 250));
-      }
+    // parse the returned parameters
+    var parsedMessage = Uri.parse(message!);
 
-      // parse the returned parameters
-      var parsedMessage = Uri.parse(message!);
-
-      // check if state is the same
-      if (state != parsedMessage.queryParameters['state']) {
-        throw PlatformException(
-            message: 'Invalid state', code: 'Authentication Error');
-      }
-
-      // check for error
-      if (parsedMessage.queryParameters['error'] != null ||
-          parsedMessage.queryParameters['code'] == null) {
-        throw PlatformException(
-            message: "${parsedMessage.queryParameters['error']}",
-            code: 'Authentication Error');
-      }
-
-      // close auth window
-      if (authPopup.closed == false) {
-        authPopup.close();
-      }
-      await sub.cancel();
-
-      // exchange auth code for access and refresh tokens
-      try {
-        return (await _authDio.post('https://accounts.spotify.com/api/token',
-                data: {
-                  'client_id': clientId,
-                  'grant_type': 'authorization_code',
-                  'code': parsedMessage.queryParameters['code'],
-                  'redirect_uri': redirectUrl,
-                  'code_verifier': codeVerifier
-                },
-                options:
-                    Options(contentType: Headers.formUrlEncodedContentType)))
-            .data;
-      } on DioError catch (e) {
-        print('Spotify auth error: ${e.response?.data}');
-        rethrow;
-      }
-    } else {
+    // check if state is the same
+    if (state != parsedMessage.queryParameters['state']) {
       throw PlatformException(
-          message:
-              'Client id or redirectUrl are not set or have invalid format',
+          message: 'Invalid state', code: 'Authentication Error');
+    }
+
+    // check for error
+    if (parsedMessage.queryParameters['error'] != null ||
+        parsedMessage.queryParameters['code'] == null) {
+      throw PlatformException(
+          message: "${parsedMessage.queryParameters['error']}",
           code: 'Authentication Error');
     }
+
+    // close auth window
+    if (authPopup.closed == false) {
+      authPopup.close();
+    }
+    await sub.cancel();
+
+    // exchange auth code for access and refresh tokens
+    dynamic authResponse;
+    try {
+      authResponse = (await _authDio.post(
+              'https://accounts.spotify.com/api/token',
+              data: {
+                'client_id': clientId,
+                'grant_type': 'authorization_code',
+                'code': parsedMessage.queryParameters['code'],
+                'redirect_uri': redirectUrl,
+                'code_verifier': codeVerifier
+              },
+              options: Options(contentType: Headers.formUrlEncodedContentType)))
+          .data;
+    } on DioError catch (e) {
+      print('Spotify auth error: ${e.response?.data}');
+      rethrow;
+    }
+
+    _spotifyToken = SpotifyToken(
+        clientId: clientId,
+        accessToken: authResponse['access_token'] as String,
+        refreshToken: authResponse['refresh_token'] as String,
+        expiry: (DateTime.now().millisecondsSinceEpoch / 1000).round() +
+            (authResponse['expires_in'] as int));
+    return _spotifyToken!.accessToken;
   }
 
   /// Refreshes the Spotify access token using the refresh token.
@@ -985,13 +980,13 @@ class WebPlaybackError {
 /// Spotify token object.
 class SpotifyToken {
   /// Currently used client id.
-  final String? clientId;
+  final String clientId;
 
   /// Access token data.
-  final String? accessToken;
+  final String accessToken;
 
   /// Refresh token data.
-  final String? refreshToken;
+  final String refreshToken;
 
   /// Token expiry time in unix seconds.
   final int expiry;
