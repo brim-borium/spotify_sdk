@@ -49,9 +49,9 @@ class _HomeState extends State<Home> {
               title: const Text('SpotifySdk Example'),
               actions: [
                 _connected
-                    ? TextButton(
+                    ? IconButton(
                         onPressed: disconnect,
-                        child: const Text('Disconnect'),
+                        icon: Icon(Icons.exit_to_app),
                       )
                     : Container()
               ],
