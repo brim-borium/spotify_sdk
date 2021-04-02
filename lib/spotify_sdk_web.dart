@@ -6,7 +6,6 @@ import 'dart:convert';
 import 'dart:core';
 import 'dart:developer';
 import 'dart:html';
-import 'dart:js';
 import 'dart:math' as math;
 
 import 'package:crypto/crypto.dart';
@@ -59,6 +58,9 @@ class SpotifySdkPlugin {
   /// Whether the Spotify SDK is loaded.
   bool _sdkLoaded = false;
 
+  /// Future loading the Spotify SDK.
+  Future? _sdkLoadFuture;
+
   /// Current Spotify SDK player instance.
   Player? _currentPlayer;
 
@@ -95,9 +97,7 @@ class SpotifySdkPlugin {
       this.playerStateEventController,
       this.playerCapabilitiesEventController,
       this.userStateEventController,
-      this.connectionStatusEventController) {
-    _initializeSpotify();
-  }
+      this.connectionStatusEventController);
 
   /// registers plugin method channels
   static void registerWith(Registrar registrar) {
@@ -140,9 +140,8 @@ class SpotifySdkPlugin {
   Future<dynamic> handleMethodCall(MethodCall call) async {
     // check if spotify is loaded
     if (_sdkLoaded == false) {
-      throw PlatformException(
-          code: 'Uninitialized',
-          details: "The Spotify SDK wasn't initialized yet");
+      _sdkLoadFuture ??= _initializeSpotify();
+      await _sdkLoadFuture;
     }
 
     switch (call.method) {
@@ -248,18 +247,25 @@ class SpotifySdkPlugin {
   }
 
   /// Loads the Spotify SDK library.
-  void _initializeSpotify() {
-    if (context['onSpotifyWebPlaybackSDKReady'] == null) {
+  Future _initializeSpotify() async {
+    if (_onSpotifyWebPlaybackSDKReady == null) {
+      log('Loading Spotify SDK...');
+
+      // link spotify ready function
+      _onSpotifyWebPlaybackSDKReady = allowInterop(_onSpotifyInitialized);
+
       // load spotify sdk
-      context['onSpotifyWebPlaybackSDKReady'] =
-          allowInterop(_onSpotifyInitialized);
-      var scriptElement = ScriptElement();
-      scriptElement.src = spotifySdkUrl;
-      scriptElement.defer = true;
-      querySelector('body')!.children.add(scriptElement);
+      querySelector('body')!.children.add(ScriptElement()..src = spotifySdkUrl);
+
+      // wait for initialization
+      while (_sdkLoaded == false) {
+        await Future.delayed(Duration(milliseconds: 200));
+      }
+
+      log('Spotify SDK loaded!');
     } else {
       // spotify sdk already loaded
-      log('Reusing loaded Spotify SDK!');
+      log('Reusing loaded Spotify SDK');
       _sdkLoaded = true;
     }
   }
@@ -309,7 +315,6 @@ class SpotifySdkPlugin {
 
   /// Called when the Spotify SDK is first loaded.
   void _onSpotifyInitialized() {
-    log('Spotify SDK loaded!');
     _sdkLoaded = true;
   }
 
@@ -405,6 +410,13 @@ class SpotifySdkPlugin {
     while (authPopup.closed == false && message == null) {
       // await response from the window
       await Future.delayed(Duration(milliseconds: 250));
+    }
+
+    // error if window closed by user
+    if (message == null) {
+      throw PlatformException(
+          message: 'User closed authentication window',
+          code: 'Authentication Error');
     }
 
     // parse the returned parameters
@@ -692,6 +704,16 @@ class SpotifySdkPlugin {
         state.context.metadata.type,
         state.context.uri);
   }
+
+  /// Allows assigning the function onSpotifyWebPlaybackSDKReady
+  /// to be callable from `window.onSpotifyWebPlaybackSDKReady()`
+  @JS('onSpotifyWebPlaybackSDKReady')
+  external set _onSpotifyWebPlaybackSDKReady(void Function()? f);
+
+  /// Allows assigning the function onSpotifyWebPlaybackSDKReady
+  /// to be callable from `window.onSpotifyWebPlaybackSDKReady()`
+  @JS('onSpotifyWebPlaybackSDKReady')
+  external void Function()? get _onSpotifyWebPlaybackSDKReady;
 }
 
 /// Spotify Player Object
