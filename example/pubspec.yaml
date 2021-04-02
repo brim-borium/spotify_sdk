@@ -8,7 +8,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  logger: ^1.0.0-nullsafety.0
+  logger: ^1.0.0
   flutter_dotenv: ^3.1.0
   cupertino_icons: ^1.0.0
 
