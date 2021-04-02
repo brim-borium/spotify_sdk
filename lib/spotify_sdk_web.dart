@@ -704,17 +704,17 @@ class SpotifySdkPlugin {
         state.context.metadata.type,
         state.context.uri);
   }
-
-  /// Allows assigning the function onSpotifyWebPlaybackSDKReady
-  /// to be callable from `window.onSpotifyWebPlaybackSDKReady()`
-  @JS('onSpotifyWebPlaybackSDKReady')
-  external set _onSpotifyWebPlaybackSDKReady(void Function()? f);
-
-  /// Allows assigning the function onSpotifyWebPlaybackSDKReady
-  /// to be callable from `window.onSpotifyWebPlaybackSDKReady()`
-  @JS('onSpotifyWebPlaybackSDKReady')
-  external void Function()? get _onSpotifyWebPlaybackSDKReady;
 }
+
+/// Allows assigning the function onSpotifyWebPlaybackSDKReady
+/// to be callable from `window.onSpotifyWebPlaybackSDKReady()`
+@JS('onSpotifyWebPlaybackSDKReady')
+external set _onSpotifyWebPlaybackSDKReady(void Function()? f);
+
+/// Allows assigning the function onSpotifyWebPlaybackSDKReady
+/// to be callable from `window.onSpotifyWebPlaybackSDKReady()`
+@JS('onSpotifyWebPlaybackSDKReady')
+external void Function()? get _onSpotifyWebPlaybackSDKReady;
 
 /// Spotify Player Object
 @JS('Spotify.Player')
