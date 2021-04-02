@@ -404,6 +404,10 @@ class SpotifySdkPlugin {
     String? message;
     var sub = window.onMessage.listen(allowInterop((event) {
       message = event.data.toString();
+      // ensure the message contains auth code
+      if (!message!.startsWith('?code=')) {
+        message = null;
+      }
     }));
 
     // loop and wait for auth
