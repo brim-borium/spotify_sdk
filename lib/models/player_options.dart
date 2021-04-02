@@ -1,5 +1,4 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:flutter/foundation.dart';
 
 part 'player_options.g.dart';
 
@@ -7,7 +6,7 @@ part 'player_options.g.dart';
 class PlayerOptions {
   PlayerOptions(
     this.repeatMode, {
-    @required this.isShuffling,
+    required this.isShuffling,
   });
 
   @JsonKey(name: 'shuffle')

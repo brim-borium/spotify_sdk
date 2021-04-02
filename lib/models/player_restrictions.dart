@@ -1,17 +1,16 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:flutter/foundation.dart';
 
 part 'player_restrictions.g.dart';
 
 @JsonSerializable()
 class PlayerRestrictions {
   PlayerRestrictions({
-    @required this.canSkipNext,
-    @required this.canSkipPrevious,
-    @required this.canRepeatTrack,
-    @required this.canRepeatContext,
-    @required this.canToggleShuffle,
-    @required this.canSeek,
+    required this.canSkipNext,
+    required this.canSkipPrevious,
+    required this.canRepeatTrack,
+    required this.canRepeatContext,
+    required this.canToggleShuffle,
+    required this.canSeek,
   });
 
   @JsonKey(name: 'can_skip_next')

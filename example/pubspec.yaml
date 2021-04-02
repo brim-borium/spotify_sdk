@@ -8,14 +8,14 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  logger: ^0.9.3
+  logger: ^1.0.0
   flutter_dotenv: ^3.1.0
   cupertino_icons: ^1.0.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  pedantic: ^1.9.2
+  pedantic: ^1.11.0
   spotify_sdk:
     path: ../
 

@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 import 'album.dart';
@@ -17,8 +16,8 @@ class Track {
     this.imageUri,
     this.name,
     this.uri, {
-    @required this.isEpisode,
-    @required this.isPodcast,
+    required this.isEpisode,
+    required this.isPodcast,
   });
 
   final Album album;

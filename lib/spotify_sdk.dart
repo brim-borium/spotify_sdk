@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:logger/logger.dart';
 
 import 'enums/image_dimension_enum.dart';
@@ -58,12 +57,12 @@ class SpotifySdk {
   /// Throws a [MissingPluginException] if the method is not implemented on
   /// the native platforms.
   static Future<bool> connectToSpotifyRemote(
-      {@required String clientId,
-      @required String redirectUrl,
-      bool asRadio,
-      String scope,
+      {required String clientId,
+      required String redirectUrl,
+      bool asRadio = false,
+      String? scope,
       String playerName = 'Spotify SDK',
-      String accessToken}) async {
+      String? accessToken}) async {
     try {
       return await _channel.invokeMethod(MethodNames.connectToSpotify, {
         ParamNames.clientId: clientId,
@@ -94,10 +93,10 @@ class SpotifySdk {
   /// Throws a [MissingPluginException] if the method is not implemented on
   /// the native platforms.
   static Future<String> getAuthenticationToken(
-      {@required String clientId,
-      @required String redirectUrl,
-      bool asRadio,
-      String scope}) async {
+      {required String clientId,
+      required String redirectUrl,
+      bool asRadio = false,
+      String? scope}) async {
     try {
       final authorization =
           await _channel.invokeMethod(MethodNames.getAuthenticationToken, {
@@ -135,7 +134,8 @@ class SpotifySdk {
   static Future<CrossfadeState> getCrossFadeState() async {
     try {
       var crossfadeStateJson =
-          await _channel.invokeMethod<String>(MethodNames.getCrossfadeState);
+          await (_channel.invokeMethod<String>(MethodNames.getCrossfadeState)
+              as FutureOr<String>);
       var crossfadeStateMap =
           jsonDecode(crossfadeStateJson) as Map<String, dynamic>;
       var crossfadeState = CrossfadeState.fromJson(crossfadeStateMap);
@@ -154,7 +154,8 @@ class SpotifySdk {
   static Future<PlayerState> getPlayerState() async {
     try {
       var playerStateJson =
-          await _channel.invokeMethod<String>(MethodNames.getPlayerState);
+          await (_channel.invokeMethod<String>(MethodNames.getPlayerState)
+              as FutureOr<String>);
       var playerStateMap = jsonDecode(playerStateJson) as Map<String, dynamic>;
       var playerState = PlayerState.fromJson(playerStateMap);
       return playerState;
@@ -170,7 +171,7 @@ class SpotifySdk {
   /// Throws a [PlatformException] if queing failed
   /// Throws a [MissingPluginException] if the method is not implemented on
   /// the native platforms.
-  static Future queue({@required String spotifyUri}) async {
+  static Future queue({required String spotifyUri}) async {
     try {
       await _channel.invokeMethod(
           MethodNames.queueTrack, {ParamNames.spotifyUri: spotifyUri});
@@ -188,7 +189,7 @@ class SpotifySdk {
   /// Throws a [MissingPluginException] if the method is not implemented on
   /// the native platforms.
   static Future play({
-    @required String spotifyUri,
+    required String spotifyUri,
     bool asRadio = false,
   }) async {
     try {
@@ -324,7 +325,7 @@ class SpotifySdk {
   /// Throws a [PlatformException] if seeking failed
   /// Throws a [MissingPluginException] if the method is not implemented on
   /// the native platforms.
-  static Future seekTo({@required int positionedMilliseconds}) async {
+  static Future seekTo({required int positionedMilliseconds}) async {
     try {
       await _channel.invokeMethod(MethodNames.seekTo,
           {ParamNames.positionedMilliseconds: positionedMilliseconds});
@@ -342,7 +343,7 @@ class SpotifySdk {
   /// Throws a [MissingPluginException] if the method is not implemented on
   /// the native platforms.
   static Future seekToRelativePosition(
-      {@required int relativeMilliseconds}) async {
+      {required int relativeMilliseconds}) async {
     try {
       await _channel.invokeMethod(MethodNames.seekToRelativePosition,
           {ParamNames.relativeMilliseconds: relativeMilliseconds});
@@ -385,7 +386,7 @@ class SpotifySdk {
   /// Throws a [PlatformException] if adding failed
   /// Throws a [MissingPluginException] if the method is not implemented on
   /// the native platforms.
-  static Future addToLibrary({@required String spotifyUri}) async {
+  static Future addToLibrary({required String spotifyUri}) async {
     try {
       await _channel.invokeMethod(
           MethodNames.addToLibrary, {ParamNames.spotifyUri: spotifyUri});
@@ -400,7 +401,7 @@ class SpotifySdk {
   /// Throws a [PlatformException] if adding failed
   /// Throws a [MissingPluginException] if the method is not implemented on
   /// the native platforms.
-  static Future removeFromLibrary({@required String spotifyUri}) async {
+  static Future removeFromLibrary({required String spotifyUri}) async {
     try {
       await _channel.invokeMethod(
           MethodNames.removeFromLibrary, {ParamNames.spotifyUri: spotifyUri});
@@ -416,10 +417,11 @@ class SpotifySdk {
   /// Throws a [MissingPluginException] if the method is not implemented on
   /// the native platforms.
   static Future<Capabilities> getCapabilities(
-      {@required String spotifyUri}) async {
+      {required String spotifyUri}) async {
     try {
       var capabilitiesJson =
-          await _channel.invokeMethod<String>(MethodNames.getCapabilities);
+          await (_channel.invokeMethod<String>(MethodNames.getCapabilities)
+              as FutureOr<String>);
       var capabilitiesMap =
           jsonDecode(capabilitiesJson) as Map<String, dynamic>;
       return Capabilities.fromJson(capabilitiesMap);
@@ -435,10 +437,11 @@ class SpotifySdk {
   /// Throws a [MissingPluginException] if the method is not implemented on
   /// the native platforms.
   static Future<LibraryState> getLibraryState(
-      {@required String spotifyUri}) async {
+      {required String spotifyUri}) async {
     try {
-      var libraryStateJson = await _channel.invokeMethod<String>(
-          MethodNames.getLibraryState, {ParamNames.spotifyUri: spotifyUri});
+      var libraryStateJson = await (_channel.invokeMethod<String>(
+              MethodNames.getLibraryState, {ParamNames.spotifyUri: spotifyUri})
+          as FutureOr<String>);
       var libraryStateMap =
           jsonDecode(libraryStateJson) as Map<String, dynamic>;
       return LibraryState.fromJson(libraryStateMap);
@@ -495,8 +498,8 @@ class SpotifySdk {
   /// Throws a [PlatformException] if adding failed
   /// Throws a [MissingPluginException] if the method is not implemented on
   /// the native platforms.
-  static Future<Uint8List> getImage(
-      {@required ImageUri imageUri,
+  static Future<Uint8List?> getImage(
+      {required ImageUri imageUri,
       ImageDimension dimension = ImageDimension.medium}) async {
     try {
       return _channel.invokeMethod(MethodNames.getImage, {
@@ -515,7 +518,7 @@ class SpotifySdk {
   /// Throws a [PlatformException] if adding failed
   /// Throws a [MissingPluginException] if the method is not implemented on
   /// the native platforms.
-  static Future setShuffle({@required bool shuffle}) async {
+  static Future setShuffle({required bool shuffle}) async {
     try {
       return _channel.invokeMethod(MethodNames.setShuffle, {
         ParamNames.shuffle: shuffle,
@@ -532,7 +535,7 @@ class SpotifySdk {
   /// Throws a [PlatformException] if adding failed
   /// Throws a [MissingPluginException] if the method is not implemented on
   /// the native platforms.
-  static Future setRepeatMode({@required RepeatMode repeatMode}) async {
+  static Future setRepeatMode({required RepeatMode repeatMode}) async {
     try {
       return _channel.invokeMethod(
           MethodNames.setRepeatMode, {ParamNames.repeatMode: repeatMode.index});
@@ -544,7 +547,7 @@ class SpotifySdk {
 
   static void _logException(String method, Exception e) {
     if (e is PlatformException) {
-      var message = e.message;
+      var message = e.message ?? '';
       message += e.details != null ? '\n${e.details}' : '';
       _logger.i('$method failed with: $message');
     } else if (e is MissingPluginException) {

@@ -11,16 +11,11 @@ PlayerState _$PlayerStateFromJson(Map<String, dynamic> json) {
     json['track'] == null
         ? null
         : Track.fromJson(json['track'] as Map<String, dynamic>),
-    (json['playback_speed'] as num)?.toDouble(),
+    (json['playback_speed'] as num).toDouble(),
     json['playback_position'] as int,
-    json['playback_options'] == null
-        ? null
-        : PlayerOptions.fromJson(
-            json['playback_options'] as Map<String, dynamic>),
-    json['playback_restrictions'] == null
-        ? null
-        : PlayerRestrictions.fromJson(
-            json['playback_restrictions'] as Map<String, dynamic>),
+    PlayerOptions.fromJson(json['playback_options'] as Map<String, dynamic>),
+    PlayerRestrictions.fromJson(
+        json['playback_restrictions'] as Map<String, dynamic>),
     isPaused: json['is_paused'] as bool,
   );
 }

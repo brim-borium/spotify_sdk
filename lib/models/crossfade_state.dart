@@ -1,5 +1,4 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:flutter/foundation.dart';
 
 part 'crossfade_state.g.dart';
 
@@ -7,7 +6,7 @@ part 'crossfade_state.g.dart';
 class CrossfadeState {
   CrossfadeState(
     this.duration, {
-    @required this.isEnabled,
+    required this.isEnabled,
   });
 
   final bool isEnabled;

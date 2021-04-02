@@ -46,3 +46,4 @@ build/
 /.vs/spotify_sdk/v16/.suo
 
 SpotifyiOS.framework
+**/doc/api/

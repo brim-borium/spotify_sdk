@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'connection_status.g.dart';
@@ -9,7 +8,7 @@ class ConnectionStatus {
     this.message,
     this.errorCode,
     this.errorDetails, {
-    @required this.connected,
+    required this.connected,
   });
 
   @JsonKey(name: 'connected')
@@ -23,7 +22,7 @@ class ConnectionStatus {
 
   @JsonKey(ignore: true)
   bool hasError() {
-    return errorCode?.isNotEmpty == true;
+    return errorCode.isNotEmpty == true;
   }
 
   factory ConnectionStatus.fromJson(Map<String, dynamic> json) =>
