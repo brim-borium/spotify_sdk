@@ -56,10 +56,10 @@ class SpotifySdk {
   /// Throws a [PlatformException] if connecting to the remote api failed
   /// Throws a [MissingPluginException] if the method is not implemented on
   /// the native platforms.
-  static Future<bool?> connectToSpotifyRemote(
+  static Future<bool> connectToSpotifyRemote(
       {required String clientId,
       required String redirectUrl,
-      bool? asRadio,
+      bool asRadio = false,
       String? scope,
       String playerName = 'Spotify SDK',
       String? accessToken}) async {
@@ -95,7 +95,7 @@ class SpotifySdk {
   static Future<String> getAuthenticationToken(
       {required String clientId,
       required String redirectUrl,
-      bool? asRadio,
+      bool asRadio = false,
       String? scope}) async {
     try {
       final authorization =
@@ -117,7 +117,7 @@ class SpotifySdk {
   /// Throws a [PlatformException] if disconnect failed
   /// Throws a [MissingPluginException] if the method is not implemented on
   /// the native platforms.
-  static Future<bool?> disconnect() async {
+  static Future<bool> disconnect() async {
     try {
       return await _channel.invokeMethod(MethodNames.disconnectFromSpotify);
     } on Exception catch (e) {
@@ -547,7 +547,7 @@ class SpotifySdk {
 
   static void _logException(String method, Exception e) {
     if (e is PlatformException) {
-      var message = e.message!;
+      var message = e.message ?? '';
       message += e.details != null ? '\n${e.details}' : '';
       _logger.i('$method failed with: $message');
     } else if (e is MissingPluginException) {
