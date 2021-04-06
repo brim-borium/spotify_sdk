@@ -387,7 +387,7 @@ class SpotifySdkPlugin {
     var codeChallenge = _createCodeChallenge(codeVerifier);
     var state = _createAuthState();
     var authorizationUri =
-        'https://accounts.spotify.com/authorize?client_id=$clientId&response_type=code&redirect_uri=$redirectUrl&code_challenge_method=S256&code_challenge=$codeChallenge&state=$state${scopes ?? ''}';
+        'https://accounts.spotify.com/authorize?client_id=$clientId&response_type=code&redirect_uri=$redirectUrl&code_challenge_method=S256&code_challenge=$codeChallenge&state=$state&scope=$scopes';
 
     // opening auth window
     var authPopup = window.open(authorizationUri, 'Spotify Authorization');
