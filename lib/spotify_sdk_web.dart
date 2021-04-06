@@ -79,6 +79,10 @@ class SpotifySdkPlugin {
   /// Lock for getting the token
   final synchronized.Lock _getTokenLock = synchronized.Lock(reentrant: true);
 
+  /// Default scopes that are required for Web SDK to work
+  static const String DEFAULT_SCOPE =
+      'streaming user-read-email user-read-private';
+
   /// constructor
   SpotifySdkPlugin(
       this.playerContextEventController,
@@ -141,7 +145,8 @@ class SpotifySdkPlugin {
         var clientId = call.arguments[ParamNames.clientId] as String;
         var redirectUrl = call.arguments[ParamNames.redirectUrl] as String;
         var playerName = call.arguments[ParamNames.playerName] as String?;
-        var scopes = call.arguments[ParamNames.scope] as String?;
+        var scopes =
+            call.arguments[ParamNames.scope] as String? ?? DEFAULT_SCOPE;
 
         // get initial token
         await _authorizeSpotify(
@@ -180,7 +185,8 @@ class SpotifySdkPlugin {
         return await _authorizeSpotify(
             clientId: call.arguments[ParamNames.clientId] as String,
             redirectUrl: call.arguments[ParamNames.redirectUrl] as String,
-            scopes: call.arguments[ParamNames.scope] as String?);
+            scopes:
+                call.arguments[ParamNames.scope] as String? ?? DEFAULT_SCOPE);
       case MethodNames.disconnectFromSpotify:
         log('Disconnecting from Spotify...');
         _spotifyToken = null;
