@@ -32,7 +32,7 @@ class _HomeState extends State<Home> {
   bool _connected = false;
   final Logger _logger = Logger();
 
-  CrossfadeState crossfadeState;
+  CrossfadeState? crossfadeState;
 
   @override
   Widget build(BuildContext context) {
@@ -41,8 +41,9 @@ class _HomeState extends State<Home> {
         stream: SpotifySdk.subscribeConnectionStatus(),
         builder: (context, snapshot) {
           _connected = false;
-          if (snapshot.data != null) {
-            _connected = snapshot.data.connected;
+          var data = snapshot.data;
+          if (data != null) {
+            _connected = data.connected;
           }
           return Scaffold(
             appBar: AppBar(
@@ -196,89 +197,83 @@ class _HomeState extends State<Home> {
   Widget playerStateWidget() {
     return StreamBuilder<PlayerState>(
       stream: SpotifySdk.subscribePlayerState(),
-      initialData: PlayerState(
-        null,
-        1,
-        1,
-        null,
-        null,
-        isPaused: false,
-      ),
       builder: (BuildContext context, AsyncSnapshot<PlayerState> snapshot) {
-        if (snapshot.data != null && snapshot.data.track != null) {
-          var playerState = snapshot.data;
-          return Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Text('''
-                    ${playerState.track.name} 
-                    by ${playerState.track.artist.name} 
-                    from the album ${playerState.track.album.name} '''),
-              Text('Speed: ${playerState.playbackSpeed}'),
-              Text(
-                  'Progress: ${playerState.playbackPosition}ms/${playerState.track.duration}ms'),
-              Text('IsPaused: ${playerState.isPaused}'),
-              Text('Is Shuffling: ${playerState.playbackOptions.isShuffling}'),
-              Text('RepeatMode: ${playerState.playbackOptions.repeatMode}'),
-              Text('Image URI: ${playerState.track.imageUri.raw}'),
-              Text('''
-                  Is episode? ${playerState.track.isEpisode}. 
-                  Is podcast?: ${playerState.track.isPodcast}'''),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Divider(),
-                  const Text(
-                    'Set Shuffle and Repeat',
-                    style: TextStyle(fontSize: 16),
-                  ),
-                  Row(
-                    children: [
-                      const Text(
-                        'Repeat Mode:',
-                      ),
-                      DropdownButton<RepeatMode>(
-                        value: RepeatMode.values[
-                            playerState.playbackOptions.repeatMode.index],
-                        items: [
-                          DropdownMenuItem(
-                            value: RepeatMode.off,
-                            child: Text('off'),
-                          ),
-                          DropdownMenuItem(
-                            value: RepeatMode.track,
-                            child: Text('track'),
-                          ),
-                          DropdownMenuItem(
-                            value: RepeatMode.context,
-                            child: Text('context'),
-                          ),
-                        ],
-                        onChanged: setRepeatMode,
-                      ),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      Text('Set shuffle: '),
-                      Switch.adaptive(
-                        value: playerState.playbackOptions.isShuffling,
-                        onChanged: (bool shuffle) => setShuffle(
-                          shuffle: shuffle,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ],
-          );
-        } else {
+        var track = snapshot.data?.track;
+        var playerState = snapshot.data;
+
+        if (playerState == null || track == null) {
           return const Center(
             child: Text('Not connected'),
           );
         }
+
+        return Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Text('''
+                    ${track.name} 
+                    by ${track.artist.name} 
+                    from the album ${track.album.name} '''),
+            Text('Speed: ${playerState.playbackSpeed}'),
+            Text(
+                'Progress: ${playerState.playbackPosition}ms/${track.duration}ms'),
+            Text('IsPaused: ${playerState.isPaused}'),
+            Text('Is Shuffling: ${playerState.playbackOptions.isShuffling}'),
+            Text('RepeatMode: ${playerState.playbackOptions.repeatMode}'),
+            Text('Image URI: ${track.imageUri.raw}'),
+            Text('''
+                  Is episode? ${track.isEpisode}. 
+                  Is podcast?: ${track.isPodcast}'''),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Divider(),
+                const Text(
+                  'Set Shuffle and Repeat',
+                  style: TextStyle(fontSize: 16),
+                ),
+                Row(
+                  children: [
+                    const Text(
+                      'Repeat Mode:',
+                    ),
+                    DropdownButton<RepeatMode>(
+                      value: RepeatMode
+                          .values[playerState.playbackOptions.repeatMode.index],
+                      items: [
+                        DropdownMenuItem(
+                          value: RepeatMode.off,
+                          child: Text('off'),
+                        ),
+                        DropdownMenuItem(
+                          value: RepeatMode.track,
+                          child: Text('track'),
+                        ),
+                        DropdownMenuItem(
+                          value: RepeatMode.context,
+                          child: Text('context'),
+                        ),
+                      ],
+                      onChanged: (_) => setRepeatMode,
+                    ),
+                  ],
+                ),
+                Row(
+                  children: [
+                    Text('Set shuffle: '),
+                    Switch.adaptive(
+                      value: playerState.playbackOptions.isShuffling,
+                      onChanged: (bool shuffle) => setShuffle(
+                        shuffle,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ],
+        );
       },
     );
   }
@@ -288,23 +283,23 @@ class _HomeState extends State<Home> {
       stream: SpotifySdk.subscribePlayerContext(),
       initialData: PlayerContext('', '', '', ''),
       builder: (BuildContext context, AsyncSnapshot<PlayerContext> snapshot) {
-        if (snapshot.data != null && snapshot.data.uri != '') {
-          var playerContext = snapshot.data;
-          return Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Text('Title: ${playerContext.title}'),
-              Text('Subtitle: ${playerContext.subtitle}'),
-              Text('Type: ${playerContext.type}'),
-              Text('Uri: ${playerContext.uri}'),
-            ],
-          );
-        } else {
+        var playerContext = snapshot.data;
+        if (playerContext == null) {
           return const Center(
             child: Text('Not connected'),
           );
         }
+
+        return Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Text('Title: ${playerContext.title}'),
+            Text('Subtitle: ${playerContext.subtitle}'),
+            Text('Type: ${playerContext.type}'),
+            Text('Uri: ${playerContext.uri}'),
+          ],
+        );
       },
     );
   }
@@ -316,9 +311,9 @@ class _HomeState extends State<Home> {
               'spotify:image:ab67616d0000b2736b4f6358fbf795b568e7952d'),
           dimension: ImageDimension.large,
         ),
-        builder: (BuildContext context, AsyncSnapshot<Uint8List> snapshot) {
+        builder: (BuildContext context, AsyncSnapshot<Uint8List?> snapshot) {
           if (snapshot.hasData) {
-            return Image.memory(snapshot.data);
+            return Image.memory(snapshot.data!);
           } else if (snapshot.hasError) {
             setStatus(snapshot.error.toString());
             return SizedBox(
@@ -350,7 +345,7 @@ class _HomeState extends State<Home> {
       setState(() {
         _loading = false;
       });
-      setStatus(e.code, message: e.message);
+      setStatus(e.code, message: e.message ?? '');
     } on MissingPluginException {
       setState(() {
         _loading = false;
@@ -377,7 +372,7 @@ class _HomeState extends State<Home> {
       setState(() {
         _loading = false;
       });
-      setStatus(e.code, message: e.message);
+      setStatus(e.code, message: e.message ?? '');
     } on MissingPluginException {
       setState(() {
         _loading = false;
@@ -398,8 +393,8 @@ class _HomeState extends State<Home> {
       setStatus('Got a token: $authenticationToken');
       return authenticationToken;
     } on PlatformException catch (e) {
-      setStatus(e.code, message: e.message);
-      return Future.error('$e.code: $e.message');
+      setStatus(e.code, message: e.message ?? '');
+      return Future.error('$e.code: $e.message ?? ' '');
     } on MissingPluginException {
       setStatus('not implemented');
       return Future.error('not implemented');
@@ -410,7 +405,7 @@ class _HomeState extends State<Home> {
     try {
       return await SpotifySdk.getPlayerState();
     } on PlatformException catch (e) {
-      setStatus(e.code, message: e.message);
+      setStatus(e.code, message: e.message ?? '');
     } on MissingPluginException {
       setStatus('not implemented');
     }
@@ -423,7 +418,7 @@ class _HomeState extends State<Home> {
         crossfadeState = crossfadeStateValue;
       });
     } on PlatformException catch (e) {
-      setStatus(e.code, message: e.message);
+      setStatus(e.code, message: e.message ?? '');
     } on MissingPluginException {
       setStatus('not implemented');
     }
@@ -434,7 +429,7 @@ class _HomeState extends State<Home> {
       await SpotifySdk.queue(
           spotifyUri: 'spotify:track:58kNJana4w5BIjlZE2wq5m');
     } on PlatformException catch (e) {
-      setStatus(e.code, message: e.message);
+      setStatus(e.code, message: e.message ?? '');
     } on MissingPluginException {
       setStatus('not implemented');
     }
@@ -444,7 +439,7 @@ class _HomeState extends State<Home> {
     try {
       await SpotifySdk.toggleRepeat();
     } on PlatformException catch (e) {
-      setStatus(e.code, message: e.message);
+      setStatus(e.code, message: e.message ?? '');
     } on MissingPluginException {
       setStatus('not implemented');
     }
@@ -456,19 +451,19 @@ class _HomeState extends State<Home> {
         repeatMode: repeatMode,
       );
     } on PlatformException catch (e) {
-      setStatus(e.code, message: e.message);
+      setStatus(e.code, message: e.message ?? '');
     } on MissingPluginException {
       setStatus('not implemented');
     }
   }
 
-  Future<void> setShuffle({bool shuffle}) async {
+  Future<void> setShuffle(bool shuffle) async {
     try {
       await SpotifySdk.setShuffle(
         shuffle: shuffle,
       );
     } on PlatformException catch (e) {
-      setStatus(e.code, message: e.message);
+      setStatus(e.code, message: e.message ?? '');
     } on MissingPluginException {
       setStatus('not implemented');
     }
@@ -478,7 +473,7 @@ class _HomeState extends State<Home> {
     try {
       await SpotifySdk.toggleShuffle();
     } on PlatformException catch (e) {
-      setStatus(e.code, message: e.message);
+      setStatus(e.code, message: e.message ?? '');
     } on MissingPluginException {
       setStatus('not implemented');
     }
@@ -488,7 +483,7 @@ class _HomeState extends State<Home> {
     try {
       await SpotifySdk.play(spotifyUri: 'spotify:track:58kNJana4w5BIjlZE2wq5m');
     } on PlatformException catch (e) {
-      setStatus(e.code, message: e.message);
+      setStatus(e.code, message: e.message ?? '');
     } on MissingPluginException {
       setStatus('not implemented');
     }
@@ -498,7 +493,7 @@ class _HomeState extends State<Home> {
     try {
       await SpotifySdk.pause();
     } on PlatformException catch (e) {
-      setStatus(e.code, message: e.message);
+      setStatus(e.code, message: e.message ?? '');
     } on MissingPluginException {
       setStatus('not implemented');
     }
@@ -508,7 +503,7 @@ class _HomeState extends State<Home> {
     try {
       await SpotifySdk.resume();
     } on PlatformException catch (e) {
-      setStatus(e.code, message: e.message);
+      setStatus(e.code, message: e.message ?? '');
     } on MissingPluginException {
       setStatus('not implemented');
     }
@@ -518,7 +513,7 @@ class _HomeState extends State<Home> {
     try {
       await SpotifySdk.skipNext();
     } on PlatformException catch (e) {
-      setStatus(e.code, message: e.message);
+      setStatus(e.code, message: e.message ?? '');
     } on MissingPluginException {
       setStatus('not implemented');
     }
@@ -528,7 +523,7 @@ class _HomeState extends State<Home> {
     try {
       await SpotifySdk.skipPrevious();
     } on PlatformException catch (e) {
-      setStatus(e.code, message: e.message);
+      setStatus(e.code, message: e.message ?? '');
     } on MissingPluginException {
       setStatus('not implemented');
     }
@@ -538,7 +533,7 @@ class _HomeState extends State<Home> {
     try {
       await SpotifySdk.seekTo(positionedMilliseconds: 20000);
     } on PlatformException catch (e) {
-      setStatus(e.code, message: e.message);
+      setStatus(e.code, message: e.message ?? '');
     } on MissingPluginException {
       setStatus('not implemented');
     }
@@ -548,7 +543,7 @@ class _HomeState extends State<Home> {
     try {
       await SpotifySdk.seekToRelativePosition(relativeMilliseconds: 20000);
     } on PlatformException catch (e) {
-      setStatus(e.code, message: e.message);
+      setStatus(e.code, message: e.message ?? '');
     } on MissingPluginException {
       setStatus('not implemented');
     }
@@ -559,7 +554,7 @@ class _HomeState extends State<Home> {
       await SpotifySdk.addToLibrary(
           spotifyUri: 'spotify:track:58kNJana4w5BIjlZE2wq5m');
     } on PlatformException catch (e) {
-      setStatus(e.code, message: e.message);
+      setStatus(e.code, message: e.message ?? '');
     } on MissingPluginException {
       setStatus('not implemented');
     }
