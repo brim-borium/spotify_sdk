@@ -202,8 +202,8 @@ class _HomeState extends State<Home> {
         var playerState = snapshot.data;
 
         if (playerState == null || track == null) {
-          return const Center(
-            child: Text('Not connected'),
+          return Center(
+            child: Container(),
           );
         }
 
