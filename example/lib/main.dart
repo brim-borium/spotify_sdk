@@ -345,7 +345,7 @@ class _HomeState extends State<Home> {
       setState(() {
         _loading = false;
       });
-      setStatus(e.code, message: e.message ?? '');
+      setStatus(e.code, message: e.message);
     } on MissingPluginException {
       setState(() {
         _loading = false;
@@ -372,7 +372,7 @@ class _HomeState extends State<Home> {
       setState(() {
         _loading = false;
       });
-      setStatus(e.code, message: e.message ?? '');
+      setStatus(e.code, message: e.message);
     } on MissingPluginException {
       setState(() {
         _loading = false;
@@ -393,8 +393,8 @@ class _HomeState extends State<Home> {
       setStatus('Got a token: $authenticationToken');
       return authenticationToken;
     } on PlatformException catch (e) {
-      setStatus(e.code, message: e.message ?? '');
-      return Future.error('$e.code: $e.message ?? ' '');
+      setStatus(e.code, message: e.message);
+      return Future.error('$e.code: $e.message');
     } on MissingPluginException {
       setStatus('not implemented');
       return Future.error('not implemented');
@@ -405,7 +405,7 @@ class _HomeState extends State<Home> {
     try {
       return await SpotifySdk.getPlayerState();
     } on PlatformException catch (e) {
-      setStatus(e.code, message: e.message ?? '');
+      setStatus(e.code, message: e.message);
     } on MissingPluginException {
       setStatus('not implemented');
     }
@@ -418,7 +418,7 @@ class _HomeState extends State<Home> {
         crossfadeState = crossfadeStateValue;
       });
     } on PlatformException catch (e) {
-      setStatus(e.code, message: e.message ?? '');
+      setStatus(e.code, message: e.message);
     } on MissingPluginException {
       setStatus('not implemented');
     }
@@ -429,7 +429,7 @@ class _HomeState extends State<Home> {
       await SpotifySdk.queue(
           spotifyUri: 'spotify:track:58kNJana4w5BIjlZE2wq5m');
     } on PlatformException catch (e) {
-      setStatus(e.code, message: e.message ?? '');
+      setStatus(e.code, message: e.message);
     } on MissingPluginException {
       setStatus('not implemented');
     }
@@ -439,7 +439,7 @@ class _HomeState extends State<Home> {
     try {
       await SpotifySdk.toggleRepeat();
     } on PlatformException catch (e) {
-      setStatus(e.code, message: e.message ?? '');
+      setStatus(e.code, message: e.message);
     } on MissingPluginException {
       setStatus('not implemented');
     }
@@ -451,7 +451,7 @@ class _HomeState extends State<Home> {
         repeatMode: repeatMode,
       );
     } on PlatformException catch (e) {
-      setStatus(e.code, message: e.message ?? '');
+      setStatus(e.code, message: e.message);
     } on MissingPluginException {
       setStatus('not implemented');
     }
@@ -463,7 +463,7 @@ class _HomeState extends State<Home> {
         shuffle: shuffle,
       );
     } on PlatformException catch (e) {
-      setStatus(e.code, message: e.message ?? '');
+      setStatus(e.code, message: e.message);
     } on MissingPluginException {
       setStatus('not implemented');
     }
@@ -473,7 +473,7 @@ class _HomeState extends State<Home> {
     try {
       await SpotifySdk.toggleShuffle();
     } on PlatformException catch (e) {
-      setStatus(e.code, message: e.message ?? '');
+      setStatus(e.code, message: e.message);
     } on MissingPluginException {
       setStatus('not implemented');
     }
@@ -483,7 +483,7 @@ class _HomeState extends State<Home> {
     try {
       await SpotifySdk.play(spotifyUri: 'spotify:track:58kNJana4w5BIjlZE2wq5m');
     } on PlatformException catch (e) {
-      setStatus(e.code, message: e.message ?? '');
+      setStatus(e.code, message: e.message);
     } on MissingPluginException {
       setStatus('not implemented');
     }
@@ -493,7 +493,7 @@ class _HomeState extends State<Home> {
     try {
       await SpotifySdk.pause();
     } on PlatformException catch (e) {
-      setStatus(e.code, message: e.message ?? '');
+      setStatus(e.code, message: e.message);
     } on MissingPluginException {
       setStatus('not implemented');
     }
@@ -503,7 +503,7 @@ class _HomeState extends State<Home> {
     try {
       await SpotifySdk.resume();
     } on PlatformException catch (e) {
-      setStatus(e.code, message: e.message ?? '');
+      setStatus(e.code, message: e.message);
     } on MissingPluginException {
       setStatus('not implemented');
     }
@@ -513,7 +513,7 @@ class _HomeState extends State<Home> {
     try {
       await SpotifySdk.skipNext();
     } on PlatformException catch (e) {
-      setStatus(e.code, message: e.message ?? '');
+      setStatus(e.code, message: e.message);
     } on MissingPluginException {
       setStatus('not implemented');
     }
@@ -523,7 +523,7 @@ class _HomeState extends State<Home> {
     try {
       await SpotifySdk.skipPrevious();
     } on PlatformException catch (e) {
-      setStatus(e.code, message: e.message ?? '');
+      setStatus(e.code, message: e.message);
     } on MissingPluginException {
       setStatus('not implemented');
     }
@@ -533,7 +533,7 @@ class _HomeState extends State<Home> {
     try {
       await SpotifySdk.seekTo(positionedMilliseconds: 20000);
     } on PlatformException catch (e) {
-      setStatus(e.code, message: e.message ?? '');
+      setStatus(e.code, message: e.message);
     } on MissingPluginException {
       setStatus('not implemented');
     }
@@ -543,7 +543,7 @@ class _HomeState extends State<Home> {
     try {
       await SpotifySdk.seekToRelativePosition(relativeMilliseconds: 20000);
     } on PlatformException catch (e) {
-      setStatus(e.code, message: e.message ?? '');
+      setStatus(e.code, message: e.message);
     } on MissingPluginException {
       setStatus('not implemented');
     }
@@ -554,14 +554,14 @@ class _HomeState extends State<Home> {
       await SpotifySdk.addToLibrary(
           spotifyUri: 'spotify:track:58kNJana4w5BIjlZE2wq5m');
     } on PlatformException catch (e) {
-      setStatus(e.code, message: e.message ?? '');
+      setStatus(e.code, message: e.message);
     } on MissingPluginException {
       setStatus('not implemented');
     }
   }
 
-  void setStatus(String code, {String message = ''}) {
-    var text = message.isEmpty ? '' : ' : $message';
+  void setStatus(String code, {String? message}) {
+    var text = message ?? '';
     _logger.i('$code$text');
   }
 }
