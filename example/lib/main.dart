@@ -255,7 +255,7 @@ class _HomeState extends State<Home> {
                           child: Text('context'),
                         ),
                       ],
-                      onChanged: (_) => setRepeatMode,
+                      onChanged: (repeatMode) => setRepeatMode(repeatMode!),
                     ),
                   ],
                 ),
