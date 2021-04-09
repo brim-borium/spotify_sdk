@@ -52,13 +52,15 @@ class SpotifySdk {
   ///
   /// Required parameters are the [clientId] and the [redirectUrl] to
   /// authenticate with the Spotify Api
-  /// You can optionally pass an [accessToken] in case you have it persisted
+  /// You can optionally pass an [accessToken] that you have persisted from a previous session. This will prevent redirecting to the Spotify if the token is still valid
+  /// You can optionally pass a [spotifyUri]. A blank string will play the user's last song or pick a random one.
   /// Throws a [PlatformException] if connecting to the remote api failed
   /// Throws a [MissingPluginException] if the method is not implemented on
   /// the native platforms.
   static Future<bool> connectToSpotifyRemote(
       {required String clientId,
       required String redirectUrl,
+      String spotifyUri = '',
       bool asRadio = false,
       String? scope,
       String playerName = 'Spotify SDK',
@@ -70,6 +72,7 @@ class SpotifySdk {
         ParamNames.playerName: playerName,
         ParamNames.accessToken: accessToken,
         ParamNames.scope: scope,
+        ParamNames.spotifyUri: spotifyUri,
         ParamNames.asRadio: asRadio,
       });
     } on Exception catch (e) {
@@ -88,6 +91,7 @@ class SpotifySdk {
   /// See https://developer.spotify.com/documentation/general/guides/scopes/
   /// for more scopes and how to use them
   /// The token can be used to communicate with the web api
+  /// You can optionally pass a [spotifyUri]. A blank string will play the user's last song or pick a random one.
   /// Throws a [PlatformException] if retrieving the authentication token
   /// failed.
   /// Throws a [MissingPluginException] if the method is not implemented on
@@ -95,6 +99,7 @@ class SpotifySdk {
   static Future<String> getAuthenticationToken(
       {required String clientId,
       required String redirectUrl,
+      String spotifyUri = '',
       bool asRadio = false,
       String? scope}) async {
     try {
@@ -103,6 +108,7 @@ class SpotifySdk {
         ParamNames.clientId: clientId,
         ParamNames.redirectUrl: redirectUrl,
         ParamNames.scope: scope,
+        ParamNames.spotifyUri: spotifyUri,
         ParamNames.asRadio: asRadio,
       });
       return authorization.toString();
