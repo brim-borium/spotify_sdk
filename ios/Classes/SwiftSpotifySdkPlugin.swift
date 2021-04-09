@@ -53,11 +53,23 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
                 return
             }
 
-            if let accessToken = swiftArguments[SpotfySdkConstants.paramAccessToken] as? String, let appRemote = appRemote {
-                appRemote.connectionParameters.accessToken = accessToken
-                appRemote.connect()
+            connectionStatusHandler?.connectionResult = result
+
+            if let accessToken = swiftArguments[SpotfySdkConstants.paramAccessToken] as? String {
+                do {
+                    try configureAppRemote(clientID: clientID, redirectURL:  url)
+                }
+                catch SpotifyError.redirectURLInvalid {
+                    result(FlutterError(code: "errorConnecting", message: "Redirect URL is not set or has invalid format", details: nil))
+                }
+                catch {
+                    result(FlutterError(code: "errorConnecting", message: "Cannot configure appRemote", details: nil))
+                    return
+                }
+
+                appRemote?.connectionParameters.accessToken = accessToken
+                appRemote?.connect()
             } else {
-                connectionStatusHandler?.connectionResult = result
                 do {
                     try connectToSpotify(clientId: clientID, redirectURL: url, asRadio: swiftArguments[SpotfySdkConstants.paramAsRadio] as? Bool, additionalScopes: swiftArguments[SpotfySdkConstants.scope] as? String)
                 }
@@ -265,20 +277,8 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
     }
 
     private func connectToSpotify(clientId: String, redirectURL: String, accessToken: String? = nil, asRadio: Bool?, additionalScopes: String? = nil) throws {
-        guard let redirectURL = URL(string: redirectURL) else {
-            throw SpotifyError.redirectURLInvalid
-        }
-        let configuration = SPTConfiguration(clientID: clientId, redirectURL: redirectURL)
-        let appRemote = SPTAppRemote(configuration: configuration, logLevel: .none)
-        appRemote.delegate = connectionStatusHandler
-        let playerDelegate = PlayerDelegate()
-        playerStateHandler = PlayerStateHandler(appRemote: appRemote, playerDelegate: playerDelegate)
-        SwiftSpotifySdkPlugin.playerStateChannel?.setStreamHandler(playerStateHandler)
 
-        playerContextHandler = PlayerContextHandler(appRemote: appRemote, playerDelegate: playerDelegate)
-        SwiftSpotifySdkPlugin.playerContextChannel?.setStreamHandler(playerContextHandler)
-
-        self.appRemote = appRemote
+        try configureAppRemote(clientID: clientId, redirectURL: redirectURL)
 
         var scopes: [String]?
         if let additionalScopes = additionalScopes {
@@ -289,6 +289,23 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
         if self.appRemote?.authorizeAndPlayURI("", asRadio: asRadio ?? false, additionalScopes: scopes) == false {
             throw SpotifyError.spotifyNotInstalledError
         }
+    }
+
+    private func configureAppRemote(clientID: String, redirectURL: String) throws {
+        guard let redirectURL = URL(string: redirectURL) else {
+            throw SpotifyError.redirectURLInvalid
+        }
+        let configuration = SPTConfiguration(clientID: clientID, redirectURL: redirectURL)
+        let appRemote = SPTAppRemote(configuration: configuration, logLevel: .none)
+        appRemote.delegate = connectionStatusHandler
+        let playerDelegate = PlayerDelegate()
+        playerStateHandler = PlayerStateHandler(appRemote: appRemote, playerDelegate: playerDelegate)
+        SwiftSpotifySdkPlugin.playerStateChannel?.setStreamHandler(playerStateHandler)
+
+        playerContextHandler = PlayerContextHandler(appRemote: appRemote, playerDelegate: playerDelegate)
+        SwiftSpotifySdkPlugin.playerContextChannel?.setStreamHandler(playerContextHandler)
+
+        self.appRemote = appRemote
     }
 }
 
