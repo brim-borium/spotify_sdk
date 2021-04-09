@@ -186,7 +186,7 @@ class SpotifySdkPlugin {
             clientId: call.arguments[ParamNames.clientId] as String,
             redirectUrl: call.arguments[ParamNames.redirectUrl] as String,
             scopes:
-                call.arguments[ParamNames.scope] as String? ?? DEFAULT_SCOPE);
+                call.arguments[ParamNames.scope] as String ?? DEFAULT_SCOPE);
       case MethodNames.disconnectFromSpotify:
         log('Disconnecting from Spotify...');
         _spotifyToken = null;
