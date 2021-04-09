@@ -14,7 +14,7 @@ class ConnectionStatus {
   @JsonKey(name: 'connected')
   final bool connected;
   @JsonKey(name: 'message')
-  final String message;
+  final String? message;
   @JsonKey(name: 'errorCode')
   final String? errorCode;
   @JsonKey(name: 'errorDetails')

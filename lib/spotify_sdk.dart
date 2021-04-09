@@ -131,11 +131,13 @@ class SpotifySdk {
   /// Throws a [PlatformException] getting the crossfadeState failed
   /// Throws a [MissingPluginException] if the method is not implemented on
   /// the native platforms.
-  static Future<CrossfadeState> getCrossFadeState() async {
+  static Future<CrossfadeState?> getCrossFadeState() async {
     try {
       var crossfadeStateJson =
-          await (_channel.invokeMethod<String>(MethodNames.getCrossfadeState)
-              as FutureOr<String>);
+          await (_channel.invokeMethod<String>(MethodNames.getCrossfadeState));
+      if (crossfadeStateJson == null) {
+        return null;
+      }
       var crossfadeStateMap =
           jsonDecode(crossfadeStateJson) as Map<String, dynamic>;
       var crossfadeState = CrossfadeState.fromJson(crossfadeStateMap);
@@ -151,11 +153,13 @@ class SpotifySdk {
   /// Throws a [PlatformException] getting the playerState failed
   /// Throws a [MissingPluginException] if the method is not implemented on
   /// the native platforms.
-  static Future<PlayerState> getPlayerState() async {
+  static Future<PlayerState?> getPlayerState() async {
     try {
       var playerStateJson =
-          await (_channel.invokeMethod<String>(MethodNames.getPlayerState)
-              as FutureOr<String>);
+          await (_channel.invokeMethod<String>(MethodNames.getPlayerState));
+      if (playerStateJson == null) {
+        return null;
+      }
       var playerStateMap = jsonDecode(playerStateJson) as Map<String, dynamic>;
       var playerState = PlayerState.fromJson(playerStateMap);
       return playerState;
@@ -416,15 +420,19 @@ class SpotifySdk {
   /// Throws a [PlatformException] getting the capability failed
   /// Throws a [MissingPluginException] if the method is not implemented on
   /// the native platforms.
-  static Future<Capabilities> getCapabilities(
+  static Future<Capabilities?> getCapabilities(
       {required String spotifyUri}) async {
     try {
       var capabilitiesJson =
-          await (_channel.invokeMethod<String>(MethodNames.getCapabilities)
-              as FutureOr<String>);
-      var capabilitiesMap =
-          jsonDecode(capabilitiesJson) as Map<String, dynamic>;
-      return Capabilities.fromJson(capabilitiesMap);
+          await _channel.invokeMethod<String>(MethodNames.getCapabilities);
+
+      if (capabilitiesJson!.isNotEmpty) {
+        var capabilitiesMap =
+            jsonDecode(capabilitiesJson) as Map<String, dynamic>;
+        return Capabilities.fromJson(capabilitiesMap);
+      }
+
+      return null;
     } on Exception catch (e) {
       _logException(MethodNames.getCapabilities, e);
       rethrow;
@@ -436,12 +444,14 @@ class SpotifySdk {
   /// Throws a [PlatformException] when getting the library state failed
   /// Throws a [MissingPluginException] if the method is not implemented on
   /// the native platforms.
-  static Future<LibraryState> getLibraryState(
+  static Future<LibraryState?> getLibraryState(
       {required String spotifyUri}) async {
     try {
       var libraryStateJson = await (_channel.invokeMethod<String>(
-              MethodNames.getLibraryState, {ParamNames.spotifyUri: spotifyUri})
-          as FutureOr<String>);
+          MethodNames.getLibraryState, {ParamNames.spotifyUri: spotifyUri}));
+      if (libraryStateJson == null) {
+        return null;
+      }
       var libraryStateMap =
           jsonDecode(libraryStateJson) as Map<String, dynamic>;
       return LibraryState.fromJson(libraryStateMap);
