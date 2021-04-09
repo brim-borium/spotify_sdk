@@ -562,6 +562,6 @@ class _HomeState extends State<Home> {
 
   void setStatus(String code, {String message = ''}) {
     var text = message.isEmpty ? '' : ' : $message';
-    _logger.d('$code$text');
+    _logger.i('$code$text');
   }
 }
