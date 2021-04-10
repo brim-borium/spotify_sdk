@@ -52,8 +52,8 @@ class SpotifySdk {
   ///
   /// Required parameters are the [clientId] and the [redirectUrl] to
   /// authenticate with the Spotify Api
-  /// You can optionally pass an [accessToken] that you have persisted from a previous session. This will prevent redirecting to the Spotify if the token is still valid
-  /// You can optionally pass a [spotifyUri]. A blank string will play the user's last song or pick a random one.
+  /// iOS specific: You can optionally pass an [accessToken] that you have persisted from a previous session. This will prevent redirecting to the Spotify if the token is still valid. It will be ignored on platforms other than iOS.
+  /// iOS specific: You can optionally pass a [spotifyUri]. A blank string will play the user's last song or pick a random one. It will be ignored on platforms other than iOS.
   /// Throws a [PlatformException] if connecting to the remote api failed
   /// Throws a [MissingPluginException] if the method is not implemented on
   /// the native platforms.
@@ -91,7 +91,7 @@ class SpotifySdk {
   /// See https://developer.spotify.com/documentation/general/guides/scopes/
   /// for more scopes and how to use them
   /// The token can be used to communicate with the web api
-  /// You can optionally pass a [spotifyUri]. A blank string will play the user's last song or pick a random one.
+  /// iOS specific: You can optionally pass a [spotifyUri]. A blank string will play the user's last song or pick a random one. It will be ignored on platforms other than iOS.
   /// Throws a [PlatformException] if retrieving the authentication token
   /// failed.
   /// Throws a [MissingPluginException] if the method is not implemented on
