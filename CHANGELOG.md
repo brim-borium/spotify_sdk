@@ -1,4 +1,4 @@
-## 2.0.1
+## 2.1.0
 * BREAKING: setShuffle now does not expect a named argument
 
 ## 2.0.0
