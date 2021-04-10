@@ -1,5 +1,7 @@
 ## 2.1.0
 * BREAKING: setShuffle now does not expect a named argument
+* fixes accessToken being ignored in connectToSpotify()
+* exposes spotifyURI on connectToSpotify() method
 
 ## 2.0.0
 * BREAKING: opt into null safety
