@@ -80,7 +80,7 @@ class SpotifySdkPlugin {
   final synchronized.Lock _getTokenLock = synchronized.Lock(reentrant: true);
 
   /// Default scopes that are required for Web SDK to work
-  static const String DEFAULT_SCOPE =
+  static const String DEFAULT_SCOPES =
       'streaming user-read-email user-read-private';
 
   /// constructor
@@ -142,15 +142,24 @@ class SpotifySdkPlugin {
           return true;
         }
         log('Connecting to Spotify...');
-        var clientId = call.arguments[ParamNames.clientId] as String;
-        var redirectUrl = call.arguments[ParamNames.redirectUrl] as String;
+        var clientId = call.arguments[ParamNames.clientId] as String?;
+        var redirectUrl = call.arguments[ParamNames.redirectUrl] as String?;
         var playerName = call.arguments[ParamNames.playerName] as String?;
         var scopes =
-            call.arguments[ParamNames.scope] as String? ?? DEFAULT_SCOPE;
+            call.arguments[ParamNames.scope] as String? ?? DEFAULT_SCOPES;
+
+        // ensure that required arguments are present
+        if (!(clientId?.isNotEmpty == true &&
+            redirectUrl?.isNotEmpty == true)) {
+          throw PlatformException(
+              message:
+                  'Client id or redirectUrl are not set or have invalid format',
+              code: 'Authentication Error');
+        }
 
         // get initial token
         await _authorizeSpotify(
-            clientId: clientId, redirectUrl: redirectUrl, scopes: scopes);
+            clientId: clientId!, redirectUrl: redirectUrl!, scopes: scopes);
 
         // create player
         _currentPlayer = Player(PlayerOptions(
@@ -182,11 +191,23 @@ class SpotifySdkPlugin {
           return false;
         }
       case MethodNames.getAuthenticationToken:
+        var clientId = call.arguments[ParamNames.clientId] as String?;
+        var redirectUrl = call.arguments[ParamNames.redirectUrl] as String?;
+
+        // ensure that required arguments are present
+        if (!(clientId?.isNotEmpty == true &&
+            redirectUrl?.isNotEmpty == true)) {
+          throw PlatformException(
+              message:
+                  'Client id or redirectUrl are not set or have invalid format',
+              code: 'Authentication Error');
+        }
+
         return await _authorizeSpotify(
-            clientId: call.arguments[ParamNames.clientId] as String,
-            redirectUrl: call.arguments[ParamNames.redirectUrl] as String,
+            clientId: clientId!,
+            redirectUrl: redirectUrl!,
             scopes:
-                call.arguments[ParamNames.scope] as String? ?? DEFAULT_SCOPE);
+                call.arguments[ParamNames.scope] as String? ?? DEFAULT_SCOPES);
       case MethodNames.disconnectFromSpotify:
         log('Disconnecting from Spotify...');
         _spotifyToken = null;
