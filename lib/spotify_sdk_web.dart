@@ -195,8 +195,10 @@ class SpotifySdkPlugin {
         var redirectUrl = call.arguments[ParamNames.redirectUrl] as String?;
 
         // ensure that required arguments are present
-        if (!(clientId?.isNotEmpty == true &&
-            redirectUrl?.isNotEmpty == true)) {
+        if (clientId == null ||
+            clientId.isEmpty ||
+            redirectUrl == null ||
+            redirectUrl.isEmpty) {
           throw PlatformException(
               message:
                   'Client id or redirectUrl are not set or have invalid format',
