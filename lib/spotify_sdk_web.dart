@@ -206,8 +206,8 @@ class SpotifySdkPlugin {
         }
 
         return await _authorizeSpotify(
-            clientId: clientId!,
-            redirectUrl: redirectUrl!,
+            clientId: clientId,
+            redirectUrl: redirectUrl,
             scopes:
                 call.arguments[ParamNames.scope] as String? ?? DEFAULT_SCOPES);
       case MethodNames.disconnectFromSpotify:
