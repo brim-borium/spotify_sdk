@@ -159,7 +159,6 @@ class SpotifySdkPlugin {
               code: 'Authentication Error');
         }
 
-
         // get initial token
         await _authorizeSpotify(
             clientId: clientId, redirectUrl: redirectUrl, scopes: scopes);
