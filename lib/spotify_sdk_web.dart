@@ -43,18 +43,6 @@ class SpotifySdkPlugin {
   /// spotify sdk url
   static const String spotifySdkUrl = 'https://sdk.scdn.co/spotify-player.js';
 
-  /// spotify auth scopes
-  static const List<String> authenticationScopes = [
-    'streaming',
-    'user-read-email',
-    'user-read-private',
-    'app-remote-control',
-    'user-modify-playback-state',
-    'playlist-read-private',
-    'playlist-modify-public',
-    'user-read-currently-playing'
-  ];
-
   /// Whether the Spotify SDK is loaded.
   bool _sdkLoaded = false;
 
@@ -90,6 +78,10 @@ class SpotifySdkPlugin {
 
   /// Lock for getting the token
   final synchronized.Lock _getTokenLock = synchronized.Lock(reentrant: true);
+
+  /// Default scopes that are required for Web SDK to work
+  static const String DEFAULT_SCOPES =
+      'streaming user-read-email user-read-private';
 
   /// constructor
   SpotifySdkPlugin(
@@ -150,12 +142,17 @@ class SpotifySdkPlugin {
           return true;
         }
         log('Connecting to Spotify...');
-        // update the client id and redirect url
         var clientId = call.arguments[ParamNames.clientId] as String?;
         var redirectUrl = call.arguments[ParamNames.redirectUrl] as String?;
         var playerName = call.arguments[ParamNames.playerName] as String?;
-        if (!(clientId?.isNotEmpty == true &&
-            redirectUrl?.isNotEmpty == true)) {
+        var scopes =
+            call.arguments[ParamNames.scope] as String? ?? DEFAULT_SCOPES;
+
+        // ensure that required arguments are present
+        if (clientId == null ||
+            clientId.isEmpty ||
+            redirectUrl == null ||
+            redirectUrl.isEmpty) {
           throw PlatformException(
               message:
                   'Client id or redirectUrl are not set or have invalid format',
@@ -163,7 +160,8 @@ class SpotifySdkPlugin {
         }
 
         // get initial token
-        await _authorizeSpotify(clientId: clientId!, redirectUrl: redirectUrl!);
+        await _authorizeSpotify(
+            clientId: clientId, redirectUrl: redirectUrl, scopes: scopes);
 
         // create player
         _currentPlayer = Player(PlayerOptions(
@@ -195,9 +193,25 @@ class SpotifySdkPlugin {
           return false;
         }
       case MethodNames.getAuthenticationToken:
+        var clientId = call.arguments[ParamNames.clientId] as String?;
+        var redirectUrl = call.arguments[ParamNames.redirectUrl] as String?;
+
+        // ensure that required arguments are present
+        if (clientId == null ||
+            clientId.isEmpty ||
+            redirectUrl == null ||
+            redirectUrl.isEmpty) {
+          throw PlatformException(
+              message:
+                  'Client id or redirectUrl are not set or have invalid format',
+              code: 'Authentication Error');
+        }
+
         return await _authorizeSpotify(
-            clientId: call.arguments[ParamNames.clientId] as String,
-            redirectUrl: call.arguments[ParamNames.redirectUrl] as String);
+            clientId: clientId,
+            redirectUrl: redirectUrl,
+            scopes:
+                call.arguments[ParamNames.scope] as String? ?? DEFAULT_SCOPES);
       case MethodNames.disconnectFromSpotify:
         log('Disconnecting from Spotify...');
         _spotifyToken = null;
@@ -390,12 +404,13 @@ class SpotifySdkPlugin {
 
   /// Authenticates a new user with Spotify and stores access token.
   Future<String> _authorizeSpotify(
-      {required String clientId, required String redirectUrl}) async {
+      {required String clientId,
+      required String redirectUrl,
+      required String? scopes}) async {
     // creating auth uri
     var codeVerifier = _createCodeVerifier();
     var codeChallenge = _createCodeChallenge(codeVerifier);
     var state = _createAuthState();
-    var scopes = authenticationScopes.join(' ');
     var authorizationUri =
         'https://accounts.spotify.com/authorize?client_id=$clientId&response_type=code&redirect_uri=$redirectUrl&code_challenge_method=S256&code_challenge=$codeChallenge&state=$state&scope=$scopes';
 
