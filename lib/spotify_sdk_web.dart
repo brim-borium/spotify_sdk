@@ -149,17 +149,20 @@ class SpotifySdkPlugin {
             call.arguments[ParamNames.scope] as String? ?? DEFAULT_SCOPES;
 
         // ensure that required arguments are present
-        if (!(clientId?.isNotEmpty == true &&
-            redirectUrl?.isNotEmpty == true)) {
+        if (clientId == null ||
+            clientId.isEmpty ||
+            redirectUrl == null ||
+            redirectUrl.isEmpty) {
           throw PlatformException(
               message:
                   'Client id or redirectUrl are not set or have invalid format',
               code: 'Authentication Error');
         }
 
+
         // get initial token
         await _authorizeSpotify(
-            clientId: clientId!, redirectUrl: redirectUrl!, scopes: scopes);
+            clientId: clientId, redirectUrl: redirectUrl, scopes: scopes);
 
         // create player
         _currentPlayer = Player(PlayerOptions(
