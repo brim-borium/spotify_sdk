@@ -3,6 +3,9 @@
 * fixes accessToken being ignored in connectToSpotify()
 * exposes spotifyURI on connectToSpotify() method
 * fixes the web implementation not using the authentication scopes supplied by the user
+* fix a crash when calling subscribeToConnectionStatus
+* fix a bug where the webplayer would not dispose
+* add null safety to example app
 
 ## 2.0.0
 * BREAKING: opt into null safety
