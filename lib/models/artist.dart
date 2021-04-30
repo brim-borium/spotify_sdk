@@ -6,8 +6,8 @@ part 'artist.g.dart';
 class Artist {
   Artist(this.name, this.uri);
 
-  final String name;
-  final String uri;
+  final String? name;
+  final String? uri;
 
   factory Artist.fromJson(Map<String, dynamic> json) => _$ArtistFromJson(json);
 
