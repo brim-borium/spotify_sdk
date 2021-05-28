@@ -235,7 +235,7 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
             }
             appRemote.userAPI?.fetchCapabilities(callback: { (capabilitiesResult, error) in
                 guard error == nil else {
-                    result(FlutterError(code: "PlayerAPI Error", message: error?.localizedDescription, details: nil))
+                    result(FlutterError(code: "UserAPI Error", message: error?.localizedDescription, details: nil))
                     return
                 }
                 guard let userCapabilities = capabilitiesResult as? SPTAppRemoteUserCapabilities else {
