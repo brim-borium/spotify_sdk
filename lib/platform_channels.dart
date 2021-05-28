@@ -51,6 +51,9 @@ class MethodNames {
   /// method name for [resume]
   static const String resume = 'resume';
 
+  /// method name for [skipToIndex]
+  static const String skipToIndex = 'skipToIndex';
+
   /// method name for [skipNext]
   static const String skipNext = 'skipNext';
 
@@ -140,4 +143,10 @@ class ParamNames {
 
   /// param name for [repeatMode]
   static const String repeatMode = 'repeatMode';
+
+  /// param name for [uri]
+  static const String uri = 'uri';
+
+  /// param name for [trackIndex]
+  static const String trackIndex = 'trackIndex';
 }

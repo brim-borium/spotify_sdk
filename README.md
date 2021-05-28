@@ -104,6 +104,7 @@ Have a look [in the example](example/lib/main.dart) for detailed insights on how
 |  resume | Resumes the current track |✔ |  ✔ | ✔ |
 |  skipNext | Skips to next track | ✔ | ✔  | ✔ |
 |  skipPrevious | Skips to previous track |✔  |  ✔ | ✔ |
+|  skipToIndex | Skips to track at specified index in album or playlist |✔  |  ✔ | 🚧  |
 |  seekTo | Seeks the current track to the given position in milliseconds | ✔ | ✔ | 🚧 |
 |  seekToRelativePosition | Adds to the current position of the track the given milliseconds | ✔ | ❌ | 🚧 |
 |  subscribeToPlayerContext | Subscribes to the current player context | ✔ | ✔ | ✔ |
@@ -125,7 +126,7 @@ Have a look [in the example](example/lib/main.dart) for detailed insights on how
 | Function  | Description| Android | iOS | Web |
 |---|---|---|---|---|
 |  addToLibrary | Adds the given spotifyUri to the users library | ✔ | ✔ | 🚧 |
-|  getCapabilities | Gets the current users capabilities | ✔ | 🚧 | 🚧 |
+|  getCapabilities | Gets the current users capabilities | ✔ | ✔ | 🚧 |
 |  getLibraryState | Gets the current library state | ✔ | 🚧 | 🚧 |
 |  removeFromLibrary | Removes the given spotifyUri to the users library | ✔ | ✔ | 🚧 |
 |  subscribeToCapabilities |  Subscribes to the current users capabilities | ✔ | 🚧 | 🚧 |

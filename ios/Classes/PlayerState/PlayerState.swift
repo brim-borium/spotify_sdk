@@ -68,4 +68,10 @@ struct State {
             "isEnabled": crossfadeState.isEnabled,
         ]
     }
+
+    static func userCapabilitiesDictionary(_ userCapabilities: SPTAppRemoteUserCapabilities) -> [String : Any] {
+        return [
+            "can_play_on_demand": userCapabilities.canPlayOnDemand
+        ]
+    }
 }

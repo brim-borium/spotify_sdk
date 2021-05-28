@@ -14,6 +14,7 @@ public class SpotfySdkConstants
     public static let methodResume = "resume"
     public static let methodSkipNext = "skipNext"
     public static let methodSkipPrevious = "skipPrevious"
+    public static let methodSkipToIndex = "skipToIndex"
     public static let methodSeekTo = "seekTo"
     public static let methodGetPlayerState = "getPlayerState"
     public static let methodGetCrossfadeState = "getCrossfadeState"
@@ -23,6 +24,7 @@ public class SpotfySdkConstants
     //user api
     public static let methodAddToLibrary = "addToLibrary"
     public static let methodRemoveFromLibrary = "removeFromLibrary"
+    public static let methodGetCapabilities = "getCapabilities"
 
     //images api
     public static let methodGetImage = "getImage"
@@ -38,5 +40,6 @@ public class SpotfySdkConstants
     public static let paramAccessToken = "accessToken"
     public static let paramShuffle = "shuffle"
     public static let paramRepeatMode = "repeatMode"
+    public static let paramTrackIndex = "trackIndex"
     public static let scope = "scope"
 }
