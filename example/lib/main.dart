@@ -15,7 +15,7 @@ import 'package:spotify_sdk/spotify_sdk.dart';
 import 'widgets/sized_icon_button.dart';
 
 Future<void> main() async {
-  await load(fileName: '.env');
+  await dotenv.load(fileName: '.env');
   runApp(Home());
 }
 
@@ -360,8 +360,8 @@ class _HomeState extends State<Home> {
         _loading = true;
       });
       var result = await SpotifySdk.connectToSpotifyRemote(
-          clientId: env['CLIENT_ID'].toString(),
-          redirectUrl: env['REDIRECT_URL'].toString());
+          clientId: dotenv.env['CLIENT_ID'].toString(),
+          redirectUrl: dotenv.env['REDIRECT_URL'].toString());
       setStatus(result
           ? 'connect to spotify successful'
           : 'connect to spotify failed');
@@ -384,8 +384,8 @@ class _HomeState extends State<Home> {
   Future<String> getAuthenticationToken() async {
     try {
       var authenticationToken = await SpotifySdk.getAuthenticationToken(
-          clientId: env['CLIENT_ID'].toString(),
-          redirectUrl: env['REDIRECT_URL'].toString(),
+          clientId: dotenv.env['CLIENT_ID'].toString(),
+          redirectUrl: dotenv.env['REDIRECT_URL'].toString(),
           scope: 'app-remote-control, '
               'user-modify-playback-state, '
               'playlist-read-private, '
