@@ -31,16 +31,19 @@ class SpotifySdk {
   // method channel
   static const MethodChannel _channel =
       MethodChannel(MethodChannels.spotifySdk);
+
   //player event channels
   static const EventChannel _playerContextChannel =
       EventChannel(EventChannels.playerContext);
   static const EventChannel _playerStateChannel =
       EventChannel(EventChannels.playerState);
+
   // user event channels
   static const EventChannel _userStatusChannel =
       EventChannel(EventChannels.userStatus);
   static const EventChannel _capabilitiesChannel =
       EventChannel(EventChannels.capabilities);
+
   // connection status channel
   static const EventChannel _connectionStatusChannel =
       EventChannel(EventChannels.connectionStatus);
@@ -265,6 +268,28 @@ class SpotifySdk {
       await _channel.invokeMethod(MethodNames.skipPrevious);
     } on Exception catch (e) {
       _logException(MethodNames.skipPrevious, e);
+      rethrow;
+    }
+  }
+
+  /// Skips to track at specified index in album or playlist
+  ///
+  /// The [spotifyUri] can be an album or playlist
+  /// The [trackIndex] is the index of the track in the playlist to be played
+  /// Throws a [PlatformException] if skipping failed
+  /// Throws a [MissingPluginException] if the method is not implemented on
+  /// the native platforms.
+  static Future skipToIndex({
+    required String spotifyUri,
+    required int trackIndex,
+  }) async {
+    try {
+      await _channel.invokeMethod(MethodNames.skipToIndex, {
+        ParamNames.spotifyUri: spotifyUri,
+        ParamNames.trackIndex: trackIndex,
+      });
+    } on Exception catch (e) {
+      _logException(MethodNames.skipToIndex, e);
       rethrow;
     }
   }
