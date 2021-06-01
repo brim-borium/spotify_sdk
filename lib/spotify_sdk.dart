@@ -143,11 +143,11 @@ class SpotifySdk {
   ///
   /// Throws a [MissingPluginException] if the method is not implemented on
   /// the native platforms.
-  static Future<bool> checkIfSpotifyAppIsActive() async {
+  static Future<bool> get isSpotifyAppActive async {
     try {
-      return await _channel.invokeMethod(MethodNames.checkIfSpotifyAppIsActive);
+      return await _channel.invokeMethod(MethodNames.isSpotifyAppActive);
     } on Exception catch (e) {
-      _logException(MethodNames.checkIfSpotifyAppIsActive, e);
+      _logException(MethodNames.isSpotifyAppActive, e);
       rethrow;
     }
   }
