@@ -33,6 +33,9 @@ class MethodNames {
   /// method name for [disconnectFromSpotify]
   static const String disconnectFromSpotify = 'disconnectFromSpotify';
 
+  /// method name for [checkIfSpotifyAppIsActive]
+  static const String checkIfSpotifyAppIsActive = 'checkIfSpotifyAppIsActive';
+
   /// method name for [getCrossfadeState]
   static const String getCrossfadeState = 'getCrossfadeState';
 

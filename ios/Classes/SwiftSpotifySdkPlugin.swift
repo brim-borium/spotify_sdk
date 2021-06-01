@@ -306,6 +306,10 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
                     return
             }
             appRemote.playerAPI?.setRepeatMode(repeatMode, callback: defaultPlayAPICallback)
+        case SpotifySdkConstants.methodCheckIfSpotifyAppIsActive:
+            SPTAppRemote.checkIfSpotifyAppIsActive { isActive in
+                result(isActive)
+            }
         default:
             result(FlutterMethodNotImplemented)
         }

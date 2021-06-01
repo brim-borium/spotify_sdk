@@ -135,6 +135,23 @@ class SpotifySdk {
     }
   }
 
+  /// Checks if the Spotify app is active on the user's device. You can use this to determine if maybe you should prompt
+  /// the user to connect to Spotify (because you know they are already using Spotify if it is active). The Spotify app
+  /// will be considered active if music is playing.
+  /// Returns true if Spotify is active, othewise false.
+  /// This method is only supported on iOS.
+  ///
+  /// Throws a [MissingPluginException] if the method is not implemented on
+  /// the native platforms.
+  static Future<bool> checkIfSpotifyAppIsActive() async {
+    try {
+      return await _channel.invokeMethod(MethodNames.checkIfSpotifyAppIsActive);
+    } on Exception catch (e) {
+      _logException(MethodNames.checkIfSpotifyAppIsActive, e);
+      rethrow;
+    }
+  }
+
   /// Gets the current [CrossfadeState]
   ///
   /// Throws a [PlatformException] getting the crossfadeState failed

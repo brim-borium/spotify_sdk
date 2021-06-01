@@ -6,6 +6,7 @@ public class SpotifySdkConstants
     public static let methodConnectToSpotify = "connectToSpotify"
     public static let methodGetAuthenticationToken = "getAuthenticationToken"
     public static let methodDisconnectFromSpotify = "disconnectFromSpotify"
+    public static let methodCheckIfSpotifyAppIsActive = "checkIfSpotifyAppIsActive"
 
     //player api
     public static let methodQueueTrack = "queueTrack"
