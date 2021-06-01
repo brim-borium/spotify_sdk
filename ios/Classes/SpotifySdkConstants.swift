@@ -1,6 +1,6 @@
 import Foundation
 
-public class SpotfySdkConstants
+public class SpotifySdkConstants
 {
     //connecting
     public static let methodConnectToSpotify = "connectToSpotify"
