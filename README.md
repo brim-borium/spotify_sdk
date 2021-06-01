@@ -8,10 +8,16 @@
 
 This is a flutter package that wraps the native [iOS](https://github.com/spotify/ios-sdk) and [Android](https://github.com/spotify/android-sdk) Spotify "remote" SDKs as well as the [Spotify Web Playback SDK](https://developer.spotify.com/documentation/web-playback-sdk/) for web.
 
+
 ## Installation
 
-To use this plugin, add `spotify_sdk` as a [dependency in your pubspec.yaml file](https://flutter.io/using-packages/).
+To use this plugin, add `spotify_sdk` as a [dependency](https://flutter.io/using-packages/) in your `pubspec.yaml` file like this
 
+```yaml
+dependencies:
+  spotify_sdk:
+```
+This will get you the latest version.
 ## Setup
 
 ### Android
@@ -64,17 +70,23 @@ Follow the instructions in the section `Setup the iOS SDK` of [Spotify iOS SDK Q
 
 ## Usage
 
-To start using this package you first have to connect to Spotify. To only connect you can do this with connectToSpotifyRemote(...) or getAuthenticationToken(...) in both of these methods you need the client id, given in the spotify dashboard and the redirect url you set in the settings on the dashboard.
+To start using this package first import it in your Dart file.
 
 ```dart
-  await SpotifySdk.connectToSpotifyRemote(clientId: "", redirectUrl: "")
+import 'package:spotify_sdk/spotify_sdk.dart';
+```
+
+To connect to the Spotify app you can call connectToSpotifyRemote(...) or getAuthenticationToken(...). In both of these methods you need the client id, which you will find in the Spotify developer dashboard and the redirect url you set there for that specific client.
+
+```dart
+await SpotifySdk.connectToSpotifyRemote(clientId: "", redirectUrl: "")
 ```
 
 If you want to use the web api as well you have to use this method to get the authentication token. 
 You can specify multiple scopes by separating them with a comma "," as shown below. For more information on scopes you can refer to [Spotify Authorization Scopes Guide](https://developer.spotify.com/documentation/general/guides/scopes/)
 
 ```dart
-  var authenticationToken = await SpotifySdk.getAuthenticationToken(clientId: "", redirectUrl: "", scope: "app-remote-control,user-modify-playback-state,playlist-read-private");
+var authenticationToken = await SpotifySdk.getAuthenticationToken(clientId: "", redirectUrl: "", scope: "app-remote-control,user-modify-playback-state,playlist-read-private");
 ```
 
 On iOS you can store the token that you get from `getAuthenticationToken(...)` and then pass it to `connectToSpotifyRemote(...)` during the next session. This will avoid having to switch to the Spotify app for establishing the connection. This library does not handle storing the token. It is up to you to persist it wherever you see fit. Keep in mind that this feature is currently quite buggy in the native iOS SDK and has many side effects like random disconnections. Proceed with caution.
