@@ -313,7 +313,7 @@ class SpotifySdk {
 
   /// Subscribes to the [PlayerContext] and returns it.
   ///
-  /// Throws a [PlatformException] if this failes
+  /// Throws a [PlatformException] if this fails
   /// Throws a [MissingPluginException] if the method is not implemented on
   /// the native platforms.
   static Stream<PlayerContext> subscribePlayerContext() {
@@ -333,7 +333,7 @@ class SpotifySdk {
 
   /// Subscribes to the [PlayerState] and returns it.
   ///
-  /// Throws a [PlatformException] if this failes
+  /// Throws a [PlatformException] if this fails
   /// Throws a [MissingPluginException] if the method is not implemented on
   /// the native platforms.
   static Stream<PlayerState> subscribePlayerState() {
@@ -353,7 +353,7 @@ class SpotifySdk {
 
   /// Subscribes to the [ConnectionStatus] and returns it.
   ///
-  /// Throws a [PlatformException] if this failes
+  /// Throws a [PlatformException] if this fails
   /// Throws a [MissingPluginException] if the method is not implemented on
   /// the native platforms.
   static Stream<ConnectionStatus> subscribeConnectionStatus() {
