@@ -175,7 +175,7 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
                 result(FlutterError(code: "Connection Error", message: "AppRemote is null", details: nil))
                 return
             }
-            appRemote.playerAPI?.skip(toNext: { (spotifyResult, error) in
+            appRemote.playerAPI?.skip(toPrevious: { (spotifyResult, error) in
                 if let error = error {
                     result(FlutterError(code: "PlayerAPI Error", message: error.localizedDescription, details: nil))
                     return
