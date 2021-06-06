@@ -138,8 +138,7 @@ class SpotifySdk {
   /// Checks if the Spotify app is active on the user's device. You can use this to determine if maybe you should prompt
   /// the user to connect to Spotify (because you know they are already using Spotify if it is active). The Spotify app
   /// will be considered active if music is playing.
-  /// Returns true if Spotify is active, othewise false.
-  /// This method is only supported on iOS.
+  /// Returns true if Spotify is active, otherwise false.
   ///
   /// Throws a [MissingPluginException] if the method is not implemented on
   /// the native platforms.

@@ -21,6 +21,7 @@ class SpotifyPlayerApi(spotifyAppRemote: SpotifyAppRemote?, result: MethodChanne
     private val errorPodcastPlaybackSpeed = "podcastPlaybackSpeedError"
     private val errorToggleShuffle = "toggleShuffleError"
     private val errorToggleRepeat = "toggleRepeatError"
+    private val errorIsSpotifyAppActive = "isSpotifyAppActiveError"
 
     private val playerApi = spotifyAppRemote?.playerApi
 
@@ -203,6 +204,19 @@ class SpotifyPlayerApi(spotifyAppRemote: SpotifyAppRemote?, result: MethodChanne
                     .setErrorCallback { throwable -> result.error(errorToggleRepeat, "error when toggle repeat", throwable.toString()) }
         } else if (repeatMode == null) {
             result.error(errorQue, "repeatMode has invalid format or is not set", "")
+        } else {
+            spotifyRemoteAppNotSetError()
+        }
+    }
+
+    internal fun isSpotifyAppActive() {
+        if (playerApi != null) {
+
+            playerApi.playerState
+                .setResultCallback { playerState ->  result.success(!playerState.isPaused && playerState.playbackSpeed > 0)}
+                .setErrorCallback {
+                        throwable -> result.error(errorIsSpotifyAppActive, "error when getting if spotify app is currently active/playing", throwable.toString())
+                }
         } else {
             spotifyRemoteAppNotSetError()
         }
