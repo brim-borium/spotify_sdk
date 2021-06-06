@@ -1,11 +1,12 @@
 import Foundation
 
-public class SpotfySdkConstants
+public class SpotifySdkConstants
 {
     //connecting
     public static let methodConnectToSpotify = "connectToSpotify"
     public static let methodGetAuthenticationToken = "getAuthenticationToken"
     public static let methodDisconnectFromSpotify = "disconnectFromSpotify"
+    public static let methodCheckIfSpotifyAppIsActive = "isSpotifyAppActive"
 
     //player api
     public static let methodQueueTrack = "queueTrack"

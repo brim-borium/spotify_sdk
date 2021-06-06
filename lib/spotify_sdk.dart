@@ -135,6 +135,23 @@ class SpotifySdk {
     }
   }
 
+  /// Checks if the Spotify app is active on the user's device. You can use this to determine if maybe you should prompt
+  /// the user to connect to Spotify (because you know they are already using Spotify if it is active). The Spotify app
+  /// will be considered active if music is playing.
+  /// Returns true if Spotify is active, othewise false.
+  /// This method is only supported on iOS.
+  ///
+  /// Throws a [MissingPluginException] if the method is not implemented on
+  /// the native platforms.
+  static Future<bool> get isSpotifyAppActive async {
+    try {
+      return await _channel.invokeMethod(MethodNames.isSpotifyAppActive);
+    } on Exception catch (e) {
+      _logException(MethodNames.isSpotifyAppActive, e);
+      rethrow;
+    }
+  }
+
   /// Gets the current [CrossfadeState]
   ///
   /// Throws a [PlatformException] getting the crossfadeState failed
@@ -296,7 +313,7 @@ class SpotifySdk {
 
   /// Subscribes to the [PlayerContext] and returns it.
   ///
-  /// Throws a [PlatformException] if this failes
+  /// Throws a [PlatformException] if this fails
   /// Throws a [MissingPluginException] if the method is not implemented on
   /// the native platforms.
   static Stream<PlayerContext> subscribePlayerContext() {
@@ -316,7 +333,7 @@ class SpotifySdk {
 
   /// Subscribes to the [PlayerState] and returns it.
   ///
-  /// Throws a [PlatformException] if this failes
+  /// Throws a [PlatformException] if this fails
   /// Throws a [MissingPluginException] if the method is not implemented on
   /// the native platforms.
   static Stream<PlayerState> subscribePlayerState() {
@@ -336,7 +353,7 @@ class SpotifySdk {
 
   /// Subscribes to the [ConnectionStatus] and returns it.
   ///
-  /// Throws a [PlatformException] if this failes
+  /// Throws a [PlatformException] if this fails
   /// Throws a [MissingPluginException] if the method is not implemented on
   /// the native platforms.
   static Stream<ConnectionStatus> subscribeConnectionStatus() {
