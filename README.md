@@ -104,7 +104,7 @@ Have a look [in the example](example/lib/main.dart) for detailed insights on how
 | connectToSpotifyRemote  | Connects the App to Spotify | ✔ | ✔ | ✔ |
 |  getAuthenticationToken | Gets the Authentication Token that you can use to work with the [Web Api](https://developer.spotify.com/documentation/web-api/) | ✔ |  ✔ | ✔ |
 |  disconnect | Disconnects the app connection | ✔ |  ✔ | ✔ |
-|  isSpotifyAppActive | Checks if the Spotify app is active | 🚧 |  ✔ | 🚧 |
+|  isSpotifyAppActive | Checks if the Spotify app is active. The Spotify app will be considered active if music is playing. | ✔ |  ✔ | 🚧 |
 
 #### Player Api
 
