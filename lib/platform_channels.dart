@@ -138,6 +138,12 @@ class ParamNames {
   /// param name for [accessToken]
   static const String accessToken = 'accessToken';
 
+  /// param name for [refreshToken]
+  static const String refreshToken = 'refreshToken';
+
+  /// param name for [expiresIn]
+  static const String expiresIn = 'expiresIn';
+
   /// param name for [asRadio]
   static const String asRadio = 'asRadio';
 

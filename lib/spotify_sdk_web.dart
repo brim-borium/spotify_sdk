@@ -148,6 +148,10 @@ class SpotifySdkPlugin {
         var scopes =
             call.arguments[ParamNames.scope] as String? ?? DEFAULT_SCOPES;
 
+        var accessToken = call.arguments[ParamNames.accessToken] as String?;
+        var refreshToken = call.arguments[ParamNames.refreshToken] as String?;
+        var expiresIn = call.arguments[ParamNames.expiresIn] as int?;
+
         // ensure that required arguments are present
         if (clientId == null ||
             clientId.isEmpty ||
@@ -159,9 +163,24 @@ class SpotifySdkPlugin {
               code: 'Authentication Error');
         }
 
-        // get initial token
-        await _authorizeSpotify(
-            clientId: clientId, redirectUrl: redirectUrl, scopes: scopes);
+        if (accessToken == null ||
+            accessToken.isEmpty ||
+            refreshToken == null ||
+            refreshToken.isEmpty ||
+            expiresIn == null ||
+            expiresIn == 0) {
+          // get initial token
+          await _authorizeSpotify(
+              clientId: clientId, redirectUrl: redirectUrl, scopes: scopes);
+        } else {
+          _spotifyToken = SpotifyToken(
+            clientId: clientId,
+            accessToken: accessToken,
+            refreshToken: refreshToken,
+            expiry: (DateTime.now().millisecondsSinceEpoch / 1000).round() +
+                expiresIn,
+          );
+        }
 
         // create player
         _currentPlayer = Player(PlayerOptions(
