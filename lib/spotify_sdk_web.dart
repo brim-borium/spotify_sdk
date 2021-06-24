@@ -147,6 +147,7 @@ class SpotifySdkPlugin {
         var playerName = call.arguments[ParamNames.playerName] as String?;
         var scopes =
             call.arguments[ParamNames.scope] as String? ?? DEFAULT_SCOPES;
+        var accessToken = call.arguments[ParamNames.accessToken] as String?;
 
         // ensure that required arguments are present
         if (clientId == null ||
@@ -159,9 +160,11 @@ class SpotifySdkPlugin {
               code: 'Authentication Error');
         }
 
-        // get initial token
-        await _authorizeSpotify(
-            clientId: clientId, redirectUrl: redirectUrl, scopes: scopes);
+        // get initial token if not supplied
+        if (accessToken == null || accessToken.isEmpty) {
+          await _authorizeSpotify(
+              clientId: clientId, redirectUrl: redirectUrl, scopes: scopes);
+        }
 
         // create player
         _currentPlayer = Player(PlayerOptions(
