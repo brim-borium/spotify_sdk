@@ -128,6 +128,10 @@ class SpotifySdkPlugin {
     channel.setMethodCallHandler(instance.handleMethodCall);
   }
 
+  static set getOAuthToken(Future<String> Function() cb) {
+    _getOAuthToken = cb;
+  }
+
   /// handles method coming through the method channel
   Future<dynamic> handleMethodCall(MethodCall call) async {
     // check if spotify is loaded
@@ -166,11 +170,14 @@ class SpotifySdkPlugin {
               clientId: clientId, redirectUrl: redirectUrl, scopes: scopes);
         }
 
+        // use internal token handler if custom not set
+        _getOAuthToken ??= _getSpotifyAuthToken;
+
         // create player
         _currentPlayer = Player(PlayerOptions(
             name: playerName,
             getOAuthToken: allowInterop((Function callback, t) {
-              _getSpotifyAuthToken().then((value) {
+              _getOAuthToken!().then((value) {
                 callback(value);
               });
             })));
@@ -553,7 +560,7 @@ class SpotifySdkPlugin {
       options: Options(
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer ${await _getSpotifyAuthToken()}'
+          'Authorization': 'Bearer ${await _getOAuthToken!()}'
         },
       ),
     );
@@ -572,7 +579,7 @@ class SpotifySdkPlugin {
       options: Options(
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer ${await _getSpotifyAuthToken()}'
+          'Authorization': 'Bearer ${await _getOAuthToken!()}'
         },
       ),
     );
@@ -594,7 +601,7 @@ class SpotifySdkPlugin {
       options: Options(
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer ${await _getSpotifyAuthToken()}'
+          'Authorization': 'Bearer ${await _getOAuthToken!()}'
         },
       ),
     );
@@ -617,7 +624,7 @@ class SpotifySdkPlugin {
       options: Options(
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer ${await _getSpotifyAuthToken()}'
+          'Authorization': 'Bearer ${await _getOAuthToken!()}'
         },
       ),
     );
@@ -636,7 +643,7 @@ class SpotifySdkPlugin {
       options: Options(
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer ${await _getSpotifyAuthToken()}'
+          'Authorization': 'Bearer ${await _getOAuthToken!()}'
         },
       ),
     );
@@ -655,7 +662,7 @@ class SpotifySdkPlugin {
       options: Options(
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer ${await _getSpotifyAuthToken()}'
+          'Authorization': 'Bearer ${await _getOAuthToken!()}'
         },
       ),
     );
@@ -737,6 +744,16 @@ external set _onSpotifyWebPlaybackSDKReady(void Function()? f);
 /// to be callable from `window.onSpotifyWebPlaybackSDKReady()`
 @JS('onSpotifyWebPlaybackSDKReady')
 external void Function()? get _onSpotifyWebPlaybackSDKReady;
+
+/// Allows assigning the function getOAuthToken
+/// to be callable from `window.getOAuthToken()`
+@JS('getOAuthToken')
+external Future<String> Function()? get _getOAuthToken;
+
+/// Allows assigning the function getOAuthToken
+/// to be callable from `window.getOAuthToken()`
+@JS('getOAuthToken')
+external set _getOAuthToken(Future<String> Function()? f);
 
 /// Spotify Player Object
 @JS('Spotify.Player')
