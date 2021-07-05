@@ -704,9 +704,9 @@ class SpotifySdkPlugin {
       state.position,
       options.PlayerOptions(repeatMode, isShuffling: state.shuffle),
       PlayerRestrictions(
-          canSkipNext: restrictionsRaw.skipping_next,
-          canSkipPrevious: restrictionsRaw.skipping_prev,
-          canSeek: restrictionsRaw.seeking,
+          canSkipNext: restrictionsRaw.skipping_next || true,
+          canSkipPrevious: restrictionsRaw.skipping_prev || true,
+          canSeek: restrictionsRaw.seeking || true,
           canRepeatTrack: true,
           canRepeatContext: true,
           canToggleShuffle: true),
