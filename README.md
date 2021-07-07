@@ -106,8 +106,7 @@ SpotifySdkPlugin.tokenRefreshURL = 'https://example.com/api/spotify/refresh';
 
 On web, this package will perform an Authorization Code (without PKCE) flow, then exchange the code and refresh the token with a backend service you run at the URLs provided.
 
-While the iOS SDK also supports the "token swap", this package does not yet configure the iOS SDK correctly.
-
+Token Swap is for now "web only". While the iOS SDK also supports the "token swap", this flow is not yet supported.
 ### Api
 
 #### Connecting/Authenticating
