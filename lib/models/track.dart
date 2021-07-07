@@ -15,7 +15,8 @@ class Track {
     this.duration,
     this.imageUri,
     this.name,
-    this.uri, {
+    this.uri,
+    this.linkedFromUri, {
     required this.isEpisode,
     required this.isPodcast,
   });
@@ -33,6 +34,8 @@ class Track {
   final bool isPodcast;
   final String name;
   final String uri;
+  @JsonKey(name: 'linked_from_uri')
+  final String linkedFromUri;
 
   factory Track.fromJson(Map<String, dynamic> json) => _$TrackFromJson(json);
 
