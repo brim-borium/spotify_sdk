@@ -95,6 +95,19 @@ On iOS Spotify starts playing music when attempting connection. This is a defaul
 
 Have a look [in the example](example/lib/main.dart) for detailed insights on how you can use this package.
 
+### Token Swap
+
+You can optionally specify "token swap" URLs to manage tokens with a backend service that protects your OAuth client secret. For more information refer to the [Spotify Token Swap and Refresh Guide](https://developer.spotify.com/documentation/ios/guides/token-swap-and-refresh/)
+
+```dart
+SpotifySdkPlugin.tokenSwapURL = 'https://example.com/api/spotify/token';
+SpotifySdkPlugin.tokenRefreshURL = 'https://example.com/api/spotify/refresh';
+````
+
+On web, this package will perform an Authorization Code (without PKCE) flow, then exchange the code and refresh the token with a backend service you run at the URLs provided.
+
+While the iOS SDK also supports the "token swap", this package does not yet configure the iOS SDK correctly.
+
 ### Api
 
 #### Connecting/Authenticating
