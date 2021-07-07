@@ -83,6 +83,9 @@ class SpotifySdkPlugin {
   static const String DEFAULT_SCOPES =
       'streaming user-read-email user-read-private';
 
+  static String? tokenSwapURL;
+  static String? tokenRefreshURL;
+
   /// constructor
   SpotifySdkPlugin(
       this.playerContextEventController,
@@ -411,11 +414,31 @@ class SpotifySdkPlugin {
     var codeVerifier = _createCodeVerifier();
     var codeChallenge = _createCodeChallenge(codeVerifier);
     var state = _createAuthState();
-    var authorizationUri =
-        'https://accounts.spotify.com/authorize?client_id=$clientId&response_type=code&redirect_uri=$redirectUrl&code_challenge_method=S256&code_challenge=$codeChallenge&state=$state&scope=$scopes';
+
+    var params = {
+      'client_id': clientId,
+      'redirect_uri': redirectUrl,
+      'response_type': 'code',
+      'state': state,
+      'scope': scopes,
+    };
+
+    if (tokenSwapURL == null) {
+      params['code_challenge_method'] = 'S256';
+      params['code_challenge'] = codeChallenge;
+    }
+
+    final authorizationUri = Uri.https(
+      'accounts.spotify.com',
+      'authorize',
+      params,
+    );
 
     // opening auth window
-    var authPopup = window.open(authorizationUri, 'Spotify Authorization');
+    var authPopup = window.open(
+      authorizationUri.toString(),
+      'Spotify Authorization',
+    );
     String? message;
     var sub = window.onMessage.listen(allowInterop((event) {
       message = event.data.toString();
@@ -463,18 +486,40 @@ class SpotifySdkPlugin {
 
     // exchange auth code for access and refresh tokens
     dynamic authResponse;
+
+    RequestOptions req;
+
+    if (tokenSwapURL == null) {
+      // build request to exchange auth code with PKCE for access and refresh tokens
+      req = RequestOptions(
+        path: 'https://accounts.spotify.com/api/token',
+        method: 'POST',
+        data: {
+          'client_id': clientId,
+          'grant_type': 'authorization_code',
+          'code': parsedMessage.queryParameters['code'],
+          'redirect_uri': redirectUrl,
+          'code_verifier': codeVerifier
+        },
+        contentType: Headers.formUrlEncodedContentType,
+      );
+    } else {
+      // or build request to exchange code with token swap
+      // https://developer.spotify.com/documentation/ios/guides/token-swap-and-refresh/
+      req = RequestOptions(
+        path: tokenSwapURL!,
+        method: 'POST',
+        data: {
+          'code': parsedMessage.queryParameters['code'],
+          'redirect_uri': redirectUrl,
+        },
+        contentType: Headers.formUrlEncodedContentType,
+      );
+    }
+
     try {
-      authResponse = (await _authDio.post(
-              'https://accounts.spotify.com/api/token',
-              data: {
-                'client_id': clientId,
-                'grant_type': 'authorization_code',
-                'code': parsedMessage.queryParameters['code'],
-                'redirect_uri': redirectUrl,
-                'code_verifier': codeVerifier
-              },
-              options: Options(contentType: Headers.formUrlEncodedContentType)))
-          .data;
+      var res = await _authDio.fetch(req);
+      authResponse = res.data;
     } on DioError catch (e) {
       print('Spotify auth error: ${e.response?.data}');
       rethrow;
@@ -492,15 +537,37 @@ class SpotifySdkPlugin {
   /// Refreshes the Spotify access token using the refresh token.
   Future<dynamic> _refreshSpotifyToken(
       String? clientId, String? refreshToken) async {
+    RequestOptions req;
+    if (tokenRefreshURL == null) {
+      // build request to refresh PKCE for access and refresh tokens
+      req = RequestOptions(
+        path: 'https://accounts.spotify.com/api/token',
+        method: 'POST',
+        data: {
+          'grant_type': 'refresh_token',
+          'refresh_token': refreshToken,
+          'client_id': clientId,
+        },
+        contentType: Headers.formUrlEncodedContentType,
+      );
+    } else {
+      // or build request to refresh code with token swap
+      // https://developer.spotify.com/documentation/ios/guides/token-swap-and-refresh/
+      req = RequestOptions(
+        path: tokenRefreshURL!,
+        method: 'POST',
+        data: {
+          'refresh_token': refreshToken,
+        },
+        contentType: Headers.formUrlEncodedContentType,
+      );
+    }
+
     try {
-      return (await _authDio.post('https://accounts.spotify.com/api/token',
-              data: {
-                'grant_type': 'refresh_token',
-                'refresh_token': refreshToken,
-                'client_id': clientId,
-              },
-              options: Options(contentType: Headers.formUrlEncodedContentType)))
-          .data;
+      var res = await _authDio.fetch(req);
+      var d = res.data;
+      d['refresh_token'] = refreshToken;
+      return d;
     } on DioError catch (e) {
       print('Token refresh error: ${e.response?.data}');
       rethrow;
