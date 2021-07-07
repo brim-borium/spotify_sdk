@@ -17,6 +17,7 @@ Track _$TrackFromJson(Map<String, dynamic> json) {
     ImageUri.fromJson(json['image_id'] as Map<String, dynamic>),
     json['name'] as String,
     json['uri'] as String,
+    json['linked_from_uri'] as String?,
     isEpisode: json['is_episode'] as bool,
     isPodcast: json['is_podcast'] as bool,
   );
@@ -32,4 +33,5 @@ Map<String, dynamic> _$TrackToJson(Track instance) => <String, dynamic>{
       'is_podcast': instance.isPodcast,
       'name': instance.name,
       'uri': instance.uri,
+      'linked_from_uri': instance.linkedFromUri,
     };

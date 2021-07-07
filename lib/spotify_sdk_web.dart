@@ -696,6 +696,7 @@ class SpotifySdkPlugin {
               ImageUri(albumRaw.images[0].url),
               trackRaw.name,
               trackRaw.uri,
+              trackRaw.linked_from.uri,
               isEpisode: trackRaw.type == 'episode',
               isPodcast: trackRaw.type == 'episode',
             )
@@ -952,6 +953,8 @@ class WebPlaybackTrack {
   external WebPlaybackAlbum get album;
   // ignore: public_member_api_docs
   external List<WebPlaybackArtist> get artists;
+  // ignore: public_member_api_docs
+  external WebLinkedFrom get linked_from;
 
   // ignore: public_member_api_docs
   external factory WebPlaybackTrack(
@@ -964,7 +967,8 @@ class WebPlaybackTrack {
       // ignore: non_constant_identifier_names
       bool? is_playable,
       WebPlaybackAlbum? album,
-      List<WebPlaybackArtist>? artists});
+      List<WebPlaybackArtist>? artists,
+      WebLinkedFrom? linked_from});
 }
 
 /// Spotify playback album object
@@ -981,6 +985,19 @@ class WebPlaybackAlbum {
   // ignore: public_member_api_docs
   external factory WebPlaybackAlbum(
       {String? uri, String? name, List<WebPlaybackAlbumImage>? images});
+}
+
+/// Spotify playback album object
+@JS()
+@anonymous
+class WebLinkedFrom {
+  // ignore: public_member_api_docs
+  external String get uri;
+  // ignore: public_member_api_docs
+  external String get id;
+
+  // ignore: public_member_api_docs
+  external factory WebLinkedFrom({String? uri, String? id});
 }
 
 /// Spotify artist object
