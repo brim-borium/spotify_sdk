@@ -89,6 +89,8 @@ You can specify multiple scopes by separating them with a comma "," as shown bel
 var authenticationToken = await SpotifySdk.getAuthenticationToken(clientId: "", redirectUrl: "", scope: "app-remote-control,user-modify-playback-state,playlist-read-private");
 ```
 
+On Web you can use the token that you get from `getAuthenticationToken(...)` and then pass it to `connectToSpotifyRemote(...)`. This will avoid having to send user through two Spotify OAuth prompts. You should not persist this token, nor supply a different token, because the refresh token is only set interally by `getAuthenticationToken` or `connectToSpotifyRemote`.
+
 On iOS you can store the token that you get from `getAuthenticationToken(...)` and then pass it to `connectToSpotifyRemote(...)` during the next session. This will avoid having to switch to the Spotify app for establishing the connection. This library does not handle storing the token. It is up to you to persist it wherever you see fit. Keep in mind that this feature is currently quite buggy in the native iOS SDK and has many side effects like random disconnections. Proceed with caution.
 
 On iOS Spotify starts playing music when attempting connection. This is a default behavior and there is no official way to prevent this with the currently supported authentication flows. You have the option to pass a Spotify URI upon connection or set it to a blank string to play the last played song. There is an undocumented workaround if you don't want music to start playing which is to pass an invalid Spotify URI instead. This is not officially supported by the Spotify SDK or this library and it can fail or stop working at any time!
