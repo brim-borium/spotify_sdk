@@ -15,6 +15,7 @@ jobs:
         run: flutter analyze lib test example
       - name: Publish dry run
         run: flutter pub publish --dry-run
-      - run: cd example
       - name: Build web version
-        run: flutter build web
+        run: |
+              cd example
+              flutter build web
