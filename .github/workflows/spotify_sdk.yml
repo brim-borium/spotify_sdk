@@ -13,8 +13,8 @@ jobs:
         run: flutter format --set-exit-if-changed lib test example
       - name: Analyze
         run: flutter analyze lib test example
+      - name: Publish dry run
+        run: flutter pub publish --dry-run
       - run: cd example
       - name: Build web version
         run: flutter build web
-      - name: Publish dry run
-        run: flutter pub publish --dry-run
