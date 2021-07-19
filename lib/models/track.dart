@@ -35,7 +35,7 @@ class Track {
   final String name;
   final String uri;
   @JsonKey(name: 'linked_from_uri')
-  final String linkedFromUri;
+  final String? linkedFromUri;
 
   factory Track.fromJson(Map<String, dynamic> json) => _$TrackFromJson(json);
 
