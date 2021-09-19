@@ -74,4 +74,12 @@ struct State {
             "can_play_on_demand": userCapabilities.canPlayOnDemand
         ]
     }
+    
+    static func libraryStateDictionary(_ libraryState: SPTAppRemoteLibraryState) -> [String : Any] {
+        return [
+            "uri": libraryState.uri,
+            "saved": libraryState.isAdded,
+            "can_save": libraryState.canAdd,
+        ]
+    }
 }
