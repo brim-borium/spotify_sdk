@@ -263,7 +263,7 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
             }
             guard let swiftArguments = call.arguments as? [String:Any],
                 let position = swiftArguments[SpotifySdkConstants.paramPositionedMilliseconds] as? Int else {
-                    result(FlutterError(code: "Position error", message: "No URI was specified", details: nil))
+                    result(FlutterError(code: "Position error", message: "No position was specified", details: nil))
                     return
             }
             appRemote.playerAPI?.seek(toPosition: position, callback: defaultPlayAPICallback)
@@ -290,7 +290,7 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
             }
             guard let swiftArguments = call.arguments as? [String:Any],
                 let shuffle = swiftArguments[SpotifySdkConstants.paramShuffle] as? Bool else {
-                    result(FlutterError(code: "Position error", message: "No URI was specified", details: nil))
+                    result(FlutterError(code: "Shuffle mode error", message: "No ShuffleMode was specified", details: nil))
                     return
             }
             appRemote.playerAPI?.setShuffle(shuffle, callback: defaultPlayAPICallback)
@@ -301,8 +301,8 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
             }
             guard let swiftArguments = call.arguments as? [String:Any],
                 let repeatModeIndex = swiftArguments[SpotifySdkConstants.paramRepeatMode] as? UInt,
-                let repeatMode = SPTAppRemotePlaybackOptionsRepeatMode(rawValue: repeatModeIndex)else {
-                    result(FlutterError(code: "Position error", message: "No URI was specified", details: nil))
+                let repeatMode = SPTAppRemotePlaybackOptionsRepeatMode(rawValue: repeatModeIndex) else {
+                    result(FlutterError(code: "Repeat mode error", message: "No RepeatMode was specified", details: nil))
                     return
             }
             appRemote.playerAPI?.setRepeatMode(repeatMode, callback: defaultPlayAPICallback)
@@ -310,6 +310,28 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
             SPTAppRemote.checkIfSpotifyAppIsActive { isActive in
                 result(isActive)
             }
+        case SpotifySdkConstants.getLibraryState:
+            guard let appRemote = appRemote else {
+                result(FlutterError(code: "Connection Error", message: "AppRemote is null", details: nil))
+                return
+            }
+            guard let swiftArguments = call.arguments as? [String:Any],
+                let uri = swiftArguments[SpotifySdkConstants.paramSpotifyUri] as? String else {
+                    result(FlutterError(code: "URI Error", message: "No URI was specified", details: nil))
+                    return
+            }
+            appRemote.userAPI?.fetchLibraryState(forURI: uri, callback: {libraryStateResult, error in
+                guard error == nil else {
+                    result(FlutterError(code: "fetchLibraryStateError", message: error?.localizedDescription, details: nil))
+                    return
+                }
+                guard let libraryState = libraryStateResult as? SPTAppRemoteLibraryState else {
+                    result(FlutterError(code: "fetchLibraryStateError", message: error?.localizedDescription, details: nil))
+                    return
+                }
+
+                result(State.libraryStateDictionary(libraryState).json)
+            })
         default:
             result(FlutterMethodNotImplemented)
         }

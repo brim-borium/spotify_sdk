@@ -154,7 +154,7 @@ Token Swap is for now "web only". While the iOS SDK also supports the "token swa
 |---|---|---|---|---|
 |  addToLibrary | Adds the given spotifyUri to the users library | ✔ | ✔ | 🚧 |
 |  getCapabilities | Gets the current users capabilities | ✔ | ✔ | 🚧 |
-|  getLibraryState | Gets the current library state | ✔ | 🚧 | 🚧 |
+|  getLibraryState | Gets the current library state | ✔ | ✔ | 🚧 |
 |  removeFromLibrary | Removes the given spotifyUri to the users library | ✔ | ✔ | 🚧 |
 |  subscribeToCapabilities |  Subscribes to the current users capabilities | ✔ | 🚧 | 🚧 |
 |  subscribeToUserStatus |  Subscrives to  the current users status | ✔ | 🚧 | 🚧 |
