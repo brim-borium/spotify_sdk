@@ -6,7 +6,7 @@
 
 ## Description
 
-This is a flutter package that wraps the native [iOS](https://github.com/spotify/ios-sdk) and [Android](https://github.com/spotify/android-sdk) Spotify "remote" SDKs as well as the [Spotify Web Playback SDK](https://developer.spotify.com/documentation/web-playback-sdk/) for web.
+This is a flutter package that wraps the native [iOS](https://github.com/spotify/ios-sdk) and [Android](https://github.com/spotify/android-sdk) Spotify "remote" SDKs as well as the [Spotify Web Playback SDK](https://developer.spotify.com/documentation/web-playback-sdk/) for web. Since it wraps the native SDKs it has the same features and limitations.
 
 
 ## Installation
