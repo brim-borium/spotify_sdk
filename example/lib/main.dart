@@ -17,13 +17,15 @@ import 'widgets/sized_icon_button.dart';
 
 Future<void> main() async {
   await dotenv.load(fileName: '.env');
-  runApp(Home());
+  runApp(const Home());
 }
 
 /// A [StatefulWidget] which uses:
 /// * [spotify_sdk](https://pub.dev/packages/spotify_sdk)
 /// to connect to Spotify and use controls.
 class Home extends StatefulWidget {
+  const Home({Key? key}) : super(key: key);
+
   @override
   _HomeState createState() => _HomeState();
 }
@@ -34,6 +36,7 @@ class _HomeState extends State<Home> {
   final Logger _logger = Logger();
 
   CrossfadeState? crossfadeState;
+  late ImageUri? currentTrackImageUri;
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +56,7 @@ class _HomeState extends State<Home> {
                 _connected
                     ? IconButton(
                         onPressed: disconnect,
-                        icon: Icon(Icons.exit_to_app),
+                        icon: const Icon(Icons.exit_to_app),
                       )
                     : Container()
               ],
@@ -216,7 +219,7 @@ class _HomeState extends State<Home> {
             ),
             ElevatedButton(
               onPressed: getCrossfadeState,
-              child: Text(
+              child: const Text(
                 'get crossfade state',
               ),
             ),
@@ -224,10 +227,6 @@ class _HomeState extends State<Home> {
             Text("Is enabled: ${crossfadeState?.isEnabled}"),
             // ignore: prefer_single_quotes
             Text("Duration: ${crossfadeState?.duration}"),
-            const Divider(),
-            _connected
-                ? spotifyImageWidget()
-                : const Text('Connect to see an image...'),
           ],
         ),
         _loading
@@ -244,6 +243,7 @@ class _HomeState extends State<Home> {
       stream: SpotifySdk.subscribePlayerState(),
       builder: (BuildContext context, AsyncSnapshot<PlayerState> snapshot) {
         var track = snapshot.data?.track;
+        currentTrackImageUri = track?.imageUri;
         var playerState = snapshot.data;
 
         if (playerState == null || track == null) {
@@ -277,6 +277,9 @@ class _HomeState extends State<Home> {
             Text('Image URI: ${track.imageUri.raw}'),
             Text('Is episode? ${track.isEpisode}'),
             Text('Is podcast? ${track.isPodcast}'),
+            _connected
+                ? spotifyImageWidget(track.imageUri)
+                : const Text('Connect to see an image...'),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -293,7 +296,7 @@ class _HomeState extends State<Home> {
                     DropdownButton<RepeatMode>(
                       value: RepeatMode
                           .values[playerState.playbackOptions.repeatMode.index],
-                      items: [
+                      items: const [
                         DropdownMenuItem(
                           value: RepeatMode.off,
                           child: Text('off'),
@@ -313,7 +316,7 @@ class _HomeState extends State<Home> {
                 ),
                 Row(
                   children: [
-                    Text('Set shuffle: '),
+                    const Text('Set shuffle: '),
                     Switch.adaptive(
                       value: playerState.playbackOptions.isShuffling,
                       onChanged: (bool shuffle) => setShuffle(
@@ -356,11 +359,10 @@ class _HomeState extends State<Home> {
     );
   }
 
-  Widget spotifyImageWidget() {
+  Widget spotifyImageWidget(ImageUri image) {
     return FutureBuilder(
         future: SpotifySdk.getImage(
-          imageUri: ImageUri(
-              'spotify:image:ab67616d0000b2736b4f6358fbf795b568e7952d'),
+          imageUri: image,
           dimension: ImageDimension.large,
         ),
         builder: (BuildContext context, AsyncSnapshot<Uint8List?> snapshot) {
