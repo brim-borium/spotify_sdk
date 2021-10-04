@@ -36,8 +36,9 @@ After you are all setup you need to add the *.aar files to your Android Project 
 If you are on Android Studio 4.2+ you need to manually do all the things that the option to add .jar/.aar files did via the dialogue:
 
 1. Open the android folder of your flutter project as an Android Studio project
-2. In the android root folder create 2 folders spotify-app-remote and spotify-auth and place the corresponding aar files and create empty build.gradle files, like on the screenshot below:
+2. In the android root folder create two folders: \nspotify-app-remote and spotify-auth and place the corresponding aar files and create empty build.gradle files, like on the screenshot below:
    ![image](https://user-images.githubusercontent.com/42183561/125422846-24e03bf0-ec7f-409f-b382-0ef2d0213d08.png)
+   
 3.  Content of the spotify-app-remote/build.gradle file:
 ```
 configurations.maybeCreate("default")
