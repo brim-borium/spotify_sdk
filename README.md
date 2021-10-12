@@ -4,8 +4,8 @@
 [![build](https://github.com/brim-borium/spotify_sdk/workflows/spotify_sdk/badge.svg?branch=master)](https://github.com/brim-borium/spotify_sdk/actions?query=workflow%3Aspotify_sdk)
 [![licence](https://img.shields.io/badge/licence-MIT-blue.svg)](https://github.com/IamTobi/spotify_sdk/blob/master/LICENSE)
 
-![Screenshot](screenshots/flutter_spotify_sdk_1.png)
-![Screenshot](screenshots/flutter_spotify_sdk_2.png)
+![Screenshot](screenshots/flutter_spotify_sdk_screenshot_1.png)
+![Screenshot](screenshots/flutter_spotify_sdk_screenshot_2.png)
 
 ## Description
 
