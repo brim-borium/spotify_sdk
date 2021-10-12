@@ -62,7 +62,7 @@ class _HomeState extends State<Home> {
               ],
             ),
             body: _sampleFlowWidget(context),
-            bottomNavigationBar: _buildBottomBar(context),
+            bottomNavigationBar: _connected ? _buildBottomBar(context) : null,
           );
         },
       ),
@@ -79,37 +79,12 @@ class _HomeState extends State<Home> {
             children: <Widget>[
               SizedIconButton(
                 width: 50,
-                icon: Icons.skip_previous,
-                onPressed: skipPrevious,
-              ),
-              SizedIconButton(
-                width: 50,
-                icon: Icons.play_arrow,
-                onPressed: resume,
-              ),
-              SizedIconButton(
-                width: 50,
-                icon: Icons.pause,
-                onPressed: pause,
-              ),
-              SizedIconButton(
-                width: 50,
-                icon: Icons.skip_next,
-                onPressed: skipNext,
-              ),
-            ],
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: <Widget>[
-              SizedIconButton(
-                width: 50,
                 icon: Icons.queue_music,
                 onPressed: queue,
               ),
               SizedIconButton(
                 width: 50,
-                icon: Icons.play_circle_filled,
+                icon: Icons.playlist_play,
                 onPressed: play,
               ),
               SizedIconButton(
@@ -256,6 +231,32 @@ class _HomeState extends State<Home> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: <Widget>[
+                SizedIconButton(
+                  width: 50,
+                  icon: Icons.skip_previous,
+                  onPressed: skipPrevious,
+                ),
+                playerState.isPaused
+                    ? SizedIconButton(
+                        width: 50,
+                        icon: Icons.play_arrow,
+                        onPressed: resume,
+                      )
+                    : SizedIconButton(
+                        width: 50,
+                        icon: Icons.pause,
+                        onPressed: pause,
+                      ),
+                SizedIconButton(
+                  width: 50,
+                  icon: Icons.skip_next,
+                  onPressed: skipNext,
+                ),
+              ],
+            ),
             Text(
                 '${track.name} by ${track.artist.name} from the album ${track.album.name}'),
             Row(
