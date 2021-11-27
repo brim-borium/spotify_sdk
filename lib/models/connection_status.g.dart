@@ -6,14 +6,13 @@ part of 'connection_status.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-ConnectionStatus _$ConnectionStatusFromJson(Map<String, dynamic> json) {
-  return ConnectionStatus(
-    json['message'] as String?,
-    json['errorCode'] as String?,
-    json['errorDetails'] as String?,
-    connected: json['connected'] as bool,
-  );
-}
+ConnectionStatus _$ConnectionStatusFromJson(Map<String, dynamic> json) =>
+    ConnectionStatus(
+      json['message'] as String?,
+      json['errorCode'] as String?,
+      json['errorDetails'] as String?,
+      connected: json['connected'] as bool,
+    );
 
 Map<String, dynamic> _$ConnectionStatusToJson(ConnectionStatus instance) =>
     <String, dynamic>{

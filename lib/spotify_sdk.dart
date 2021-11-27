@@ -49,7 +49,16 @@ class SpotifySdk {
       EventChannel(EventChannels.connectionStatus);
 
   //logging
-  static final Logger _logger = Logger();
+  static final Logger _logger = Logger(
+    //filter: CustomLogFilter(), // custom logfilter can be used to have logs in release mode
+    printer: PrettyPrinter(
+      methodCount: 2,
+      errorMethodCount: 8,
+      lineLength: 120,
+      colors: true,
+      printEmojis: true,
+    ),
+  );
 
   /// Connects to Spotify Remote, returning a [bool] for confirmation
   ///
@@ -606,11 +615,11 @@ class SpotifySdk {
     if (e is PlatformException) {
       var message = e.message ?? '';
       message += e.details != null ? '\n${e.details}' : '';
-      _logger.i('$method failed with: $message');
+      _logger.e('$method failed with: $message');
     } else if (e is MissingPluginException) {
-      _logger.i('$method not implemented');
+      _logger.e('$method not implemented');
     } else {
-      _logger.i('$method throws unhandled exception: ${e.toString()}');
+      _logger.e('$method throws unhandled exception: ${e.toString()}');
     }
   }
 }

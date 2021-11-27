@@ -6,14 +6,13 @@ part of 'player_context.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-PlayerContext _$PlayerContextFromJson(Map<String, dynamic> json) {
-  return PlayerContext(
-    json['title'] as String,
-    json['subtitle'] as String,
-    json['type'] as String,
-    json['uri'] as String,
-  );
-}
+PlayerContext _$PlayerContextFromJson(Map<String, dynamic> json) =>
+    PlayerContext(
+      json['title'] as String,
+      json['subtitle'] as String,
+      json['type'] as String,
+      json['uri'] as String,
+    );
 
 Map<String, dynamic> _$PlayerContextToJson(PlayerContext instance) =>
     <String, dynamic>{
