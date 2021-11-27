@@ -87,6 +87,15 @@ Follow the instructions in the section `Setup the iOS SDK` of [Spotify iOS SDK Q
 </html>
 ```
 
+3. Optionally add this to your Flutter app web/index.html to avoid a Javascript `TypeError: r.__extends is not a function` error in development mode.
+
+```html
+<script src="https://sdk.scdn.co/spotify-player.js"></script>
+<script>
+  window.onSpotifyWebPlaybackSDKReady = (evt) => {};
+</script>
+```
+
 [You need Spotify Premium to access the Web SDK.](https://developer.spotify.com/documentation/web-playback-sdk/quick-start/)
 
 ## Usage
