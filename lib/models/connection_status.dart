@@ -12,7 +12,7 @@ class ConnectionStatus {
   });
 
   @JsonKey(name: 'connected')
-  final bool? connected;
+  final bool connected;
   @JsonKey(name: 'message')
   final String? message;
   @JsonKey(name: 'errorCode')

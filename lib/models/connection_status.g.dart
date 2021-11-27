@@ -11,7 +11,7 @@ ConnectionStatus _$ConnectionStatusFromJson(Map<String, dynamic> json) =>
       json['message'] as String?,
       json['errorCode'] as String?,
       json['errorDetails'] as String?,
-      connected: json['connected'] as bool?,
+      connected: json['connected'] as bool,
     );
 
 Map<String, dynamic> _$ConnectionStatusToJson(ConnectionStatus instance) =>

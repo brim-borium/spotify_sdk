@@ -57,7 +57,7 @@ class _HomeState extends State<Home> {
           _connected = false;
           var data = snapshot.data;
           if (data != null) {
-            _connected = data.connected ?? false;
+            _connected = data.connected;
           }
           return Scaffold(
             appBar: AppBar(
