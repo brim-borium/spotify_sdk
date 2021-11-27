@@ -321,6 +321,13 @@ class SpotifySdkPlugin {
     }));
     player.addListener('authentication_error',
         allowInterop((WebPlaybackError error) {
+      // If the error is due to browser security, don't disconnect.
+      // The user needs to interact with the SDK to trigger media activation.
+      // https://developer.spotify.com/documentation/web-playback-sdk/quick-start/#mobile-support
+      if (error.message.contains('Browser prevented autoplay')) {
+        log('authentication_error: ${error.message}');
+        return;
+      }
       _onSpotifyDisconnected(
           errorCode: 'Authentication Error', errorDetails: error.message);
     }));
