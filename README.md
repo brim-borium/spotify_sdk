@@ -87,6 +87,15 @@ Follow the instructions in the section `Setup the iOS SDK` of [Spotify iOS SDK Q
 </html>
 ```
 
+3. Optionally add this to your Flutter app web/index.html to avoid a Javascript `TypeError: r.__extends is not a function` error in development mode.
+
+```html
+<script src="https://sdk.scdn.co/spotify-player.js"></script>
+<script>
+  window.onSpotifyWebPlaybackSDKReady = (evt) => {};
+</script>
+```
+
 [You need Spotify Premium to access the Web SDK.](https://developer.spotify.com/documentation/web-playback-sdk/quick-start/)
 
 ## Usage
@@ -130,6 +139,7 @@ SpotifySdkPlugin.tokenRefreshURL = 'https://example.com/api/spotify/refresh';
 On web, this package will perform an Authorization Code (without PKCE) flow, then exchange the code and refresh the token with a backend service you run at the URLs provided.
 
 Token Swap is for now "web only". While the iOS SDK also supports the "token swap", this flow is not yet supported.
+
 ### Api
 
 #### Connecting/Authenticating
@@ -163,6 +173,8 @@ Token Swap is for now "web only". While the iOS SDK also supports the "token swa
 |  setShuffle | Set the shuffle mode | ✔ |  ✔ | ✔ |
 |  toggleRepeat | Cycles through the repeat modes | ✔ |  ✔ | ❌ |
 |  setRepeatMode | Set the repeat mode | ✔ |  ✔ | ✔ |
+
+On Web, an automatic call to play may not work due to media activation policies which send an error: "Authentication Error: Browser prevented autoplay due to lack of interaction". This error is ignored by the SDK so you can still present a button for the user to click to `play` or `resume` to start playback. See the [Web SDK Troubleshooting guide](https://developer.spotify.com/documentation/web-playback-sdk/reference/#troubleshooting) for more details.
 
 #### Images Api
 
@@ -199,3 +211,4 @@ Token Swap is for now "web only". While the iOS SDK also supports the "token swa
 
 - [Auth](https://spotify.github.io/android-sdk/auth-lib/docs/index.html)
 - [App Remote](https://spotify.github.io/android-sdk/app-remote-lib/docs/index.html)
+- [Web Playback SDK](https://developer.spotify.com/documentation/web-playback-sdk/)
