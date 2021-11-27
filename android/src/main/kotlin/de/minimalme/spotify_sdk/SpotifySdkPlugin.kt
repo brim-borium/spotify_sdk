@@ -45,6 +45,7 @@ class SpotifySdkPlugin : MethodCallHandler, FlutterPlugin, ActivityAware, Plugin
     // method channel
     private var methodChannel: MethodChannel? = null
     private val channelName = "spotify_sdk"
+    private val loggingTag = "spotify_sdk"
 
     // event channels
     private var playerContextChannel : EventChannel? = null
@@ -236,12 +237,18 @@ class SpotifySdkPlugin : MethodCallHandler, FlutterPlugin, ActivityAware, Plugin
                     object : ConnectionListener {
                         override fun onConnected(spotifyAppRemoteValue: SpotifyAppRemote) {
                             spotifyAppRemote = spotifyAppRemoteValue
-                            playerContextChannel?.setStreamHandler(PlayerContextChannel(spotifyAppRemote!!.playerApi))
-                            playerStateChannel?.setStreamHandler(PlayerStateChannel(spotifyAppRemote!!.playerApi))
-                            capabilitiesChannel?.setStreamHandler(CapabilitiesChannel(spotifyAppRemote!!.userApi))
-                            userStatusChannel?.setStreamHandler(UserStatusChannel(spotifyAppRemote!!.userApi))
 
+                            playerContextChannel?.setStreamHandler(PlayerContextChannel(spotifyAppRemote!!.playerApi))
+                            Log.i(loggingTag, "Set stream handler for PlayerContextChannel")
+                            playerStateChannel?.setStreamHandler(PlayerStateChannel(spotifyAppRemote!!.playerApi))
+                            Log.i(loggingTag, "Set stream handler for PlayerStateChannel")
+                            capabilitiesChannel?.setStreamHandler(CapabilitiesChannel(spotifyAppRemote!!.userApi))
+                            Log.i(loggingTag, "Set stream handler for CapabilitiesChannel")
+                            userStatusChannel?.setStreamHandler(UserStatusChannel(spotifyAppRemote!!.userApi))
+                            Log.i(loggingTag, "Set stream handler for UserStatusChannel")
                             initiallyConnected = true
+
+                            Log.i(loggingTag, "App Remote successfully connected")
                             // emit connection established event
                             connStatusEventChannel(ConnectionStatusChannel.ConnectionEvent(true, "Successfully connected to Spotify.", null, null))
                             // method success
@@ -297,7 +304,7 @@ class SpotifySdkPlugin : MethodCallHandler, FlutterPlugin, ActivityAware, Plugin
                                     errorCode = errorConnection
                                 }
                             }
-                            Log.e("SPOTIFY_SDK", errorMessage)
+                            Log.e(loggingTag, errorMessage)
                             // notify plugin
                             if (initiallyConnected) {
                                 // emit connection error event

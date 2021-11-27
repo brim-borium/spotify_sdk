@@ -33,7 +33,17 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   bool _loading = false;
   bool _connected = false;
-  final Logger _logger = Logger();
+  final Logger _logger = Logger(
+    //filter: CustomLogFilter(), // custom logfilter can be used to have logs in release mode
+    printer: PrettyPrinter(
+      methodCount: 2, // number of method calls to be displayed
+      errorMethodCount: 8, // number of method calls if stacktrace is provided
+      lineLength: 120, // width of the output
+      colors: true, // Colorful log messages
+      printEmojis: true, // Print an emoji for each log message
+      printTime: true,
+    ),
+  );
 
   CrossfadeState? crossfadeState;
   late ImageUri? currentTrackImageUri;
@@ -47,7 +57,7 @@ class _HomeState extends State<Home> {
           _connected = false;
           var data = snapshot.data;
           if (data != null) {
-            _connected = data.connected;
+            _connected = data.connected ?? false;
           }
           return Scaffold(
             appBar: AppBar(

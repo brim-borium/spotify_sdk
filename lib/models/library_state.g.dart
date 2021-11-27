@@ -6,13 +6,11 @@ part of 'library_state.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-LibraryState _$LibraryStateFromJson(Map<String, dynamic> json) {
-  return LibraryState(
-    json['uri'] as String,
-    isSaved: json['saved'] as bool,
-    canSave: json['can_save'] as bool,
-  );
-}
+LibraryState _$LibraryStateFromJson(Map<String, dynamic> json) => LibraryState(
+      json['uri'] as String,
+      isSaved: json['saved'] as bool,
+      canSave: json['can_save'] as bool,
+    );
 
 Map<String, dynamic> _$LibraryStateToJson(LibraryState instance) =>
     <String, dynamic>{
