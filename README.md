@@ -166,8 +166,8 @@ Token Swap is for now "web only". While the iOS SDK also supports the "token swa
 |  skipToIndex | Skips to track at specified index in album or playlist |✔  |  ✔ | 🚧  |
 |  seekTo | Seeks the current track to the given position in milliseconds | ✔ | ✔ | 🚧 |
 |  seekToRelativePosition | Adds to the current position of the track the given milliseconds | ✔ | ❌ | 🚧 |
-|  subscribeToPlayerContext | Subscribes to the current player context | ✔ | ✔ | ✔ |
-|  subscribeToPlayerState| Subscribes to the current player state | ✔  | ✔ | ✔ |
+|  subscribePlayerContext | Subscribes to the current player context | ✔ | ✔ | ✔ |
+|  subscribePlayerState| Subscribes to the current player state | ✔  | ✔ | ✔ |
 |  getCrossfadeState | Gets the current crossfade state | ✔  | ✔ | ❌ |
 |  toggleShuffle | Cycles through the shuffle modes | ✔ | ❌ | ❌ |
 |  setShuffle | Set the shuffle mode | ✔ |  ✔ | ✔ |
@@ -190,8 +190,8 @@ On Web, an automatic call to play may not work due to media activation policies 
 |  getCapabilities | Gets the current users capabilities | ✔ | ✔ | 🚧 |
 |  getLibraryState | Gets the current library state | ✔ | ✔ | 🚧 |
 |  removeFromLibrary | Removes the given spotifyUri to the users library | ✔ | ✔ | 🚧 |
-|  subscribeToCapabilities |  Subscribes to the current users capabilities | ✔ | 🚧 | 🚧 |
-|  subscribeToUserStatus |  Subscribes to  the current users status | ✔ | 🚧 | 🚧 |
+|  subscribeCapabilities |  Subscribes to the current users capabilities | ✔ | 🚧 | 🚧 |
+|  subscribeUserStatus |  Subscribes to  the current users status | ✔ | 🚧 | 🚧 |
 
 #### Connect Api
 
