@@ -1,3 +1,19 @@
+## 2.2.0
+* iOS and Android
+  * adds SkipToIndex and getCapabilities 
+  * adds isSpotifyAppActive 
+  * adds getLibraryState on iOS
+  * Switch to native Spotify iOS XCFramework
+  * fixes android json mapping error on release builds  
+  * fixes skipPrevious on iOS
+* web
+  * adds use accessToken which implies reusing _spotifyToken from getAuthenticationToken
+  * adds optional tokenSwapURL and tokenRefreshURL for Authorization Code (without PKCE)
+  * adds support for track relinking
+  * fixes browser autoplay error  
+* updates libraries
+* updates documentation
+
 ## 2.1.0
 * BREAKING: setShuffle now does not expect a named argument
 * fixes accessToken being ignored in connectToSpotify()
