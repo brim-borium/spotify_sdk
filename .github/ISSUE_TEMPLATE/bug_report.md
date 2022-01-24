@@ -15,15 +15,19 @@ This is a flutter package that wraps the native [iOS](https://github.com/spotify
 Yes/No
 If Yes, please use Stack Overflow instead.
 
-**Is this a native Spotify SDK issue**
+**Is this a native Spotify SDK issue?**
 Yes/No/I don't know
 If you answered "Yes" then your issue belongs to the native SDK repo and not here.
 If you answered "I don't know" then you should visit the corresponding native SDK repo and make sure that this is not a native SDK issue.
 
-**Are you using a Free or Premium Spotify account**
+**Have you searched for existing issues?**
+Yes/No
+If you answered "No" you should that first before opening a new issue.
+
+**Are you using a Free or Premium Spotify account?**
 Free/Premium
 
-**Are you aware of the limitation of Free Spotify accounts**
+**Are you aware of the limitations of Free Spotify accounts?**
 Yes/No
 If you answered "No" and you are using a Free account then you make sure that this is not behavior that intentionally limited by the native SDK.
 
