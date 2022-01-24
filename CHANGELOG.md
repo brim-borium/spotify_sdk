@@ -1,4 +1,4 @@
-## 2.2.0
+## 2.3
 * iOS, Android and Web
 getAuthenticationToken is deprecated in favor of getAccessToken
 
