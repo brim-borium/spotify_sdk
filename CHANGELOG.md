@@ -1,4 +1,8 @@
 ## 2.2.0
+* iOS, Android and Web
+getAuthenticationToken is deprecated in favor of getAccessToken
+
+## 2.2.0
 * iOS and Android
   * adds SkipToIndex and getCapabilities 
   * adds isSpotifyAppActive 

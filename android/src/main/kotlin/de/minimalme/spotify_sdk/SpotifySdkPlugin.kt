@@ -62,7 +62,7 @@ class SpotifySdkPlugin : MethodCallHandler, FlutterPlugin, ActivityAware, Plugin
 
     //connecting
     private val methodConnectToSpotify = "connectToSpotify"
-    private val methodGetAuthenticationToken = "getAuthenticationToken"
+    private val methodGetAccessToken = "getAccessToken"
     private val methodDisconnectFromSpotify = "disconnectFromSpotify"
 
     //player api
@@ -173,7 +173,7 @@ class SpotifySdkPlugin : MethodCallHandler, FlutterPlugin, ActivityAware, Plugin
         when (call.method) {
             //connecting to spotify
             methodConnectToSpotify -> connectToSpotify(call.argument(paramClientId), call.argument(paramRedirectUrl), result)
-            methodGetAuthenticationToken -> getAuthenticationToken(call.argument(paramClientId), call.argument(paramRedirectUrl), call.argument(paramScope), result)
+            methodGetAccessToken -> getAccessToken(call.argument(paramClientId), call.argument(paramRedirectUrl), call.argument(paramScope), result)
             methodDisconnectFromSpotify -> disconnectFromSpotify(result)
             //player api calls
             methodGetCrossfadeState -> spotifyPlayerApi?.getCrossfadeState()
@@ -318,9 +318,9 @@ class SpotifySdkPlugin : MethodCallHandler, FlutterPlugin, ActivityAware, Plugin
         }
     }
 
-    private fun getAuthenticationToken(clientId: String?, redirectUrl: String?, scope: String?, result: Result) {
+    private fun getAccessToken(clientId: String?, redirectUrl: String?, scope: String?, result: Result) {
         if (applicationActivity == null) {
-            throw IllegalStateException("getAuthenticationToken needs a foreground activity")
+            throw IllegalStateException("getAccessToken needs a foreground activity")
         }
 
         if (clientId.isNullOrBlank() || redirectUrl.isNullOrBlank()) {

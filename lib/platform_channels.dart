@@ -27,8 +27,8 @@ class MethodNames {
   /// method name for [connectToSpotify]
   static const String connectToSpotify = 'connectToSpotify';
 
-  /// method name for [getAuthenticationToken]
-  static const String getAuthenticationToken = 'getAuthenticationToken';
+  /// method name for [getAccessToken]
+  static const String getAccessToken = 'getAccessToken';
 
   /// method name for [disconnectFromSpotify]
   static const String disconnectFromSpotify = 'disconnectFromSpotify';
