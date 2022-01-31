@@ -142,7 +142,7 @@ class _HomeState extends State<Home> {
                   child: const Icon(Icons.settings_remote),
                 ),
                 TextButton(
-                  onPressed: getAuthenticationToken,
+                  onPressed: getAccessToken,
                   child: const Text('get auth token '),
                 ),
               ],
@@ -445,9 +445,9 @@ class _HomeState extends State<Home> {
     }
   }
 
-  Future<String> getAuthenticationToken() async {
+  Future<String> getAccessToken() async {
     try {
-      var authenticationToken = await SpotifySdk.getAuthenticationToken(
+      var authenticationToken = await SpotifySdk.getAccessToken(
           clientId: dotenv.env['CLIENT_ID'].toString(),
           redirectUrl: dotenv.env['REDIRECT_URL'].toString(),
           scope: 'app-remote-control, '

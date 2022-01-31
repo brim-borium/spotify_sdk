@@ -25,7 +25,7 @@ This will get you the latest version.
 
 ### Android
 
-This package is using both the spotify-app-remote sdk and spotify-auth library. The auth library is needed to get the authentication token to work with the web api.
+This package is using both the spotify-app-remote sdk and spotify-auth library. The auth library is needed to get the access token to work with the web api.
 
 From the [Spotify Android SDK Quick Start](https://developer.spotify.com/documentation/android/quick-start/). You need two things:
 
@@ -101,22 +101,22 @@ To start using this package first import it in your Dart file.
 import 'package:spotify_sdk/spotify_sdk.dart';
 ```
 
-To connect to the Spotify app you can call connectToSpotifyRemote(...) or getAuthenticationToken(...). In both of these methods you need the client id, which you will find in the Spotify developer dashboard and the redirect url you set there for that specific client.
+To connect to the Spotify app you can call connectToSpotifyRemote(...) or getAccessToken(...). In both of these methods you need the client id, which you will find in the Spotify developer dashboard and the redirect url you set there for that specific client.
 
 ```dart
 await SpotifySdk.connectToSpotifyRemote(clientId: "", redirectUrl: "")
 ```
 
-If you want to use the web api as well you have to use this method to get the authentication token. 
-You can specify multiple scopes by separating them with a comma "," as shown below. For more information on scopes you can refer to [Spotify Authorization Scopes Guide](https://developer.spotify.com/documentation/general/guides/scopes/)
+If you want to use the web api as well you have to use this method to get the access token. 
+You can specify multiple scopes by separating them with a comma "," as shown below. For more information on scopes you can refer to [Spotify Authorization Scopes Guide](https://developer.spotify.com/documentation/general/guides/authorization/scopes/)
 
 ```dart
-var authenticationToken = await SpotifySdk.getAuthenticationToken(clientId: "", redirectUrl: "", scope: "app-remote-control,user-modify-playback-state,playlist-read-private");
+var accessToken = await SpotifySdk.getAccessToken(clientId: "", redirectUrl: "", scope: "app-remote-control,user-modify-playback-state,playlist-read-private");
 ```
 
-On Web you can use the token that you get from `getAuthenticationToken(...)` and then pass it to `connectToSpotifyRemote(...)`. This will avoid having to send user through two Spotify OAuth prompts. You should not persist this token, nor supply a different token, because the refresh token is only set interally by `getAuthenticationToken` or `connectToSpotifyRemote`.
+On Web you can use the token that you get from `getAccessToken(...)` and then pass it to `connectToSpotifyRemote(...)`. This will avoid having to send user through two Spotify OAuth prompts. You should not persist this token, nor supply a different token, because the refresh token is only set interally by `getAccessToken` or `connectToSpotifyRemote`.
 
-On iOS you can store the token that you get from `getAuthenticationToken(...)` and then pass it to `connectToSpotifyRemote(...)` during the next session. This will avoid having to switch to the Spotify app for establishing the connection. This library does not handle storing the token. It is up to you to persist it wherever you see fit. Keep in mind that this feature is currently quite buggy in the native iOS SDK and has many side effects like random disconnections. Proceed with caution.
+On iOS you can store the token that you get from `getAccessToken(...)` and then pass it to `connectToSpotifyRemote(...)` during the next session. This will avoid having to switch to the Spotify app for establishing the connection. This library does not handle storing the token. It is up to you to persist it wherever you see fit. Keep in mind that this feature is currently quite buggy in the native iOS SDK and has many side effects like random disconnections. Proceed with caution.
 
 On iOS Spotify starts playing music when attempting connection. This is a default behavior and there is no official way to prevent this with the currently supported authentication flows. You have the option to pass a Spotify URI upon connection or set it to a blank string to play the last played song. There is an undocumented workaround if you don't want music to start playing which is to pass an invalid Spotify URI instead. This is not officially supported by the Spotify SDK or this library and it can fail or stop working at any time!
 
@@ -142,7 +142,7 @@ Token Swap is for now "web only". While the iOS SDK also supports the "token swa
 | Function  | Description| Android | iOS | Web |
 |---|---|---|---|---|
 | connectToSpotifyRemote  | Connects the App to Spotify | ✔ | ✔ | ✔ |
-|  getAuthenticationToken | Gets the Authentication Token that you can use to work with the [Web Api](https://developer.spotify.com/documentation/web-api/) | ✔ |  ✔ | ✔ |
+|  getAccessToken | Gets the Access Token that you can use to work with the [Web Api](https://developer.spotify.com/documentation/web-api/) | ✔ |  ✔ | ✔ |
 |  disconnect | Disconnects the app connection | ✔ |  ✔ | ✔ |
 |  isSpotifyAppActive | Checks if the Spotify app is active. The Spotify app will be considered active if music is playing. | ✔ |  ✔ | 🚧 |
 |  subscribeConnectionStatus | Subscribes to the current player state. | ✔ |  ✔ | 🚧 |

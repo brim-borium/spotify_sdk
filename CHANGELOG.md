@@ -1,5 +1,6 @@
-## next
-
+## 2.3
+* iOS, Android and Web
+  * getAuthenticationToken is deprecated in favor of getAccessToken
 * Android:
   * `spotify-auth` SDK is now retrieved via Maven Central instead of being sourced from an AAR file
 

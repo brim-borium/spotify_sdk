@@ -108,7 +108,7 @@ class SpotifySdk {
   /// failed.
   /// Throws a [MissingPluginException] if the method is not implemented on
   /// the native platforms.
-  static Future<String> getAuthenticationToken(
+  static Future<String> getAccessToken(
       {required String clientId,
       required String redirectUrl,
       String spotifyUri = '',
@@ -116,7 +116,7 @@ class SpotifySdk {
       String? scope}) async {
     try {
       final authorization =
-          await _channel.invokeMethod(MethodNames.getAuthenticationToken, {
+          await _channel.invokeMethod(MethodNames.getAccessToken, {
         ParamNames.clientId: clientId,
         ParamNames.redirectUrl: redirectUrl,
         ParamNames.scope: scope,
@@ -125,10 +125,25 @@ class SpotifySdk {
       });
       return authorization.toString();
     } on Exception catch (e) {
-      _logException(MethodNames.getAuthenticationToken, e);
+      _logException(MethodNames.getAccessToken, e);
       rethrow;
     }
   }
+
+  @Deprecated('Use [getAccessToken]')
+  static Future<String> getAuthenticationToken(
+          {required String clientId,
+          required String redirectUrl,
+          String spotifyUri = '',
+          bool asRadio = false,
+          String? scope}) =>
+      getAccessToken(
+        clientId: clientId,
+        redirectUrl: redirectUrl,
+        spotifyUri: spotifyUri,
+        asRadio: asRadio,
+        scope: scope,
+      );
 
   /// Logs the user out and disconnects the app from the users spotify account
   ///

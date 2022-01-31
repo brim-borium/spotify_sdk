@@ -198,7 +198,7 @@ class SpotifySdkPlugin {
               errorDetails: 'Attempt to connect to the Spotify SDK failed');
           return false;
         }
-      case MethodNames.getAuthenticationToken:
+      case MethodNames.getAccessToken:
         var clientId = call.arguments[ParamNames.clientId] as String?;
         var redirectUrl = call.arguments[ParamNames.redirectUrl] as String?;
 

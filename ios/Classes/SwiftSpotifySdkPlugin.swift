@@ -70,7 +70,7 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
                 return
             }
 
-        case SpotifySdkConstants.methodGetAuthenticationToken:
+        case SpotifySdkConstants.methodGetAccessToken:
             guard let swiftArguments = call.arguments as? [String:Any],
                 let clientID = swiftArguments[SpotifySdkConstants.paramClientId] as? String,
                 let url = swiftArguments[SpotifySdkConstants.paramRedirectUrl] as? String else {
