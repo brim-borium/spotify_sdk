@@ -1,2 +1,2 @@
 rootProject.name = 'spotify_sdk'
-include ':spotify-auth', ':spotify-app-remote'
+include ':spotify-app-remote'

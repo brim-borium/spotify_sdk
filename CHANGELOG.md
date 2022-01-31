@@ -1,3 +1,8 @@
+## next
+
+* Android:
+  * `spotify-auth` SDK is now retrieved via Maven Central instead of being sourced from an AAR file
+
 ## 2.2.0
 * iOS and Android
   * adds SkipToIndex and getCapabilities 
