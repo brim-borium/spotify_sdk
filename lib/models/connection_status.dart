@@ -20,7 +20,6 @@ class ConnectionStatus {
   @JsonKey(name: 'errorDetails')
   final String? errorDetails;
 
-  @JsonKey(ignore: true)
   bool hasError() {
     return errorCode?.isNotEmpty == true;
   }
