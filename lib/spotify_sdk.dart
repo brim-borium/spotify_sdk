@@ -93,7 +93,7 @@ class SpotifySdk {
     }
   }
 
-  /// Returns an authentication token as a [String]
+  /// Returns an access token as a [String]
   ///
   /// Required parameters are the [clientId] and the [redirectUrl] to
   /// authenticate with the Spotify Api.
