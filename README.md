@@ -172,6 +172,7 @@ Token Swap is for now "web only". While the iOS SDK also supports the "token swa
 |  setShuffle | Set the shuffle mode | ✔ |  ✔ | ✔ |
 |  toggleRepeat | Cycles through the repeat modes | ✔ |  ✔ | ❌ |
 |  setRepeatMode | Set the repeat mode | ✔ |  ✔ | ✔ |
+|  setPodcastPlaybackSpeed | Set the playback speed of a podcast | ✔ |  🚧 | 🚧 |
 
 On Web, an automatic call to play may not work due to media activation policies which send an error: "Authentication Error: Browser prevented autoplay due to lack of interaction". This error is ignored by the SDK so you can still present a button for the user to click to `play` or `resume` to start playback. See the [Web SDK Troubleshooting guide](https://developer.spotify.com/documentation/web-playback-sdk/reference/#troubleshooting) for more details.
 

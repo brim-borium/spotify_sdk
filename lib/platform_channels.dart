@@ -54,6 +54,9 @@ class MethodNames {
   /// method name for [resume]
   static const String resume = 'resume';
 
+  /// method name for [podcastPlaybackSpeed]
+  static const String setPodcastPlaybackSpeed = 'setPodcastPlaybackSpeed';
+
   /// method name for [skipToIndex]
   static const String skipToIndex = 'skipToIndex';
 
@@ -146,6 +149,9 @@ class ParamNames {
 
   /// param name for [repeatMode]
   static const String repeatMode = 'repeatMode';
+
+  /// param name for [podcastPlaybackSpeed]
+  static const String podcastPlaybackSpeed = 'podcastPlaybackSpeed';
 
   /// param name for [uri]
   static const String uri = 'uri';

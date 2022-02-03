@@ -5,8 +5,10 @@ import 'package:flutter/services.dart';
 import 'package:logger/logger.dart';
 
 import 'enums/image_dimension_enum.dart';
+import 'enums/podcast_playback_speed.dart';
 import 'enums/repeat_mode_enum.dart';
 import 'extensions/image_dimension_extension.dart';
+import 'extensions/podcast_playback_speed_extension.dart';
 import 'models/capabilities.dart';
 import 'models/connection_status.dart';
 import 'models/crossfade_state.dart';
@@ -18,8 +20,10 @@ import 'models/user_status.dart';
 import 'platform_channels.dart';
 
 export 'package:spotify_sdk/enums/image_dimension_enum.dart';
+export 'package:spotify_sdk/enums/podcast_playback_speed.dart';
 export 'package:spotify_sdk/enums/repeat_mode_enum.dart';
 export 'package:spotify_sdk/extensions/image_dimension_extension.dart';
+export 'package:spotify_sdk/extensions/podcast_playback_speed_extension.dart';
 
 ///
 /// [SpotifySdk] holds the functionality to connect via spotify remote or
@@ -277,6 +281,23 @@ class SpotifySdk {
   static Future resume() async {
     try {
       await _channel.invokeMethod(MethodNames.resume);
+    } on Exception catch (e) {
+      _logException(MethodNames.resume, e);
+      rethrow;
+    }
+  }
+
+  /// Sets the playbackSpeed of the Podcast
+  ///
+  /// The podcast playback speed can be controlled via [podcastPlaybackSpeed].
+  /// Throws a [PlatformException] if resuming failed
+  /// Throws a [MissingPluginException] if the method is not implemented on
+  /// the native platforms.
+  static Future setPodcastPlaybackSpeed(
+      {required PodcastPlaybackSpeed podcastPlaybackSpeed}) async {
+    try {
+      await _channel.invokeMethod(MethodNames.setPodcastPlaybackSpeed,
+          {ParamNames.podcastPlaybackSpeed: podcastPlaybackSpeed.value});
     } on Exception catch (e) {
       _logException(MethodNames.resume, e);
       rethrow;
