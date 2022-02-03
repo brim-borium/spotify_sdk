@@ -11,7 +11,6 @@
 
 This is a flutter package that wraps the native [iOS](https://github.com/spotify/ios-sdk) and [Android](https://github.com/spotify/android-sdk) Spotify "remote" SDKs as well as the [Spotify Web Playback SDK](https://developer.spotify.com/documentation/web-playback-sdk/) for web. Since it wraps the native SDKs it has the same features and limitations.
 
-
 ## Installation
 
 To use this plugin, add `spotify_sdk` as a [dependency](https://flutter.io/using-packages/) in your `pubspec.yaml` file like this
@@ -21,6 +20,7 @@ dependencies:
   spotify_sdk:
 ```
 This will get you the latest version.
+
 ## Setup
 
 ### Android
@@ -201,6 +201,15 @@ On Web, an automatic call to play may not work due to media activation policies 
 | getChildrenOfItem | tbd | 🚧 | 🚧 | 🚧 |
 | getRecommendedContentItems | tbd | 🚧 | 🚧 | 🚧 |
 | playContentItem | tbd | 🚧 | 🚧 | 🚧 |
+
+## Migration 
+
+### spotify-auth: moving from locally sourced aar to maven central
+`spotify-auth` SDK is now retrieved via Maven Central instead of being sourced from an AAR file
+* Steps to remove the locally sourced `spotify-auth` SDK:
+   * android/settings.gradle -> remove `':spotify-auth'`
+   * android/spotify-auth/build.gradle -> remove file
+   * android/spotify-auth/spotify-auth-release-x.x.x.aar -> remove file
 
 ## Official Spotify Docs
 
