@@ -5,7 +5,6 @@ analyzer:
     # Ignore generated files
     - "**/*.g.dart"
     - "lib/generated/**"
-    - "lib/models/**"
   errors:
     close_sinks: ignore
 linter:

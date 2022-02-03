@@ -93,7 +93,7 @@ class SpotifySdk {
     }
   }
 
-  /// Returns an authentication token as a [String]
+  /// Returns an access token as a [String]
   ///
   /// Required parameters are the [clientId] and the [redirectUrl] to
   /// authenticate with the Spotify Api.
@@ -104,7 +104,7 @@ class SpotifySdk {
   /// for more scopes and how to use them
   /// The token can be used to communicate with the web api
   /// iOS specific: You can optionally pass a [spotifyUri]. A blank string will play the user's last song or pick a random one. It will be ignored on platforms other than iOS.
-  /// Throws a [PlatformException] if retrieving the authentication token
+  /// Throws a [PlatformException] if retrieving the access token
   /// failed.
   /// Throws a [MissingPluginException] if the method is not implemented on
   /// the native platforms.

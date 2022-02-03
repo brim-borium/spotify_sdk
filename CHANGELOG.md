@@ -1,8 +1,12 @@
-## 2.3
+## 2.3.0
 * iOS, Android and Web
   * getAuthenticationToken is deprecated in favor of getAccessToken
 * Android:
   * `spotify-auth` SDK is now retrieved via Maven Central instead of being sourced from an AAR file
+    * Steps to remove the `spotify-auth` SDK:
+      * android/settings.gradle -> remove `':spotify-auth'` 
+      * android/spotify-auth/build.gradle -> remove file
+      * android/spotify-auth/spotify-auth-release-x.x.x.aar -> remove file
 
 ## 2.2.0
 * iOS and Android

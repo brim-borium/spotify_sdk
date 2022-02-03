@@ -15,7 +15,6 @@ class UserStatus {
   @JsonKey(name: 'long_text')
   final String longMessage;
 
-  @JsonKey(ignore: true)
   bool isLoggedIn() {
     return code == 0;
   }
