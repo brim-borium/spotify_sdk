@@ -123,7 +123,7 @@ class SpotifyPlayerApi(spotifyAppRemote: SpotifyAppRemote?, result: MethodChanne
     internal fun setPodcastPlaybackSpeed(podcastPlaybackSpeedValue: Int?) {
         if (playerApi != null && podcastPlaybackSpeedValue != null) {
 
-            val podcastPlaybackSpeed = PlaybackSpeed.PodcastPlaybackSpeed.values()[podcastPlaybackSpeedValue]
+            val podcastPlaybackSpeed = PlaybackSpeed.PodcastPlaybackSpeed.values().firstOrNull{ it.value == podcastPlaybackSpeedValue }
 
             playerApi.setPodcastPlaybackSpeed(podcastPlaybackSpeed)
                     .setResultCallback { result.success(true) }

@@ -265,6 +265,37 @@ class HomeState extends State<Home> {
                 ),
               ],
             ),
+            track.isPodcast
+                ? Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      TextButton(
+                        child: const SizedBox(
+                          width: 50,
+                          child: Text("x0.5"),
+                        ),
+                        onPressed: () => setPlaybackSpeed(
+                            PodcastPlaybackSpeed.playbackSpeed_50),
+                      ),
+                      TextButton(
+                        child: const SizedBox(
+                          width: 50,
+                          child: Text("x1"),
+                        ),
+                        onPressed: () => setPlaybackSpeed(
+                            PodcastPlaybackSpeed.playbackSpeed_100),
+                      ),
+                      TextButton(
+                        child: const SizedBox(
+                          width: 50,
+                          child: Text("x1.5"),
+                        ),
+                        onPressed: () => setPlaybackSpeed(
+                            PodcastPlaybackSpeed.playbackSpeed_150),
+                      ),
+                    ],
+                  )
+                : Container(),
             Text(
                 '${track.name} by ${track.artist.name} from the album ${track.album.name}'),
             Row(
@@ -535,6 +566,18 @@ class HomeState extends State<Home> {
   Future<void> toggleShuffle() async {
     try {
       await SpotifySdk.toggleShuffle();
+    } on PlatformException catch (e) {
+      setStatus(e.code, message: e.message);
+    } on MissingPluginException {
+      setStatus('not implemented');
+    }
+  }
+
+  Future<void> setPlaybackSpeed(
+      PodcastPlaybackSpeed podcastPlaybackSpeed) async {
+    try {
+      await SpotifySdk.setPodcastPlaybackSpeed(
+          podcastPlaybackSpeed: podcastPlaybackSpeed);
     } on PlatformException catch (e) {
       setStatus(e.code, message: e.message);
     } on MissingPluginException {
