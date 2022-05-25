@@ -641,7 +641,7 @@ class SpotifySdkPlugin {
     }
 
     await _dio.post(
-      '/add-to-queue',
+      '/queue',
       queryParameters: {'uri': uri, 'device_id': _currentPlayer!.deviceID},
       options: Options(
         headers: {
