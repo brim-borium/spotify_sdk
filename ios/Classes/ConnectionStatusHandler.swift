@@ -3,6 +3,7 @@ import SpotifyiOS
 class ConnectionStatusHandler: StatusHandler, SPTAppRemoteDelegate {
 
     var tokenResult: FlutterResult?
+    var codeResult: FlutterResult?
     var connectionResult: FlutterResult?
     
     func appRemoteDidEstablishConnection(_ appRemote: SPTAppRemote) {

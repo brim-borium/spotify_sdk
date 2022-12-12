@@ -63,6 +63,7 @@ class SpotifySdkPlugin : MethodCallHandler, FlutterPlugin, ActivityAware, Plugin
     //connecting
     private val methodConnectToSpotify = "connectToSpotify"
     private val methodGetAccessToken = "getAccessToken"
+    private val methodGetAuthorizationCode = "getAuthorizationCode"
     private val methodDisconnectFromSpotify = "disconnectFromSpotify"
 
     //player api
@@ -174,6 +175,7 @@ class SpotifySdkPlugin : MethodCallHandler, FlutterPlugin, ActivityAware, Plugin
             //connecting to spotify
             methodConnectToSpotify -> connectToSpotify(call.argument(paramClientId), call.argument(paramRedirectUrl), result)
             methodGetAccessToken -> getAccessToken(call.argument(paramClientId), call.argument(paramRedirectUrl), call.argument(paramScope), result)
+            methodGetAuthorizationCode -> getAuthorizationCode(call.argument(paramClientId), call.argument(paramRedirectUrl), call.argument(paramScope), result)
             methodDisconnectFromSpotify -> disconnectFromSpotify(result)
             //player api calls
             methodGetCrossfadeState -> spotifyPlayerApi?.getCrossfadeState()
@@ -338,6 +340,27 @@ class SpotifySdkPlugin : MethodCallHandler, FlutterPlugin, ActivityAware, Plugin
         }
     }
 
+    private fun getAuthorizationCode(clientId: String?, redirectUrl: String?, scope: String?, result: Result) {
+        if (applicationActivity == null) {
+            throw IllegalStateException("getAuthorizationCode needs a foreground activity")
+        }
+
+        if (clientId.isNullOrBlank() || redirectUrl.isNullOrBlank()) {
+            result.error(errorConnecting, "client id or redirectUrl are not set or have invalid format", "")
+        } else {
+            //Convert String? scope to Array. Delimiter set as comma ","
+            val scopeArray = scope?.split(",")?.toTypedArray()
+            methodConnectToSpotify.checkAndSetPendingOperation(result)
+
+            val builder = AuthorizationRequest.Builder(clientId, AuthorizationResponse.Type.CODE, redirectUrl)
+            builder.setScopes(scopeArray)
+            val request = builder.build()
+
+            AuthorizationClient.openLoginActivity(applicationActivity, requestCodeAuthentication, request)
+        }
+    }
+
+
     private fun disconnectFromSpotify(result: Result) {
         if (spotifyAppRemote != null && spotifyAppRemote!!.isConnected) {
             SpotifyAppRemote.disconnect(spotifyAppRemote)
@@ -367,7 +390,6 @@ class SpotifySdkPlugin : MethodCallHandler, FlutterPlugin, ActivityAware, Plugin
     }
 
     private fun authFlow(resultCode: Int, data: Intent?) {
-
         val response: AuthorizationResponse = AuthorizationClient.getResponse(resultCode, data)
         val result = pendingOperation!!.result
         pendingOperation = null
@@ -375,6 +397,9 @@ class SpotifySdkPlugin : MethodCallHandler, FlutterPlugin, ActivityAware, Plugin
         when (response.type) {
             AuthorizationResponse.Type.TOKEN -> {
                 result.success(response.accessToken)
+            }
+            AuthorizationResponse.Type.CODE -> {
+                result.success(response.code)
             }
             AuthorizationResponse.Type.ERROR -> result.error(errorAuthenticationToken, "Authentication went wrong", response.error)
             else -> result.notImplemented()

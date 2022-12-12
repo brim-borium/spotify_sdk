@@ -69,7 +69,28 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
                 result(FlutterError(code: "CouldNotFindSpotifyApp", message: "The Spotify app is not installed on the device", details: nil))
                 return
             }
-
+        case SpotifySdkConstants.methodGetAuthorizationCode:
+            guard let swiftArguments = call.arguments as? [String:Any],
+                let clientID = swiftArguments[SpotifySdkConstants.paramClientId] as? String,
+                let url = swiftArguments[SpotifySdkConstants.paramRedirectUrl] as? String else {
+                    result(FlutterError(code: "Arguments Error", message: "One or more arguments are missing", details: nil))
+                    return
+            }
+            
+            connectionStatusHandler?.tokenResult = result
+            let spotifyUri: String = swiftArguments[SpotifySdkConstants.paramSpotifyUri] as? String ?? ""
+            
+            do {
+                try connectToSpotify(clientId: clientID, redirectURL: url, spotifyUri: spotifyUri, asRadio: swiftArguments[SpotifySdkConstants.paramAsRadio] as? Bool, additionalScopes: swiftArguments[SpotifySdkConstants.scope] as? String)
+            }
+            catch SpotifyError.redirectURLInvalid {
+                result(FlutterError(code: "errorConnecting", message: "Redirect URL is not set or has invalid format", details: nil))
+            }
+            catch {
+                result(FlutterError(code: "CouldNotFindSpotifyApp", message: "The Spotify app is not installed on the device", details: nil))
+                return
+            }
+            
         case SpotifySdkConstants.methodGetAccessToken:
             guard let swiftArguments = call.arguments as? [String:Any],
                 let clientID = swiftArguments[SpotifySdkConstants.paramClientId] as? String,

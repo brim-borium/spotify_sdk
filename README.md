@@ -19,6 +19,7 @@ To use this plugin, add `spotify_sdk` as a [dependency](https://flutter.io/using
 dependencies:
   spotify_sdk:
 ```
+
 This will get you the latest version.
 
 ## Setup
@@ -30,9 +31,9 @@ This package is using both the spotify-app-remote sdk and spotify-auth library. 
 From the [Spotify Android SDK Quick Start](https://developer.spotify.com/documentation/android/quick-start/). You need two things:
 
 1. Register your app in the [spotify developer portal](https://developer.spotify.com/dashboard/). You also need to create a sha-1 fingerprint and add this and your package name to the app settings on the dashboard as well as a redirect url.
-2. download the current [Spotify Android SDK](https://github.com/spotify/android-sdk/releases). Here you need the spotify-app-remote-*.aar.
+2. download the current [Spotify Android SDK](https://github.com/spotify/android-sdk/releases). Here you need the spotify-app-remote-\*.aar.
 
-After you are all setup you need to add the SDKs *.aar file to your Android Project as Module. See the [Spotify Android SDK Quick Start](https://developer.spotify.com/documentation/android/quick-start/) for detailed information.
+After you are all setup you need to add the SDKs \*.aar file to your Android Project as Module. See the [Spotify Android SDK Quick Start](https://developer.spotify.com/documentation/android/quick-start/) for detailed information.
 
 ##### Installation instructions for Android Studio 4.2+
 
@@ -41,13 +42,15 @@ Since Android Studio 4.2 you need to manually perform these steps in order to ad
 1. Open the android folder of your flutter project as an Android Studio project
 2. In the android root folder create a single folder for `spotify-app-remote`, place the corresponding aar file and create an empty build.gradle file, like on the screenshot below:
    ![image](https://user-images.githubusercontent.com/42183561/125422846-24e03bf0-ec7f-409f-b382-0ef2d0213d08.png)
-   
-3.  Content of the `spotify-app-remote/build.gradle` file:
+3. Content of the `spotify-app-remote/build.gradle` file:
+
 ```
 configurations.maybeCreate("default")
 artifacts.add("default", file('spotify-app-remote-release-x.x.x.aar'))
 ```
+
 4. In the android root folder find `settings.gradle` file, open it and add the following line at the top of the file:
+
 ```
 include ':spotify-app-remote'
 ```
@@ -62,7 +65,8 @@ Follow the instructions in the section `Setup the iOS SDK` of [Spotify iOS SDK Q
 
 1. Register your app in the [spotify developer portal](https://developer.spotify.com/dashboard/). You need to provide a redirect URL which points to a dedicated page on a website you own.
 
-2. Paste the following onto the webpage, which you linked to in your redirect URL.  
+2. Paste the following onto the webpage, which you linked to in your redirect URL.
+
 ```html
 <!DOCTYPE html>
 <html>
@@ -70,14 +74,17 @@ Follow the instructions in the section `Setup the iOS SDK` of [Spotify iOS SDK Q
     <title>Authenticating Spotify</title>
   </head>
   <body>
-	<p>Please wait while we authenticate Spotify...</p>
-	<script type="text/javascript">
-		if(window.opener) {
-			window.opener.postMessage('?' + window.location.href.split('?')[1], "*");
-		} else {
-			window.close();
-		}
-	</script>
+    <p>Please wait while we authenticate Spotify...</p>
+    <script type="text/javascript">
+      if (window.opener) {
+        window.opener.postMessage(
+          "?" + window.location.href.split("?")[1],
+          "*"
+        );
+      } else {
+        window.close();
+      }
+    </script>
   </body>
 </html>
 ```
@@ -101,13 +108,13 @@ To start using this package first import it in your Dart file.
 import 'package:spotify_sdk/spotify_sdk.dart';
 ```
 
-To connect to the Spotify app you can call connectToSpotifyRemote(...) or getAccessToken(...). In both of these methods you need the client id, which you will find in the Spotify developer dashboard and the redirect url you set there for that specific client.
+To connect to the Spotify app you can call connectToSpotifyRemote(...), getAccessToken(...) or getAuthorizationCode(...). In these methods you need the client id, which you will find in the Spotify developer dashboard and the redirect url you set there for that specific client.
 
 ```dart
 await SpotifySdk.connectToSpotifyRemote(clientId: "", redirectUrl: "")
 ```
 
-If you want to use the web api as well you have to use this method to get the access token. 
+If you want to use the web api as well you have to use this method to get the access token.
 You can specify multiple scopes by separating them with a comma "," as shown below. For more information on scopes you can refer to [Spotify Authorization Scopes Guide](https://developer.spotify.com/documentation/general/guides/authorization/scopes/)
 
 ```dart
@@ -129,7 +136,7 @@ You can optionally specify "token swap" URLs to manage tokens with a backend ser
 ```dart
 SpotifySdkPlugin.tokenSwapURL = 'https://example.com/api/spotify/token';
 SpotifySdkPlugin.tokenRefreshURL = 'https://example.com/api/spotify/refresh';
-````
+```
 
 On web, this package will perform an Authorization Code (without PKCE) flow, then exchange the code and refresh the token with a backend service you run at the URLs provided.
 
@@ -139,77 +146,79 @@ Token Swap is for now "web only". While the iOS SDK also supports the "token swa
 
 #### Connecting/Authenticating
 
-| Function  | Description| Android | iOS | Web |
-|---|---|---|---|---|
-| connectToSpotifyRemote  | Connects the App to Spotify | ✔ | ✔ | ✔ |
-|  getAccessToken | Gets the Access Token that you can use to work with the [Web Api](https://developer.spotify.com/documentation/web-api/) | ✔ |  ✔ | ✔ |
-|  disconnect | Disconnects the app connection | ✔ |  ✔ | ✔ |
-|  isSpotifyAppActive | Checks if the Spotify app is active. The Spotify app will be considered active if music is playing. | ✔ |  ✔ | 🚧 |
-|  subscribeConnectionStatus | Subscribes to the current player state. | ✔ |  ✔ | 🚧 |
+| Function                  | Description                                                                                                             | Android | iOS | Web |
+| ------------------------- | ----------------------------------------------------------------------------------------------------------------------- | ------- | --- | --- |
+| connectToSpotifyRemote    | Connects the App to Spotify                                                                                             | ✔       | ✔   | ✔   |
+| getAccessToken            | Gets the Access Token that you can use to work with the [Web Api](https://developer.spotify.com/documentation/web-api/) | ✔       | ✔   | ✔   |
+| disconnect                | Disconnects the app connection                                                                                          | ✔       | ✔   | ✔   |
+| isSpotifyAppActive        | Checks if the Spotify app is active. The Spotify app will be considered active if music is playing.                     | ✔       | ✔   | 🚧  |
+| subscribeConnectionStatus | Subscribes to the current player state.                                                                                 | ✔       | ✔   | 🚧  |
 
 #### Player Api
 
-| Function  | Description | Android | iOS | Web |
-|---|---|---|---|---|
-|  getPlayerState | Gets the current player state |✔  |  ✔ | ✔ |
-|  pause | Pauses the current track  |✔ | ✔  | ✔ |
-|  play | Plays the given spotifyUri |✔ |  ✔ | ✔ |
-|  queue | Queues given spotifyUri |✔ | ✔  | ✔ |
-|  resume | Resumes the current track |✔ |  ✔ | ✔ |
-|  skipNext | Skips to next track | ✔ | ✔  | ✔ |
-|  skipPrevious | Skips to previous track |✔  |  ✔ | ✔ |
-|  skipToIndex | Skips to track at specified index in album or playlist |✔  |  ✔ | 🚧  |
-|  seekTo | Seeks the current track to the given position in milliseconds | ✔ | ✔ | 🚧 |
-|  seekToRelativePosition | Adds to the current position of the track the given milliseconds | ✔ | ❌ | 🚧 |
-|  subscribePlayerContext | Subscribes to the current player context | ✔ | ✔ | ✔ |
-|  subscribePlayerState| Subscribes to the current player state | ✔  | ✔ | ✔ |
-|  getCrossfadeState | Gets the current crossfade state | ✔  | ✔ | ❌ |
-|  toggleShuffle | Cycles through the shuffle modes | ✔ | ❌ | ❌ |
-|  setShuffle | Set the shuffle mode | ✔ |  ✔ | ✔ |
-|  toggleRepeat | Cycles through the repeat modes | ✔ |  ✔ | ❌ |
-|  setRepeatMode | Set the repeat mode | ✔ |  ✔ | ✔ |
+| Function               | Description                                                      | Android | iOS | Web |
+| ---------------------- | ---------------------------------------------------------------- | ------- | --- | --- |
+| getPlayerState         | Gets the current player state                                    | ✔       | ✔   | ✔   |
+| pause                  | Pauses the current track                                         | ✔       | ✔   | ✔   |
+| play                   | Plays the given spotifyUri                                       | ✔       | ✔   | ✔   |
+| queue                  | Queues given spotifyUri                                          | ✔       | ✔   | ✔   |
+| resume                 | Resumes the current track                                        | ✔       | ✔   | ✔   |
+| skipNext               | Skips to next track                                              | ✔       | ✔   | ✔   |
+| skipPrevious           | Skips to previous track                                          | ✔       | ✔   | ✔   |
+| skipToIndex            | Skips to track at specified index in album or playlist           | ✔       | ✔   | 🚧  |
+| seekTo                 | Seeks the current track to the given position in milliseconds    | ✔       | ✔   | 🚧  |
+| seekToRelativePosition | Adds to the current position of the track the given milliseconds | ✔       | ❌  | 🚧  |
+| subscribePlayerContext | Subscribes to the current player context                         | ✔       | ✔   | ✔   |
+| subscribePlayerState   | Subscribes to the current player state                           | ✔       | ✔   | ✔   |
+| getCrossfadeState      | Gets the current crossfade state                                 | ✔       | ✔   | ❌  |
+| toggleShuffle          | Cycles through the shuffle modes                                 | ✔       | ❌  | ❌  |
+| setShuffle             | Set the shuffle mode                                             | ✔       | ✔   | ✔   |
+| toggleRepeat           | Cycles through the repeat modes                                  | ✔       | ✔   | ❌  |
+| setRepeatMode          | Set the repeat mode                                              | ✔       | ✔   | ✔   |
 
 On Web, an automatic call to play may not work due to media activation policies which send an error: "Authentication Error: Browser prevented autoplay due to lack of interaction". This error is ignored by the SDK so you can still present a button for the user to click to `play` or `resume` to start playback. See the [Web SDK Troubleshooting guide](https://developer.spotify.com/documentation/web-playback-sdk/reference/#troubleshooting) for more details.
 
 #### Images Api
 
-| Function  | Description| Android | iOS | Web |
-|---|---|---|---|---|
-|  getImage | Get the image from the given spotifyUri | ✔ |  ✔ | 🚧 |
+| Function | Description                             | Android | iOS | Web |
+| -------- | --------------------------------------- | ------- | --- | --- |
+| getImage | Get the image from the given spotifyUri | ✔       | ✔   | 🚧  |
 
 #### User Api
 
-| Function  | Description| Android | iOS | Web |
-|---|---|---|---|---|
-|  addToLibrary | Adds the given spotifyUri to the users library | ✔ | ✔ | 🚧 |
-|  getCapabilities | Gets the current users capabilities | ✔ | ✔ | 🚧 |
-|  getLibraryState | Gets the current library state | ✔ | ✔ | 🚧 |
-|  removeFromLibrary | Removes the given spotifyUri to the users library | ✔ | ✔ | 🚧 |
-|  subscribeCapabilities |  Subscribes to the current users capabilities | ✔ | 🚧 | 🚧 |
-|  subscribeUserStatus |  Subscribes to  the current users status | ✔ | 🚧 | 🚧 |
+| Function              | Description                                       | Android | iOS | Web |
+| --------------------- | ------------------------------------------------- | ------- | --- | --- |
+| addToLibrary          | Adds the given spotifyUri to the users library    | ✔       | ✔   | 🚧  |
+| getCapabilities       | Gets the current users capabilities               | ✔       | ✔   | 🚧  |
+| getLibraryState       | Gets the current library state                    | ✔       | ✔   | 🚧  |
+| removeFromLibrary     | Removes the given spotifyUri to the users library | ✔       | ✔   | 🚧  |
+| subscribeCapabilities | Subscribes to the current users capabilities      | ✔       | 🚧  | 🚧  |
+| subscribeUserStatus   | Subscribes to the current users status            | ✔       | 🚧  | 🚧  |
 
 #### Connect Api
 
-| Function  | Description| Android | iOS | Web |
-|---|---|---|---|---|
-|  connectSwitchToLocalDevice | Switch to play music on this (local) device | 🚧 | 🚧 | 🚧 |
+| Function                   | Description                                 | Android | iOS | Web |
+| -------------------------- | ------------------------------------------- | ------- | --- | --- |
+| connectSwitchToLocalDevice | Switch to play music on this (local) device | 🚧      | 🚧  | 🚧  |
 
 #### Content Api
 
-| Function  | Description| Android | iOS | Web |
-|---|---|---|---|---|
-| getChildrenOfItem | tbd | 🚧 | 🚧 | 🚧 |
-| getRecommendedContentItems | tbd | 🚧 | 🚧 | 🚧 |
-| playContentItem | tbd | 🚧 | 🚧 | 🚧 |
+| Function                   | Description | Android | iOS | Web |
+| -------------------------- | ----------- | ------- | --- | --- |
+| getChildrenOfItem          | tbd         | 🚧      | 🚧  | 🚧  |
+| getRecommendedContentItems | tbd         | 🚧      | 🚧  | 🚧  |
+| playContentItem            | tbd         | 🚧      | 🚧  | 🚧  |
 
-## Migration 
+## Migration
 
 ### spotify-auth: moving from locally sourced aar to maven central
+
 `spotify-auth` SDK is now retrieved via Maven Central instead of being sourced from an AAR file
-* Steps to remove the locally sourced `spotify-auth` SDK:
-   * android/settings.gradle -> remove `':spotify-auth'`
-   * android/spotify-auth/build.gradle -> remove file
-   * android/spotify-auth/spotify-auth-release-x.x.x.aar -> remove file
+
+- Steps to remove the locally sourced `spotify-auth` SDK:
+  - android/settings.gradle -> remove `':spotify-auth'`
+  - android/spotify-auth/build.gradle -> remove file
+  - android/spotify-auth/spotify-auth-release-x.x.x.aar -> remove file
 
 ## Official Spotify Docs
 
