@@ -129,7 +129,8 @@ class SpotifySdk {
     }
   }
 
-  /// Returns an authorization code as a [String]
+  /// Returns an authorization code and code verifier as a [Map].
+  /// Code verifier only available on iOS, in Android it will always be null.
   ///
   /// Required parameters are the [clientId] and the [redirectUrl] to
   /// authenticate with the Spotify Api.
@@ -139,16 +140,13 @@ class SpotifySdk {
   /// See https://developer.spotify.com/documentation/general/guides/scopes/
   /// for more scopes and how to use them
   /// The token can be used to communicate with the web api
-  /// iOS specific: You can optionally pass a [spotifyUri]. A blank string will play the user's last song or pick a random one. It will be ignored on platforms other than iOS.
   /// Throws a [PlatformException] if retrieving the access token
   /// failed.
   /// Throws a [MissingPluginException] if the method is not implemented on
   /// the native platforms.
-  static Future<String> getAuthorizationCode(
+  static Future<Map<String, String?>> getAuthorizationCode(
       {required String clientId,
       required String redirectUrl,
-      String spotifyUri = '',
-      bool asRadio = false,
       String? scope}) async {
     try {
       final authorization =
@@ -156,12 +154,15 @@ class SpotifySdk {
         ParamNames.clientId: clientId,
         ParamNames.redirectUrl: redirectUrl,
         ParamNames.scope: scope,
-        ParamNames.spotifyUri: spotifyUri,
-        ParamNames.asRadio: asRadio,
       });
-      return authorization.toString();
+
+      return {
+        'code': authorization['code'] as String?,
+        'code_verifier': authorization['code_verifier'] as String?,
+        'token': authorization['token'] as String?,
+      };
     } on Exception catch (e) {
-      _logException(MethodNames.getAccessToken, e);
+      _logException(MethodNames.getAuthorizationCode, e);
       rethrow;
     }
   }
