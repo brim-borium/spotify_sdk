@@ -159,7 +159,6 @@ class SpotifySdk {
       return {
         'code': authorization['code'] as String?,
         'code_verifier': authorization['code_verifier'] as String?,
-        'token': authorization['token'] as String?,
       };
     } on Exception catch (e) {
       _logException(MethodNames.getAuthorizationCode, e);
