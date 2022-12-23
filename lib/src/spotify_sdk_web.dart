@@ -28,10 +28,6 @@ import 'models/player_state.dart';
 import 'models/track.dart';
 import 'platform_channels.dart';
 
-export 'package:spotify_sdk/enums/image_dimension_enum.dart';
-export 'package:spotify_sdk/enums/repeat_mode_enum.dart';
-export 'package:spotify_sdk/extensions/image_dimension_extension.dart';
-
 ///
 /// [SpotifySdkPlugin] is the web implementation of the Spotify SDK plugin.
 ///
@@ -605,10 +601,10 @@ class SpotifySdkPlugin {
 
   /// Creates a cryptographically random string.
   String _createRandomString(int length) {
-    const _chars =
+    const chars =
         'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~';
     return List.generate(
-        128, (i) => _chars[math.Random.secure().nextInt(_chars.length)]).join();
+        128, (i) => chars[math.Random.secure().nextInt(chars.length)]).join();
   }
 
   /// Starts track playback on the device.

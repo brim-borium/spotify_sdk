@@ -1,4 +1,4 @@
-import 'package:spotify_sdk/enums/image_dimension_enum.dart';
+import '../enums/image_dimension_enum.dart';
 
 ///Extension for formatting the ImageDimension enum to value
 ///@nodoc

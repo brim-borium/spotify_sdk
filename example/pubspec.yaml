@@ -10,14 +10,14 @@ dependencies:
     sdk: flutter
   logger: ^1.1.0
   flutter_dotenv: ^5.0.2
-  cupertino_icons: ^1.0.4
+  cupertino_icons: ^1.0.5
+  spotify_sdk:
+    path: ../
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^1.0.4
-  spotify_sdk:
-    path: ../
+  flutter_lints: ^2.0.1
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

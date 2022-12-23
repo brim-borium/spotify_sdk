@@ -1,15 +1,9 @@
 import 'dart:async';
-import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:logger/logger.dart';
-import 'package:spotify_sdk/models/connection_status.dart';
-import 'package:spotify_sdk/models/crossfade_state.dart';
-import 'package:spotify_sdk/models/image_uri.dart';
-import 'package:spotify_sdk/models/player_context.dart';
-import 'package:spotify_sdk/models/player_state.dart';
 import 'package:spotify_sdk/spotify_sdk.dart';
 
 import 'widgets/sized_icon_button.dart';
@@ -26,10 +20,10 @@ class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
 
   @override
-  _HomeState createState() => _HomeState();
+  HomeState createState() => HomeState();
 }
 
-class _HomeState extends State<Home> {
+class HomeState extends State<Home> {
   bool _loading = false;
   bool _connected = false;
   final Logger _logger = Logger(
@@ -626,13 +620,14 @@ class _HomeState extends State<Home> {
 
   Future<void> checkIfAppIsActive(BuildContext context) async {
     try {
-      var isActive = await SpotifySdk.isSpotifyAppActive;
-      final snackBar = SnackBar(
-          content: Text(isActive
-              ? 'Spotify app connection is active (currently playing)'
-              : 'Spotify app connection is not active (currently not playing)'));
+      await SpotifySdk.isSpotifyAppActive.then((isActive) {
+        final snackBar = SnackBar(
+            content: Text(isActive
+                ? 'Spotify app connection is active (currently playing)'
+                : 'Spotify app connection is not active (currently not playing)'));
 
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      });
     } on PlatformException catch (e) {
       setStatus(e.code, message: e.message);
     } on MissingPluginException {
