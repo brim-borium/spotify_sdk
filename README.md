@@ -1,7 +1,7 @@
 # spotify_sdk
 
-[![pub package](https://img.shields.io/badge/pub-2.3.0-orange)](https://pub.dev/packages/spotify_sdk)
-[![licence](https://img.shields.io/badge/licence-MIT-blue.svg)](https://github.com/IamTobi/spotify_sdk/blob/master/LICENSE)
+[![pub package](https://img.shields.io/badge/pub-2.3.0-brightgreen?style=flat)](https://pub.dev/packages/spotify_sdk)
+[![licence](https://img.shields.io/github/license/brim-borium/spotify_sdk)](https://github.com/IamTobi/spotify_sdk/blob/master/LICENSE)
 
 ![Screenshot](screenshots/flutter_spotify_sdk_screenshot_1.png)
 ![Screenshot](screenshots/flutter_spotify_sdk_screenshot_2.png)
