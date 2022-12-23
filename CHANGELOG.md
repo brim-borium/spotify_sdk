@@ -1,3 +1,7 @@
+## 3.0.0
+* BREAKING: Change file structure and export via barrel file.
+  * You only need to import `import 'package:spotify_sdk/spotify_sdk.dart';` and can remove all other imports
+
 ## 2.3.0
 * iOS, Android and Web
   * getAuthenticationToken is deprecated in favor of getAccessToken
