@@ -398,7 +398,7 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin, SPTSessionManagerDe
             return false
        }
         connectionStatusHandler?.codeResult?(["code": code, "code_verifier": codeVerifier])
-        return false
+        return true
     }
 
     private func connectToSpotify(clientId: String, redirectURL: String, accessToken: String? = nil, spotifyUri: String = "", asRadio: Bool?, additionalScopes: String? = nil) throws {
@@ -508,12 +508,10 @@ extension SwiftSpotifySdkPlugin {
 extension SwiftSpotifySdkPlugin {
     public func application(_ application: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
         if(requestedAuthCode == true) {
-            setAuthorizationCodeFromURL(application, open: url, options: options)
+            return setAuthorizationCodeFromURL(application, open: url, options: options)
         } else {
-            setAccessTokenFromURL(url: url)
+            return setAccessTokenFromURL(url: url)
         }
-        
-        return true
     }
 
 
@@ -529,21 +527,19 @@ extension SwiftSpotifySdkPlugin {
         }
         
         if(requestedAuthCode == true) {
-            setAuthorizationCodeFromURL(application, open: url)
+            return setAuthorizationCodeFromURL(application, open: url)
         } else {
-            setAccessTokenFromURL(url: url)
+            return setAccessTokenFromURL(url: url)
         }
-
-        return true
     }
 
-    private func setAccessTokenFromURL(url: URL) {
+    private func setAccessTokenFromURL(url: URL) -> Bool {
         guard let appRemote = appRemote else {
             connectionStatusHandler?.connectionResult?(FlutterError(code: "errorConnection", message: "AppRemote is null", details: nil))
             connectionStatusHandler?.tokenResult?(FlutterError(code: "errorConnection", message: "AppRemote is null", details: nil))
             connectionStatusHandler?.connectionResult = nil
             connectionStatusHandler?.tokenResult = nil
-            return
+            return false
         }
 
         guard let token = appRemote.authorizationParameters(from: url)?[SPTAppRemoteAccessTokenKey] else {
@@ -551,15 +547,21 @@ extension SwiftSpotifySdkPlugin {
             connectionStatusHandler?.tokenResult?(FlutterError(code: "authenticationTokenError", message: appRemote.authorizationParameters(from: url)?[SPTAppRemoteErrorDescriptionKey], details: nil))
             connectionStatusHandler?.connectionResult = nil
             connectionStatusHandler?.tokenResult = nil
-            return
+            return false
         }
         
         appRemote.connectionParameters.accessToken = token
         appRemote.connect()
+        
+        return true
     }
     
-    private func setAuthorizationCodeFromURL(_ application: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) {
-        mmSessionManager?.application(application, open: url, options: options)
+    private func setAuthorizationCodeFromURL(_ application: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+        if(mmSessionManager == nil){
+            return false
+        }
+            
+        return mmSessionManager!.application(application, open: url, options: options)
     }
 }
 
