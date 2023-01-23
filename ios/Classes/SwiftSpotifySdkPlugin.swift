@@ -428,7 +428,12 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin, SPTSessionManagerDe
         }
 
         if(accessToken != nil) {
-            appRemote?.connect()
+            DispatchQueue.main.async {
+                // Everything inside this block will now work on the main thread
+                // This may solve the endless connecting issue.
+                self.appRemote?.connect()
+            }
+            
         } else {
             // Note: A blank string will play the user's last song or pick a random one.
         if self.appRemote?.authorizeAndPlayURI(spotifyUri, asRadio: asRadio ?? false, additionalScopes: scopes) == false
