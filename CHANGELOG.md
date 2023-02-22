@@ -1,3 +1,8 @@
+## 2.3.1
+* Fix: null album when getting advertisement on android (#179)
+* Fix: queue endpoint for web (#167)
+* Update license to apache-2.0
+
 ## 2.3.0
 * iOS, Android and Web
   * getAuthenticationToken is deprecated in favor of getAccessToken
