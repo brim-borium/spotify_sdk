@@ -1,8 +1,9 @@
 # spotify_sdk
 
 [![pub package](https://img.shields.io/badge/pub-2.3.1-orange)](https://pub.dev/packages/spotify_sdk)
-[![build](https://github.com/brim-borium/spotify_sdk/workflows/spotify_sdk/badge.svg?branch=master)](https://github.com/brim-borium/spotify_sdk/actions?query=workflow%3Aspotify_sdk)
-[![licence](https://img.shields.io/badge/licence-Apache-2.0-blue.svg)](https://github.com/IamTobi/spotify_sdk/blob/master/LICENSE)
+[![stars](https://img.shields.io/github/stars/brim-borium/spotify_sdk?color=deeppink)](https://github.com/brim-borium/spotify_sdk)
+[![build](https://img.shields.io/github/actions/workflow/status/brim-borium/spotify_sdk/spotify_sdk.yml)](https://github.com/brim-borium/spotify_sdk/actions?query=workflow%3Aspotify_sdk)
+[![licence](https://img.shields.io/github/license/brim-borium/spotify_sdk?color=blue)](https://github.com/brim-borium/spotify_sdk/blob/main/LICENSE)
 
 ![Screenshot](screenshots/flutter_spotify_sdk_screenshot_1.png)
 ![Screenshot](screenshots/flutter_spotify_sdk_screenshot_2.png)
