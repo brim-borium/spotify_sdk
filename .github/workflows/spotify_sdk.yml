@@ -5,12 +5,14 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: subosito/flutter-action@v1.5.3
+      - uses: actions/checkout@v3
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
       - name: Install Dependencies
         run: flutter packages get
       - name: Format
-        run: flutter format --set-exit-if-changed lib test example
+        run: dart format --set-exit-if-changed lib test example
       - name: Analyze
         run: flutter analyze lib test example
       - name: Publish dry run

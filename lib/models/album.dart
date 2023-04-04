@@ -6,8 +6,8 @@ part 'album.g.dart';
 class Album {
   Album(this.name, this.uri);
 
-  final String name;
-  final String uri;
+  final String? name;
+  final String? uri;
 
   factory Album.fromJson(Map<String, dynamic> json) => _$AlbumFromJson(json);
 
