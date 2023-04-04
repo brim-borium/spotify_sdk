@@ -6,5 +6,5 @@ FRAMEWORK_NAME="SpotifyiOS.xcframework"
 rm -fR ${REPO_NAME}
 mkdir ${REPO_NAME}
 git clone https://github.com/spotify/${REPO_NAME}
-git -C ${REPO_NAME} checkout 711bd15
+git -C ${REPO_NAME} checkout f9a7d53
 find ./${REPO_NAME} -mindepth 1 -maxdepth 1 -not -name ${FRAMEWORK_NAME} -exec rm -rf '{}' \;   # Keep on only the xcframework folder
