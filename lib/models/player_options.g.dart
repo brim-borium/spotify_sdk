@@ -15,7 +15,7 @@ PlayerOptions _$PlayerOptionsFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$PlayerOptionsToJson(PlayerOptions instance) =>
     <String, dynamic>{
       'shuffle': instance.isShuffling,
-      'repeat': _$RepeatModeEnumMap[instance.repeatMode],
+      'repeat': _$RepeatModeEnumMap[instance.repeatMode]!,
     };
 
 const _$RepeatModeEnumMap = {
