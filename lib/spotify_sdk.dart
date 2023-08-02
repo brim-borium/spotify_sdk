@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:typed_data';
 
 import 'package:flutter/services.dart';
 import 'package:logger/logger.dart';
@@ -126,6 +125,43 @@ class SpotifySdk {
       return authorization.toString();
     } on Exception catch (e) {
       _logException(MethodNames.getAccessToken, e);
+      rethrow;
+    }
+  }
+
+  /// Returns an authorization code and code verifier as a [Map].
+  /// Code verifier only available on iOS, in Android it will always be null.
+  ///
+  /// Required parameters are the [clientId] and the [redirectUrl] to
+  /// authenticate with the Spotify Api.
+  /// Also you have to provide a [scope] like
+  /// "app-remote-control, user-modify-playback-state, playlist-read-private,
+  /// playlist-modify-public,user-read-currently-playing"
+  /// See https://developer.spotify.com/documentation/general/guides/scopes/
+  /// for more scopes and how to use them
+  /// The token can be used to communicate with the web api
+  /// Throws a [PlatformException] if retrieving the access token
+  /// failed.
+  /// Throws a [MissingPluginException] if the method is not implemented on
+  /// the native platforms.
+  static Future<Map<String, String?>> getAuthorizationCode(
+      {required String clientId,
+      required String redirectUrl,
+      String? scope}) async {
+    try {
+      final authorization =
+          await _channel.invokeMethod(MethodNames.getAuthorizationCode, {
+        ParamNames.clientId: clientId,
+        ParamNames.redirectUrl: redirectUrl,
+        ParamNames.scope: scope,
+      });
+
+      return {
+        'code': authorization['code'] as String?,
+        'code_verifier': authorization['code_verifier'] as String?,
+      };
+    } on Exception catch (e) {
+      _logException(MethodNames.getAuthorizationCode, e);
       rethrow;
     }
   }

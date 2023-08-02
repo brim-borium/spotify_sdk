@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -448,12 +447,14 @@ class _HomeState extends State<Home> {
   Future<String> getAccessToken() async {
     try {
       var authenticationToken = await SpotifySdk.getAccessToken(
-          clientId: dotenv.env['CLIENT_ID'].toString(),
-          redirectUrl: dotenv.env['REDIRECT_URL'].toString(),
-          scope: 'app-remote-control, '
-              'user-modify-playback-state, '
-              'playlist-read-private, '
-              'playlist-modify-public,user-read-currently-playing');
+        clientId: dotenv.env['CLIENT_ID'].toString(),
+        redirectUrl: dotenv.env['REDIRECT_URL'].toString(),
+        scope: 'app-remote-control, '
+            'user-modify-playback-state, '
+            'playlist-read-private, '
+            'playlist-modify-public, '
+            'user-read-currently-playing',
+      );
       setStatus('Got a token: $authenticationToken');
       return authenticationToken;
     } on PlatformException catch (e) {

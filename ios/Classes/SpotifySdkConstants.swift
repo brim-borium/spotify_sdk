@@ -5,6 +5,7 @@ public class SpotifySdkConstants
     //connecting
     public static let methodConnectToSpotify = "connectToSpotify"
     public static let methodGetAccessToken = "getAccessToken"
+    public static let methodGetAuthorizationCode = "getAuthorizationCode"
     public static let methodDisconnectFromSpotify = "disconnectFromSpotify"
     public static let methodCheckIfSpotifyAppIsActive = "isSpotifyAppActive"
 

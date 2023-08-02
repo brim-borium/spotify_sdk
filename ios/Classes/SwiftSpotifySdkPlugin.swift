@@ -1,20 +1,23 @@
 import Flutter
 import SpotifyiOS
 
-public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
-
+public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin, SPTSessionManagerDelegate {
     private var appRemote: SPTAppRemote?
     private var connectionStatusHandler: ConnectionStatusHandler?
     private var playerStateHandler: PlayerStateHandler?
+    private var mmSessionManager: SPTSessionManager?
+    private var requestedAuthCode: Bool?
     private var playerContextHandler: PlayerContextHandler?
     private static var playerStateChannel: FlutterEventChannel?
     private static var playerContextChannel: FlutterEventChannel?
+    
 
     public static func register(with registrar: FlutterPluginRegistrar) {
         let spotifySDKChannel = FlutterMethodChannel(name: "spotify_sdk", binaryMessenger: registrar.messenger())
         let connectionStatusChannel = FlutterEventChannel(name: "connection_status_subscription", binaryMessenger: registrar.messenger())
         playerStateChannel = FlutterEventChannel(name: "player_state_subscription", binaryMessenger: registrar.messenger())
         playerContextChannel = FlutterEventChannel(name: "player_context_subscription", binaryMessenger: registrar.messenger())
+        
 
         let instance = SwiftSpotifySdkPlugin()
         registrar.addApplicationDelegate(instance)
@@ -69,7 +72,46 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
                 result(FlutterError(code: "CouldNotFindSpotifyApp", message: "The Spotify app is not installed on the device", details: nil))
                 return
             }
-
+        case SpotifySdkConstants.methodGetAuthorizationCode:
+            guard let swiftArguments = call.arguments as? [String:Any],
+                let clientID = swiftArguments[SpotifySdkConstants.paramClientId] as? String,
+                let url = swiftArguments[SpotifySdkConstants.paramRedirectUrl] as? String else {
+                    result(FlutterError(code: "Arguments Error", message: "One or more arguments are missing", details: nil))
+                    return
+            }
+            
+          
+            let additionalScopes = swiftArguments[SpotifySdkConstants.scope] as? String? ?? ""
+            
+            connectionStatusHandler?.codeResult = result
+        
+            do {
+                guard let redirectURL = URL(string: url) else {
+                    throw SpotifyError.redirectURLInvalid
+                }
+                
+                requestedAuthCode = true
+            
+                let configuration = SPTConfiguration(clientID: clientID, redirectURL: redirectURL)
+                mmSessionManager = SPTSessionManager(configuration: configuration, delegate: self)
+                var scopes: [String]?
+                if let additionalScopes = additionalScopes {
+                    scopes = additionalScopes.components(separatedBy: ",")
+                }
+               
+                let sptScope = scopeStringsToEnums(scopes: scopes)
+                
+                self.mmSessionManager?.initiateSession(with: sptScope, options: .clientOnly)
+                
+            }
+            catch SpotifyError.redirectURLInvalid {
+                result(FlutterError(code: "errorConnecting", message: "Redirect URL is not set or has invalid format", details: nil))
+            }
+            catch {
+                result(FlutterError(code: "CouldNotFindSpotifyApp", message: "The Spotify app is not installed on the device", details: nil))
+                return
+            }
+            
         case SpotifySdkConstants.methodGetAccessToken:
             guard let swiftArguments = call.arguments as? [String:Any],
                 let clientID = swiftArguments[SpotifySdkConstants.paramClientId] as? String,
@@ -336,13 +378,35 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
             result(FlutterMethodNotImplemented)
         }
     }
+    
+    public func sessionManager(manager: SPTSessionManager, didInitiate session: SPTSession) {
+        
+    }
+    
+    public func sessionManager(manager: SPTSessionManager, didFailWith error: Error) {
+        
+    }
+    
+    public func sessionManager(manager: SPTSessionManager, didRenew session: SPTSession) {
+        
+    }
+    
+    public func sessionManager(manager: SPTSessionManager, shouldRequestAccessTokenWith code: String) -> Bool {
+        guard let pkceProvider = manager.value(forKey: "PKCEProvider"),
+              let codeVerifier:String = (pkceProvider as AnyObject).value(forKey: "codeVerifier") as? String else {
+            connectionStatusHandler?.codeResult?(FlutterError(code: "errorConnecting", message: "codeVerifier is null", details: ["code": code]))
+            return false
+       }
+        connectionStatusHandler?.codeResult?(["code": code, "code_verifier": codeVerifier])
+        return true
+    }
 
     private func connectToSpotify(clientId: String, redirectURL: String, accessToken: String? = nil, spotifyUri: String = "", asRadio: Bool?, additionalScopes: String? = nil) throws {
         func configureAppRemote(clientID: String, redirectURL: String, accessToken: String? = nil) throws {
             guard let redirectURL = URL(string: redirectURL) else {
                 throw SpotifyError.redirectURLInvalid
             }
-            let configuration = SPTConfiguration(clientID: clientID, redirectURL: redirectURL)
+            let configuration = SPTConfiguration(clientID: clientID, redirectURL: redirectURL )
             let appRemote = SPTAppRemote(configuration: configuration, logLevel: .none)
             appRemote.delegate = connectionStatusHandler
             let playerDelegate = PlayerDelegate()
@@ -363,22 +427,98 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
             scopes = additionalScopes.components(separatedBy: ",")
         }
 
-        if accessToken != nil {
-            appRemote?.connect()
+        if(accessToken != nil) {
+            DispatchQueue.main.async {
+                // Everything inside this block will now work on the main thread
+                // This may solve the endless connecting issue.
+                self.appRemote?.connect()
+            }
+            
         } else {
             // Note: A blank string will play the user's last song or pick a random one.
-            if self.appRemote?.authorizeAndPlayURI(spotifyUri, asRadio: asRadio ?? false, additionalScopes: scopes) == false {
+        if self.appRemote?.authorizeAndPlayURI(spotifyUri, asRadio: asRadio ?? false, additionalScopes: scopes) == false
+            {
                 throw SpotifyError.spotifyNotInstalledError
             }
         }
+        
+        
+        
+    }
+}
+
+extension SwiftSpotifySdkPlugin {
+    public func scopeStringsToEnums(scopes: [String]?) -> SPTScope {
+        var sptScope = SPTScope()
+        
+        if(scopes?.contains("user-top-read") == true) {
+            sptScope.insert(.userTopRead)
+        }
+        if(scopes?.contains("user-read-recently-played") == true) {
+            sptScope.insert(.userReadRecentlyPlayed)
+        }
+        if(scopes?.contains("user-read-playback-state") == true) {
+            sptScope.insert(.userReadPlaybackState)
+        }
+        if(scopes?.contains("user-modify-playback-state") == true) {
+            sptScope.insert(.userModifyPlaybackState)
+        }
+        if(scopes?.contains("user-read-currently-playing") == true) {
+            sptScope.insert(.userReadCurrentlyPlaying)
+        }
+        if(scopes?.contains("app-remote-control") == true) {
+            sptScope.insert(.appRemoteControl)
+        }
+        if(scopes?.contains("streaming") == true) {
+            sptScope.insert(.streaming)
+        }
+        if(scopes?.contains("playlist-read-private") == true) {
+            sptScope.insert(.playlistReadPrivate)
+        }
+        if(scopes?.contains("playlist-read-collaborative") == true) {
+            sptScope.insert(.playlistReadCollaborative)
+        }
+        if(scopes?.contains("playlist-modify-public") == true) {
+            sptScope.insert(.playlistModifyPublic)
+        }
+        if(scopes?.contains("playlist-modify-private") == true) {
+            sptScope.insert(.playlistModifyPrivate)
+        }
+        if(scopes?.contains("user-follow-modify") == true) {
+            sptScope.insert(.userFollowModify)
+        }
+        if(scopes?.contains("user-follow-read") == true) {
+            sptScope.insert(.userFollowRead)
+        }
+        if(scopes?.contains("user-library-read") == true) {
+            sptScope.insert(.userLibraryRead)
+        }
+        if(scopes?.contains("user-library-modify") == true) {
+            sptScope.insert(.userLibraryModify)
+        }
+        if(scopes?.contains("user-read-email") == true) {
+            sptScope.insert(.userReadEmail)
+        }
+        if(scopes?.contains("user-read-private") == true) {
+            sptScope.insert(.userReadPrivate)
+        }
+        if(scopes?.contains("ugc-image-upload") == true) {
+            sptScope.insert(.ugcImageUpload)
+        }
+        
+        return sptScope
     }
 }
 
 extension SwiftSpotifySdkPlugin {
     public func application(_ application: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
-        setAccessTokenFromURL(url: url)
-        return true
+        if(requestedAuthCode == true) {
+            return setAuthorizationCodeFromURL(application, open: url, options: options)
+        } else {
+            return setAccessTokenFromURL(url: url)
+        }
     }
+
 
     public func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([Any]) -> Void) -> Bool {
         guard userActivity.activityType == NSUserActivityTypeBrowsingWeb,
@@ -390,18 +530,21 @@ extension SwiftSpotifySdkPlugin {
                 connectionStatusHandler?.tokenResult = nil
                 return false
         }
-
-        setAccessTokenFromURL(url: url)
-        return true
+        
+        if(requestedAuthCode == true) {
+            return setAuthorizationCodeFromURL(application, open: url)
+        } else {
+            return setAccessTokenFromURL(url: url)
+        }
     }
 
-    private func setAccessTokenFromURL(url: URL) {
+    private func setAccessTokenFromURL(url: URL) -> Bool {
         guard let appRemote = appRemote else {
             connectionStatusHandler?.connectionResult?(FlutterError(code: "errorConnection", message: "AppRemote is null", details: nil))
             connectionStatusHandler?.tokenResult?(FlutterError(code: "errorConnection", message: "AppRemote is null", details: nil))
             connectionStatusHandler?.connectionResult = nil
             connectionStatusHandler?.tokenResult = nil
-            return
+            return false
         }
 
         guard let token = appRemote.authorizationParameters(from: url)?[SPTAppRemoteAccessTokenKey] else {
@@ -409,10 +552,21 @@ extension SwiftSpotifySdkPlugin {
             connectionStatusHandler?.tokenResult?(FlutterError(code: "authenticationTokenError", message: appRemote.authorizationParameters(from: url)?[SPTAppRemoteErrorDescriptionKey], details: nil))
             connectionStatusHandler?.connectionResult = nil
             connectionStatusHandler?.tokenResult = nil
-            return
+            return false
         }
-
+        
         appRemote.connectionParameters.accessToken = token
         appRemote.connect()
+        
+        return true
+    }
+    
+    private func setAuthorizationCodeFromURL(_ application: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+        if(mmSessionManager == nil){
+            return false
+        }
+            
+        return mmSessionManager!.application(application, open: url, options: options)
     }
 }
+

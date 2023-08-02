@@ -30,6 +30,9 @@ class MethodNames {
   /// method name for [getAccessToken]
   static const String getAccessToken = 'getAccessToken';
 
+  /// method name for [getAuthorizationCode]
+  static const String getAuthorizationCode = 'getAuthorizationCode';
+
   /// method name for [disconnectFromSpotify]
   static const String disconnectFromSpotify = 'disconnectFromSpotify';
 
