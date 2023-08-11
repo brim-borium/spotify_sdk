@@ -44,13 +44,25 @@ Since Android Studio 4.2 you need to manually perform these steps in order to ad
    ![image](https://user-images.githubusercontent.com/42183561/125422846-24e03bf0-ec7f-409f-b382-0ef2d0213d08.png)
    
 3.  Content of the `spotify-app-remote/build.gradle` file:
-```
+
+```groovy
 configurations.maybeCreate("default")
 artifacts.add("default", file('spotify-app-remote-release-x.x.x.aar'))
 ```
+
 4. In the android root folder find `settings.gradle` file, open it and add the following line at the top of the file:
-```
+
+```groovy
 include ':spotify-app-remote'
+```
+
+5. In the app/build.gradle add the following to the default config
+
+```groovy
+defaultConfig {
+        manifestPlaceholders = [redirectSchemeName: "spotify-sdk", redirectHostName: "auth"]
+        ...
+    }
 ```
 
 ### iOS
@@ -112,7 +124,7 @@ If you want to use the web api as well you have to use this method to get the ac
 You can specify multiple scopes by separating them with a comma "," as shown below. For more information on scopes you can refer to [Spotify Authorization Scopes Guide](https://developer.spotify.com/documentation/general/guides/authorization/scopes/)
 
 ```dart
-var accessToken = await SpotifySdk.getAccessToken(clientId: "", redirectUrl: "", scope: "app-remote-control,user-modify-playback-state,playlist-read-private");
+final accessToken = await SpotifySdk.getAccessToken(clientId: "", redirectUrl: "", scope: "app-remote-control,user-modify-playback-state,playlist-read-private");
 ```
 
 On Web you can use the token that you get from `getAccessToken(...)` and then pass it to `connectToSpotifyRemote(...)`. This will avoid having to send user through two Spotify OAuth prompts. You should not persist this token, nor supply a different token, because the refresh token is only set interally by `getAccessToken` or `connectToSpotifyRemote`.
