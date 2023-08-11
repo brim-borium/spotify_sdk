@@ -530,7 +530,7 @@ class SpotifySdkPlugin {
     try {
       var res = await _authDio.fetch(req);
       authResponse = res.data;
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       log('Spotify auth error: ${e.response?.data}');
       rethrow;
     }
@@ -578,7 +578,7 @@ class SpotifySdkPlugin {
       var d = res.data;
       d['refresh_token'] = refreshToken;
       return d;
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       log('Token refresh error: ${e.response?.data}');
       rethrow;
     }
