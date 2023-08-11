@@ -25,10 +25,10 @@ class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
 
   @override
-  _HomeState createState() => _HomeState();
+  HomeState createState() => HomeState();
 }
 
-class _HomeState extends State<Home> {
+class HomeState extends State<Home> {
   bool _loading = false;
   bool _connected = false;
   final Logger _logger = Logger(
@@ -625,13 +625,14 @@ class _HomeState extends State<Home> {
 
   Future<void> checkIfAppIsActive(BuildContext context) async {
     try {
-      var isActive = await SpotifySdk.isSpotifyAppActive;
-      final snackBar = SnackBar(
-          content: Text(isActive
-              ? 'Spotify app connection is active (currently playing)'
-              : 'Spotify app connection is not active (currently not playing)'));
+      await SpotifySdk.isSpotifyAppActive.then((isActive) {
+        final snackBar = SnackBar(
+            content: Text(isActive
+                ? 'Spotify app connection is active (currently playing)'
+                : 'Spotify app connection is not active (currently not playing)'));
 
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      });
     } on PlatformException catch (e) {
       setStatus(e.code, message: e.message);
     } on MissingPluginException {
