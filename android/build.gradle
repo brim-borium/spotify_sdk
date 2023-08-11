@@ -2,7 +2,7 @@ group 'de.minimalme.spotify_sdk'
 version '1.0-SNAPSHOT'
 
 buildscript {
-    ext.kotlin_version = '1.6.10'
+    ext.kotlin_version = '1.8.22'
     repositories {
         google()
         mavenCentral()
@@ -44,9 +44,9 @@ android {
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     // -- spotify
-    implementation "com.spotify.android:auth:1.2.6"
+    implementation "com.spotify.android:auth:2.1.0"
     implementation project(':spotify-app-remote')
-    implementation 'com.google.code.gson:gson:2.8.6'
+    implementation 'com.google.code.gson:gson:2.10'
     // -- events
     implementation "com.github.stuhlmeier:kotlin-events:v2.0"
 }
