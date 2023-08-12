@@ -17,11 +17,11 @@ class SpotifyImagesApi(spotifyAppRemote: SpotifyAppRemote?, result: MethodChanne
 
     fun getImage(imageUri: String?, dimension: Int?) {
         if (imagesApi != null && imageUri != null && dimension != null) {
-            imagesApi.getImage(ImageUri(imageUri), Dimension.values().first{it.getValue() == dimension})
+            imagesApi.getImage(ImageUri(imageUri), Dimension.values().first{it.value == dimension})
                     .setResultCallback { bitmap ->
-                        var stream: ByteArrayOutputStream? = ByteArrayOutputStream()
+                        val stream = ByteArrayOutputStream()
                         bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
-                        result.success(stream?.toByteArray())
+                        result.success(stream.toByteArray())
                     }
                     .setErrorCallback { throwable -> result.error(errorGetImage, "error when getting the image", throwable.toString()) }
         } else if (imageUri == null) {

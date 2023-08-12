@@ -95,7 +95,7 @@ class SpotifyPlayerApi(spotifyAppRemote: SpotifyAppRemote?, result: MethodChanne
     }
 
     internal fun seekTo(milliseconds: Int?) {
-        var castedMilliseconds = milliseconds?.toLong()
+        val castedMilliseconds = milliseconds?.toLong()
         if (playerApi != null && castedMilliseconds != null) {
             playerApi.seekTo(castedMilliseconds)
                     .setResultCallback { result.success(true) }
