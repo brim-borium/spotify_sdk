@@ -2,19 +2,21 @@
 
 <p align="center">
 <a href="https://pub.dev/packages/spotify_sdk"><img src="https://img.shields.io/badge/pub-2.3.1-orange" alt="build"></a>
-[![stars](https://img.shields.io/github/stars/brim-borium/spotify_sdk?color=deeppink)](https://github.com/brim-borium/spotify_sdk)
-[![build](https://img.shields.io/github/actions/workflow/status/brim-borium/spotify_sdk/spotify_sdk.yml)](https://github.com/brim-borium/spotify_sdk/actions?query=workflow%3Aspotify_sdk)
-[![licence](https://img.shields.io/github/license/brim-borium/spotify_sdk?color=blue)](https://github.com/brim-borium/spotify_sdk/blob/main/LICENSE)
+<a href="https://github.com/brim-borium/spotify_sdk"><img src="https://img.shields.io/github/stars/brim-borium/spotify_sdk?color=deeppink" alt="build"></a>
+<a href="https://github.com/brim-borium/spotify_sdk/actions?query=workflow%3Aspotify_sdk"><img src="https://img.shields.io/github/actions/workflow/status/brim-borium/spotify_sdk/spotify_sdk.yml" alt="build"></a>
+<a href="https://github.com/brim-borium/spotify_sdk/blob/main/LICENSE"><img src="https://img.shields.io/github/license/brim-borium/spotify_sdk?color=blue" alt="build"></a>
 </p>
 
 ---
-
+<p align="center">
 <a href="https://www.buymeacoffee.com/tobiasbusch" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
-
+</p>
 ---
 
-![Screenshot](screenshots/flutter_spotify_sdk_screenshot_1.png)
-![Screenshot](screenshots/flutter_spotify_sdk_screenshot_2.png)
+<p align="center">
+<img src="https://raw.githubusercontent.com/brim-borium/spotify_sdk/main/screenshots/flutter_spotify_sdk_screenshot_1.png" height="100" alt="screenshot1" />
+<img src="https://raw.githubusercontent.com/brim-borium/spotify_sdk/main/screenshots/flutter_spotify_sdk_screenshot_2.png" height="100" alt="screenshot1" />
+</p>
 
 ## Description
 
