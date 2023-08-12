@@ -8,14 +8,10 @@
 </p>
 
 ---
-<p align="center">
-<a href="https://www.buymeacoffee.com/tobiasbusch" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
-</p>
----
 
 <p align="center">
-<img src="https://raw.githubusercontent.com/brim-borium/spotify_sdk/main/screenshots/flutter_spotify_sdk_screenshot_1.png" height="100" alt="screenshot1" />
-<img src="https://raw.githubusercontent.com/brim-borium/spotify_sdk/main/screenshots/flutter_spotify_sdk_screenshot_2.png" height="100" alt="screenshot1" />
+<img src="https://raw.githubusercontent.com/brim-borium/spotify_sdk/main/screenshots/flutter_spotify_sdk_screenshot_1.png" height="400" alt="screenshot1" />
+<img src="https://raw.githubusercontent.com/brim-borium/spotify_sdk/main/screenshots/flutter_spotify_sdk_screenshot_2.png" height="400" alt="screenshot2" />
 </p>
 
 ## Description
