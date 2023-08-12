@@ -7,6 +7,7 @@
           ...
       }
   ```
+* Update android target sdk to 34
 
 ## 2.3.1
 * Fix: null album when getting advertisement on android (#179)
