@@ -1,9 +1,17 @@
 # spotify_sdk
 
+<p align="center">
 [![pub package](https://img.shields.io/badge/pub-2.3.1-orange)](https://pub.dev/packages/spotify_sdk)
 [![stars](https://img.shields.io/github/stars/brim-borium/spotify_sdk?color=deeppink)](https://github.com/brim-borium/spotify_sdk)
 [![build](https://img.shields.io/github/actions/workflow/status/brim-borium/spotify_sdk/spotify_sdk.yml)](https://github.com/brim-borium/spotify_sdk/actions?query=workflow%3Aspotify_sdk)
 [![licence](https://img.shields.io/github/license/brim-borium/spotify_sdk?color=blue)](https://github.com/brim-borium/spotify_sdk/blob/main/LICENSE)
+</p>
+
+---
+
+<script type="text/javascript" src="https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js" data-name="bmc-button" data-slug="tobiasbusch" data-color="#FFDD00" data-emoji=""  data-font="Cookie" data-text="Buy me a coffee" data-outline-color="#000000" data-font-color="#000000" data-coffee-color="#ffffff" ></script>
+
+---
 
 ![Screenshot](screenshots/flutter_spotify_sdk_screenshot_1.png)
 ![Screenshot](screenshots/flutter_spotify_sdk_screenshot_2.png)
@@ -229,3 +237,5 @@ On Web, an automatic call to play may not work due to media activation policies 
 - [Auth](https://spotify.github.io/android-sdk/auth-lib/docs/index.html)
 - [App Remote](https://spotify.github.io/android-sdk/app-remote-lib/docs/index.html)
 - [Web Playback SDK](https://developer.spotify.com/documentation/web-playback-sdk/)
+
+
