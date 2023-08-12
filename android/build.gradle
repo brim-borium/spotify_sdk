@@ -27,7 +27,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 
 android {
-    compileSdk 33
+    compileSdk 34
 
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
