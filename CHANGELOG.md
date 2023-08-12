@@ -1,3 +1,13 @@
+## 3.0.0-dev.1
+* **BREAKINg**:feat: update spotify.android:auth from 1.2.6 to 2.1.0 and spotify.app.remote from 0.7.2 to 0.8.0
+  In the app/build.gradle add the following to the default config for auth to work as described [here](https://github.com/spotify/android-auth#integrating-the-library-into-your-project)
+  ```groovy
+  defaultConfig {
+          manifestPlaceholders = [redirectSchemeName: "spotify-sdk", redirectHostName: "auth"]
+          ...
+      }
+  ```
+
 ## 2.3.1
 * Fix: null album when getting advertisement on android (#179)
 * Fix: queue endpoint for web (#167)
