@@ -1,7 +1,7 @@
 # spotify_sdk
 
 <p align="center">
-[![pub package](https://img.shields.io/badge/pub-2.3.1-orange)](https://pub.dev/packages/spotify_sdk)
+<a href="https://pub.dev/packages/spotify_sdk"><img src="https://img.shields.io/badge/pub-2.3.1-orange" alt="build"></a>
 [![stars](https://img.shields.io/github/stars/brim-borium/spotify_sdk?color=deeppink)](https://github.com/brim-borium/spotify_sdk)
 [![build](https://img.shields.io/github/actions/workflow/status/brim-borium/spotify_sdk/spotify_sdk.yml)](https://github.com/brim-borium/spotify_sdk/actions?query=workflow%3Aspotify_sdk)
 [![licence](https://img.shields.io/github/license/brim-borium/spotify_sdk?color=blue)](https://github.com/brim-borium/spotify_sdk/blob/main/LICENSE)
@@ -9,7 +9,7 @@
 
 ---
 
-<script type="text/javascript" src="https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js" data-name="bmc-button" data-slug="tobiasbusch" data-color="#FFDD00" data-emoji=""  data-font="Cookie" data-text="Buy me a coffee" data-outline-color="#000000" data-font-color="#000000" data-coffee-color="#ffffff" ></script>
+<a href="https://www.buymeacoffee.com/tobiasbusch" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
 
 ---
 
