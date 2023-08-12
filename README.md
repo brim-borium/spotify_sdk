@@ -1,4 +1,5 @@
-<h1 style: "text-align: center;">spotify_sdk</h1>
+# spotify_sdk
+
 <p align="center">
 <a href="https://pub.dev/packages/spotify_sdk"><img src="https://img.shields.io/badge/pub-2.3.1-orange" alt="build"></a>
 <a href="https://github.com/brim-borium/spotify_sdk"><img src="https://img.shields.io/github/stars/brim-borium/spotify_sdk?color=deeppink" alt="build"></a>
@@ -7,11 +8,6 @@
 </p>
 
 ---
-
-<p align="center">
-<img src="https://raw.githubusercontent.com/brim-borium/spotify_sdk/main/screenshots/flutter_spotify_sdk_screenshot_1.png" height="400" alt="screenshot1" />
-<img src="https://raw.githubusercontent.com/brim-borium/spotify_sdk/main/screenshots/flutter_spotify_sdk_screenshot_2.png" height="400" alt="screenshot2" />
-</p>
 
 ## Description
 
