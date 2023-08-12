@@ -21,3 +21,18 @@ jobs:
         run: |
               cd example
               flutter build web
+
+  pana:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: subosito/flutter-action@v2
+
+      - name: Install Dependencies
+        run: |
+          flutter packages get
+          flutter pub global activate pana
+          sudo apt-get install webp
+
+      - name: Verify Pub Score
+        run: ../../tools/verify_pub_score.sh
