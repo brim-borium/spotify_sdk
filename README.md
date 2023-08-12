@@ -1,7 +1,7 @@
 # spotify_sdk
 
 <p align="center">
-<a href="https://pub.dev/packages/spotify_sdk"><img src="https://img.shields.io/badge/pub-2.3.1-orange" alt="build"></a>
+<a href="https://pub.dev/packages/spotify_sdk"><img src="https://img.shields.io/badge/pub-3.0.0-dev.1-orange" alt="build"></a>
 <a href="https://github.com/brim-borium/spotify_sdk"><img src="https://img.shields.io/github/stars/brim-borium/spotify_sdk?color=deeppink" alt="build"></a>
 <a href="https://github.com/brim-borium/spotify_sdk/actions?query=workflow%3Aspotify_sdk"><img src="https://img.shields.io/github/actions/workflow/status/brim-borium/spotify_sdk/spotify_sdk.yml" alt="build"></a>
 <a href="https://github.com/brim-borium/spotify_sdk/blob/main/LICENSE"><img src="https://img.shields.io/github/license/brim-borium/spotify_sdk?color=blue" alt="build"></a>
