@@ -3,21 +3,26 @@ description: Demonstrates how to use the spotify_sdk plugin.
 publish_to: 'none'
 
 environment:
-  sdk: ">=2.12.0 <3.0.0"
+  sdk: ">=3.0.6 <4.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
-  logger: ^1.1.0
-  flutter_dotenv: ^5.0.2
-  cupertino_icons: ^1.0.4
+  logger: ^2.0.1
+  flutter_dotenv: ^5.1.0
+  cupertino_icons: ^1.0.5
+  spotify_sdk:
+    # When depending on this package from a real application you should use:
+    #   spotify_sdk: ^x.y.z
+    # See https://dart.dev/tools/pub/dependencies#version-constraints
+    # The example app is bundled with the plugin so we use a path dependency on
+    # the parent directory to use the current plugin's version.
+    path: ../
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^1.0.4
-  spotify_sdk:
-    path: ../
+  flutter_lints: ^2.0.2
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

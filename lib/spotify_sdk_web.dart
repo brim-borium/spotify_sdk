@@ -530,7 +530,7 @@ class SpotifySdkPlugin {
     try {
       var res = await _authDio.fetch(req);
       authResponse = res.data;
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       log('Spotify auth error: ${e.response?.data}');
       rethrow;
     }
@@ -578,7 +578,7 @@ class SpotifySdkPlugin {
       var d = res.data;
       d['refresh_token'] = refreshToken;
       return d;
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       log('Token refresh error: ${e.response?.data}');
       rethrow;
     }
@@ -605,10 +605,10 @@ class SpotifySdkPlugin {
 
   /// Creates a cryptographically random string.
   String _createRandomString(int length) {
-    const _chars =
+    const chars =
         'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~';
     return List.generate(
-        128, (i) => _chars[math.Random.secure().nextInt(_chars.length)]).join();
+        128, (i) => chars[math.Random.secure().nextInt(chars.length)]).join();
   }
 
   /// Starts track playback on the device.
