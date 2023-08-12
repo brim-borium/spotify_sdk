@@ -35,4 +35,4 @@ jobs:
           sudo apt-get install webp
 
       - name: Verify Pub Score
-        run: ../../tools/verify_pub_score.sh
+        run: tools/verify_pub_score.sh
