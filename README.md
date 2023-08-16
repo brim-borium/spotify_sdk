@@ -1,7 +1,7 @@
 # spotify_sdk
 
 <p align="center">
-<a href="https://pub.dev/packages/spotify_sdk"><img src="https://img.shields.io/badge/pub-3.0.0.dev1-orange" alt="build"></a>
+<a href="https://pub.dev/packages/spotify_sdk"><img src="https://img.shields.io/badge/pub-3.0.0.dev.2-orange" alt="build"></a>
 <a href="https://github.com/brim-borium/spotify_sdk"><img src="https://img.shields.io/github/stars/brim-borium/spotify_sdk?color=deeppink" alt="build"></a>
 <a href="https://github.com/brim-borium/spotify_sdk/actions?query=workflow%3Aspotify_sdk"><img src="https://img.shields.io/github/actions/workflow/status/brim-borium/spotify_sdk/spotify_sdk.yml" alt="build"></a>
 <a href="https://github.com/brim-borium/spotify_sdk/blob/main/LICENSE"><img src="https://img.shields.io/github/license/brim-borium/spotify_sdk?color=blue" alt="build"></a>
@@ -153,35 +153,43 @@ Token Swap is for now "web only". While the iOS SDK also supports the "token swa
 
 #### Player Api
 
-| Function  | Description | Android | iOS | Web |
-|---|---|---|---|---|
-|  getPlayerState | Gets the current player state |✔  |  ✔ | ✔ |
-|  pause | Pauses the current track  |✔ | ✔  | ✔ |
-|  play | Plays the given spotifyUri |✔ |  ✔ | ✔ |
-|  queue | Queues given spotifyUri |✔ | ✔  | ✔ |
-|  resume | Resumes the current track |✔ |  ✔ | ✔ |
-|  skipNext | Skips to next track | ✔ | ✔  | ✔ |
-|  skipPrevious | Skips to previous track |✔  |  ✔ | ✔ |
-|  skipToIndex | Skips to track at specified index in album or playlist |✔  |  ✔ | 🚧  |
-|  seekTo | Seeks the current track to the given position in milliseconds | ✔ | ✔ | 🚧 |
-|  seekToRelativePosition | Adds to the current position of the track the given milliseconds | ✔ | ❌ | 🚧 |
-|  subscribePlayerContext | Subscribes to the current player context | ✔ | ✔ | ✔ |
-|  subscribePlayerState| Subscribes to the current player state | ✔  | ✔ | ✔ |
-|  getCrossfadeState | Gets the current crossfade state | ✔  | ✔ | ❌ |
-|  toggleShuffle | Cycles through the shuffle modes | ✔ | ❌ | ❌ |
-|  setShuffle | Set the shuffle mode | ✔ |  ✔ | ✔ |
-|  toggleRepeat | Cycles through the repeat modes | ✔ |  ✔ | ❌ |
-|  setRepeatMode | Set the repeat mode | ✔ |  ✔ | ✔ |
+The playerApi as described [here](https://spotify.github.io/android-sdk/app-remote-lib/docs/com/spotify/android/appremote/api/PlayerApi.html).
+
+| Function                | Description | Android | iOS | Web |
+|-------------------------|---|--|---|---|
+| getCrossfadeState       | Gets the current crossfade state | ✔ | ✔ | ❌ |
+| getPlayerState          | Gets the current player state |✔ |  ✔ | ✔ |
+| pause                   | Pauses the current track  |✔ | ✔  | ✔ |
+| play                    | Plays the given spotifyUri |✔ |  ✔ | ✔ |
+| playWithStreamType      | Play the given Spotify uri with specific behaviour for that streamtype | 🚧 |  🚧 | 🚧 |
+| queue                   | Queues given spotifyUri |✔ | ✔  | ✔ |
+| resume                  | Resumes the current track |✔ |  ✔ | ✔ |
+| seekTo                  | Seeks the current track to the given position in milliseconds | ✔ | ✔ | 🚧 |
+| seekToRelativePosition  | Adds to the current position of the track the given milliseconds | ✔ | ❌ | 🚧 |
+| setPodcastPlaybackSpeed | Set playback speed for Podcast  | ✔ | 🚧 | 🚧 |
+| setRepeatMode           | Set the repeat mode | ✔ |  ✔ | ✔ |
+| setShuffle              | Set the shuffle mode | ✔ |  ✔ | ✔ |
+| skipNext                | Skips to next track | ✔ | ✔  | ✔ |
+| skipPrevious            | Skips to previous track |✔ |  ✔ | ✔ |
+| skipToIndex             | Skips to track at specified index in album or playlist |✔ |  ✔ | 🚧  |
+| subscribePlayerContext  | Subscribes to the current player context | ✔ | ✔ | ✔ |
+| subscribePlayerState    | Subscribes to the current player state | ✔ | ✔ | ✔ |
+| toggleRepeat            | Cycles through the repeat modes | ✔ |  ✔ | ❌ |
+| toggleShuffle           | Cycles through the shuffle modes | ✔ | ❌ | ❌ |
 
 On Web, an automatic call to play may not work due to media activation policies which send an error: "Authentication Error: Browser prevented autoplay due to lack of interaction". This error is ignored by the SDK so you can still present a button for the user to click to `play` or `resume` to start playback. See the [Web SDK Troubleshooting guide](https://developer.spotify.com/documentation/web-playback-sdk/reference/#troubleshooting) for more details.
 
 #### Images Api
+
+The imagesApi as described [here](https://spotify.github.io/android-sdk/app-remote-lib/docs/com/spotify/android/appremote/api/ImagesApi.html).
 
 | Function  | Description| Android | iOS | Web |
 |---|---|---|---|---|
 |  getImage | Get the image from the given spotifyUri | ✔ |  ✔ | 🚧 |
 
 #### User Api
+
+The userApi as described [here](https://spotify.github.io/android-sdk/app-remote-lib/docs/com/spotify/android/appremote/api/UserApi.html).
 
 | Function  | Description| Android | iOS | Web |
 |---|---|---|---|---|
@@ -194,11 +202,19 @@ On Web, an automatic call to play may not work due to media activation policies 
 
 #### Connect Api
 
-| Function  | Description| Android | iOS | Web |
-|---|---|---|---|---|
-|  connectSwitchToLocalDevice | Switch to play music on this (local) device | 🚧 | 🚧 | 🚧 |
+The connectApi as described [here](https://spotify.github.io/android-sdk/app-remote-lib/docs/com/spotify/android/appremote/api/ConnectApi.html).
+
+| Function                   | Description                                | Android | iOS | Web |
+|----------------------------|--------------------------------------------|---|---|---|
+| connectDecreaseVolume      | Decrease volume by a step size determined  | 🚧 | 🚧 | 🚧 |
+| connectIncreaseVolume      | Increase volume by a step size determined  | 🚧 | 🚧 | 🚧 |
+| connectSetVolume           | Set a volume on the currently active device | 🚧 | 🚧 | 🚧 |
+| connectSwitchToLocalDevice | Switch to play music on this (local) device | ✔ | 🚧 | 🚧 |
+| subscribeToVolumeState     | Subscribe to volume state                  | 🚧 | 🚧 | 🚧 |
 
 #### Content Api
+
+The contentApi as described [here](https://spotify.github.io/android-sdk/app-remote-lib/docs/com/spotify/android/appremote/api/ContentApi.html).
 
 | Function  | Description| Android | iOS | Web |
 |---|---|---|---|---|
