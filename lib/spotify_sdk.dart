@@ -290,6 +290,8 @@ class SpotifySdk {
   /// Sets the playbackSpeed of the Podcast
   ///
   /// The podcast playback speed can be controlled via [podcastPlaybackSpeed].
+  /// This can only be set if the podcast is played on the local device
+  /// the same device the app is running on.
   /// Throws a [PlatformException] if resuming failed
   /// Throws a [MissingPluginException] if the method is not implemented on
   /// the native platforms.
@@ -444,6 +446,20 @@ class SpotifySdk {
           {ParamNames.relativeMilliseconds: relativeMilliseconds});
     } on Exception catch (e) {
       _logException(MethodNames.seekToRelativePosition, e);
+      rethrow;
+    }
+  }
+
+  /// Switch to local device for playback
+  ///
+  /// Throws a [PlatformException] if switching to local device failed
+  /// Throws a [MissingPluginException] if the method is not implemented on
+  /// the native platforms.
+  static Future switchToLocalDevice() async {
+    try {
+      await _channel.invokeMethod(MethodNames.switchToLocalDevice);
+    } on Exception catch (e) {
+      _logException(MethodNames.switchToLocalDevice, e);
       rethrow;
     }
   }
