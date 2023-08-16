@@ -226,7 +226,7 @@ class HomeState extends State<Home> {
                     style: Theme.of(context).textTheme.titleSmall,
                   ),
                 ),
-                Text(crossfadeState?.duration?.toString() ?? 'Unknown'),
+                Text(crossfadeState?.duration.toString() ?? 'Unknown'),
                 Row(
                   children: <Widget>[
                     ElevatedButton(
