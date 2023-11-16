@@ -47,3 +47,4 @@ build/
 
 SpotifyiOS.framework
 **/doc/api/
+/ios/ios-sdk/
