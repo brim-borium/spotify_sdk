@@ -111,6 +111,13 @@ To connect to the Spotify app you can call connectToSpotifyRemote(...) or getAcc
 await SpotifySdk.connectToSpotifyRemote(clientId: "", redirectUrl: "")
 ```
 
+Subscribe to `PlayerState` or `PlayerContext` streams only after connecting successfully
+
+```dart
+SpotifySdk.subscribePlayerState();
+SpotifySdk.subscribePlayerContext();
+```
+
 If you want to use the web api as well you have to use this method to get the access token. 
 You can specify multiple scopes by separating them with a comma "," as shown below. For more information on scopes you can refer to [Spotify Authorization Scopes Guide](https://developer.spotify.com/documentation/general/guides/authorization/scopes/)
 
