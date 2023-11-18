@@ -22,11 +22,21 @@ This package is using both the spotify-app-remote sdk and spotify-auth library. 
 From the [Spotify Android SDK Quick Start](https://developer.spotify.com/documentation/android/quick-start/). You need two things:
 
 1. Register your app in the [spotify developer portal](https://developer.spotify.com/dashboard/). You also need to create a sha-1 fingerprint and add this and your package name to the app settings on the dashboard as well as a redirect url.
-2. download the current [Spotify Android SDK](https://github.com/spotify/android-sdk/releases). Here you need the spotify-app-remote-*.aar.
+2. Follow the steps below for either [Option A: Auto setup](#option-a-auto-setup) or [Option B: Manual setup](#option-b-manual-setup-instructions-for-android-studio-42).
 
-After you are all setup you need to add the SDKs *.aar file to your Android Project as Module. See the [Spotify Android SDK Quick Start](https://developer.spotify.com/documentation/android/quick-start/) for detailed information.
+#### Option A: Auto setup
 
-##### Installation instructions for Android Studio 4.2+
+Use the provided setup script to automatically download the latest version of the spotify-app-remote sdk from GitHub and setup the gradle files inside your android project. Run the following command in the root folder of your flutter project.
+
+```bash
+dart run spotify_sdk:android_setup
+```
+
+#### Option B: Manual setup, instructions for Android Studio 4.2+
+
+Download the current [Spotify Android SDK](https://github.com/spotify/android-sdk/releases). Here you need the `spotify-app-remote-\*.aar``.
+
+After you are all setup you need to add the SDKs `\*.aar`` file to your Android Project as Module. See the [Spotify Android SDK Quick Start](https://developer.spotify.com/documentation/android/quick-start/) for detailed information.
 
 Since Android Studio 4.2 you need to manually perform these steps in order to add .jar/.aar files:
 
