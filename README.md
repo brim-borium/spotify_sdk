@@ -32,6 +32,8 @@ Use the provided setup script to automatically download the latest version of th
 dart run spotify_sdk:android_setup
 ```
 
+Use the `--help` flag to see all available options.
+
 #### Option B: Manual setup, instructions for Android Studio 4.2+
 
 Download the current [Spotify Android SDK](https://github.com/spotify/android-sdk/releases). Here you need the `spotify-app-remote-\*.aar``.
