@@ -1,70 +1,53 @@
-// ignore_for_file: avoid_print
-
 import 'dart:io';
+
+import 'package:logger/logger.dart';
 
 import 'android_module_creator.dart';
 import 'github_api.dart';
+import 'precondition_checker.dart';
 
 const String scriptName = 'android_setup';
+const String moduleName = 'spotify-app-remote';
+
+final logger = Logger(filter: ScriptLogFilter(), printer: SimplePrinter());
 
 void main(List<String> args) async {
+  Logger.level = Level.info;
+
   if (args.contains('--help')) {
-    print('''
+    logger.i('''
     Usage: $scriptName [options]
     Options:
       --help: show this help message
+      --verbose: show all logs
     ''');
-// TODO: add android_cleanup script
+// TODO: --cleanup: runs the cleanup script before executing the setup script to remove all previously created changes
 // TODO: --sdk-version: the version of the Spotify Android SDK, default is the latest release on GitHub
     return;
+  } else if (args.contains('--verbose')) {
+    Logger.level = Level.trace;
+    logger.t('verbose logging enabled');
   }
 
-  if (!_preconditionsAreMet()) {
-    print('[$scriptName] can not be executed,'
+  if (!PreconditionChecker.setupConditionsMet()) {
+    logger.e('$scriptName can not be executed, '
         'please make sure to meet all requirements and try again.');
   } else {
+    logger.t('$scriptName started');
     _runSetup();
   }
-}
-
-/// Checks if all preconditions are met to execute this script.
-/// Returns true if all preconditions are met, false otherwise.
-bool _preconditionsAreMet() {
-  if (!Platform.isMacOS && !Platform.isLinux) {
-    print(
-        '[$scriptName] Warning: This script has not been tested on your platform (${Platform.operatingSystem}).');
-  }
-
-  // check if flutter is installed
-  if (!(Platform.environment['PATH']?.contains("flutter") ?? false) &&
-      Platform.environment['FLUTTER_ROOT'] == null) {
-    print('[$scriptName] Error: Flutter is not installed or not in your PATH.');
-    return false;
-  }
-
-  // check if the script is executed from inside a flutter project
-  if (!File('pubspec.yaml').existsSync()) {
-    print(
-        '[$scriptName] Error: The script must be executed from inside a flutter project.');
-    return false;
-  }
-
-  // check if the necessary android files exist
-  if (!File('android/app/build.gradle').existsSync()) {
-    print(
-        '[$scriptName] Error: The file "android/app/build.gradle" does not exist.');
-    return false;
-  }
-
-  return true;
 }
 
 /// Runs the setup process.
 void _runSetup() async {
   Uri url;
   String name;
-  (name, url) = await GitHubApi().fetchLatestAppRemoteReleaseAssetDownloadUrl();
-  File destination = File('android/libs/$name');
+  (name, url) = await GitHubApi.fetchLatestAppRemoteReleaseAssetDownloadUrl();
+
+  // create the new module directory
+  final destination = File('android/$moduleName/$name')
+    ..createSync(recursive: true);
+  logger.t('created new file ${destination.path}');
 
   // download the aar file to the new destination module
   final client = HttpClient();
@@ -72,8 +55,14 @@ void _runSetup() async {
   final response = await request.close();
   await response.pipe(destination.openWrite());
   client.close();
+  logger.t('downloaded $name to ${destination.path}');
 
   // create the new module
-  await AndroidModuleCreator('spotify-app-remote', name)
-      .createModuleDirectory();
+  await AndroidModuleCreator(moduleName, name).createModuleDirectory();
+}
+
+/// Log filter to show all logs when running the script in release mode.
+class ScriptLogFilter extends LogFilter {
+  @override
+  bool shouldLog(LogEvent event) => true;
 }
