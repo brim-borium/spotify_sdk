@@ -22,8 +22,8 @@ Future<void> main(List<String> args) async {
       --help: show this help message
       --verbose: show all logs
       --cleanup: runs the cleanup script before executing the setup script to remove all previously created changes
+      --sdk-version: the version of the Spotify Android SDK, default is the latest release on GitHub (eg. --sdk-version=0.8.0)
     ''');
-// TODO: --sdk-version: the version of the Spotify Android SDK, default is the latest release on GitHub
     return;
   }
 
@@ -42,15 +42,30 @@ Future<void> main(List<String> args) async {
         'please make sure to meet all requirements and try again.');
   } else {
     logger.i('running $scriptName script');
-    _runSetup();
+    String? sdkVersion = args.cast<String?>().firstWhere(
+        (element) => element?.startsWith('--sdk-version=') ?? false,
+        orElse: () => null);
+    _runSetup(sdkVersion: sdkVersion);
   }
 }
 
 /// Runs the setup process.
-void _runSetup() async {
+void _runSetup({String? sdkVersion}) async {
   Uri url;
   String name;
-  (name, url) = await GitHubApi.fetchLatestAppRemoteReleaseAssetDownloadUrl();
+  try {
+    if (sdkVersion == null) {
+      (name, url) =
+          await GitHubApi.fetchLatestAppRemoteReleaseAssetDownloadUrl();
+    } else {
+      (name, url) =
+          await GitHubApi.fetchVersionedAppRemoteReleaseAssetDownloadUrl(
+              sdkVersion);
+    }
+  } catch (e) {
+    logger.e('Failed to fetch the Spotify Android SDK asset, terminating.');
+    return;
+  }
 
   // create the new module directory
   final destination = File('android/$moduleName/$name')
