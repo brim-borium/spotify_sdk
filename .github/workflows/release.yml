@@ -1,0 +1,37 @@
+name: Publish to pub.dev
+on:
+  release:
+    types: [published, prereleased]
+
+jobs:
+  pana:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: subosito/flutter-action@v2
+
+      - name: Install Dependencies
+        run: |
+          flutter packages get
+          flutter pub global activate pana
+          sudo apt-get install webp
+
+      - name: Verify Pub Score
+        run: ./.github/scripts/verify_pub_score.sh
+
+  publish:
+    needs: pana
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: subosito/flutter-action@v1
+        with:
+          channel: "stable"
+
+      - name: Install Dependencies
+        run: flutter packages get
+
+      - name: Publish
+        run: flutter pub publish --dry-run
+        env:
+          PUB_CREDENTIALS: ${{ secrets.PUB_CREDENTIALS }}
