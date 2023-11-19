@@ -1,3 +1,8 @@
+## 3.0.0-dev.3
+* Fix: prevent multiple iOS initializations (#203)
+* Chore: Update libraries (#202)
+* Feat: Automatic setup of the android integration of the spotify_sdk (#204)
+
 ## 3.0.0-dev.2
 * Feat: add set podcastPlaybackSpeed and switchToLocalDevice for android (#160)
 

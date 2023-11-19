@@ -26,15 +26,25 @@ apply plugin: 'kotlin-android'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 android {
+    namespace 'de.minimalme.spotify_sdk_example'
     compileSdk 34
+    ndkVersion flutter.ndkVersion
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
 
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
     }
 
-
     defaultConfig {
-       manifestPlaceholders = [redirectSchemeName: "spotify-sdk", redirectHostName: "auth"]
+        manifestPlaceholders = [redirectSchemeName: "spotify-sdk", redirectHostName: "auth"]
         applicationId "de.minimalme.spotify_sdk_example"
         minSdkVersion 21
         targetSdkVersion 34
