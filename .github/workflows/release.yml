@@ -1,0 +1,30 @@
+name: Publish to pub.dev
+on:
+  push:
+    tags:
+      - "[0-9]+.[0-9]+.[0-9]+*" # tag-pattern on pub.dev: ''
+
+jobs:
+  pana:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: subosito/flutter-action@v2
+
+      - name: Install Dependencies
+        run: |
+          flutter packages get
+          flutter pub global activate pana
+          sudo apt-get install webp
+
+      - name: Verify Pub Score
+        run: ./.github/scripts/verify_pub_score.sh
+
+  publish:
+    needs: pana
+    permissions:
+      id-token: write # Required for authentication using OIDC
+    uses: dart-lang/setup-dart/.github/workflows/publish.yml@v1
+    with:
+      # Specify the github actions deployment environment
+      environment: pub.dev

@@ -43,7 +43,7 @@ class PreconditionChecker {
 
     if (prevRun) {
       logger.w('Warning: The setup may have already been executed. '
-          'Please run the cleanup script before running this script again.');
+          'Please run dart run spotify_sdk:android_setup --cleanup before running this script again.');
       return false;
     }
 
