@@ -1,7 +1,8 @@
 name: Publish to pub.dev
 on:
-  release:
-    types: [published, prereleased]
+  push:
+    tags:
+      - "[0-9]+.[0-9]+.[0-9]+*" # tag-pattern on pub.dev: ''
 
 jobs:
   pana:
@@ -21,17 +22,9 @@ jobs:
 
   publish:
     needs: pana
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: subosito/flutter-action@v1
-        with:
-          channel: "stable"
-
-      - name: Install Dependencies
-        run: flutter packages get
-
-      - name: Publish
-        run: flutter pub publish --dry-run
-        env:
-          PUB_CREDENTIALS: ${{ secrets.PUB_CREDENTIALS }}
+    permissions:
+      id-token: write # Required for authentication using OIDC
+    uses: dart-lang/setup-dart/.github/workflows/publish.yml@v1
+    with:
+      # Specify the github actions deployment environment
+      environment: pub.dev
