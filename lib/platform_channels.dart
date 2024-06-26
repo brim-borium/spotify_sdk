@@ -117,6 +117,9 @@ class ParamNames {
   /// param name for [redirectUrl]
   static const String redirectUrl = 'redirectUrl';
 
+  /// param name for [tokenSwapUrl]
+  static const String tokenSwapUrl = 'tokenSwapUrl';
+
   /// param name for [scope]
   static const String scope = 'scope';
 

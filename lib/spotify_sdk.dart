@@ -107,21 +107,24 @@ class SpotifySdk {
   /// failed.
   /// Throws a [MissingPluginException] if the method is not implemented on
   /// the native platforms.
-  static Future<String> getAccessToken(
-      {required String clientId,
-      required String redirectUrl,
-      String spotifyUri = '',
-      bool asRadio = false,
-      String? scope}) async {
+  static Future<String> getAccessToken({
+    required String clientId,
+    required String redirectUrl,
+    String spotifyUri = '',
+    bool asRadio = false,
+    String? scope,
+  }) async {
     try {
-      final authorization =
-          await _channel.invokeMethod(MethodNames.getAccessToken, {
-        ParamNames.clientId: clientId,
-        ParamNames.redirectUrl: redirectUrl,
-        ParamNames.scope: scope,
-        ParamNames.spotifyUri: spotifyUri,
-        ParamNames.asRadio: asRadio,
-      });
+      final authorization = await _channel.invokeMethod(
+        MethodNames.getAccessToken,
+        {
+          ParamNames.clientId: clientId,
+          ParamNames.redirectUrl: redirectUrl,
+          ParamNames.scope: scope,
+          ParamNames.spotifyUri: spotifyUri,
+          ParamNames.asRadio: asRadio,
+        },
+      );
       return authorization.toString();
     } on Exception catch (e) {
       _logException(MethodNames.getAccessToken, e);
@@ -144,42 +147,28 @@ class SpotifySdk {
   /// failed.
   /// Throws a [MissingPluginException] if the method is not implemented on
   /// the native platforms.
-  static Future<Map<String, String?>> getAuthorizationCode(
-      {required String clientId,
-      required String redirectUrl,
-      String? scope}) async {
+  static Future<Map<String, String?>> getAuthorizationCode({
+    required String clientId,
+    required String redirectUrl,
+    required String tokenSwapUrl,
+    String? scope,
+  }) async {
     try {
-      final authorization =
-          await _channel.invokeMethod(MethodNames.getAuthorizationCode, {
-        ParamNames.clientId: clientId,
-        ParamNames.redirectUrl: redirectUrl,
-        ParamNames.scope: scope,
-      });
-
-      return {
-        'code': authorization['code'] as String?,
-        'code_verifier': authorization['code_verifier'] as String?,
-      };
+      final authorization = await _channel.invokeMethod(
+        MethodNames.getAuthorizationCode,
+        {
+          ParamNames.clientId: clientId,
+          ParamNames.redirectUrl: redirectUrl,
+          ParamNames.tokenSwapUrl: tokenSwapUrl,
+          ParamNames.scope: scope,
+        },
+      );
+      return {'code': authorization['code'] as String?};
     } on Exception catch (e) {
       _logException(MethodNames.getAuthorizationCode, e);
       rethrow;
     }
   }
-
-  @Deprecated('Use [getAccessToken]')
-  static Future<String> getAuthenticationToken(
-          {required String clientId,
-          required String redirectUrl,
-          String spotifyUri = '',
-          bool asRadio = false,
-          String? scope}) =>
-      getAccessToken(
-        clientId: clientId,
-        redirectUrl: redirectUrl,
-        spotifyUri: spotifyUri,
-        asRadio: asRadio,
-        scope: scope,
-      );
 
   /// Logs the user out and disconnects the app from the users spotify account
   ///

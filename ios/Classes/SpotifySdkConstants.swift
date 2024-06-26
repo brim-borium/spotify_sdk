@@ -32,6 +32,7 @@ public class SpotifySdkConstants
     public static let methodGetImage = "getImage"
 
     public static let paramClientId = "clientId"
+    public static let paramTokenSwapURL = "tokenSwapUrl"
     public static let paramRedirectUrl = "redirectUrl"
     public static let paramSpotifyUri = "spotifyUri"
     public static let paramAsRadio = "asRadio"
@@ -45,4 +46,5 @@ public class SpotifySdkConstants
     public static let paramTrackIndex = "trackIndex"
     public static let scope = "scope"
     public static let getLibraryState = "getLibraryState"
+     
 }

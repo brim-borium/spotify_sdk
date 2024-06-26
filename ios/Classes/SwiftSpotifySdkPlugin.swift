@@ -75,6 +75,7 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin, SPTSessionManagerDe
         case SpotifySdkConstants.methodGetAuthorizationCode:
             guard let swiftArguments = call.arguments as? [String:Any],
                 let clientID = swiftArguments[SpotifySdkConstants.paramClientId] as? String,
+                let tokenSwapUrl = swiftArguments[SpotifySdkConstants.paramTokenSwapURL] as? String,
                 let url = swiftArguments[SpotifySdkConstants.paramRedirectUrl] as? String else {
                     result(FlutterError(code: "Arguments Error", message: "One or more arguments are missing", details: nil))
                     return
@@ -93,6 +94,10 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin, SPTSessionManagerDe
                 requestedAuthCode = true
             
                 let configuration = SPTConfiguration(clientID: clientID, redirectURL: redirectURL)
+                // This prevents SDK from auto verifying the authorization code
+                // and generating an access token. Instead, it redirects the
+                // authorization code to the swap url.
+                configuration.tokenSwapURL = URL(string: tokenSwapUrl)
                 mmSessionManager = SPTSessionManager(configuration: configuration, delegate: self)
                 var scopes: [String]?
                 if let additionalScopes = additionalScopes {
@@ -180,7 +185,6 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin, SPTSessionManagerDe
             })
         case SpotifySdkConstants.methodDisconnectFromSpotify:
             appRemote?.disconnect()
-//            appRemote?.connectionParameters.accessToken = nil
             result(true)
         case SpotifySdkConstants.methodPlay:
             guard let appRemote = appRemote else {
@@ -392,12 +396,7 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin, SPTSessionManagerDe
     }
     
     public func sessionManager(manager: SPTSessionManager, shouldRequestAccessTokenWith code: String) -> Bool {
-        guard let pkceProvider = manager.value(forKey: "PKCEProvider"),
-              let codeVerifier:String = (pkceProvider as AnyObject).value(forKey: "codeVerifier") as? String else {
-            connectionStatusHandler?.codeResult?(FlutterError(code: "errorConnecting", message: "codeVerifier is null", details: ["code": code]))
-            return false
-       }
-        connectionStatusHandler?.codeResult?(["code": code, "code_verifier": codeVerifier])
+        connectionStatusHandler?.codeResult?(["code": code])
         return true
     }
 
