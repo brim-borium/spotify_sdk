@@ -366,11 +366,13 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
         if accessToken != nil {
             appRemote?.connect()
         } else {
+          let appRemote = self.appRemote
+          Task {
             // Note: A blank string will play the user's last song or pick a random one.
-            if self.appRemote?.authorizeAndPlayURI(spotifyUri, asRadio: asRadio ?? false, additionalScopes: scopes) == false {
-                throw SpotifyError.spotifyNotInstalledError
+            if await appRemote?.authorizeAndPlayURI(spotifyUri, asRadio: asRadio ?? false, additionalScopes: scopes) == false {
+              throw SpotifyError.spotifyNotInstalledError
             }
-        }
+          }
     }
 }
 
