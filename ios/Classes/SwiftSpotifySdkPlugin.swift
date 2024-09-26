@@ -337,7 +337,7 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
         }
     }
 
-    private func connectToSpotify(clientId: String, redirectURL: String, accessToken: String? = nil, spotifyUri: String = "", asRadio: Bool?, additionalScopes: String? = nil) throws {
+  private func connectToSpotify(clientId: String, redirectURL: String, accessToken: String? = nil, spotifyUri: String = "", asRadio: Bool?, additionalScopes: String? = nil) throws {
         func configureAppRemote(clientID: String, redirectURL: String, accessToken: String? = nil) throws {
             guard let redirectURL = URL(string: redirectURL) else {
                 throw SpotifyError.redirectURLInvalid
@@ -366,13 +366,13 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
         if accessToken != nil {
             appRemote?.connect()
         } else {
-          let appRemote = self.appRemote
-          Task {
-            // Note: A blank string will play the user's last song or pick a random one.
-            if await appRemote?.authorizeAndPlayURI(spotifyUri, asRadio: asRadio ?? false, additionalScopes: scopes) == false {
-              throw SpotifyError.spotifyNotInstalledError
+          // Note: A blank string will play the user's last song or pick a random one.
+          self.appRemote?.authorizeAndPlayURI(spotifyUri, asRadio: asRadio ?? false, additionalScopes: scopes) { success in
+            if (!success) {
+              self.connectionStatusHandler?.connectionResult?(FlutterError(code: "spotifyNotInstalled", message: "Spotify app is not installed", details: nil))
             }
           }
+        }
     }
 }
 
