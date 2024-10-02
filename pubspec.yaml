@@ -6,6 +6,7 @@ issue_tracker: https://github.com/brim-borium/spotify_sdk/issues
 
 environment:
   sdk: ^3.5.0
+  flutter: '>=3.3.0'
 
 dependencies:
   flutter:
