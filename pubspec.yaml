@@ -5,28 +5,27 @@ homepage: https://github.com/brim-borium/spotify_sdk
 issue_tracker: https://github.com/brim-borium/spotify_sdk/issues
 
 environment:
-  sdk: '>=3.1.1 <4.0.0'
-  flutter: ">=1.17.0"
+  sdk: ^3.5.0
 
 dependencies:
   flutter:
     sdk: flutter
   flutter_web_plugins:
     sdk: flutter
-  logger: ^2.0.2+1
-  dio: ^5.3.3
-  json_annotation: ^4.8.1
+  logger: ^2.4.0
+  dio: ^5.7.0
+  json_annotation: ^4.9.0
   js: ">=0.6.7 <0.8.0"
-  crypto: ^3.0.3
-  synchronized: ^3.1.0
-  http: ^1.1.0
+  crypto: ^3.0.5
+  synchronized: ^3.3.0+3
+  http: ^1.2.2
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  build_runner: ^2.4.6
-  json_serializable: ^6.7.1
-  flutter_lints: ^3.0.1
+  build_runner: ^2.4.13
+  json_serializable: ^6.8.0
+  flutter_lints: ^5.0.0
 
 
 # For information on the generic Dart part of this file, see the
