@@ -1,3 +1,9 @@
+## 3.0.0
+* All changes from dev builds
+* chore: Bump native iOS SDK to 1.2.4 (#208)
+* chore: Update Spotify iOS SDK to v2.1.7 (#216)
+* chore: Update android versions (#219)
+
 ## 3.0.0-dev.3
 * Fix: prevent multiple iOS initializations (#203)
 * Chore: Update libraries (#202)
