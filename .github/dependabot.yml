@@ -9,7 +9,25 @@ updates:
     directory: "/" # Location of package manifests
     schedule:
       interval: "weekly"
+    groups:
+      spotify_sdk:
+        patterns:
+          - "*"
+      
   - package-ecosystem: "pub"
     directory: "/example" # Location of package manifests in the example directory
     schedule:
       interval: "weekly"
+    groups:
+      spotify_sdk_example:
+        patterns:
+          - "*"
+      
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    groups:
+      github_actions:
+        patterns:
+          - "*"
