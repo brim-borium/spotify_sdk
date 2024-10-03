@@ -9,6 +9,9 @@ updates:
     directory: "/" # Location of package manifests
     schedule:
       interval: "weekly"
+    commit-message:
+      prefix: "chore"
+      include: "scope"
     groups:
       spotify_sdk:
         patterns:
@@ -18,6 +21,9 @@ updates:
     directory: "/example" # Location of package manifests in the example directory
     schedule:
       interval: "weekly"
+    commit-message:
+      prefix: "chore"
+      include: "scope"
     groups:
       spotify_sdk_example:
         patterns:
@@ -27,6 +33,9 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    commit-message:
+      prefix: "chore"
+      include: "scope"
     groups:
       github_actions:
         patterns:
