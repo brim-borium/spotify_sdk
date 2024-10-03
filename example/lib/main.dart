@@ -39,7 +39,6 @@ class HomeState extends State<Home> {
       lineLength: 120, // width of the output
       colors: true, // Colorful log messages
       printEmojis: true, // Print an emoji for each log message
-      printTime: true,
     ),
   );
 
@@ -767,19 +766,23 @@ class HomeState extends State<Home> {
 
   Future<void> checkIfAppIsActive(BuildContext context) async {
     try {
-      await SpotifySdk.isSpotifyAppActive.then((isActive) {
-        final snackBar = SnackBar(
-            content: Text(isActive
-                ? 'Spotify app connection is active (currently playing)'
-                : 'Spotify app connection is not active (currently not playing)'));
-
-        ScaffoldMessenger.of(context).showSnackBar(snackBar);
-      });
+      final isActive = await SpotifySdk.isSpotifyAppActive;
+      _showSnackBar(isActive);
     } on PlatformException catch (e) {
       setStatus(e.code, message: e.message);
     } on MissingPluginException {
       setStatus('not implemented');
     }
+  }
+
+  void _showSnackBar(bool isActive) {
+    final snackBar = SnackBar(
+      content: Text(isActive
+          ? 'Spotify app connection is active (currently playing)'
+          : 'Spotify app connection is not active (currently not playing)'),
+    );
+
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
   void setStatus(String code, {String? message}) {
