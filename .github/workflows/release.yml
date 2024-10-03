@@ -22,9 +22,13 @@ jobs:
 
   publish:
     needs: pana
+    environment: 'pub.dev'
     permissions:
       id-token: write # Required for authentication using OIDC
-    uses: dart-lang/setup-dart/.github/workflows/publish.yml@v1
-    with:
-      # Specify the github actions deployment environment
-      environment: pub.dev
+    runs-on: ubuntu-latest
+    steps:
+    - name: 📚 Git Checkout
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+    - uses: ./.github/actions/publish_flutter_package
