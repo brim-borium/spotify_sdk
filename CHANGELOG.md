@@ -1,5 +1,5 @@
 ## 3.0.1
-* **BREAKING**: `isSpotifyAppActive` is removed from iOS (#222)
+* **BREAKING**: `isSpotifyAppActive` is removed from iOS and Android (#222)
 * chore: Bump native iOS SDK to 3.0.0 (#222)
 
 ## 3.0.0

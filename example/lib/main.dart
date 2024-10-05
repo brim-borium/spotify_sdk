@@ -118,11 +118,6 @@ class HomeState extends State<Home> {
                 onPressed: addToLibrary,
                 icon: Icons.favorite,
               ),
-              SizedIconButton(
-                width: 50,
-                onPressed: () => checkIfAppIsActive(context),
-                icon: Icons.info,
-              ),
             ],
           ),
         ],
@@ -762,27 +757,6 @@ class HomeState extends State<Home> {
     } on MissingPluginException {
       setStatus('not implemented');
     }
-  }
-
-  Future<void> checkIfAppIsActive(BuildContext context) async {
-    try {
-      final isActive = await SpotifySdk.isSpotifyAppActive;
-      _showSnackBar(isActive);
-    } on PlatformException catch (e) {
-      setStatus(e.code, message: e.message);
-    } on MissingPluginException {
-      setStatus('not implemented');
-    }
-  }
-
-  void _showSnackBar(bool isActive) {
-    final snackBar = SnackBar(
-      content: Text(isActive
-          ? 'Spotify app connection is active (currently playing)'
-          : 'Spotify app connection is not active (currently not playing)'),
-    );
-
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
   void setStatus(String code, {String? message}) {
