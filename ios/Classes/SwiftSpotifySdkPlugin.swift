@@ -125,10 +125,17 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
                 return
             }
             
-            getPlayerState(appRemote: appRemote, result: result) { playerState, _ in
-                let isActive = !playerState.isPaused && playerState.playbackSpeed > 0
+            appRemote.playerAPI?.getPlayerState({ (playerState, error) in
+                guard error == nil else {
+                    result(FlutterError(code: "PlayerAPI Error", message: error?.localizedDescription, details: nil))
+                    return
+                }
+                guard let playerState = playerState as? SPTAppRemotePlayerState else {
+                    result(FlutterError(code: "PlayerAPI Error", message: "PlayerState is empty", details: nil))
+                    return
+                }
                 result(State.playerStateDictionary(playerState).json)
-            }
+            })
         case SpotifySdkConstants.methodDisconnectFromSpotify:
             appRemote?.disconnect()
 //            appRemote?.connectionParameters.accessToken = nil
@@ -299,16 +306,6 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
                     return
             }
             appRemote.playerAPI?.setRepeatMode(repeatMode, callback: defaultPlayAPICallback)
-        case SpotifySdkConstants.methodCheckIfSpotifyAppIsActive:
-            guard let appRemote = appRemote else {
-                result(FlutterError(code: "Connection Error", message: "AppRemote is null", details: nil))
-                return
-            }
-            
-            getPlayerState(appRemote: appRemote, result: result) { playerState, _ in
-                let isActive = !playerState.isPaused && playerState.playbackSpeed > 0
-                result(isActive)
-            }
         case SpotifySdkConstants.getLibraryState:
             guard let appRemote = appRemote else {
                 result(FlutterError(code: "Connection Error", message: "AppRemote is null", details: nil))
@@ -372,21 +369,6 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
             }
           }
         }
-    }
-    
-    private func getPlayerState(appRemote: SPTAppRemote, result: @escaping FlutterResult, completion: @escaping (SPTAppRemotePlayerState, Error?) -> Void) {
-        appRemote.playerAPI?.getPlayerState({ (playerState, error) in
-            guard error == nil else {
-                result(FlutterError(code: "PlayerAPI Error", message: error?.localizedDescription, details: nil))
-                return
-            }
-            guard let playerState = playerState as? SPTAppRemotePlayerState else {
-                result(FlutterError(code: "PlayerAPI Error", message: "PlayerState is empty", details: nil))
-                return
-            }
-            
-            completion(playerState, nil)
-        })
     }
 }
 
