@@ -85,7 +85,6 @@ class SpotifySdkPlugin : MethodCallHandler, FlutterPlugin, ActivityAware, Plugin
     private val methodToggleShuffle = "toggleShuffle"
     private val methodSetShuffle = "setShuffle"
     private val methodSetRepeatMode = "setRepeatMode"
-    private val methodIsSpotifyAppActive = "isSpotifyAppActive"
 
     //userApi
     private val methodAddToLibrary = "addToLibrary"
@@ -199,7 +198,6 @@ class SpotifySdkPlugin : MethodCallHandler, FlutterPlugin, ActivityAware, Plugin
             methodSetShuffle -> spotifyPlayerApi?.setShuffle(call.argument(paramShuffle))
             methodToggleRepeat -> spotifyPlayerApi?.toggleRepeat()
             methodSetRepeatMode -> spotifyPlayerApi?.setRepeatMode(call.argument(paramRepeatMode))
-            methodIsSpotifyAppActive -> spotifyPlayerApi?.isSpotifyAppActive()
             //userApi calls
             methodAddToLibrary -> spotifyUserApi?.addToUserLibrary(call.argument(paramSpotifyUri))
             methodRemoveFromLibrary -> spotifyUserApi?.removeFromUserLibrary(call.argument(paramSpotifyUri))

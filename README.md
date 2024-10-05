@@ -166,7 +166,6 @@ Token Swap is for now "web only". While the iOS SDK also supports the "token swa
 | connectToSpotifyRemote  | Connects the App to Spotify | ✔ | ✔ | ✔ |
 |  getAccessToken | Gets the Access Token that you can use to work with the [Web Api](https://developer.spotify.com/documentation/web-api/) | ✔ |  ✔ | ✔ |
 |  disconnect | Disconnects the app connection | ✔ |  ✔ | ✔ |
-|  isSpotifyAppActive | Checks if the Spotify app is active. The Spotify app will be considered active if music is playing. | ✔ |  ✔ | 🚧 |
 |  subscribeConnectionStatus | Subscribes to the current player state. | ✔ |  ✔ | 🚧 |
 
 #### Player Api

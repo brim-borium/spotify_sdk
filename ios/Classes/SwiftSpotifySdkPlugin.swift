@@ -306,10 +306,6 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
                     return
             }
             appRemote.playerAPI?.setRepeatMode(repeatMode, callback: defaultPlayAPICallback)
-        case SpotifySdkConstants.methodCheckIfSpotifyAppIsActive:
-            SPTAppRemote.checkIfSpotifyAppIsActive { isActive in
-                result(isActive)
-            }
         case SpotifySdkConstants.getLibraryState:
             guard let appRemote = appRemote else {
                 result(FlutterError(code: "Connection Error", message: "AppRemote is null", details: nil))

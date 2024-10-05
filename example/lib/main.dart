@@ -81,49 +81,33 @@ class HomeState extends State<Home> {
 
   Widget _buildBottomBar(BuildContext context) {
     return BottomAppBar(
-      height: 125,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: <Widget>[
-              SizedIconButton(
-                width: 50,
-                icon: Icons.queue_music,
-                onPressed: queue,
-              ),
-              SizedIconButton(
-                width: 50,
-                icon: Icons.playlist_play,
-                onPressed: play,
-              ),
-              SizedIconButton(
-                width: 50,
-                icon: Icons.repeat,
-                onPressed: toggleRepeat,
-              ),
-              SizedIconButton(
-                width: 50,
-                icon: Icons.shuffle,
-                onPressed: toggleShuffle,
-              ),
-            ],
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: <Widget>[
+          SizedIconButton(
+            width: 50,
+            icon: Icons.queue_music,
+            onPressed: queue,
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              SizedIconButton(
-                width: 50,
-                onPressed: addToLibrary,
-                icon: Icons.favorite,
-              ),
-              SizedIconButton(
-                width: 50,
-                onPressed: () => checkIfAppIsActive(context),
-                icon: Icons.info,
-              ),
-            ],
+          SizedIconButton(
+            width: 50,
+            icon: Icons.playlist_play,
+            onPressed: play,
+          ),
+          SizedIconButton(
+            width: 50,
+            icon: Icons.repeat,
+            onPressed: toggleRepeat,
+          ),
+          SizedIconButton(
+            width: 50,
+            icon: Icons.shuffle,
+            onPressed: toggleShuffle,
+          ),
+          SizedIconButton(
+            width: 50,
+            onPressed: addToLibrary,
+            icon: Icons.favorite,
           ),
         ],
       ),
@@ -762,27 +746,6 @@ class HomeState extends State<Home> {
     } on MissingPluginException {
       setStatus('not implemented');
     }
-  }
-
-  Future<void> checkIfAppIsActive(BuildContext context) async {
-    try {
-      final isActive = await SpotifySdk.isSpotifyAppActive;
-      _showSnackBar(isActive);
-    } on PlatformException catch (e) {
-      setStatus(e.code, message: e.message);
-    } on MissingPluginException {
-      setStatus('not implemented');
-    }
-  }
-
-  void _showSnackBar(bool isActive) {
-    final snackBar = SnackBar(
-      content: Text(isActive
-          ? 'Spotify app connection is active (currently playing)'
-          : 'Spotify app connection is not active (currently not playing)'),
-    );
-
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
   void setStatus(String code, {String? message}) {

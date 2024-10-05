@@ -1,3 +1,7 @@
+## 3.0.1
+* **BREAKING**: `isSpotifyAppActive` is removed from iOS and Android (#222) and therefore removed from the sdk
+* chore: Bump native iOS SDK to 3.0.0 (#222)
+
 ## 3.0.0
 * All changes from dev builds
 * chore: Bump native iOS SDK to 1.2.4 (#208)
@@ -13,7 +17,7 @@
 * Feat: add set podcastPlaybackSpeed and switchToLocalDevice for android (#160)
 
 ## 3.0.0-dev.1
-* **BREAKINg**:feat: update spotify.android:auth from 1.2.6 to 2.1.0 and spotify.app.remote from 0.7.2 to 0.8.0
+* **BREAKING**:feat: update spotify.android:auth from 1.2.6 to 2.1.0 and spotify.app.remote from 0.7.2 to 0.8.0
   In the app/build.gradle add the following to the default config for auth to work as described [here](https://github.com/spotify/android-auth#integrating-the-library-into-your-project)
   ```groovy
   defaultConfig {
