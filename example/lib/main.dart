@@ -81,44 +81,33 @@ class HomeState extends State<Home> {
 
   Widget _buildBottomBar(BuildContext context) {
     return BottomAppBar(
-      height: 125,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: <Widget>[
-              SizedIconButton(
-                width: 50,
-                icon: Icons.queue_music,
-                onPressed: queue,
-              ),
-              SizedIconButton(
-                width: 50,
-                icon: Icons.playlist_play,
-                onPressed: play,
-              ),
-              SizedIconButton(
-                width: 50,
-                icon: Icons.repeat,
-                onPressed: toggleRepeat,
-              ),
-              SizedIconButton(
-                width: 50,
-                icon: Icons.shuffle,
-                onPressed: toggleShuffle,
-              ),
-            ],
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: <Widget>[
+          SizedIconButton(
+            width: 50,
+            icon: Icons.queue_music,
+            onPressed: queue,
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              SizedIconButton(
-                width: 50,
-                onPressed: addToLibrary,
-                icon: Icons.favorite,
-              ),
-            ],
+          SizedIconButton(
+            width: 50,
+            icon: Icons.playlist_play,
+            onPressed: play,
+          ),
+          SizedIconButton(
+            width: 50,
+            icon: Icons.repeat,
+            onPressed: toggleRepeat,
+          ),
+          SizedIconButton(
+            width: 50,
+            icon: Icons.shuffle,
+            onPressed: toggleShuffle,
+          ),
+          SizedIconButton(
+            width: 50,
+            onPressed: addToLibrary,
+            icon: Icons.favorite,
           ),
         ],
       ),
