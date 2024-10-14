@@ -23,27 +23,15 @@ import io.flutter.plugin.common.MethodChannel.Result
 import io.flutter.plugin.common.PluginRegistry
 import kotlinx.event.SetEvent
 import kotlinx.event.event
-import io.flutter.plugin.common.BinaryMessenger
-import io.flutter.plugin.common.PluginRegistry.Registrar
 
 class SpotifySdkPlugin : MethodCallHandler, FlutterPlugin, ActivityAware, PluginRegistry.ActivityResultListener {
-
-    companion object {
-        /** Plugin registration.  */
-        @SuppressWarnings("deprecation")
-        @JvmStatic
-        fun registerWith(registrar: Registrar) {
-            val instance = SpotifySdkPlugin()
-            instance.onAttachedToEngine(registrar.context(), registrar.messenger())
-        }
-    }
 
     // application context
     private var applicationContext : Context? = null
     private var applicationActivity : Activity? = null
 
     // method channel
-    private var methodChannel: MethodChannel? = null
+    private lateinit var methodChannel : MethodChannel
     private val channelName = "spotify_sdk"
     private val loggingTag = "spotify_sdk"
 
@@ -125,15 +113,25 @@ class SpotifySdkPlugin : MethodCallHandler, FlutterPlugin, ActivityAware, Plugin
     private var spotifyImagesApi: SpotifyImagesApi? = null
 
     override fun onAttachedToEngine(binding: FlutterPlugin.FlutterPluginBinding) {
-        onAttachedToEngine(binding.applicationContext, binding.binaryMessenger)
+        this.applicationContext = binding.applicationContext
+
+        methodChannel = MethodChannel(binding.binaryMessenger, channelName)
+        methodChannel.setMethodCallHandler(this)
+
+        playerContextChannel = EventChannel(binding.binaryMessenger, playerContextSubscription)
+        playerStateChannel = EventChannel(binding.binaryMessenger, playerStateSubscription)
+        capabilitiesChannel = EventChannel(binding.binaryMessenger, capabilitiesSubscription)
+        userStatusChannel = EventChannel(binding.binaryMessenger, userStatusSubscription)
+        connectionStatusChannel = EventChannel(binding.binaryMessenger, connectionStatusSubscription)
+
+        connectionStatusChannel?.setStreamHandler(ConnectionStatusChannel(connStatusEventChannel))
     }
 
     override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
 
         applicationContext = null
 
-        methodChannel?.setMethodCallHandler(null)
-        methodChannel = null
+        methodChannel.setMethodCallHandler(null)
 
         playerContextChannel?.setStreamHandler(null)
         playerStateChannel?.setStreamHandler(null)
@@ -208,22 +206,6 @@ class SpotifySdkPlugin : MethodCallHandler, FlutterPlugin, ActivityAware, Plugin
             // method call is not implemented yet
             else -> result.notImplemented()
         }
-    }
-
-    private fun onAttachedToEngine(applicationContext: Context, messenger: BinaryMessenger) {
-
-        this.applicationContext = applicationContext
-
-        methodChannel = MethodChannel(messenger, channelName)
-        methodChannel?.setMethodCallHandler(this)
-
-        playerContextChannel = EventChannel(messenger, playerContextSubscription)
-        playerStateChannel = EventChannel(messenger, playerStateSubscription)
-        capabilitiesChannel = EventChannel(messenger, capabilitiesSubscription)
-        userStatusChannel = EventChannel(messenger, userStatusSubscription)
-        connectionStatusChannel = EventChannel(messenger, connectionStatusSubscription)
-
-        connectionStatusChannel?.setStreamHandler(ConnectionStatusChannel(connStatusEventChannel))
     }
 
     //-- Method implementations
