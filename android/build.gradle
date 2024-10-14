@@ -31,7 +31,7 @@ android {
         namespace 'de.minimalme.spotify_sdk'
     }
 
-    compileSdk 35
+    compileSdk 34
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
