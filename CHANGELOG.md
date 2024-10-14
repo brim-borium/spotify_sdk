@@ -1,3 +1,6 @@
+## 3.0.2
+* chore: update deprications (#224)
+
 ## 3.0.1
 * **BREAKING**: `isSpotifyAppActive` is removed from iOS and Android (#222) and therefore removed from the sdk
 * chore: Bump native iOS SDK to 3.0.0 (#222)
