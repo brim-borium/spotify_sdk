@@ -10,6 +10,9 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
     private static var playerStateChannel: FlutterEventChannel?
     private static var playerContextChannel: FlutterEventChannel?
 
+    public var sessionManager: SPTSessionManager?
+    private var authCallback: FlutterResult?
+
     public static func register(with registrar: FlutterPluginRegistrar) {
         guard playerStateChannel == nil else {
             // Avoid multiple plugin registations
@@ -69,6 +72,36 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
                 result(FlutterError(code: "CouldNotFindSpotifyApp", message: "The Spotify app is not installed on the device", details: nil))
                 return
             }
+
+        case SpotifySdkConstants.methodConnectToSpotifyTokenSwap:
+            guard let args = call.arguments as? [String: Any],
+                  let clientId = args["clientId"] as? String,
+                  let redirectUri = args["redirectUri"] as? String,
+                  let scopesString = args["scopes"] as? String,
+                  let tokenSwapUrl = args["tokenSwapUrl"] as? String else {
+                result(FlutterError(code: "INVALID_ARGUMENTS",
+                                    message: "Missing required arguments",
+                                    details: nil))
+                return
+            }
+
+            if !isSpotifyInstalled() {
+                result(FlutterError(code: "SPOTIFY_NOT_INSTALLED",
+                                    message: "Spotify app is not installed",
+                                    details: nil))
+                return
+            }
+            
+            authenticateTokenSwap(
+                clientId: clientId,
+                redirectUri: redirectUri,
+                scopes: scopesString.components(separatedBy: " "),
+                tokenSwapUrl: tokenSwapUrl,
+                result: result
+            )
+
+        case SpotifySdkConstants.methodIsSpotifyInstalled:
+            result(isSpotifyInstalled())
 
         case SpotifySdkConstants.methodGetAccessToken:
             guard let swiftArguments = call.arguments as? [String:Any],
@@ -370,9 +403,107 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
           }
         }
     }
+
+    private func isSpotifyInstalled() -> Bool {
+        return UIApplication.shared.canOpenURL(URL(string: "spotify:")!)
+    }
+
+    private func authenticateTokenSwap(
+        clientId: String,
+        redirectUri: String,
+        scopes: [String],
+        tokenSwapUrl: String,
+        result: @escaping FlutterResult
+    ) {
+        guard let redirectURL = URL(string: redirectUri) else {
+            result(FlutterError(code: "INVALID_URI",
+                              message: "Invalid redirect URI",
+                              details: nil))
+            return
+        }
+        
+        // Create configuration
+        let configuration = SPTConfiguration(clientID: clientId, redirectURL: redirectURL)
+        configuration.tokenSwapURL = URL(string: tokenSwapUrl)
+        
+        // Initialize session manager if needed
+        if sessionManager == nil {
+            sessionManager = SPTSessionManager(configuration: configuration, delegate: self)
+        }
+        
+        authCallback = result
+        
+        // Convert string scopes to SPTScope
+        let spotifyScopes: SPTScope = scopes.reduce(into: []) { result, scope in
+            switch scope {
+            case "user-read-private":
+                result.insert(.userReadPrivate)
+            case "user-read-email":
+                result.insert(.userReadEmail)
+            case "playlist-read-private":
+                result.insert(.playlistReadPrivate)
+            case "playlist-modify-public":
+                result.insert(.playlistModifyPublic)
+            case "playlist-modify-private":
+                result.insert(.playlistModifyPrivate)
+            case "user-library-read":
+                result.insert(.userLibraryRead)
+            case "user-library-modify":
+                result.insert(.userLibraryModify)
+            case "streaming":
+                result.insert(.streaming)
+            case "app-remote-control":
+                result.insert(.appRemoteControl)
+            case "user-follow-read":
+                result.insert(.userFollowRead)
+            case "user-follow-modify":
+                result.insert(.userFollowModify)
+            case "user-top-read":
+                result.insert(.userTopRead)
+            case "playlist-read-collaborative":
+                result.insert(.playlistReadCollaborative)
+            case "user-read-playback-state":
+                result.insert(.userReadPlaybackState)
+            case "user-modify-playback-state":
+                result.insert(.userModifyPlaybackState)
+            case "user-read-currently-playing":
+                result.insert(.userReadCurrentlyPlaying)
+            case "user-read-recently-played":
+                result.insert(.userReadRecentlyPlayed)
+            default:
+                break
+            }
+        }
+        
+        sessionManager?.initiateSession(with: spotifyScopes, options: .clientOnly, campaign: "app")
+    }
+    
+    public func handleSpotifyCallback(url: URL) {
+        guard let components = URLComponents(url: url, resolvingAgainstBaseURL: true),
+              let code = components.queryItems?.first(where: { $0.name == "code" })?.value else {
+            authCallback?(FlutterError(code: "INVALID_CALLBACK",
+                                     message: "Missing authorization code",
+                                     details: nil))
+            return
+        }
+        authCallback?(code)
+        authCallback = nil
+    }
 }
 
-extension SwiftSpotifySdkPlugin {
+extension SwiftSpotifySdkPlugin: SPTSessionManagerDelegate {
+    public func sessionManager(manager: SPTSessionManager, didInitiate session: SPTSession) {
+        authCallback?(session.accessToken)
+        authCallback = nil
+    }
+    
+    public func sessionManager(manager: SPTSessionManager, didFailWith error: Error) {
+        authCallback?(FlutterError(code: "AUTH_FAILED",
+                                 message: error.localizedDescription,
+                                 details: nil))
+        authCallback = nil
+    }
+    
     public func application(_ application: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
         setAccessTokenFromURL(url: url)
         return true
