@@ -101,13 +101,14 @@ class SpotifySdk {
   /// Only available on iOS currently
   ///
   /// This method is used to connect to Spotify using token swap authentication.
-  /// It requires a [clientId], [redirectUrl], [scopes], and [tokenSwapUrl].
+  /// It requires a [clientId], [redirectUrl], [scopes], [tokenSwapUrl], and [tokenRefreshUrl].
   /// Throws a [PlatformException] if the connection fails.
   static Future<bool> connectToSpotifyTokenSwap({
     required String clientId,
     required String redirectUrl,
     required List<String> scopes,
     required String tokenSwapUrl,
+    required String? tokenRefreshUrl,
   }) async {
     /// Check if Spotify is installed
     if (!await isSpotifyInstalled().catchError((_) => false)) {
@@ -123,6 +124,7 @@ class SpotifySdk {
         ParamNames.redirectUrl: redirectUrl,
         ParamNames.scopes: scopes,
         ParamNames.tokenSwapUrl: tokenSwapUrl,
+        ParamNames.tokenRefreshUrl: tokenRefreshUrl,
       });
     } on Exception catch (e) {
       _logException(MethodNames.connectToSpotifyTokenSwap, e);
