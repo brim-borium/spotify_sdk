@@ -173,7 +173,7 @@ For iOS setup: Add a `CFBundleURLScheme` to your Info.plist file. This allows th
 ```dart
 SpotifySdk.connectToSpotifyTokenSwap(
   clientId: "",
-  redirectUri: "example://spotify-auth/callback",
+  redirectUri: "example://auth/spotify/callback",
   scopes: "app-remote-control,user-modify-playback-state,playlist-read-private",
   tokenSwapUrl: "https://example.com/api/spotify/swap",
   tokenRefreshUrl: "https://example.com/api/spotify/refresh",
