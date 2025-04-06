@@ -1,25 +1,24 @@
 import Flutter
 import UIKit
 
-extension FlutterAppDelegate {
-    open override func application(
+public class SpotifyAppDelegate {
+    public static func application(
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
-    ) -> Bool {
-        let result = super.application(application, didFinishLaunchingWithOptions: launchOptions)
-
+    ) {
         // Initialize Spotify-specific components
-        SwiftSpotifySdkPlugin.register(with: self.registrar(forPlugin: "SwiftSpotifySdkPlugin")!)
-
-        return result
+        if let registrar = (application.delegate as? FlutterAppDelegate)?.registrar(
+            forPlugin: "SwiftSpotifySdkPlugin")
+        {
+            SwiftSpotifySdkPlugin.register(with: registrar)
+        }
     }
 
-    open override func application(
+    public static func application(
         _ app: UIApplication,
         open url: URL,
         options: [UIApplication.OpenURLOptionsKey: Any] = [:]
     ) -> Bool {
-
         // Handle Spotify URL callback
         if let urlTypes = Bundle.main.infoDictionary?["CFBundleURLTypes"] as? [[String: Any]],
             let urlSchemes = urlTypes.first?["CFBundleURLSchemes"] as? [String],
@@ -33,6 +32,6 @@ extension FlutterAppDelegate {
             }
         }
 
-        return super.application(app, open: url, options: options)
+        return false
     }
 }
