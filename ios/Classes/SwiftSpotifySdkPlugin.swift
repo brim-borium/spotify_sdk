@@ -130,6 +130,7 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
 
         case SpotifySdkConstants.methodIsSpotifyInstalled:
             result(isSpotifyInstalled())
+            return
 
         case SpotifySdkConstants.methodGetAccessToken:
             guard let swiftArguments = call.arguments as? [String: Any],
