@@ -3,6 +3,7 @@ import SpotifyiOS
 
 public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
     private static var instance = SwiftSpotifySdkPlugin()
+    public static var shared: SwiftSpotifySdkPlugin { return instance }
     private var appRemote: SPTAppRemote?
     private var connectionStatusHandler: ConnectionStatusHandler?
     private var playerStateHandler: PlayerStateHandler?
@@ -587,7 +588,7 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
         // Create configuration
         let configuration = SPTConfiguration(clientID: clientId, redirectURL: redirectURL)
         configuration.tokenSwapURL = URL(string: tokenSwapUrl)
-        if tokenRefreshUrl !== nil {
+        if let tokenRefreshUrl = tokenRefreshUrl {
             configuration.tokenRefreshURL = URL(string: tokenRefreshUrl)
         }
 
