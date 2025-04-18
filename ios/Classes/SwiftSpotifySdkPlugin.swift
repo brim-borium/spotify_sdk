@@ -94,7 +94,7 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
                 return
             }
 
-        case SpotifySdkConstants.getSwapToken:
+        case SpotifySdkConstants.methodGetSwapToken:
             guard let args = call.arguments as? [String: Any] else {
                 result(
                     FlutterError(
