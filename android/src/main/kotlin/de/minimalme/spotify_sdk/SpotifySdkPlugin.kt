@@ -184,7 +184,7 @@ class SpotifySdkPlugin : MethodCallHandler, FlutterPlugin, ActivityAware, Plugin
             methodGetSwapToken -> getSwapToken(call.argument(paramClientId), call.argument(paramRedirectUrl), call.argument(paramScope), call.argument(paramTokenSwapUrl), result)
             methodGetAccessToken -> getAccessToken(call.argument(paramClientId), call.argument(paramRedirectUrl), call.argument(paramScope), result)
             methodDisconnectFromSpotify -> disconnectFromSpotify(result)
-            methodIsSpotifyInstalled -> isSpotifyInstalled()
+            methodIsSpotifyInstalled -> isSpotifyInstalled(result)
             //connectApi calls
             methodSwitchToLocalDevice -> spotifyConnectApi?.switchToLocalDevice()
             //playerApi calls
@@ -341,7 +341,7 @@ class SpotifySdkPlugin : MethodCallHandler, FlutterPlugin, ActivityAware, Plugin
             }
 
             // Check Spotify installation
-            if (!isSpotifyInstalled()) {
+            if (!_isSpotifyInstalled()) {
                 result.error("SPOTIFY_NOT_INSTALLED", "Spotify is not installed", null)
                 return
             }
@@ -447,9 +447,32 @@ class SpotifySdkPlugin : MethodCallHandler, FlutterPlugin, ActivityAware, Plugin
         pendingOperation = PendingOperation(this, result)
     }
 
-    private fun isSpotifyInstalled(): Boolean {
+    private fun isSpotifyInstalled(result: Result) {
+        try {
+            if (applicationActivity == null) {
+                result.error(
+                    "NO_ACTIVITY", 
+                    "Activity is not attached", 
+                    null
+                )
+                return
+            }
+            
+            val isInstalled = _isSpotifyInstalled()
+            
+            result.success(isInstalled)
+        } catch (e: Exception) {
+            result.error(
+                "SPOTIFY_CHECK_FAILED",
+                "Failed to check if Spotify is installed",
+                e.toString()
+            )
+        }
+    }
+
+    private fun _isSpotifyInstalled(): Boolean {
         return try {
-            applicationActivity?.packageManager?.getPackageInfo("com.spotify.music", 0)
+            applicationActivity!!.packageManager.getPackageInfo("com.spotify.music", 0)
             true
         } catch (e: PackageManager.NameNotFoundException) {
             false
