@@ -21,7 +21,7 @@ public class SpotifyAppDelegate {
     ) -> Bool {
         // Handle Spotify URL callback
         if let value = Bundle.main.infoDictionary?["SpotifySDKCallbackURL"] as? String {
-            if url.absoluteString == value {
+            if url.absoluteString.contains(value) {
                 SwiftSpotifySdkPlugin.shared.handleSpotifyCallback(url: url)
                 return true
             }
