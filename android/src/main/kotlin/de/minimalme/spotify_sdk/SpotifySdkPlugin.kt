@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.util.Log
 import android.content.pm.PackageManager
+import android.webkit.URLUtil
 import com.spotify.android.appremote.api.ConnectionParams
 import com.spotify.android.appremote.api.Connector.ConnectionListener
 import com.spotify.android.appremote.api.SpotifyAppRemote
@@ -34,6 +35,8 @@ class SpotifySdkPlugin : MethodCallHandler, FlutterPlugin, ActivityAware, Plugin
     private val channelName = "spotify_sdk"
     private val loggingTag = "spotify_sdk"
 
+    private val REQUEST_SWAP_CODE = 1337
+
     // event channels
     private var playerContextChannel : EventChannel? = null
     private var playerStateChannel : EventChannel? = null
@@ -52,6 +55,7 @@ class SpotifySdkPlugin : MethodCallHandler, FlutterPlugin, ActivityAware, Plugin
     private val methodGetSwapToken = "getSwapToken"
     private val methodGetAccessToken = "getAccessToken"
     private val methodDisconnectFromSpotify = "disconnectFromSpotify"
+    private val methodIsSpotifyInstalled = "isSpotifyInstalled"
 
     // connectApi
     private val methodSwitchToLocalDevice = "switchToLocalDevice"
@@ -180,6 +184,7 @@ class SpotifySdkPlugin : MethodCallHandler, FlutterPlugin, ActivityAware, Plugin
             methodGetSwapToken -> getSwapToken(call.argument(paramClientId), call.argument(paramRedirectUrl), call.argument(paramScope), call.argument(paramTokenSwapUrl), result)
             methodGetAccessToken -> getAccessToken(call.argument(paramClientId), call.argument(paramRedirectUrl), call.argument(paramScope), result)
             methodDisconnectFromSpotify -> disconnectFromSpotify(result)
+            methodIsSpotifyInstalled -> isSpotifyInstalled()
             //connectApi calls
             methodSwitchToLocalDevice -> spotifyConnectApi?.switchToLocalDevice()
             //playerApi calls
@@ -207,6 +212,7 @@ class SpotifySdkPlugin : MethodCallHandler, FlutterPlugin, ActivityAware, Plugin
             //imageApi calls
             methodGetImage -> spotifyImagesApi?.getImage(call.argument(paramImageUri), call.argument(paramImageDimension))
             // method call is not implemented yet
+
             else -> result.notImplemented()
         }
     }
@@ -308,33 +314,62 @@ class SpotifySdkPlugin : MethodCallHandler, FlutterPlugin, ActivityAware, Plugin
         }
     }
 
-    private fun getSwapToken(clientId: String?, redirectUrl: String?, scopes: String?, tokenSwapUrl: String?, result: Result) {
-        if (clientId == null || redirectUrl == null || scopes == null) {
-            result.error("INVALID_ARGUMENTS", "Missing required arguments", null)
-            return
+    /**
+     * Gets a swap token from Spotify using token swap authentication.
+     * 
+     * @param clientId The Spotify client ID
+     * @param redirectUrl The redirect URL registered in Spotify dashboard
+     * @param scopes Comma-separated list of Spotify authorization scopes
+     * @param tokenSwapUrl URL for token swap endpoint
+     * @param result Flutter result callback
+     */
+    private fun getSwapToken(
+        clientId: String?,
+        redirectUrl: String?,
+        scopes: String?,
+        tokenSwapUrl: String?,
+        result: Result
+    ) {
+        try {
+            // Validate required parameters
+            when {
+                clientId.isNullOrBlank() -> throw IllegalArgumentException("Client ID is required")
+                redirectUrl.isNullOrBlank() -> throw IllegalArgumentException("Redirect URL is required")
+                scopes.isNullOrBlank() -> throw IllegalArgumentException("Scopes are required")
+                tokenSwapUrl.isNullOrBlank() -> throw IllegalArgumentException("Token swap URL is required")
+                !URLUtil.isValidUrl(tokenSwapUrl) -> throw IllegalArgumentException("Invalid token swap URL")
+            }
+
+            // Check Spotify installation
+            if (!isSpotifyInstalled()) {
+                result.error("SPOTIFY_NOT_INSTALLED", "Spotify is not installed", null)
+                return
+            }
+
+            // Verify activity exists
+            val activity = applicationActivity ?: run {
+                result.error("NO_ACTIVITY", "Activity is not attached", null)
+                return
+            }
+
+            // Store pending operation
+            methodGetSwapToken.checkAndSetPendingOperation(result)
+
+            // Build authorization request
+            val request = AuthorizationRequest.Builder(
+                clientId,
+                AuthorizationResponse.Type.CODE,
+                redirectUrl
+            ).apply {
+                setScopes(scopes.split(",").toTypedArray())
+                setShowDialog(true)
+            }.build()
+
+            // Start authentication
+            AuthorizationClient.openLoginActivity(activity, REQUEST_SWAP_CODE, request)
+        } catch (e: Exception) {
+            result.error("AUTH_ERROR", e.message, e.toString())
         }
-
-        if (!isSpotifyInstalled()) {
-            result.error("SPOTIFY_NOT_INSTALLED", "Spotify is not installed", null)
-            return
-        }
-
-        if (applicationActivity == null) {
-            result.error("NO_ACTIVITY", "Activity is not attached", null)
-            return
-        }
-
-        val builder = AuthorizationRequest.Builder(
-            clientId,
-            AuthorizationResponse.Type.CODE,
-            redirectUrl
-        )
-
-        builder.setScopes(scopes.split(",").toTypedArray())
-        builder.setShowDialog(true)
-        val request = builder.build()
-
-        AuthorizationClient.openLoginActivity(applicationActivity, 1337, request)
     }
 
     private fun getAccessToken(clientId: String?, redirectUrl: String?, scope: String?, result: Result) {
