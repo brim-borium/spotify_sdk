@@ -181,6 +181,8 @@ SpotifySdk.getSwapToken(
 );
 ```
 
+Check the [Spotify docs](https://developer.spotify.com/documentation/ios/concepts/token-swap-and-refresh) for how to setup the tokenSwapUrl.
+
 ### Api
 
 #### Connecting/Authenticating
