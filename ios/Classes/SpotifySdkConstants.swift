@@ -4,7 +4,7 @@ public class SpotifySdkConstants
 {
     //connecting
     public static let methodConnectToSpotify = "connectToSpotify"
-    public static let methodConnectToSpotifyTokenSwap = "connectToSpotifyTokenSwap"
+    public static let methodGetSwapToken = "getSwapToken"
     public static let methodGetAccessToken = "getAccessToken"
     public static let methodDisconnectFromSpotify = "disconnectFromSpotify"
 
