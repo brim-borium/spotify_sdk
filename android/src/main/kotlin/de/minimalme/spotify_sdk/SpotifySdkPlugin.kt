@@ -181,7 +181,7 @@ class SpotifySdkPlugin : MethodCallHandler, FlutterPlugin, ActivityAware, Plugin
         when (call.method) {
             //connecting to spotify
             methodConnectToSpotify -> connectToSpotify(call.argument(paramClientId), call.argument(paramRedirectUrl), result)
-            methodGetSwapToken -> getSwapToken(call.argument(paramClientId), call.argument(paramRedirectUrl), call.argument(paramScope), call.argument(paramTokenSwapUrl), result)
+            methodGetSwapToken -> getSwapToken(call.argument(paramClientId), call.argument(paramRedirectUrl), call.argument(paramScopes), call.argument(paramTokenSwapUrl), result)
             methodGetAccessToken -> getAccessToken(call.argument(paramClientId), call.argument(paramRedirectUrl), call.argument(paramScope), result)
             methodDisconnectFromSpotify -> disconnectFromSpotify(result)
             methodIsSpotifyInstalled -> isSpotifyInstalled(result)
