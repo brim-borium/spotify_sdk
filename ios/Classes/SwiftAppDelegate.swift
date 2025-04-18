@@ -20,15 +20,10 @@ public class SpotifyAppDelegate {
         options: [UIApplication.OpenURLOptionsKey: Any] = [:]
     ) -> Bool {
         // Handle Spotify URL callback
-        if let urlTypes = Bundle.main.infoDictionary?["CFBundleURLTypes"] as? [[String: Any]],
-            let urlSchemes = urlTypes.first?["CFBundleURLSchemes"] as? [String],
-            let urlScheme = urlSchemes.first
-        {
-            if url.scheme == urlScheme && url.host == "auth" {
-                if url.path == "/spotify/callback" {
-                    SwiftSpotifySdkPlugin.shared.handleSpotifyCallback(url: url)
-                    return true
-                }
+        if let value = Bundle.main.infoDictionary?["SpotifySDKCallbackURL"] as? String {
+            if url.absoluteString == value {
+                SwiftSpotifySdkPlugin.shared.handleSpotifyCallback(url: url)
+                return true
             }
         }
 
