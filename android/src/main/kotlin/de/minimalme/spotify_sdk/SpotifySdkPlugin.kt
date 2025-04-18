@@ -308,7 +308,7 @@ class SpotifySdkPlugin : MethodCallHandler, FlutterPlugin, ActivityAware, Plugin
     }
 
     private fun getSwapToken(clientId: String?, redirectUrl: String?, scopes: String?, tokenSwapUrl: String?, result: Result) {
-        if (clientId == null || redirectUrl == null || scope == null) {
+        if (clientId == null || redirectUrl == null || scopes == null) {
             result.error("INVALID_ARGUMENTS", "Missing required arguments", null)
             return
         }
@@ -318,7 +318,7 @@ class SpotifySdkPlugin : MethodCallHandler, FlutterPlugin, ActivityAware, Plugin
             return
         }
 
-        if (activity == null) {
+        if (applicationActivity == null) {
             result.error("NO_ACTIVITY", "Activity is not attached", null)
             return
         }
@@ -326,14 +326,14 @@ class SpotifySdkPlugin : MethodCallHandler, FlutterPlugin, ActivityAware, Plugin
         val builder = AuthorizationRequest.Builder(
             clientId,
             AuthorizationResponse.Type.CODE,
-            redirectUri
+            redirectUrl
         )
 
         builder.setScopes(scopes.split(",").toTypedArray())
         builder.setShowDialog(true)
         val request = builder.build()
 
-        AuthorizationClient.openLoginActivity(activity, REQUEST_CODE, request)
+        AuthorizationClient.openLoginActivity(applicationActivity, 1337, request)
     }
 
     private fun getAccessToken(clientId: String?, redirectUrl: String?, scope: String?, result: Result) {
@@ -413,7 +413,7 @@ class SpotifySdkPlugin : MethodCallHandler, FlutterPlugin, ActivityAware, Plugin
 
     private fun isSpotifyInstalled(): Boolean {
         return try {
-            activity?.packageManager?.getPackageInfo("com.spotify.music", 0)
+            applicationActivity?.packageManager?.getPackageInfo("com.spotify.music", 0)
             true
         } catch (e: PackageManager.NameNotFoundException) {
             false
