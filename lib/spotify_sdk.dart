@@ -96,49 +96,35 @@ class SpotifySdk {
     }
   }
 
-  /// Connects to Spotify using token swap authentication
+  /// Returns a swap token for Spotify using token swap authentication
   ///
   /// Only available on iOS currently
   ///
   /// This method is used to connect to Spotify using token swap authentication.
-  /// It requires a [clientId], [redirectUrl], [scopes], [tokenSwapUrl], and [tokenRefreshUrl].
+  /// It requires a [clientId], [redirectUrl], [scopes], and a [tokenSwapUrl].
   /// Throws a [PlatformException] if the connection fails.
-  ///
-  /// Will only return a swap token if [tokenRefreshUrl] is null.
-  static Future<String?> connectToSpotifyTokenSwap({
+  static Future<String> getSwapToken({
     required String clientId,
     required String redirectUrl,
     required List<String> scopes,
     required String tokenSwapUrl,
-    required String? tokenRefreshUrl,
   }) async {
     /// Check if Spotify is installed
     if (!await isSpotifyInstalled().catchError((_) => false)) {
       var e = Exception('Spotify is not installed');
-      _logException(MethodNames.connectToSpotifyTokenSwap, e);
+      _logException(MethodNames.getSwapToken, e);
       throw e;
     }
 
     try {
-      String swapToken =
-          await _channel.invokeMethod(MethodNames.connectToSpotifyTokenSwap, {
+      return await _channel.invokeMethod(MethodNames.getSwapToken, {
         ParamNames.clientId: clientId,
         ParamNames.redirectUrl: redirectUrl,
         ParamNames.scopes: scopes.join(','),
         ParamNames.tokenSwapUrl: tokenSwapUrl,
-        ParamNames.tokenRefreshUrl: tokenRefreshUrl,
       });
-
-      // Return the swap token if there is no refresh url
-      if (tokenRefreshUrl == null) {
-        return swapToken;
-      }
-
-      /// TODO: Refresh the token if the refresh url is provided
-
-      return null;
     } on Exception catch (e) {
-      _logException(MethodNames.connectToSpotifyTokenSwap, e);
+      _logException(MethodNames.getSwapToken, e);
       rethrow;
     }
   }

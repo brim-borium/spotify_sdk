@@ -94,7 +94,7 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
                 return
             }
 
-        case SpotifySdkConstants.methodConnectToSpotifyTokenSwap:
+        case SpotifySdkConstants.getSwapToken:
             guard let args = call.arguments as? [String: Any] else {
                 result(
                     FlutterError(
@@ -116,7 +116,6 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
                         details: nil))
                 return
             }
-            let tokenRefreshUrl = args["tokenRefreshUrl"] as? String
 
             // Check if Spotify is installed
             if !isSpotifyInstalled() {
@@ -133,7 +132,7 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
                 redirectUri: redirectUrl,
                 scopes: scopesString.components(separatedBy: ","),
                 tokenSwapUrl: tokenSwapUrl,
-                tokenRefreshUrl: tokenRefreshUrl,
+                tokenRefreshUrl: nil,
                 result: result
             )
 
