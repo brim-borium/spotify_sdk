@@ -159,8 +159,6 @@ On web, this package will perform an Authorization Code (without PKCE) flow, the
 
 #### Mobile setup
 
-If you choose to handle the token swap yourself, set the `tokenRefreshUrl` parameter to `null`. This will cause the function to return the swap token directly.
-
 For iOS setup: Add a `SpotifySDKCallbackURL` to your Info.plist file. This allows the SDK to launch your app after receiving authentication from the Spotify app.
 
 ```swift
