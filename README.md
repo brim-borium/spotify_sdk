@@ -159,9 +159,13 @@ On web, this package will perform an Authorization Code (without PKCE) flow, the
 
 #### Mobile setup
 
-For iOS setup: Add a `SpotifySDKCallbackURL` to your Info.plist file. This allows the SDK to launch your app after receiving authentication from the Spotify app.
+For iOS setup: Add a `SpotifySDKCallbackURL` and `LSApplicationQueriesSchemes` to your Info.plist file. This allows the SDK to search for the Spotify app and launch your app after receiving authentication from the Spotify app.
 
 ```swift
+  <key>LSApplicationQueriesSchemes</key>
+    <array>
+      <string>spotify</string>
+  </array>
   <key>SpotifySDKCallbackURL</key>
   <string>example://auth/callback</string>
 ```
