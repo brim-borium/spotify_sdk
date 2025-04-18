@@ -27,6 +27,9 @@ class MethodNames {
   /// method name for [connectToSpotify]
   static const String connectToSpotify = 'connectToSpotify';
 
+  /// method name for [getSwapToken]
+  static const String getSwapToken = 'getSwapToken';
+
   /// method name for [getAccessToken]
   static const String getAccessToken = 'getAccessToken';
 
@@ -107,6 +110,9 @@ class MethodNames {
 
   /// method name for [switchToLocalDevice]
   static const String switchToLocalDevice = "switchToLocalDevice";
+
+  /// method name for [isSpotifyInstalled]
+  static const String isSpotifyInstalled = 'isSpotifyInstalled';
 }
 
 /// Holds the names for all parameters that are used in the package
@@ -119,6 +125,15 @@ class ParamNames {
 
   /// param name for [scope]
   static const String scope = 'scope';
+
+  /// param name for [scopes]
+  static const String scopes = 'scopes';
+
+  /// param name for [tokenSwapUrl]
+  static const String tokenSwapUrl = 'tokenSwapUrl';
+
+  /// param name for [tokenRefreshUrl]
+  static const String tokenRefreshUrl = 'tokenRefreshUrl';
 
   /// param name for [playerName]
   static const String playerName = 'playerName';

@@ -96,6 +96,37 @@ class SpotifySdk {
     }
   }
 
+  /// Returns a swap token for Spotify using token swap authentication
+  ///
+  /// This method is used to connect to Spotify using token swap authentication.
+  /// It requires a [clientId], [redirectUrl], [scopes], and a [tokenSwapUrl].
+  /// Throws a [PlatformException] if the connection fails.
+  static Future<String> getSwapToken({
+    required String clientId,
+    required String redirectUrl,
+    required List<String> scopes,
+    required String tokenSwapUrl,
+  }) async {
+    /// Check if Spotify is installed
+    if (!await isSpotifyInstalled().catchError((_) => false)) {
+      var e = Exception('Spotify is not installed');
+      _logException(MethodNames.getSwapToken, e);
+      throw e;
+    }
+
+    try {
+      return await _channel.invokeMethod(MethodNames.getSwapToken, {
+        ParamNames.clientId: clientId,
+        ParamNames.redirectUrl: redirectUrl,
+        ParamNames.scopes: scopes.join(','),
+        ParamNames.tokenSwapUrl: tokenSwapUrl,
+      });
+    } on Exception catch (e) {
+      _logException(MethodNames.getSwapToken, e);
+      rethrow;
+    }
+  }
+
   /// Returns an access token as a [String]
   ///
   /// Required parameters are the [clientId] and the [redirectUrl] to
@@ -642,6 +673,23 @@ class SpotifySdk {
           MethodNames.setRepeatMode, {ParamNames.repeatMode: repeatMode.index});
     } on Exception catch (e) {
       _logException(MethodNames.setRepeatMode, e);
+      rethrow;
+    }
+  }
+
+  /// Checks if Spotify is installed on the device
+  ///
+  /// Only available on iOS currently
+  ///
+  /// Returns true if Spotify is installed, false otherwise
+  /// Throws a [PlatformException] if checking fails
+  /// Throws a [MissingPluginException] if the method is not implemented on
+  /// the native platforms.
+  static Future<bool> isSpotifyInstalled() async {
+    try {
+      return await _channel.invokeMethod(MethodNames.isSpotifyInstalled);
+    } on Exception catch (e) {
+      _logException(MethodNames.isSpotifyInstalled, e);
       rethrow;
     }
   }
