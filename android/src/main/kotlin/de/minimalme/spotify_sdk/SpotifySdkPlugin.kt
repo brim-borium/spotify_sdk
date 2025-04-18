@@ -8,6 +8,7 @@ import com.spotify.android.appremote.api.ConnectionParams
 import com.spotify.android.appremote.api.Connector.ConnectionListener
 import com.spotify.android.appremote.api.SpotifyAppRemote
 import com.spotify.android.appremote.api.error.*
+import com.spotify.sdk.android.auth.*
 import com.spotify.sdk.android.auth.AuthorizationClient
 import com.spotify.sdk.android.auth.AuthorizationRequest
 import com.spotify.sdk.android.auth.AuthorizationResponse
@@ -50,6 +51,7 @@ class SpotifySdkPlugin : MethodCallHandler, FlutterPlugin, ActivityAware, Plugin
 
     //connecting
     private val methodConnectToSpotify = "connectToSpotify"
+    private val methodGetSwapToken = "getSwapToken"
     private val methodGetAccessToken = "getAccessToken"
     private val methodDisconnectFromSpotify = "disconnectFromSpotify"
 
@@ -86,6 +88,8 @@ class SpotifySdkPlugin : MethodCallHandler, FlutterPlugin, ActivityAware, Plugin
     private val paramClientId = "clientId"
     private val paramRedirectUrl = "redirectUrl"
     private val paramScope = "scope"
+    private val paramScopes = "scopes"
+    private val paramTokenSwapUrl = "tokenSwapUrl"
     private val paramSpotifyUri = "spotifyUri"
     private val paramImageUri = "imageUri"
     private val paramImageDimension = "imageDimension"
@@ -175,6 +179,7 @@ class SpotifySdkPlugin : MethodCallHandler, FlutterPlugin, ActivityAware, Plugin
         when (call.method) {
             //connecting to spotify
             methodConnectToSpotify -> connectToSpotify(call.argument(paramClientId), call.argument(paramRedirectUrl), result)
+            methodGetSwapToken -> getSwapToken(call.argument(paramClientId), call.argument(paramRedirectUrl), call.argument(paramScope), call.argument(paramTokenSwapUrl), result)
             methodGetAccessToken -> getAccessToken(call.argument(paramClientId), call.argument(paramRedirectUrl), call.argument(paramScope), result)
             methodDisconnectFromSpotify -> disconnectFromSpotify(result)
             //connectApi calls
@@ -305,6 +310,21 @@ class SpotifySdkPlugin : MethodCallHandler, FlutterPlugin, ActivityAware, Plugin
         }
     }
 
+    private fun getSwapToken(clientId: String?, redirectUrl: String?, scopes: String?, tokenSwapUrl: String?, result: Result) {
+        if (clientId == null || redirectUrl == null || scope == null) {
+            result.error("INVALID_ARGUMENTS", "Missing required arguments", null)
+            return
+        }
+
+        if (!isSpotifyInstalled()) {
+            result.error("SPOTIFY_NOT_INSTALLED", "Spotify is not installed", null)
+            return
+        }
+
+        _authenticateTokenSwap(clientId, redirectUrl, scopes, result)
+        
+    }
+
     private fun getAccessToken(clientId: String?, redirectUrl: String?, scope: String?, result: Result) {
         if (applicationActivity == null) {
             throw IllegalStateException("getAccessToken needs a foreground activity")
@@ -363,6 +383,9 @@ class SpotifySdkPlugin : MethodCallHandler, FlutterPlugin, ActivityAware, Plugin
             AuthorizationResponse.Type.TOKEN -> {
                 result.success(response.accessToken)
             }
+            AuthorizationResponse.Type.CODE -> {
+                result.success(response.code)
+            }
             AuthorizationResponse.Type.ERROR -> result.error(errorAuthenticationToken, "Authentication went wrong", response.error)
             else -> result.notImplemented()
         }
@@ -375,6 +398,40 @@ class SpotifySdkPlugin : MethodCallHandler, FlutterPlugin, ActivityAware, Plugin
             "Concurrent operations detected: " + pendingOperation?.method.toString() + ", " + this
         }
         pendingOperation = PendingOperation(this, result)
+    }
+
+    private fun isSpotifyInstalled(): Boolean {
+        return try {
+            activity?.packageManager?.getPackageInfo("com.spotify.music", 0)
+            true
+        } catch (e: PackageManager.NameNotFoundException) {
+            false
+        }
+    }
+
+    private fun _authenticateTokenSwap(
+        clientId: String,
+        redirectUri: String,
+        scopes: String,
+        result: MethodChannel.Result
+    ) {
+
+        if (activity == null) {
+            result.error("NO_ACTIVITY", "Activity is not attached", null)
+            return
+        }
+
+        val builder = AuthorizationRequest.Builder(
+            clientId,
+            AuthorizationResponse.Type.CODE,
+            redirectUri
+        )
+
+        builder.setScopes(scopes.split(",").toTypedArray())
+        builder.setShowDialog(true)
+        val request = builder.build()
+
+        AuthorizationClient.openLoginActivity(activity, REQUEST_CODE, request)
     }
 }
 
