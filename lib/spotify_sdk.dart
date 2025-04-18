@@ -122,7 +122,7 @@ class SpotifySdk {
           await _channel.invokeMethod(MethodNames.connectToSpotifyTokenSwap, {
         ParamNames.clientId: clientId,
         ParamNames.redirectUrl: redirectUrl,
-        ParamNames.scopes: scopes,
+        ParamNames.scopes: scopes.join(','),
         ParamNames.tokenSwapUrl: tokenSwapUrl,
         ParamNames.tokenRefreshUrl: tokenRefreshUrl,
       });
