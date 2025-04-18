@@ -159,24 +159,23 @@ On web, this package will perform an Authorization Code (without PKCE) flow, the
 
 #### Mobile setup
 
-Currently is only supported on iOS.
-
-You have two options for token swap handling:
-
-1. Let the SDK handle the token swap exchange automatically
-2. Handle the token swap process yourself outside of the SDK
-
 If you choose to handle the token swap yourself, set the `tokenRefreshUrl` parameter to `null`. This will cause the function to return the swap token directly.
 
-For iOS setup: Add a `CFBundleURLScheme` to your Info.plist file. This allows the SDK to launch your app after receiving authentication from the Spotify app. The SDK will use the first URL scheme it finds in your app's Info.plist.
+For iOS setup: Add a `SpotifySDKCallbackURL` to your Info.plist file. This allows the SDK to launch your app after receiving authentication from the Spotify app.
+
+```swift
+  <key>SpotifySDKCallbackURL</key>
+  <string>example://auth/callback</string>
+```
+
+Dart code:
 
 ```dart
-SpotifySdk.connectToSpotifyTokenSwap(
+SpotifySdk.getSwapToken(
   clientId: "",
   redirectUri: "example://auth/spotify/callback",
   scopes: "app-remote-control,user-modify-playback-state,playlist-read-private",
   tokenSwapUrl: "https://example.com/api/spotify/swap",
-  tokenRefreshUrl: "https://example.com/api/spotify/refresh",
 );
 ```
 
@@ -187,7 +186,7 @@ SpotifySdk.connectToSpotifyTokenSwap(
 | Function  | Description| Android | iOS | Web |
 |---|---|---|---|---|
 | connectToSpotifyRemote  | Connects the App to Spotify | ✔ | ✔ | ✔ |
-| connectToSpotifyTokenSwap  | Connects the App to Spotify using Token Swap | 🚧 | ✔ | ❌ |
+| getSwapToken  | Get's the Swap Token from the Spotify app | ✔ | ✔ | ❌ |
 |  getAccessToken | Gets the Access Token that you can use to work with the [Web Api](https://developer.spotify.com/documentation/web-api/) | ✔ |  ✔ | ✔ |
 |  disconnect | Disconnects the app connection | ✔ |  ✔ | ✔ |
 |  subscribeConnectionStatus | Subscribes to the current player state. | ✔ |  ✔ | 🚧 |
