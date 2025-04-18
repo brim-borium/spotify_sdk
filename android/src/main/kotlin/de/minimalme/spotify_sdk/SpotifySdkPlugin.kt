@@ -321,8 +321,22 @@ class SpotifySdkPlugin : MethodCallHandler, FlutterPlugin, ActivityAware, Plugin
             return
         }
 
-        _authenticateTokenSwap(clientId, redirectUrl, scopes, result)
-        
+        if (activity == null) {
+            result.error("NO_ACTIVITY", "Activity is not attached", null)
+            return
+        }
+
+        val builder = AuthorizationRequest.Builder(
+            clientId,
+            AuthorizationResponse.Type.CODE,
+            redirectUri
+        )
+
+        builder.setScopes(scopes.split(",").toTypedArray())
+        builder.setShowDialog(true)
+        val request = builder.build()
+
+        AuthorizationClient.openLoginActivity(activity, REQUEST_CODE, request)
     }
 
     private fun getAccessToken(clientId: String?, redirectUrl: String?, scope: String?, result: Result) {
@@ -407,31 +421,6 @@ class SpotifySdkPlugin : MethodCallHandler, FlutterPlugin, ActivityAware, Plugin
         } catch (e: PackageManager.NameNotFoundException) {
             false
         }
-    }
-
-    private fun _authenticateTokenSwap(
-        clientId: String,
-        redirectUri: String,
-        scopes: String,
-        result: MethodChannel.Result
-    ) {
-
-        if (activity == null) {
-            result.error("NO_ACTIVITY", "Activity is not attached", null)
-            return
-        }
-
-        val builder = AuthorizationRequest.Builder(
-            clientId,
-            AuthorizationResponse.Type.CODE,
-            redirectUri
-        )
-
-        builder.setScopes(scopes.split(",").toTypedArray())
-        builder.setShowDialog(true)
-        val request = builder.build()
-
-        AuthorizationClient.openLoginActivity(activity, REQUEST_CODE, request)
     }
 }
 
