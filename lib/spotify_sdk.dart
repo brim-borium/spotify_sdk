@@ -98,8 +98,6 @@ class SpotifySdk {
 
   /// Returns a swap token for Spotify using token swap authentication
   ///
-  /// Only available on iOS currently
-  ///
   /// This method is used to connect to Spotify using token swap authentication.
   /// It requires a [clientId], [redirectUrl], [scopes], and a [tokenSwapUrl].
   /// Throws a [PlatformException] if the connection fails.
