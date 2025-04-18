@@ -103,6 +103,8 @@ class SpotifySdk {
   /// This method is used to connect to Spotify using token swap authentication.
   /// It requires a [clientId], [redirectUrl], [scopes], [tokenSwapUrl], and [tokenRefreshUrl].
   /// Throws a [PlatformException] if the connection fails.
+  ///
+  /// Will only return a swap token if [tokenRefreshUrl] is null.
   static Future<String?> connectToSpotifyTokenSwap({
     required String clientId,
     required String redirectUrl,
