@@ -95,21 +95,30 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
             }
 
         case SpotifySdkConstants.methodConnectToSpotifyTokenSwap:
-            guard let args = call.arguments as? [String: Any],
-                let clientId = args["clientId"] as? String,
-                let redirectUri = args["redirectUri"] as? String,
-                let scopesString = args["scopes"] as? String,
-                let tokenSwapUrl = args["tokenSwapUrl"] as? String,
-                let tokenRefreshUrl = args["tokenRefreshUrl"] as? String?
-            else {
+            guard let args = call.arguments as? [String: Any] else {
                 result(
                     FlutterError(
-                        code: "INVALID_ARGUMENTS",
-                        message: "Missing required arguments",
-                        details: nil))
+                    code: "INVALID_ARGUMENTS",
+                    message: "Arguments are not a dictionary: \(String(describing: call.arguments))",
+                    details: nil))
                 return
             }
 
+            guard let clientId = args["clientId"] as? String,
+                let redirectUrl = args["redirectUrl"] as? String,
+                let scopesString = args["scopes"] as? String,
+                let tokenSwapUrl = args["tokenSwapUrl"] as? String
+                else {
+                result(
+                    FlutterError(
+                        code: "INVALID_ARGUMENTS",
+                        message: "Missing required arguments. Received arguments: \(args)",
+                        details: nil))
+                return
+            }
+            let tokenRefreshUrl = args["tokenRefreshUrl"] as? String
+
+            // Check if Spotify is installed
             if !isSpotifyInstalled() {
                 result(
                     FlutterError(
@@ -121,8 +130,8 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
 
             authenticateTokenSwap(
                 clientId: clientId,
-                redirectUri: redirectUri,
-                scopes: scopesString.components(separatedBy: " "),
+                redirectUri: redirectUrl,
+                scopes: scopesString.components(separatedBy: ","),
                 tokenSwapUrl: tokenSwapUrl,
                 tokenRefreshUrl: tokenRefreshUrl,
                 result: result
