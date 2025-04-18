@@ -159,6 +159,8 @@ On web, this package will perform an Authorization Code (without PKCE) flow, the
 
 #### Mobile setup
 
+* Note: Mobile implementation currently is only for getting the Swap token to exchange for a real token. It will not authenticate the SpotifySdk's other functions.
+
 For iOS setup: Add a `SpotifySDKCallbackURL` and `LSApplicationQueriesSchemes` to your Info.plist file. This allows the SDK to search for the Spotify app and launch your app after receiving authentication from the Spotify app.
 
 ```swift
