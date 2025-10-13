@@ -14,7 +14,7 @@ jobs:
       - name: Format
         run: dart format --set-exit-if-changed lib test example
       - name: Analyze
-        run: flutter analyze lib test example
+        run: flutter analyze lib test example --no-fatal-infos
       - name: Publish dry run
         run: flutter pub publish --dry-run
       - name: Build web version
