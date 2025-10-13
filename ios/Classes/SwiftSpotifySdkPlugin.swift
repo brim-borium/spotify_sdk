@@ -364,9 +364,12 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
         } else {
           // Note: A blank string will play the user's last song or pick a random one.
           self.appRemote?.authorizeAndPlayURI(spotifyUri, asRadio: asRadio ?? false, additionalScopes: scopes) { success in
-            if (!success) {
-              self.connectionStatusHandler?.connectionResult?(FlutterError(code: "spotifyNotInstalled", message: "Spotify app is not installed", details: nil))
-            }
+              if (!success) {
+                  self.connectionStatusHandler?.connectionResult?(FlutterError(code: "spotifyNotInstalled", message: "Spotify app is not installed", details: nil))
+                  self.connectionStatusHandler?.tokenResult?(FlutterError(code: "spotifyNotInstalled", message: "Spotify app is not installed", details: nil))
+                  self.connectionStatusHandler?.connectionResult = nil
+                  self.connectionStatusHandler?.tokenResult = nil
+              }
           }
         }
     }
