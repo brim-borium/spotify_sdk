@@ -51,7 +51,7 @@ class MethodNames {
   /// method name for [resume]
   static const String resume = 'resume';
 
-  /// method name for [podcastPlaybackSpeed]
+  /// method name for [setPodcastPlaybackSpeed]
   static const String setPodcastPlaybackSpeed = 'setPodcastPlaybackSpeed';
 
   /// method name for [skipToIndex]
