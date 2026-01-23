@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io' show Platform;
 
 import 'package:flutter/services.dart';
 import 'package:logger/logger.dart';
@@ -18,6 +19,58 @@ import 'models/player_context.dart';
 import 'models/player_state.dart';
 import 'models/user_status.dart';
 import 'platform_channels.dart';
+
+/// Result of Spotify authorization with PKCE
+///
+/// Platform differences:
+/// - **Android**: Returns [authorizationCode] and [codeVerifier].
+///   Send these to your backend to exchange for tokens.
+/// - **iOS**: Returns [accessToken], [refreshToken], and [expiresAt].
+///   iOS SDK handles PKCE internally. Send [refreshToken] to your backend for storage.
+class SpotifyAuthorizationResult {
+  /// Authorization code (Android only)
+  /// Exchange this with your backend along with [codeVerifier]
+  final String? authorizationCode;
+
+  /// PKCE code verifier (Android only)
+  /// Required for backend token exchange
+  final String? codeVerifier;
+
+  /// Access token (iOS only)
+  /// Use this to connect to Spotify Remote
+  final String? accessToken;
+
+  /// Refresh token (iOS only)
+  /// Send this to your backend for persistent token management
+  final String? refreshToken;
+
+  /// Token expiry timestamp in seconds since epoch (iOS only)
+  final double? expiresAt;
+
+  /// Returns true if this is an Android result (has authorization code)
+  bool get isAuthorizationCode => authorizationCode != null;
+
+  /// Returns true if this is an iOS result (has tokens directly)
+  bool get isTokenResult => accessToken != null;
+
+  SpotifyAuthorizationResult._({
+    this.authorizationCode,
+    this.codeVerifier,
+    this.accessToken,
+    this.refreshToken,
+    this.expiresAt,
+  });
+
+  factory SpotifyAuthorizationResult.fromMap(Map<dynamic, dynamic> map) {
+    return SpotifyAuthorizationResult._(
+      authorizationCode: map['authorizationCode'] as String?,
+      codeVerifier: map['codeVerifier'] as String?,
+      accessToken: map['accessToken'] as String?,
+      refreshToken: map['refreshToken'] as String?,
+      expiresAt: map['expiresAt'] as double?,
+    );
+  }
+}
 
 export 'package:spotify_sdk/enums/image_dimension_enum.dart';
 export 'package:spotify_sdk/enums/podcast_playback_speed.dart';
@@ -96,7 +149,55 @@ class SpotifySdk {
     }
   }
 
+  /// Returns authorization result with PKCE support
+  ///
+  /// This is the recommended method for Spotify OAuth after Nov 2025.
+  /// Uses PKCE (Proof Key for Code Exchange) for secure authorization.
+  ///
+  /// Required parameters are the [clientId] and the [redirectUrl] to
+  /// authenticate with the Spotify Api.
+  /// Also you have to provide a [scope] like
+  /// "app-remote-control, user-modify-playback-state, playlist-read-private,
+  /// playlist-modify-public,user-read-currently-playing"
+  /// See https://developer.spotify.com/documentation/general/guides/scopes/
+  ///
+  /// Returns [SpotifyAuthorizationResult] which differs by platform:
+  /// - **Android**: Contains [authorizationCode] and [codeVerifier].
+  ///   Send these to your backend to exchange for access/refresh tokens.
+  /// - **iOS**: Contains [accessToken], [refreshToken], and [expiresAt].
+  ///   iOS SDK handles PKCE internally. Send [refreshToken] to backend.
+  ///
+  /// Throws a [PlatformException] if authorization failed.
+  /// Throws a [MissingPluginException] if the method is not implemented.
+  static Future<SpotifyAuthorizationResult> authorize({
+    required String clientId,
+    required String redirectUrl,
+    required String scope,
+  }) async {
+    try {
+      final result = await _channel.invokeMethod(MethodNames.getAccessToken, {
+        ParamNames.clientId: clientId,
+        ParamNames.redirectUrl: redirectUrl,
+        ParamNames.scope: scope,
+      });
+
+      if (result is Map) {
+        return SpotifyAuthorizationResult.fromMap(result);
+      }
+
+      // Fallback for unexpected string result (legacy behavior)
+      return SpotifyAuthorizationResult._(accessToken: result.toString());
+    } on Exception catch (e) {
+      _logException(MethodNames.getAccessToken, e);
+      rethrow;
+    }
+  }
+
   /// Returns an access token as a [String]
+  ///
+  /// @Deprecated: Use [authorize] instead for PKCE support.
+  /// This method is kept for backward compatibility but may not work
+  /// after Spotify's Implicit Grant deprecation (Nov 2025).
   ///
   /// Required parameters are the [clientId] and the [redirectUrl] to
   /// authenticate with the Spotify Api.
@@ -111,6 +212,7 @@ class SpotifySdk {
   /// failed.
   /// Throws a [MissingPluginException] if the method is not implemented on
   /// the native platforms.
+  @Deprecated('Use authorize() instead for PKCE support')
   static Future<String> getAccessToken(
       {required String clientId,
       required String redirectUrl,
@@ -118,15 +220,21 @@ class SpotifySdk {
       bool asRadio = false,
       String? scope}) async {
     try {
-      final authorization =
-          await _channel.invokeMethod(MethodNames.getAccessToken, {
+      final result = await _channel.invokeMethod(MethodNames.getAccessToken, {
         ParamNames.clientId: clientId,
         ParamNames.redirectUrl: redirectUrl,
         ParamNames.scope: scope,
         ParamNames.spotifyUri: spotifyUri,
         ParamNames.asRadio: asRadio,
       });
-      return authorization.toString();
+
+      // Handle new map response format
+      if (result is Map) {
+        // Return accessToken if available (iOS), otherwise return authorizationCode (Android)
+        return (result['accessToken'] ?? result['authorizationCode'] ?? '').toString();
+      }
+
+      return result.toString();
     } on Exception catch (e) {
       _logException(MethodNames.getAccessToken, e);
       rethrow;

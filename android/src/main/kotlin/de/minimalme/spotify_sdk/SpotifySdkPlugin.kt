@@ -23,6 +23,9 @@ import io.flutter.plugin.common.MethodChannel.Result
 import io.flutter.plugin.common.PluginRegistry
 import kotlinx.event.SetEvent
 import kotlinx.event.event
+import java.security.MessageDigest
+import java.security.SecureRandom
+import java.util.Base64
 
 class SpotifySdkPlugin : MethodCallHandler, FlutterPlugin, ActivityAware, PluginRegistry.ActivityResultListener {
 
@@ -111,6 +114,9 @@ class SpotifySdkPlugin : MethodCallHandler, FlutterPlugin, ActivityAware, Plugin
     private var spotifyConnectApi: SpotifyConnectApi? = null
     private var spotifyUserApi: SpotifyUserApi? = null
     private var spotifyImagesApi: SpotifyImagesApi? = null
+
+    // PKCE code verifier
+    private var codeVerifier: String? = null
 
     override fun onAttachedToEngine(binding: FlutterPlugin.FlutterPluginBinding) {
         this.applicationContext = binding.applicationContext
@@ -317,12 +323,33 @@ class SpotifySdkPlugin : MethodCallHandler, FlutterPlugin, ActivityAware, Plugin
             val scopeArray = scope?.split(",")?.toTypedArray()
             methodConnectToSpotify.checkAndSetPendingOperation(result)
 
-            val builder = AuthorizationRequest.Builder(clientId, AuthorizationResponse.Type.TOKEN, redirectUrl)
+            // Generate PKCE parameters
+            codeVerifier = generateCodeVerifier()
+            val codeChallenge = generateCodeChallenge(codeVerifier!!)
+
+            val builder = AuthorizationRequest.Builder(clientId, AuthorizationResponse.Type.CODE, redirectUrl)
             builder.setScopes(scopeArray)
+            builder.setCustomParam("code_challenge_method", "S256")
+            builder.setCustomParam("code_challenge", codeChallenge)
             val request = builder.build()
 
             AuthorizationClient.openLoginActivity(applicationActivity, requestCodeAuthentication, request)
         }
+    }
+
+    private fun generateCodeVerifier(): String {
+        val secureRandom = SecureRandom()
+        val codeVerifier = ByteArray(32)
+        secureRandom.nextBytes(codeVerifier)
+        return Base64.getUrlEncoder().withoutPadding().encodeToString(codeVerifier)
+    }
+
+    private fun generateCodeChallenge(codeVerifier: String): String {
+        val bytes = codeVerifier.toByteArray(Charsets.US_ASCII)
+        val messageDigest = MessageDigest.getInstance("SHA-256")
+        messageDigest.update(bytes, 0, bytes.size)
+        val digest = messageDigest.digest()
+        return Base64.getUrlEncoder().withoutPadding().encodeToString(digest)
     }
 
     private fun disconnectFromSpotify(result: Result) {
@@ -360,8 +387,13 @@ class SpotifySdkPlugin : MethodCallHandler, FlutterPlugin, ActivityAware, Plugin
         pendingOperation = null
 
         when (response.type) {
-            AuthorizationResponse.Type.TOKEN -> {
-                result.success(response.accessToken)
+            AuthorizationResponse.Type.CODE -> {
+                // Return authorization code and code verifier
+                val resultMap = mapOf(
+                    "authorizationCode" to response.code,
+                    "codeVerifier" to codeVerifier
+                )
+                result.success(resultMap)
             }
             AuthorizationResponse.Type.ERROR -> result.error(errorAuthenticationToken, "Authentication went wrong", response.error)
             else -> result.notImplemented()

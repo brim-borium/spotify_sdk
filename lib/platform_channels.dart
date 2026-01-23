@@ -158,4 +158,10 @@ class ParamNames {
 
   /// param name for [trackIndex]
   static const String trackIndex = 'trackIndex';
+
+  /// param name for [tokenSwapUrl] (iOS Token Swap)
+  static const String tokenSwapUrl = 'tokenSwapUrl';
+
+  /// param name for [tokenRefreshUrl] (iOS Token Swap)
+  static const String tokenRefreshUrl = 'tokenRefreshUrl';
 }

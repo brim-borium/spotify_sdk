@@ -43,4 +43,8 @@ public class SpotifySdkConstants
     public static let paramTrackIndex = "trackIndex"
     public static let scope = "scope"
     public static let getLibraryState = "getLibraryState"
+
+    // Token Swap parameters (iOS only)
+    public static let paramTokenSwapUrl = "tokenSwapUrl"
+    public static let paramTokenRefreshUrl = "tokenRefreshUrl"
 }

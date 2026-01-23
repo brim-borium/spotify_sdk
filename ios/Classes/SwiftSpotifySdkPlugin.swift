@@ -4,6 +4,7 @@ import SpotifyiOS
 public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
     private static var instance = SwiftSpotifySdkPlugin()
     private var appRemote: SPTAppRemote?
+    private var sessionManager: SPTSessionManager?
     private var connectionStatusHandler: ConnectionStatusHandler?
     private var playerStateHandler: PlayerStateHandler?
     private var playerContextHandler: PlayerContextHandler?
@@ -77,19 +78,51 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
                     result(FlutterError(code: "Arguments Error", message: "One or more arguments are missing", details: nil))
                     return
             }
-            connectionStatusHandler?.tokenResult = result
-            let spotifyUri: String = swiftArguments[SpotifySdkConstants.paramSpotifyUri] as? String ?? ""
-            
-            do {
-                try connectToSpotify(clientId: clientID, redirectURL: url, spotifyUri: spotifyUri, asRadio: swiftArguments[SpotifySdkConstants.paramAsRadio] as? Bool, additionalScopes: swiftArguments[SpotifySdkConstants.scope] as? String)
-            }
-            catch SpotifyError.redirectURLInvalid {
+
+            guard let redirectURL = URL(string: url) else {
                 result(FlutterError(code: "errorConnecting", message: "Redirect URL is not set or has invalid format", details: nil))
-            }
-            catch {
-                result(FlutterError(code: "CouldNotFindSpotifyApp", message: "The Spotify app is not installed on the device", details: nil))
                 return
             }
+
+            // Use SPTSessionManager for PKCE OAuth
+            // iOS SDK handles PKCE internally - no Token Swap needed
+            // Returns accessToken, refreshToken, and expiresAt directly
+            let configuration = SPTConfiguration(clientID: clientID, redirectURL: redirectURL)
+            sessionManager = SPTSessionManager(configuration: configuration, delegate: self)
+
+            connectionStatusHandler?.tokenResult = result
+
+            // Parse and map scopes from string to SPTScope
+            var requestedScopes: SPTScope = []
+            if let scopeString = swiftArguments[SpotifySdkConstants.scope] as? String {
+                let scopeArray = scopeString.components(separatedBy: ",")
+                for scope in scopeArray {
+                    let trimmedScope = scope.trimmingCharacters(in: .whitespaces)
+                    switch trimmedScope {
+                    case "user-read-playback-state":
+                        requestedScopes.insert(.userReadPlaybackState)
+                    case "user-modify-playback-state":
+                        requestedScopes.insert(.userModifyPlaybackState)
+                    case "user-read-currently-playing":
+                        requestedScopes.insert(.userReadCurrentlyPlaying)
+                    case "user-read-recently-played":
+                        requestedScopes.insert(.userReadRecentlyPlayed)
+                    case "app-remote-control":
+                        requestedScopes.insert(.appRemoteControl)
+                    case "playlist-read-private":
+                        requestedScopes.insert(.playlistReadPrivate)
+                    case "playlist-read-collaborative":
+                        requestedScopes.insert(.playlistReadCollaborative)
+                    case "user-library-read":
+                        requestedScopes.insert(.userLibraryRead)
+                    default:
+                        break
+                    }
+                }
+            }
+
+            // Initiate PKCE session (iOS handles PKCE automatically)
+            sessionManager?.initiateSession(with: requestedScopes, options: .clientOnly)
         case SpotifySdkConstants.methodGetImage:
             guard let appRemote = appRemote else {
                 result(FlutterError(code: "Connection Error", message: "AppRemote is null", details: nil))
@@ -377,6 +410,13 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
 
 extension SwiftSpotifySdkPlugin {
     public func application(_ application: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+        // Try SPTSessionManager first
+        if let sessionManager = sessionManager {
+            sessionManager.application(application, open: url, options: options)
+            return true
+        }
+
+        // Fallback to old SPTAppRemote flow
         setAccessTokenFromURL(url: url)
         return true
     }
@@ -392,6 +432,13 @@ extension SwiftSpotifySdkPlugin {
                 return false
         }
 
+        // Try SPTSessionManager first
+        if let sessionManager = sessionManager {
+            sessionManager.application(application, open: url, options: [:])
+            return true
+        }
+
+        // Fallback to old SPTAppRemote flow
         setAccessTokenFromURL(url: url)
         return false
     }
@@ -415,5 +462,37 @@ extension SwiftSpotifySdkPlugin {
 
         appRemote.connectionParameters.accessToken = token
         appRemote.connect()
+    }
+}
+
+
+// MARK: - SPTSessionManagerDelegate
+extension SwiftSpotifySdkPlugin: SPTSessionManagerDelegate {
+    public func sessionManager(manager: SPTSessionManager, didInitiate session: SPTSession) {
+        // iOS SDK handles PKCE internally and returns tokens directly
+        // Return accessToken, refreshToken, and expiresAt
+        let resultMap: [String: Any] = [
+            "accessToken": session.accessToken,
+            "refreshToken": session.refreshToken,
+            "expiresAt": session.expirationDate.timeIntervalSince1970
+        ]
+        connectionStatusHandler?.tokenResult?(resultMap)
+        connectionStatusHandler?.tokenResult = nil
+    }
+
+    public func sessionManager(manager: SPTSessionManager, didFailWith error: Error) {
+        connectionStatusHandler?.tokenResult?(FlutterError(
+            code: "authenticationTokenError",
+            message: error.localizedDescription,
+            details: nil
+        ))
+        connectionStatusHandler?.tokenResult = nil
+    }
+
+    public func sessionManager(manager: SPTSessionManager, didRenew session: SPTSession) {
+        // Token was refreshed
+        if let appRemote = appRemote {
+            appRemote.connectionParameters.accessToken = session.accessToken
+        }
     }
 }
