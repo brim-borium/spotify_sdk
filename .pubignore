@@ -1,0 +1,6 @@
+# Files to exclude from the published pub.dev package (not from git).
+# Dev-only agent tooling — useful in the repo, not needed by package consumers.
+AGENTS.md
+CLAUDE.md
+.claude/
+.editorconfig

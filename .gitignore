@@ -48,3 +48,6 @@ build/
 SpotifyiOS.framework
 **/doc/api/
 /ios/ios-sdk/
+
+# Claude Code per-user local settings (shared config lives in .claude/settings.json)
+.claude/settings.local.json
