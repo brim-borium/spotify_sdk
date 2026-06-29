@@ -1,4 +1,4 @@
-## 4.0.0
+## 4.0.0-dev.1
 * **BREAKING**: raised minimum SDKs — Dart `>=3.12.0`, Flutter `>=3.32.0`, Android `compileSdk`/`targetSdk` 35, and iOS deployment target 13.0.
 * **BREAKING**: web — replaced the discontinued `js` package with `dart:js_interop` + `package:web`. The Web Playback SDK interop is now expressed with extension types; no public Dart API changed, but the web implementation now requires a `js_interop`-capable Flutter (already covered by the SDK bump).
 * **BREAKING (Android)**: bumped `com.spotify.android:auth` 2.1.0 → 4.0.1. Since auth 3.0.0 the `redirectPathPattern` manifest placeholder is **mandatory** — add it alongside the existing placeholders in your app's `android/app/build.gradle` (use `.*` to keep accepting any path):
