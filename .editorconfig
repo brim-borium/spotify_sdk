@@ -1,0 +1,28 @@
+# EditorConfig — keeps formatting consistent across editors and AI tools.
+# Dart formatting is ultimately enforced by `dart format` (and CI). These
+# baseline rules make non-Dart-aware editors produce CI-passing output.
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 2
+
+[*.dart]
+indent_size = 2
+max_line_length = 80
+
+[*.{kt,kts}]
+indent_size = 4
+
+[*.{swift,m,h}]
+indent_size = 4
+
+[*.md]
+trim_trailing_whitespace = false
+
+[Makefile]
+indent_style = tab

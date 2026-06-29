@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "allow": [
+      "Bash(flutter pub get)",
+      "Bash(flutter packages get)",
+      "Bash(dart pub get)",
+      "Bash(dart format:*)",
+      "Bash(flutter analyze:*)",
+      "Bash(dart analyze:*)",
+      "Bash(flutter test:*)",
+      "Bash(dart test:*)",
+      "Bash(dart run build_runner:*)",
+      "Bash(flutter pub run build_runner:*)",
+      "Bash(flutter pub publish --dry-run)",
+      "Bash(pana:*)",
+      "Bash(flutter build web:*)"
+    ],
+    "ask": [
+      "Bash(git push:*)",
+      "Bash(flutter pub publish)",
+      "Bash(dart pub publish)"
+    ],
+    "deny": []
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "f=\"$(jq -r '.tool_input.file_path // empty')\"; case \"$f\" in *.g.dart) ;; *.dart) [ -f \"$f\" ] && dart format \"$f\" >/dev/null 2>&1 ;; esac; exit 0"
+          }
+        ]
+      }
+    ]
+  }
+}

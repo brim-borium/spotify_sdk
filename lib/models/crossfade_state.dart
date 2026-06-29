@@ -4,10 +4,7 @@ part 'crossfade_state.g.dart';
 
 @JsonSerializable()
 class CrossfadeState {
-  CrossfadeState(
-    this.duration, {
-    required this.isEnabled,
-  });
+  CrossfadeState(this.duration, {required this.isEnabled});
 
   final bool isEnabled;
   final int duration;

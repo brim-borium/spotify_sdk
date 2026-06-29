@@ -13,6 +13,8 @@ runs:
       uses: actions/checkout@v4
     - name: 🐦 Setup Flutter
       uses: subosito/flutter-action@v2
+      with:
+        flutter-version-file: .fvmrc
 
     - name: 🪪 Get Id Token
       uses: actions/github-script@v6
@@ -22,20 +24,20 @@ runs:
           core.exportVariable('PUB_TOKEN', pub_token)
 
     - name: 📢 Authenticate
-      shell: ${{ inputs.shell }}
+      shell: bash
       run: flutter pub pub token add https://pub.dev --env-var PUB_TOKEN
 
     - name: 📦 Install dependencies
-      shell: ${{ inputs.shell }}
+      shell: bash
       run: flutter pub get
       working-directory: ${{ inputs.working-directory }}
 
     - name: 🌵 Dry Run
-      shell: ${{ inputs.shell }}
+      shell: bash
       run: flutter pub publish --dry-run
       working-directory: ${{ inputs.working-directory }}
 
     - name: 📢 Publish
-      shell: ${{ inputs.shell }}
+      shell: bash
       run: flutter pub publish -f
       working-directory: ${{ inputs.working-directory }}

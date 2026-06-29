@@ -7,10 +7,10 @@ part of 'library_state.dart';
 // **************************************************************************
 
 LibraryState _$LibraryStateFromJson(Map<String, dynamic> json) => LibraryState(
-      json['uri'] as String,
-      isSaved: json['saved'] as bool,
-      canSave: json['can_save'] as bool,
-    );
+  json['uri'] as String,
+  isSaved: json['saved'] as bool,
+  canSave: json['can_save'] as bool,
+);
 
 Map<String, dynamic> _$LibraryStateToJson(LibraryState instance) =>
     <String, dynamic>{

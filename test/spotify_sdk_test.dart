@@ -10,8 +10,8 @@ void main() {
   setUp(() {
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(channel, (MethodCall methodCall) async {
-      return true;
-    });
+          return true;
+        });
   });
 
   tearDown(() {
@@ -21,8 +21,11 @@ void main() {
 
   test('connectToSpotify', () async {
     expect(
-        await SpotifySdk.connectToSpotifyRemote(
-            clientId: 'null', redirectUrl: 'null'),
-        true);
+      await SpotifySdk.connectToSpotifyRemote(
+        clientId: 'null',
+        redirectUrl: 'null',
+      ),
+      true,
+    );
   });
 }
