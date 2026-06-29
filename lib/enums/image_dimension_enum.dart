@@ -13,5 +13,5 @@ enum ImageDimension {
   xSmall,
 
   /// thumbnail image
-  thumbnail
+  thumbnail,
 }

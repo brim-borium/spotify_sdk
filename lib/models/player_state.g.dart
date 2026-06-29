@@ -7,16 +7,17 @@ part of 'player_state.dart';
 // **************************************************************************
 
 PlayerState _$PlayerStateFromJson(Map<String, dynamic> json) => PlayerState(
-      json['track'] == null
-          ? null
-          : Track.fromJson(json['track'] as Map<String, dynamic>),
-      (json['playback_speed'] as num).toDouble(),
-      json['playback_position'] as int,
-      PlayerOptions.fromJson(json['playback_options'] as Map<String, dynamic>),
-      PlayerRestrictions.fromJson(
-          json['playback_restrictions'] as Map<String, dynamic>),
-      isPaused: json['is_paused'] as bool,
-    );
+  json['track'] == null
+      ? null
+      : Track.fromJson(json['track'] as Map<String, dynamic>),
+  (json['playback_speed'] as num).toDouble(),
+  (json['playback_position'] as num).toInt(),
+  PlayerOptions.fromJson(json['playback_options'] as Map<String, dynamic>),
+  PlayerRestrictions.fromJson(
+    json['playback_restrictions'] as Map<String, dynamic>,
+  ),
+  isPaused: json['is_paused'] as bool,
+);
 
 Map<String, dynamic> _$PlayerStateToJson(PlayerState instance) =>
     <String, dynamic>{

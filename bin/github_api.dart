@@ -15,7 +15,7 @@ class GitHubApi {
   static const String allReleases = '/releases';
 
   static Future<(String, Uri)>
-      fetchLatestAppRemoteReleaseAssetDownloadUrl() async {
+  fetchLatestAppRemoteReleaseAssetDownloadUrl() async {
     // fetch the github api to get the latest release
     Uri uri = Uri.parse(apiUrl + spotifyAndroidSdkRepo + latestRelease);
     try {
@@ -33,7 +33,8 @@ class GitHubApi {
   }
 
   static Future<(String, Uri)> fetchVersionedAppRemoteReleaseAssetDownloadUrl(
-      String sdkVersion) async {
+    String sdkVersion,
+  ) async {
     if (sdkVersion.startsWith('--sdk-version=')) {
       sdkVersion = sdkVersion.substring(14);
     }
@@ -49,7 +50,8 @@ class GitHubApi {
         final data = jsonDecode(response.body) as List<dynamic>;
 
         logger.t(
-            'Found ${data.length} releases of the Spotify Android SDK on GitHub.');
+          'Found ${data.length} releases of the Spotify Android SDK on GitHub.',
+        );
         final releaseData = data.firstWhere(
           (element) {
             final tagName = element['tag_name'] as String;
@@ -93,8 +95,10 @@ class GitHubApi {
     }
 
     // return the download url of the spotify-app-remote-release-*.aar asset
-    logger.i('Found the Spotify Android SDK asset: '
-        '${assetMap[assetId]!.$1}');
+    logger.i(
+      'Found the Spotify Android SDK asset: '
+      '${assetMap[assetId]!.$1}',
+    );
     return (assetMap[assetId]!.$1, Uri.parse(assetMap[assetId]!.$2));
   }
 }

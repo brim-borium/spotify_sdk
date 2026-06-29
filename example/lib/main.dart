@@ -1,6 +1,8 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
+// Flutter's material library now also exports a `RepeatMode`; hide it so the
+// spotify_sdk `RepeatMode` (used by the player controls below) resolves.
+import 'package:flutter/material.dart' hide RepeatMode;
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:logger/logger.dart';
@@ -48,9 +50,7 @@ class HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      theme: ThemeData(
-        useMaterial3: true,
-      ),
+      theme: ThemeData(useMaterial3: true),
       home: StreamBuilder<ConnectionStatus>(
         stream: SpotifySdk.subscribeConnectionStatus(),
         builder: (context, snapshot) {
@@ -68,7 +68,7 @@ class HomeState extends State<Home> {
                         onPressed: disconnect,
                         icon: const Icon(Icons.exit_to_app),
                       )
-                    : Container()
+                    : Container(),
               ],
             ),
             body: _sampleFlowWidget(context),
@@ -84,11 +84,7 @@ class HomeState extends State<Home> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
-          SizedIconButton(
-            width: 50,
-            icon: Icons.queue_music,
-            onPressed: queue,
-          ),
+          SizedIconButton(width: 50, icon: Icons.queue_music, onPressed: queue),
           SizedIconButton(
             width: 50,
             icon: Icons.playlist_play,
@@ -140,9 +136,7 @@ class HomeState extends State<Home> {
             ),
             _connected
                 ? _buildPlayerStateWidget()
-                : const Center(
-                    child: Text('Not connected'),
-                  ),
+                : const Center(child: Text('Not connected')),
             const Divider(),
             Text(
               'Player Context',
@@ -150,9 +144,7 @@ class HomeState extends State<Home> {
             ),
             _connected
                 ? _buildPlayerContextWidget()
-                : const Center(
-                    child: Text('Not connected'),
-                  ),
+                : const Center(child: Text('Not connected')),
             const Divider(),
             Text(
               'Player Api',
@@ -196,12 +188,10 @@ class HomeState extends State<Home> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
+                Text('Status', style: Theme.of(context).textTheme.titleSmall),
                 Text(
-                  'Status',
-                  style: Theme.of(context).textTheme.titleSmall,
+                  crossfadeState?.isEnabled == true ? 'Enabled' : 'Disabled',
                 ),
-                Text(
-                    crossfadeState?.isEnabled == true ? 'Enabled' : 'Disabled'),
                 Padding(
                   padding: const EdgeInsets.only(top: 8.0),
                   child: Text(
@@ -214,9 +204,7 @@ class HomeState extends State<Home> {
                   children: <Widget>[
                     ElevatedButton(
                       onPressed: getCrossfadeState,
-                      child: const Text(
-                        'get crossfade state',
-                      ),
+                      child: const Text('get crossfade state'),
                     ),
                   ],
                 ),
@@ -227,7 +215,8 @@ class HomeState extends State<Home> {
         _loading
             ? Container(
                 color: Colors.black12,
-                child: const Center(child: CircularProgressIndicator()))
+                child: const Center(child: CircularProgressIndicator()),
+              )
             : const SizedBox(),
       ],
     );
@@ -242,9 +231,7 @@ class HomeState extends State<Home> {
         var playerState = snapshot.data;
 
         if (playerState == null || track == null) {
-          return Center(
-            child: Container(),
-          );
+          return Center(child: Container());
         }
 
         return Column(
@@ -282,44 +269,33 @@ class HomeState extends State<Home> {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       TextButton(
-                        child: const SizedBox(
-                          width: 50,
-                          child: Text("x0.5"),
-                        ),
+                        child: const SizedBox(width: 50, child: Text("x0.5")),
                         onPressed: () => setPlaybackSpeed(
-                            PodcastPlaybackSpeed.playbackSpeed_50),
+                          PodcastPlaybackSpeed.playbackSpeed_50,
+                        ),
                       ),
                       TextButton(
-                        child: const SizedBox(
-                          width: 50,
-                          child: Text("x1"),
-                        ),
+                        child: const SizedBox(width: 50, child: Text("x1")),
                         onPressed: () => setPlaybackSpeed(
-                            PodcastPlaybackSpeed.playbackSpeed_100),
+                          PodcastPlaybackSpeed.playbackSpeed_100,
+                        ),
                       ),
                       TextButton(
-                        child: const SizedBox(
-                          width: 50,
-                          child: Text("x1.5"),
-                        ),
+                        child: const SizedBox(width: 50, child: Text("x1.5")),
                         onPressed: () => setPlaybackSpeed(
-                            PodcastPlaybackSpeed.playbackSpeed_150),
+                          PodcastPlaybackSpeed.playbackSpeed_150,
+                        ),
                       ),
                       TextButton(
-                        child: const SizedBox(
-                          width: 50,
-                          child: Text("x3.0"),
-                        ),
+                        child: const SizedBox(width: 50, child: Text("x3.0")),
                         onPressed: () => setPlaybackSpeed(
-                            PodcastPlaybackSpeed.playbackSpeed_300),
+                          PodcastPlaybackSpeed.playbackSpeed_300,
+                        ),
                       ),
                     ],
                   )
                 : Container(),
-            Text(
-              'Track',
-              style: Theme.of(context).textTheme.titleSmall,
-            ),
+            Text('Track', style: Theme.of(context).textTheme.titleSmall),
             Text(
               '${track.name} by ${track.artist.name} from the album ${track.album.name}',
               maxLines: 2,
@@ -337,7 +313,8 @@ class HomeState extends State<Home> {
               children: [
                 Text('Playback speed: ${playerState.playbackSpeed}'),
                 Text(
-                    'Progress: ${playerState.playbackPosition}ms/${track.duration}ms'),
+                  'Progress: ${playerState.playbackPosition}ms/${track.duration}ms',
+                ),
               ],
             ),
             Row(
@@ -364,9 +341,7 @@ class HomeState extends State<Home> {
               children: [
                 Row(
                   children: [
-                    const Text(
-                      'Repeat Mode:',
-                    ),
+                    const Text('Repeat Mode:'),
                     DropdownButton<RepeatMode>(
                       value: RepeatMode
                           .values[playerState.playbackOptions.repeatMode.index],
@@ -393,9 +368,7 @@ class HomeState extends State<Home> {
                     const Text('Switch shuffle: '),
                     Switch.adaptive(
                       value: playerState.playbackOptions.isShuffling,
-                      onChanged: (bool shuffle) => setShuffle(
-                        shuffle,
-                      ),
+                      onChanged: (bool shuffle) => setShuffle(shuffle),
                     ),
                   ],
                 ),
@@ -424,19 +397,14 @@ class HomeState extends State<Home> {
       builder: (BuildContext context, AsyncSnapshot<PlayerContext> snapshot) {
         var playerContext = snapshot.data;
         if (playerContext == null) {
-          return const Center(
-            child: Text('Not connected'),
-          );
+          return const Center(child: Text('Not connected'));
         }
 
         return Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            Text(
-              'Title',
-              style: Theme.of(context).textTheme.titleSmall,
-            ),
+            Text('Title', style: Theme.of(context).textTheme.titleSmall),
             Text(playerContext.title),
             Padding(
               padding: const EdgeInsets.only(top: 8.0),
@@ -456,10 +424,7 @@ class HomeState extends State<Home> {
             Text(playerContext.type),
             Padding(
               padding: const EdgeInsets.only(top: 8.0),
-              child: Text(
-                'Uri',
-                style: Theme.of(context).textTheme.titleSmall,
-              ),
+              child: Text('Uri', style: Theme.of(context).textTheme.titleSmall),
             ),
             Text(
               playerContext.uri,
@@ -473,28 +438,29 @@ class HomeState extends State<Home> {
 
   Widget spotifyImageWidget(ImageUri image) {
     return FutureBuilder(
-        future: SpotifySdk.getImage(
-          imageUri: image,
-          dimension: ImageDimension.large,
-        ),
-        builder: (BuildContext context, AsyncSnapshot<Uint8List?> snapshot) {
-          if (snapshot.hasData) {
-            return Image.memory(snapshot.data!);
-          } else if (snapshot.hasError) {
-            setStatus(snapshot.error.toString());
-            return SizedBox(
-              width: ImageDimension.large.value.toDouble(),
-              height: ImageDimension.large.value.toDouble(),
-              child: const Center(child: Text('Error getting image')),
-            );
-          } else {
-            return SizedBox(
-              width: ImageDimension.large.value.toDouble(),
-              height: ImageDimension.large.value.toDouble(),
-              child: const Center(child: Text('Getting image...')),
-            );
-          }
-        });
+      future: SpotifySdk.getImage(
+        imageUri: image,
+        dimension: ImageDimension.large,
+      ),
+      builder: (BuildContext context, AsyncSnapshot<Uint8List?> snapshot) {
+        if (snapshot.hasData) {
+          return Image.memory(snapshot.data!);
+        } else if (snapshot.hasError) {
+          setStatus(snapshot.error.toString());
+          return SizedBox(
+            width: ImageDimension.large.value.toDouble(),
+            height: ImageDimension.large.value.toDouble(),
+            child: const Center(child: Text('Error getting image')),
+          );
+        } else {
+          return SizedBox(
+            width: ImageDimension.large.value.toDouble(),
+            height: ImageDimension.large.value.toDouble(),
+            child: const Center(child: Text('Getting image...')),
+          );
+        }
+      },
+    );
   }
 
   Future<void> disconnect() async {
@@ -526,11 +492,12 @@ class HomeState extends State<Home> {
         _loading = true;
       });
       var result = await SpotifySdk.connectToSpotifyRemote(
-          clientId: dotenv.env['CLIENT_ID'].toString(),
-          redirectUrl: dotenv.env['REDIRECT_URL'].toString());
-      setStatus(result
-          ? 'connect to spotify successful'
-          : 'connect to spotify failed');
+        clientId: dotenv.env['CLIENT_ID'].toString(),
+        redirectUrl: dotenv.env['REDIRECT_URL'].toString(),
+      );
+      setStatus(
+        result ? 'connect to spotify successful' : 'connect to spotify failed',
+      );
       setState(() {
         _loading = false;
       });
@@ -550,12 +517,14 @@ class HomeState extends State<Home> {
   Future<String> getAccessToken() async {
     try {
       var authenticationToken = await SpotifySdk.getAccessToken(
-          clientId: dotenv.env['CLIENT_ID'].toString(),
-          redirectUrl: dotenv.env['REDIRECT_URL'].toString(),
-          scope: 'app-remote-control, '
-              'user-modify-playback-state, '
-              'playlist-read-private, '
-              'playlist-modify-public,user-read-currently-playing');
+        clientId: dotenv.env['CLIENT_ID'].toString(),
+        redirectUrl: dotenv.env['REDIRECT_URL'].toString(),
+        scope:
+            'app-remote-control, '
+            'user-modify-playback-state, '
+            'playlist-read-private, '
+            'playlist-modify-public,user-read-currently-playing',
+      );
       setStatus('Got a token: $authenticationToken');
       return authenticationToken;
     } on PlatformException catch (e) {
@@ -593,7 +562,8 @@ class HomeState extends State<Home> {
   Future<void> queue() async {
     try {
       await SpotifySdk.queue(
-          spotifyUri: 'spotify:track:58kNJana4w5BIjlZE2wq5m');
+        spotifyUri: 'spotify:track:58kNJana4w5BIjlZE2wq5m',
+      );
     } on PlatformException catch (e) {
       setStatus(e.code, message: e.message);
     } on MissingPluginException {
@@ -613,9 +583,7 @@ class HomeState extends State<Home> {
 
   Future<void> setRepeatMode(RepeatMode repeatMode) async {
     try {
-      await SpotifySdk.setRepeatMode(
-        repeatMode: repeatMode,
-      );
+      await SpotifySdk.setRepeatMode(repeatMode: repeatMode);
     } on PlatformException catch (e) {
       setStatus(e.code, message: e.message);
     } on MissingPluginException {
@@ -625,9 +593,7 @@ class HomeState extends State<Home> {
 
   Future<void> setShuffle(bool shuffle) async {
     try {
-      await SpotifySdk.setShuffle(
-        shuffle: shuffle,
-      );
+      await SpotifySdk.setShuffle(shuffle: shuffle);
     } on PlatformException catch (e) {
       setStatus(e.code, message: e.message);
     } on MissingPluginException {
@@ -646,10 +612,12 @@ class HomeState extends State<Home> {
   }
 
   Future<void> setPlaybackSpeed(
-      PodcastPlaybackSpeed podcastPlaybackSpeed) async {
+    PodcastPlaybackSpeed podcastPlaybackSpeed,
+  ) async {
     try {
       await SpotifySdk.setPodcastPlaybackSpeed(
-          podcastPlaybackSpeed: podcastPlaybackSpeed);
+        podcastPlaybackSpeed: podcastPlaybackSpeed,
+      );
     } on PlatformException catch (e) {
       setStatus(e.code, message: e.message);
     } on MissingPluginException {
@@ -740,7 +708,8 @@ class HomeState extends State<Home> {
   Future<void> addToLibrary() async {
     try {
       await SpotifySdk.addToLibrary(
-          spotifyUri: 'spotify:track:58kNJana4w5BIjlZE2wq5m');
+        spotifyUri: 'spotify:track:58kNJana4w5BIjlZE2wq5m',
+      );
     } on PlatformException catch (e) {
       setStatus(e.code, message: e.message);
     } on MissingPluginException {

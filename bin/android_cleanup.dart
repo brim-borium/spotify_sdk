@@ -17,11 +17,13 @@ Future<void> main(List<String> args) async {
   final settingsFile = await File('android/settings.gradle').readAsString();
   const includeStatements = [
     "include ':$moduleName'",
-    'include ":$moduleName"'
+    'include ":$moduleName"',
   ];
   if (includeStatements.any((element) => settingsFile.contains(element))) {
-    final newSettingsFile = includeStatements.fold(settingsFile,
-        (previousValue, element) => previousValue.replaceAll(element, ''));
+    final newSettingsFile = includeStatements.fold(
+      settingsFile,
+      (previousValue, element) => previousValue.replaceAll(element, ''),
+    );
     await File('android/settings.gradle').writeAsString(newSettingsFile);
     logger.t('removed include statement from settings.gradle');
   }

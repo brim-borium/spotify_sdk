@@ -4,10 +4,7 @@ part 'player_options.g.dart';
 
 @JsonSerializable()
 class PlayerOptions {
-  PlayerOptions(
-    this.repeatMode, {
-    required this.isShuffling,
-  });
+  PlayerOptions(this.repeatMode, {required this.isShuffling});
 
   @JsonKey(name: 'shuffle')
   final bool isShuffling;
@@ -26,5 +23,5 @@ enum RepeatMode {
   @JsonValue(1)
   track,
   @JsonValue(2)
-  context
+  context,
 }

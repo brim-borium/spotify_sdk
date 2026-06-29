@@ -62,7 +62,9 @@ include ':spotify-app-remote'
 
 ```groovy
 defaultConfig {
-        manifestPlaceholders = [redirectSchemeName: "spotify-sdk", redirectHostName: "auth"]
+        // `redirectPathPattern` is mandatory since com.spotify.android:auth 3.0.0.
+        // Use `.*` to accept any redirect path.
+        manifestPlaceholders = [redirectSchemeName: "spotify-sdk", redirectHostName: "auth", redirectPathPattern: ".*"]
         ...
     }
 ```

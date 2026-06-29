@@ -321,7 +321,9 @@ class SpotifySdkPlugin : MethodCallHandler, FlutterPlugin, ActivityAware, Plugin
             builder.setScopes(scopeArray)
             val request = builder.build()
 
-            AuthorizationClient.openLoginActivity(applicationActivity, requestCodeAuthentication, request)
+            // `applicationActivity` is null-checked above; `!!` avoids the K2
+            // smart-cast restriction on mutable properties.
+            AuthorizationClient.openLoginActivity(applicationActivity!!, requestCodeAuthentication, request)
         }
     }
 

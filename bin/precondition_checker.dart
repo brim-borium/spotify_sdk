@@ -9,7 +9,8 @@ class PreconditionChecker {
     // check if the script is executed on a supported platform
     if (!Platform.isMacOS && !Platform.isLinux) {
       logger.w(
-          'Warning: This script has not been tested on your platform (${Platform.operatingSystem}).');
+        'Warning: This script has not been tested on your platform (${Platform.operatingSystem}).',
+      );
     }
 
     // check if flutter is installed
@@ -22,7 +23,8 @@ class PreconditionChecker {
     // check if the script is executed from inside a flutter project
     if (!File('pubspec.yaml').existsSync()) {
       logger.e(
-          'Error: The script must be executed from inside a flutter project.');
+        'Error: The script must be executed from inside a flutter project.',
+      );
       return false;
     }
 
@@ -33,7 +35,8 @@ class PreconditionChecker {
     }
 
     // check if the setup may have already been executed and recommend to run the cleanup script
-    bool prevRun = Directory('android/$moduleName').existsSync() ||
+    bool prevRun =
+        Directory('android/$moduleName').existsSync() ||
         File('android/$moduleName/build.gradle').existsSync();
     if (!prevRun && File('android/settings.gradle').existsSync()) {
       final settingsFile = File('android/settings.gradle').readAsStringSync();
@@ -42,8 +45,10 @@ class PreconditionChecker {
     }
 
     if (prevRun) {
-      logger.w('Warning: The setup may have already been executed. '
-          'Please run dart run spotify_sdk:android_setup --cleanup before running this script again.');
+      logger.w(
+        'Warning: The setup may have already been executed. '
+        'Please run dart run spotify_sdk:android_setup --cleanup before running this script again.',
+      );
       return false;
     }
 

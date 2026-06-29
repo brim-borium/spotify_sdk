@@ -4,11 +4,7 @@ part 'library_state.g.dart';
 
 @JsonSerializable()
 class LibraryState {
-  LibraryState(
-    this.uri, {
-    required this.isSaved,
-    required this.canSave,
-  });
+  LibraryState(this.uri, {required this.isSaved, required this.canSave});
 
   @JsonKey(name: 'uri')
   final String uri;

@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace 'de.minimalme.spotify_sdk_example'
-    compileSdk 34
+    compileSdk 35
     ndkVersion = "27.0.12077973"
 
     compileOptions {
@@ -23,10 +23,12 @@ android {
     }
 
     defaultConfig {
-        manifestPlaceholders = [redirectSchemeName: "spotify-sdk", redirectHostName: "auth"]
+        // `redirectPathPattern` is mandatory since com.spotify.android:auth 3.0.0.
+        // `.*` keeps the pre-3.0 behaviour of accepting any redirect path.
+        manifestPlaceholders = [redirectSchemeName: "spotify-sdk", redirectHostName: "auth", redirectPathPattern: ".*"]
         applicationId = "de.minimalme.spotify_sdk_example"
-        minSdk = 21
-        targetSdk = 34
+        minSdkVersion = flutter.minSdkVersion
+        targetSdk = 35
         versionCode = flutter.versionCode
         versionName = flutter.versionName
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"

@@ -8,7 +8,7 @@ part of 'crossfade_state.dart';
 
 CrossfadeState _$CrossfadeStateFromJson(Map<String, dynamic> json) =>
     CrossfadeState(
-      json['duration'] as int,
+      (json['duration'] as num).toInt(),
       isEnabled: json['isEnabled'] as bool,
     );
 

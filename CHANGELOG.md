@@ -1,3 +1,17 @@
+## 4.0.0
+* **BREAKING**: raised minimum SDKs — Dart `>=3.12.0`, Flutter `>=3.32.0`, Android `compileSdk`/`targetSdk` 35, and iOS deployment target 13.0.
+* **BREAKING**: web — replaced the discontinued `js` package with `dart:js_interop` + `package:web`. The Web Playback SDK interop is now expressed with extension types; no public Dart API changed, but the web implementation now requires a `js_interop`-capable Flutter (already covered by the SDK bump).
+* **BREAKING (Android)**: bumped `com.spotify.android:auth` 2.1.0 → 4.0.1. Since auth 3.0.0 the `redirectPathPattern` manifest placeholder is **mandatory** — add it alongside the existing placeholders in your app's `android/app/build.gradle` (use `.*` to keep accepting any path):
+  ```groovy
+  defaultConfig {
+      manifestPlaceholders = [redirectSchemeName: "spotify-sdk", redirectHostName: "auth", redirectPathPattern: ".*"]
+      ...
+  }
+  ```
+* chore: bump Android toolchain — Android Gradle Plugin 8.7.1, Kotlin 2.2.20.
+* chore: bump iOS native Spotify SDK to v5.0.1 and handle `getAccessToken` failure (#242).
+* chore: upgrade Dart dependencies — `dio` 5.10.0, `http` 1.6.0, `logger` 2.7.0, `json_annotation` 4.12.0, `crypto` 3.0.7, `synchronized` 3.4.1, and dev deps `build_runner` 2.15.0, `json_serializable` 6.14.0, `flutter_lints` 6.0.0.
+
 ## 3.0.2
 * chore: update deprications (#224)
 
