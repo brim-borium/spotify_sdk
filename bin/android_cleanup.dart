@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'android_setup.dart';
 
-/// Removes all changes made by the [android_setup] script.
+/// Removes all changes made by the android_setup script.
 Future<void> main(List<String> args) async {
   logger.i('running android_cleanup script');
 
@@ -13,27 +13,50 @@ Future<void> main(List<String> args) async {
     logger.t('deleted directory ${moduleDir.path}');
   }
 
-  // remove the include statement from settings.gradle
-  final settingsFile = await File('android/settings.gradle').readAsString();
-  const includeStatements = [
-    "include ':$moduleName'",
-    'include ":$moduleName"'
-  ];
-  if (includeStatements.any((element) => settingsFile.contains(element))) {
-    final newSettingsFile = includeStatements.fold(settingsFile,
-        (previousValue, element) => previousValue.replaceAll(element, ''));
-    await File('android/settings.gradle').writeAsString(newSettingsFile);
-    logger.t('removed include statement from settings.gradle');
+  // remove the include statement from settings.gradle or settings.gradle.kts
+  final settingsFile = File('android/settings.gradle.kts').existsSync()
+      ? File('android/settings.gradle.kts')
+      : File('android/settings.gradle');
+
+  if (settingsFile.existsSync()) {
+    final settingsFileContent = await settingsFile.readAsString();
+    final includeStatements = [
+      "include ':$moduleName'",
+      'include ":$moduleName"',
+      'include(":$moduleName")',
+      "include(':$moduleName')",
+    ];
+    if (includeStatements.any(settingsFileContent.contains)) {
+      final newSettingsFileContent = includeStatements.fold(
+        settingsFileContent,
+        (previousValue, element) => previousValue.replaceAll(element, ''),
+      );
+      await settingsFile.writeAsString(newSettingsFileContent);
+      logger.t('removed include statement from ${settingsFile.path}');
+    }
   }
 
-  // remove the manifestPlaceholder from app/build.gradle
-  final appBuildFile = await File('android/app/build.gradle').readAsString();
-  if (appBuildFile.contains('manifestPlaceholders')) {
-    final newAppBuildFile = appBuildFile
-        .split('\n')
-        .where((element) => !element.contains('manifestPlaceholders'))
-        .join('\n');
-    await File('android/app/build.gradle').writeAsString(newAppBuildFile);
-    logger.t('removed manifestPlaceholders from app/build.gradle');
+  // remove the RedirectUriReceiverActivity from AndroidManifest.xml
+  final manifestFile = File('android/app/src/main/AndroidManifest.xml');
+  if (manifestFile.existsSync()) {
+    final content = await manifestFile.readAsString();
+    const activityName =
+        'com.spotify.sdk.android.auth.RedirectUriReceiverActivity';
+    if (content.contains(activityName)) {
+      final activityPattern = RegExp(
+        r'\s*<!-- Added by spotify_sdk setup -->\s*<activity\s+'
+        r'android:name="com\.spotify\.sdk\.android\.auth\.'
+        r'RedirectUriReceiverActivity"[\s\S]*?</activity>',
+      );
+      final activityPatternSimple = RegExp(
+        r'\s*<activity\s+android:name="com\.spotify\.sdk\.android\.auth\.'
+        r'RedirectUriReceiverActivity"[\s\S]*?</activity>',
+      );
+      final newContent = content
+          .replaceAll(activityPattern, '')
+          .replaceAll(activityPatternSimple, '');
+      await manifestFile.writeAsString(newContent);
+      logger.t('removed RedirectUriReceiverActivity from AndroidManifest.xml');
+    }
   }
 }

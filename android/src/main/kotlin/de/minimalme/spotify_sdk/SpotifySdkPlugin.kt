@@ -306,7 +306,8 @@ class SpotifySdkPlugin : MethodCallHandler, FlutterPlugin, ActivityAware, Plugin
     }
 
     private fun getAccessToken(clientId: String?, redirectUrl: String?, scope: String?, result: Result) {
-        if (applicationActivity == null) {
+        val activity = applicationActivity
+        if (activity == null) {
             throw IllegalStateException("getAccessToken needs a foreground activity")
         }
 
@@ -321,7 +322,7 @@ class SpotifySdkPlugin : MethodCallHandler, FlutterPlugin, ActivityAware, Plugin
             builder.setScopes(scopeArray)
             val request = builder.build()
 
-            AuthorizationClient.openLoginActivity(applicationActivity, requestCodeAuthentication, request)
+            AuthorizationClient.openLoginActivity(activity, requestCodeAuthentication, request)
         }
     }
 

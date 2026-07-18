@@ -5,7 +5,7 @@ import 'package:spotify_sdk/enums/image_dimension_enum.dart';
 extension ImageDimensionExtension on ImageDimension {
   ///maps the value to the specified enum
   ///@nodoc
-  static const values = {
+  static const Map<ImageDimension, int> values = {
     ImageDimension.large: 720,
     ImageDimension.medium: 480,
     ImageDimension.small: 360,

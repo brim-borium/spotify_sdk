@@ -5,7 +5,7 @@ import 'package:spotify_sdk/enums/podcast_playback_speed.dart';
 extension PodcastPlaybackSpeedExtension on PodcastPlaybackSpeed {
   ///maps the value to the specified enum
   ///@nodoc
-  static const values = {
+  static const Map<PodcastPlaybackSpeed, int> values = {
     PodcastPlaybackSpeed.playbackSpeed_50: 50,
     PodcastPlaybackSpeed.playbackSpeed_80: 80,
     PodcastPlaybackSpeed.playbackSpeed_100: 100,

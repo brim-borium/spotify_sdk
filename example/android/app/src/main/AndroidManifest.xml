@@ -32,5 +32,18 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+            <!-- Added by spotify_sdk setup -->
+        <activity
+            android:name="com.spotify.sdk.android.auth.RedirectUriReceiverActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data
+                    android:scheme="spotify-sdk"
+                    android:host="auth"/>
+            </intent-filter>
+        </activity>
     </application>
 </manifest>

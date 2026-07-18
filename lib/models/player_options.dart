@@ -1,30 +1,29 @@
 import 'package:json_annotation/json_annotation.dart';
+import 'package:spotify_sdk/enums/repeat_mode_enum.dart';
 
 part 'player_options.g.dart';
 
+/// The playback options of the Spotify player.
 @JsonSerializable()
 class PlayerOptions {
+  /// Constructor for [PlayerOptions].
   PlayerOptions(
     this.repeatMode, {
     required this.isShuffling,
   });
 
-  @JsonKey(name: 'shuffle')
-  final bool isShuffling;
-  @JsonKey(name: 'repeat')
-  final RepeatMode repeatMode;
-
+  /// Converts a [Map<String, dynamic>] to a [PlayerOptions].
   factory PlayerOptions.fromJson(Map<String, dynamic> json) =>
       _$PlayerOptionsFromJson(json);
 
-  Map<String, dynamic> toJson() => _$PlayerOptionsToJson(this);
-}
+  /// Whether shuffle is enabled.
+  @JsonKey(name: 'shuffle')
+  final bool isShuffling;
 
-enum RepeatMode {
-  @JsonValue(0)
-  off,
-  @JsonValue(1)
-  track,
-  @JsonValue(2)
-  context
+  /// The current repeat mode.
+  @JsonKey(name: 'repeat')
+  final SpotifyRepeatMode repeatMode;
+
+  /// Converts a [PlayerOptions] to a [Map<String, dynamic>].
+  Map<String, dynamic> toJson() => _$PlayerOptionsToJson(this);
 }

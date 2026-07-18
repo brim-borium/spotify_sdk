@@ -17,8 +17,7 @@ Unofficial Spotify Flutter SDK.
   s.dependency 'Flutter'
   s.platform = :ios, '12.0'
   s.ios.deployment_target = '12.0'
-  # Flutter.framework does not contain a i386 slice. Only x86_64 simulators are supported.
-  s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES', 'VALID_ARCHS[sdk=iphonesimulator*]' => 'x86_64' }
+  s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES' }
   s.swift_version = '5.0'
   s.prepare_command = './prepare-iOS-SDK.sh'
   s.vendored_frameworks = 'ios-sdk/SpotifyiOS.xcframework'

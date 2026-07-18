@@ -8,18 +8,18 @@ part of 'player_options.dart';
 
 PlayerOptions _$PlayerOptionsFromJson(Map<String, dynamic> json) =>
     PlayerOptions(
-      $enumDecode(_$RepeatModeEnumMap, json['repeat']),
+      $enumDecode(_$SpotifyRepeatModeEnumMap, json['repeat']),
       isShuffling: json['shuffle'] as bool,
     );
 
 Map<String, dynamic> _$PlayerOptionsToJson(PlayerOptions instance) =>
     <String, dynamic>{
       'shuffle': instance.isShuffling,
-      'repeat': _$RepeatModeEnumMap[instance.repeatMode]!,
+      'repeat': _$SpotifyRepeatModeEnumMap[instance.repeatMode]!,
     };
 
-const _$RepeatModeEnumMap = {
-  RepeatMode.off: 0,
-  RepeatMode.track: 1,
-  RepeatMode.context: 2,
+const _$SpotifyRepeatModeEnumMap = {
+  SpotifyRepeatMode.off: 0,
+  SpotifyRepeatMode.track: 1,
+  SpotifyRepeatMode.context: 2,
 };

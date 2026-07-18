@@ -2,11 +2,10 @@ import 'dart:io';
 
 import 'package:logger/logger.dart';
 
+import 'android_cleanup.dart' as cleanup;
 import 'android_module_creator.dart';
 import 'github_api.dart';
 import 'precondition_checker.dart';
-
-import 'android_cleanup.dart' as cleanup;
 
 const String scriptName = 'android_setup';
 const String moduleName = 'spotify-app-remote';
@@ -38,19 +37,22 @@ Future<void> main(List<String> args) async {
   }
 
   if (!PreconditionChecker.setupConditionsMet()) {
-    logger.e('$scriptName can not be executed, '
-        'please make sure to meet all requirements and try again.');
+    logger.e(
+      '$scriptName can not be executed, '
+      'please make sure to meet all requirements and try again.',
+    );
   } else {
     logger.i('running $scriptName script');
-    String? sdkVersion = args.cast<String?>().firstWhere(
-        (element) => element?.startsWith('--sdk-version=') ?? false,
-        orElse: () => null);
-    _runSetup(sdkVersion: sdkVersion);
+    final sdkVersion = args.cast<String?>().firstWhere(
+      (element) => element?.startsWith('--sdk-version=') ?? false,
+      orElse: () => null,
+    );
+    await _runSetup(sdkVersion: sdkVersion);
   }
 }
 
 /// Runs the setup process.
-void _runSetup({String? sdkVersion}) async {
+Future<void> _runSetup({String? sdkVersion}) async {
   Uri url;
   String name;
   try {
@@ -58,16 +60,20 @@ void _runSetup({String? sdkVersion}) async {
       (name, url) =
           await GitHubApi.fetchLatestAppRemoteReleaseAssetDownloadUrl();
     } else {
-      (name, url) =
-          await GitHubApi.fetchVersionedAppRemoteReleaseAssetDownloadUrl(
-              sdkVersion);
+      (
+        name,
+        url,
+      ) = await GitHubApi.fetchVersionedAppRemoteReleaseAssetDownloadUrl(
+        sdkVersion,
+      );
     }
-  } catch (e) {
-    logger.e('Failed to fetch the Spotify Android SDK asset, terminating.');
+  } on Exception catch (e) {
+    logger
+      ..t('Error: $e')
+      ..e('Failed to fetch the Spotify Android SDK asset, terminating.');
     return;
   }
 
-  // create the new module directory
   final destination = File('android/$moduleName/$name')
     ..createSync(recursive: true);
   logger.t('created new file ${destination.path}');

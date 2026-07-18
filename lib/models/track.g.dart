@@ -12,7 +12,7 @@ Track _$TrackFromJson(Map<String, dynamic> json) => Track(
       (json['artists'] as List<dynamic>)
           .map((e) => Artist.fromJson(e as Map<String, dynamic>))
           .toList(),
-      json['duration_ms'] as int,
+      (json['duration_ms'] as num).toInt(),
       ImageUri.fromJson(json['image_id'] as Map<String, dynamic>),
       json['name'] as String,
       json['uri'] as String,

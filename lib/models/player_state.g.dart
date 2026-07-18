@@ -11,7 +11,7 @@ PlayerState _$PlayerStateFromJson(Map<String, dynamic> json) => PlayerState(
           ? null
           : Track.fromJson(json['track'] as Map<String, dynamic>),
       (json['playback_speed'] as num).toDouble(),
-      json['playback_position'] as int,
+      (json['playback_position'] as num).toInt(),
       PlayerOptions.fromJson(json['playback_options'] as Map<String, dynamic>),
       PlayerRestrictions.fromJson(
           json['playback_restrictions'] as Map<String, dynamic>),

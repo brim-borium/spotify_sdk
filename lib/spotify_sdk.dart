@@ -3,21 +3,20 @@ import 'dart:convert';
 
 import 'package:flutter/services.dart';
 import 'package:logger/logger.dart';
-
-import 'enums/image_dimension_enum.dart';
-import 'enums/podcast_playback_speed.dart';
-import 'enums/repeat_mode_enum.dart';
-import 'extensions/image_dimension_extension.dart';
-import 'extensions/podcast_playback_speed_extension.dart';
-import 'models/capabilities.dart';
-import 'models/connection_status.dart';
-import 'models/crossfade_state.dart';
-import 'models/image_uri.dart';
-import 'models/library_state.dart';
-import 'models/player_context.dart';
-import 'models/player_state.dart';
-import 'models/user_status.dart';
-import 'platform_channels.dart';
+import 'package:spotify_sdk/enums/image_dimension_enum.dart';
+import 'package:spotify_sdk/enums/podcast_playback_speed.dart';
+import 'package:spotify_sdk/enums/repeat_mode_enum.dart';
+import 'package:spotify_sdk/extensions/image_dimension_extension.dart';
+import 'package:spotify_sdk/extensions/podcast_playback_speed_extension.dart';
+import 'package:spotify_sdk/models/capabilities.dart';
+import 'package:spotify_sdk/models/connection_status.dart';
+import 'package:spotify_sdk/models/crossfade_state.dart';
+import 'package:spotify_sdk/models/image_uri.dart';
+import 'package:spotify_sdk/models/library_state.dart';
+import 'package:spotify_sdk/models/player_context.dart';
+import 'package:spotify_sdk/models/player_state.dart';
+import 'package:spotify_sdk/models/user_status.dart';
+import 'package:spotify_sdk/platform_channels.dart';
 
 export 'package:spotify_sdk/enums/image_dimension_enum.dart';
 export 'package:spotify_sdk/enums/podcast_playback_speed.dart';
@@ -32,64 +31,74 @@ export 'package:spotify_sdk/extensions/podcast_playback_speed_extension.dart';
 ///
 class SpotifySdk {
   // method channel
-  static const MethodChannel _channel =
-      MethodChannel(MethodChannels.spotifySdk);
+  static const MethodChannel _channel = MethodChannel(
+    MethodChannels.spotifySdk,
+  );
 
   //player event channels
-  static const EventChannel _playerContextChannel =
-      EventChannel(EventChannels.playerContext);
-  static const EventChannel _playerStateChannel =
-      EventChannel(EventChannels.playerState);
+  static const EventChannel _playerContextChannel = EventChannel(
+    EventChannels.playerContext,
+  );
+  static const EventChannel _playerStateChannel = EventChannel(
+    EventChannels.playerState,
+  );
 
   // user event channels
-  static const EventChannel _userStatusChannel =
-      EventChannel(EventChannels.userStatus);
-  static const EventChannel _capabilitiesChannel =
-      EventChannel(EventChannels.capabilities);
+  static const EventChannel _userStatusChannel = EventChannel(
+    EventChannels.userStatus,
+  );
+  static const EventChannel _capabilitiesChannel = EventChannel(
+    EventChannels.capabilities,
+  );
 
   // connection status channel
-  static const EventChannel _connectionStatusChannel =
-      EventChannel(EventChannels.connectionStatus);
+  static const EventChannel _connectionStatusChannel = EventChannel(
+    EventChannels.connectionStatus,
+  );
 
   //logging
   static final Logger _logger = Logger(
     //filter: CustomLogFilter(), // custom logfilter can be used to have logs in release mode
-    printer: PrettyPrinter(
-      methodCount: 2,
-      errorMethodCount: 8,
-      lineLength: 120,
-      colors: true,
-      printEmojis: true,
-    ),
+    printer: PrettyPrinter(),
   );
 
   /// Connects to Spotify Remote, returning a [bool] for confirmation
   ///
   /// Required parameters are the [clientId] and the [redirectUrl] to
   /// authenticate with the Spotify Api
-  /// iOS specific: You can optionally pass an [accessToken] that you have persisted from a previous session. This will prevent redirecting to the Spotify if the token is still valid. It will be ignored on platforms other than iOS.
-  /// iOS specific: You can optionally pass a [spotifyUri]. A blank string will play the user's last song or pick a random one. It will be ignored on platforms other than iOS.
+  /// iOS specific: You can optionally pass an [accessToken] that you have
+  /// persisted from a previous session.
+  /// This will prevent redirecting to the Spotify if the token is still valid.
+  /// It will be ignored on platforms other than iOS.
+  /// iOS specific: You can optionally pass a [spotifyUri].
+  /// A blank string will play the user's last song or pick a random one.
+  /// It will be ignored on platforms other than iOS.
   /// Throws a [PlatformException] if connecting to the remote api failed
   /// Throws a [MissingPluginException] if the method is not implemented on
   /// the native platforms.
-  static Future<bool> connectToSpotifyRemote(
-      {required String clientId,
-      required String redirectUrl,
-      String spotifyUri = '',
-      bool asRadio = false,
-      String? scope,
-      String playerName = 'Spotify SDK',
-      String? accessToken}) async {
+  static Future<bool> connectToSpotifyRemote({
+    required String clientId,
+    required String redirectUrl,
+    String spotifyUri = '',
+    bool asRadio = false,
+    String? scope,
+    String playerName = 'Spotify SDK',
+    String? accessToken,
+  }) async {
     try {
-      return await _channel.invokeMethod(MethodNames.connectToSpotify, {
-        ParamNames.clientId: clientId,
-        ParamNames.redirectUrl: redirectUrl,
-        ParamNames.playerName: playerName,
-        ParamNames.accessToken: accessToken,
-        ParamNames.scope: scope,
-        ParamNames.spotifyUri: spotifyUri,
-        ParamNames.asRadio: asRadio,
-      });
+      final result = await _channel.invokeMethod<bool>(
+        MethodNames.connectToSpotify,
+        {
+          ParamNames.clientId: clientId,
+          ParamNames.redirectUrl: redirectUrl,
+          ParamNames.playerName: playerName,
+          ParamNames.accessToken: accessToken,
+          ParamNames.scope: scope,
+          ParamNames.spotifyUri: spotifyUri,
+          ParamNames.asRadio: asRadio,
+        },
+      );
+      return result ?? false;
     } on Exception catch (e) {
       _logException(MethodNames.connectToSpotify, e);
       rethrow;
@@ -106,26 +115,31 @@ class SpotifySdk {
   /// See https://developer.spotify.com/documentation/general/guides/scopes/
   /// for more scopes and how to use them
   /// The token can be used to communicate with the web api
-  /// iOS specific: You can optionally pass a [spotifyUri]. A blank string will play the user's last song or pick a random one. It will be ignored on platforms other than iOS.
+  /// iOS specific: You can optionally pass a [spotifyUri]. A blank string will
+  /// play the user's last song or pick a random one. It will be ignored on
+  /// platforms other than iOS.
   /// Throws a [PlatformException] if retrieving the access token
   /// failed.
   /// Throws a [MissingPluginException] if the method is not implemented on
   /// the native platforms.
-  static Future<String> getAccessToken(
-      {required String clientId,
-      required String redirectUrl,
-      String spotifyUri = '',
-      bool asRadio = false,
-      String? scope}) async {
+  static Future<String> getAccessToken({
+    required String clientId,
+    required String redirectUrl,
+    String spotifyUri = '',
+    bool asRadio = false,
+    String? scope,
+  }) async {
     try {
-      final authorization =
-          await _channel.invokeMethod(MethodNames.getAccessToken, {
-        ParamNames.clientId: clientId,
-        ParamNames.redirectUrl: redirectUrl,
-        ParamNames.scope: scope,
-        ParamNames.spotifyUri: spotifyUri,
-        ParamNames.asRadio: asRadio,
-      });
+      final authorization = await _channel.invokeMethod(
+        MethodNames.getAccessToken,
+        {
+          ParamNames.clientId: clientId,
+          ParamNames.redirectUrl: redirectUrl,
+          ParamNames.scope: scope,
+          ParamNames.spotifyUri: spotifyUri,
+          ParamNames.asRadio: asRadio,
+        },
+      );
       return authorization.toString();
     } on Exception catch (e) {
       _logException(MethodNames.getAccessToken, e);
@@ -133,20 +147,21 @@ class SpotifySdk {
     }
   }
 
+  /// Deprecated. Use [getAccessToken] instead.
   @Deprecated('Use [getAccessToken]')
-  static Future<String> getAuthenticationToken(
-          {required String clientId,
-          required String redirectUrl,
-          String spotifyUri = '',
-          bool asRadio = false,
-          String? scope}) =>
-      getAccessToken(
-        clientId: clientId,
-        redirectUrl: redirectUrl,
-        spotifyUri: spotifyUri,
-        asRadio: asRadio,
-        scope: scope,
-      );
+  static Future<String> getAuthenticationToken({
+    required String clientId,
+    required String redirectUrl,
+    String spotifyUri = '',
+    bool asRadio = false,
+    String? scope,
+  }) => getAccessToken(
+    clientId: clientId,
+    redirectUrl: redirectUrl,
+    spotifyUri: spotifyUri,
+    asRadio: asRadio,
+    scope: scope,
+  );
 
   /// Logs the user out and disconnects the app from the users spotify account
   ///
@@ -155,7 +170,10 @@ class SpotifySdk {
   /// the native platforms.
   static Future<bool> disconnect() async {
     try {
-      return await _channel.invokeMethod(MethodNames.disconnectFromSpotify);
+      final result = await _channel.invokeMethod<bool>(
+        MethodNames.disconnectFromSpotify,
+      );
+      return result ?? false;
     } on Exception catch (e) {
       _logException(MethodNames.disconnectFromSpotify, e);
       rethrow;
@@ -169,14 +187,15 @@ class SpotifySdk {
   /// the native platforms.
   static Future<CrossfadeState?> getCrossFadeState() async {
     try {
-      var crossfadeStateJson =
-          await (_channel.invokeMethod<String>(MethodNames.getCrossfadeState));
+      final crossfadeStateJson = await _channel.invokeMethod<String>(
+        MethodNames.getCrossfadeState,
+      );
       if (crossfadeStateJson == null) {
         return null;
       }
-      var crossfadeStateMap =
+      final crossfadeStateMap =
           jsonDecode(crossfadeStateJson) as Map<String, dynamic>;
-      var crossfadeState = CrossfadeState.fromJson(crossfadeStateMap);
+      final crossfadeState = CrossfadeState.fromJson(crossfadeStateMap);
       return crossfadeState;
     } on Exception catch (e) {
       _logException(MethodNames.getCrossfadeState, e);
@@ -191,13 +210,15 @@ class SpotifySdk {
   /// the native platforms.
   static Future<PlayerState?> getPlayerState() async {
     try {
-      var playerStateJson =
-          await (_channel.invokeMethod<String>(MethodNames.getPlayerState));
+      final playerStateJson = await _channel.invokeMethod<String>(
+        MethodNames.getPlayerState,
+      );
       if (playerStateJson == null) {
         return null;
       }
-      var playerStateMap = jsonDecode(playerStateJson) as Map<String, dynamic>;
-      var playerState = PlayerState.fromJson(playerStateMap);
+      final playerStateMap =
+          jsonDecode(playerStateJson) as Map<String, dynamic>;
+      final playerState = PlayerState.fromJson(playerStateMap);
       return playerState;
     } on Exception catch (e) {
       _logException(MethodNames.getPlayerState, e);
@@ -211,10 +232,11 @@ class SpotifySdk {
   /// Throws a [PlatformException] if queing failed
   /// Throws a [MissingPluginException] if the method is not implemented on
   /// the native platforms.
-  static Future queue({required String spotifyUri}) async {
+  static Future<void> queue({required String spotifyUri}) async {
     try {
-      await _channel.invokeMethod(
-          MethodNames.queueTrack, {ParamNames.spotifyUri: spotifyUri});
+      await _channel.invokeMethod(MethodNames.queueTrack, {
+        ParamNames.spotifyUri: spotifyUri,
+      });
     } on Exception catch (e) {
       _logException(MethodNames.queueTrack, e);
       rethrow;
@@ -228,7 +250,7 @@ class SpotifySdk {
   /// Throws a [PlatformException] if playing failed
   /// Throws a [MissingPluginException] if the method is not implemented on
   /// the native platforms.
-  static Future play({
+  static Future<void> play({
     required String spotifyUri,
     bool asRadio = false,
   }) async {
@@ -248,7 +270,7 @@ class SpotifySdk {
   /// Throws a [PlatformException] if pausing failed
   /// Throws a [MissingPluginException] if the method is not implemented on
   /// the native platforms.
-  static Future pause() async {
+  static Future<void> pause() async {
     try {
       await _channel.invokeMethod(MethodNames.pause);
     } on Exception catch (e) {
@@ -262,7 +284,7 @@ class SpotifySdk {
   /// Throws a [PlatformException] if resuming failed
   /// Throws a [MissingPluginException] if the method is not implemented on
   /// the native platforms.
-  static Future resume() async {
+  static Future<void> resume() async {
     try {
       await _channel.invokeMethod(MethodNames.resume);
     } on Exception catch (e) {
@@ -279,11 +301,13 @@ class SpotifySdk {
   /// Throws a [PlatformException] if resuming failed
   /// Throws a [MissingPluginException] if the method is not implemented on
   /// the native platforms.
-  static Future setPodcastPlaybackSpeed(
-      {required PodcastPlaybackSpeed podcastPlaybackSpeed}) async {
+  static Future<void> setPodcastPlaybackSpeed({
+    required PodcastPlaybackSpeed podcastPlaybackSpeed,
+  }) async {
     try {
-      await _channel.invokeMethod(MethodNames.setPodcastPlaybackSpeed,
-          {ParamNames.podcastPlaybackSpeed: podcastPlaybackSpeed.value});
+      await _channel.invokeMethod(MethodNames.setPodcastPlaybackSpeed, {
+        ParamNames.podcastPlaybackSpeed: podcastPlaybackSpeed.value,
+      });
     } on Exception catch (e) {
       _logException(MethodNames.resume, e);
       rethrow;
@@ -295,7 +319,7 @@ class SpotifySdk {
   /// Throws a [PlatformException] if skipping failed
   /// Throws a [MissingPluginException] if the method is not implemented on
   /// the native platforms.
-  static Future skipNext() async {
+  static Future<void> skipNext() async {
     try {
       await _channel.invokeMethod(MethodNames.skipNext);
     } on Exception catch (e) {
@@ -309,7 +333,7 @@ class SpotifySdk {
   /// Throws a [PlatformException] if skipping failed
   /// Throws a [MissingPluginException] if the method is not implemented on
   /// the native platforms.
-  static Future skipPrevious() async {
+  static Future<void> skipPrevious() async {
     try {
       await _channel.invokeMethod(MethodNames.skipPrevious);
     } on Exception catch (e) {
@@ -325,7 +349,7 @@ class SpotifySdk {
   /// Throws a [PlatformException] if skipping failed
   /// Throws a [MissingPluginException] if the method is not implemented on
   /// the native platforms.
-  static Future skipToIndex({
+  static Future<void> skipToIndex({
     required String spotifyUri,
     required int trackIndex,
   }) async {
@@ -347,10 +371,10 @@ class SpotifySdk {
   /// the native platforms.
   static Stream<PlayerContext> subscribePlayerContext() {
     try {
-      var playerContextSubscription =
-          _playerContextChannel.receiveBroadcastStream();
+      final playerContextSubscription = _playerContextChannel
+          .receiveBroadcastStream();
       return playerContextSubscription.asyncMap((playerContextJson) {
-        var playerContextMap =
+        final playerContextMap =
             jsonDecode(playerContextJson.toString()) as Map<String, dynamic>;
         return PlayerContext.fromJson(playerContextMap);
       });
@@ -367,10 +391,10 @@ class SpotifySdk {
   /// the native platforms.
   static Stream<PlayerState> subscribePlayerState() {
     try {
-      var playerStateSubscription =
-          _playerStateChannel.receiveBroadcastStream();
+      final playerStateSubscription = _playerStateChannel
+          .receiveBroadcastStream();
       return playerStateSubscription.asyncMap((playerStateJson) {
-        var playerStateMap =
+        final playerStateMap =
             jsonDecode(playerStateJson.toString()) as Map<String, dynamic>;
         return PlayerState.fromJson(playerStateMap);
       });
@@ -387,10 +411,10 @@ class SpotifySdk {
   /// the native platforms.
   static Stream<ConnectionStatus> subscribeConnectionStatus() {
     try {
-      var connectionStatusSubscription =
-          _connectionStatusChannel.receiveBroadcastStream();
+      final connectionStatusSubscription = _connectionStatusChannel
+          .receiveBroadcastStream();
       return connectionStatusSubscription.asyncMap((connectionStatusJson) {
-        var connectionStatusMap =
+        final connectionStatusMap =
             jsonDecode(connectionStatusJson.toString()) as Map<String, dynamic>;
         return ConnectionStatus.fromJson(connectionStatusMap);
       });
@@ -406,10 +430,11 @@ class SpotifySdk {
   /// Throws a [PlatformException] if seeking failed
   /// Throws a [MissingPluginException] if the method is not implemented on
   /// the native platforms.
-  static Future seekTo({required int positionedMilliseconds}) async {
+  static Future<void> seekTo({required int positionedMilliseconds}) async {
     try {
-      await _channel.invokeMethod(MethodNames.seekTo,
-          {ParamNames.positionedMilliseconds: positionedMilliseconds});
+      await _channel.invokeMethod(MethodNames.seekTo, {
+        ParamNames.positionedMilliseconds: positionedMilliseconds,
+      });
     } on Exception catch (e) {
       _logException(MethodNames.seekTo, e);
       rethrow;
@@ -423,11 +448,13 @@ class SpotifySdk {
   /// Throws a [PlatformException] if seeking failed
   /// Throws a [MissingPluginException] if the method is not implemented on
   /// the native platforms.
-  static Future seekToRelativePosition(
-      {required int relativeMilliseconds}) async {
+  static Future<void> seekToRelativePosition({
+    required int relativeMilliseconds,
+  }) async {
     try {
-      await _channel.invokeMethod(MethodNames.seekToRelativePosition,
-          {ParamNames.relativeMilliseconds: relativeMilliseconds});
+      await _channel.invokeMethod(MethodNames.seekToRelativePosition, {
+        ParamNames.relativeMilliseconds: relativeMilliseconds,
+      });
     } on Exception catch (e) {
       _logException(MethodNames.seekToRelativePosition, e);
       rethrow;
@@ -439,7 +466,7 @@ class SpotifySdk {
   /// Throws a [PlatformException] if switching to local device failed
   /// Throws a [MissingPluginException] if the method is not implemented on
   /// the native platforms.
-  static Future switchToLocalDevice() async {
+  static Future<void> switchToLocalDevice() async {
     try {
       await _channel.invokeMethod(MethodNames.switchToLocalDevice);
     } on Exception catch (e) {
@@ -453,7 +480,7 @@ class SpotifySdk {
   /// Throws a [PlatformException] if toggling shuffle failed
   /// Throws a [MissingPluginException] if the method is not implemented on
   /// the native platforms.
-  static Future toggleShuffle() async {
+  static Future<void> toggleShuffle() async {
     try {
       await _channel.invokeMethod(MethodNames.toggleShuffle);
     } on Exception catch (e) {
@@ -467,7 +494,7 @@ class SpotifySdk {
   /// Throws a [PlatformException] if toggling repeat failed
   /// Throws a [MissingPluginException] if the method is not implemented on
   /// the native platforms.
-  static Future toggleRepeat() async {
+  static Future<void> toggleRepeat() async {
     try {
       await _channel.invokeMethod(MethodNames.toggleRepeat);
     } on Exception catch (e) {
@@ -481,10 +508,11 @@ class SpotifySdk {
   /// Throws a [PlatformException] if adding failed
   /// Throws a [MissingPluginException] if the method is not implemented on
   /// the native platforms.
-  static Future addToLibrary({required String spotifyUri}) async {
+  static Future<void> addToLibrary({required String spotifyUri}) async {
     try {
-      await _channel.invokeMethod(
-          MethodNames.addToLibrary, {ParamNames.spotifyUri: spotifyUri});
+      await _channel.invokeMethod(MethodNames.addToLibrary, {
+        ParamNames.spotifyUri: spotifyUri,
+      });
     } on Exception catch (e) {
       _logException(MethodNames.addToLibrary, e);
       rethrow;
@@ -496,10 +524,11 @@ class SpotifySdk {
   /// Throws a [PlatformException] if adding failed
   /// Throws a [MissingPluginException] if the method is not implemented on
   /// the native platforms.
-  static Future removeFromLibrary({required String spotifyUri}) async {
+  static Future<void> removeFromLibrary({required String spotifyUri}) async {
     try {
-      await _channel.invokeMethod(
-          MethodNames.removeFromLibrary, {ParamNames.spotifyUri: spotifyUri});
+      await _channel.invokeMethod(MethodNames.removeFromLibrary, {
+        ParamNames.spotifyUri: spotifyUri,
+      });
     } on Exception catch (e) {
       _logException(MethodNames.removeFromLibrary, e);
       rethrow;
@@ -511,14 +540,16 @@ class SpotifySdk {
   /// Throws a [PlatformException] getting the capability failed
   /// Throws a [MissingPluginException] if the method is not implemented on
   /// the native platforms.
-  static Future<Capabilities?> getCapabilities(
-      {required String spotifyUri}) async {
+  static Future<Capabilities?> getCapabilities({
+    required String spotifyUri,
+  }) async {
     try {
-      var capabilitiesJson =
-          await _channel.invokeMethod<String>(MethodNames.getCapabilities);
+      final capabilitiesJson = await _channel.invokeMethod<String>(
+        MethodNames.getCapabilities,
+      );
 
       if (capabilitiesJson!.isNotEmpty) {
-        var capabilitiesMap =
+        final capabilitiesMap =
             jsonDecode(capabilitiesJson) as Map<String, dynamic>;
         return Capabilities.fromJson(capabilitiesMap);
       }
@@ -535,15 +566,18 @@ class SpotifySdk {
   /// Throws a [PlatformException] when getting the library state failed
   /// Throws a [MissingPluginException] if the method is not implemented on
   /// the native platforms.
-  static Future<LibraryState?> getLibraryState(
-      {required String spotifyUri}) async {
+  static Future<LibraryState?> getLibraryState({
+    required String spotifyUri,
+  }) async {
     try {
-      var libraryStateJson = await (_channel.invokeMethod<String>(
-          MethodNames.getLibraryState, {ParamNames.spotifyUri: spotifyUri}));
+      final libraryStateJson = await _channel.invokeMethod<String>(
+        MethodNames.getLibraryState,
+        {ParamNames.spotifyUri: spotifyUri},
+      );
       if (libraryStateJson == null) {
         return null;
       }
-      var libraryStateMap =
+      final libraryStateMap =
           jsonDecode(libraryStateJson) as Map<String, dynamic>;
       return LibraryState.fromJson(libraryStateMap);
     } on Exception catch (e) {
@@ -559,10 +593,10 @@ class SpotifySdk {
   /// the native platforms.
   static Stream<Capabilities> subscribeCapabilities() {
     try {
-      var capabilitiesSubscription =
-          _capabilitiesChannel.receiveBroadcastStream();
+      final capabilitiesSubscription = _capabilitiesChannel
+          .receiveBroadcastStream();
       return capabilitiesSubscription.asyncMap((capabilitiesJson) {
-        var capabilitiesMap =
+        final capabilitiesMap =
             jsonDecode(capabilitiesJson.toString()) as Map<String, dynamic>;
         return Capabilities.fromJson(capabilitiesMap);
       });
@@ -579,9 +613,10 @@ class SpotifySdk {
   /// the native platforms.
   static Stream<UserStatus> subscribeUserStatus() {
     try {
-      var userStatusSubscription = _userStatusChannel.receiveBroadcastStream();
+      final userStatusSubscription = _userStatusChannel
+          .receiveBroadcastStream();
       return userStatusSubscription.asyncMap((userStatusJson) {
-        var userStatusMap =
+        final userStatusMap =
             jsonDecode(userStatusJson.toString()) as Map<String, dynamic>;
         return UserStatus.fromJson(userStatusMap);
       });
@@ -599,13 +634,14 @@ class SpotifySdk {
   /// Throws a [PlatformException] if adding failed
   /// Throws a [MissingPluginException] if the method is not implemented on
   /// the native platforms.
-  static Future<Uint8List?> getImage(
-      {required ImageUri imageUri,
-      ImageDimension dimension = ImageDimension.medium}) async {
+  static Future<Uint8List?> getImage({
+    required ImageUri imageUri,
+    ImageDimension dimension = ImageDimension.medium,
+  }) async {
     try {
       return _channel.invokeMethod(MethodNames.getImage, {
         ParamNames.imageUri: imageUri.raw,
-        ParamNames.imageDimension: dimension.value
+        ParamNames.imageDimension: dimension.value,
       });
     } on Exception catch (e) {
       _logException(MethodNames.getImage, e);
@@ -619,7 +655,7 @@ class SpotifySdk {
   /// Throws a [PlatformException] if adding failed
   /// Throws a [MissingPluginException] if the method is not implemented on
   /// the native platforms.
-  static Future setShuffle({required bool shuffle}) async {
+  static Future<void> setShuffle({required bool shuffle}) async {
     try {
       return _channel.invokeMethod(MethodNames.setShuffle, {
         ParamNames.shuffle: shuffle,
@@ -632,14 +668,18 @@ class SpotifySdk {
 
   /// Sets the repeat mode
   ///
-  /// Set [repeatMode] to a value of [RepeatMode].
+  /// Set [repeatMode] to a value of [SpotifyRepeatMode] either
+  /// [off, track, context].
   /// Throws a [PlatformException] if adding failed
   /// Throws a [MissingPluginException] if the method is not implemented on
   /// the native platforms.
-  static Future setRepeatMode({required RepeatMode repeatMode}) async {
+  static Future<void> setRepeatMode({
+    required SpotifyRepeatMode repeatMode,
+  }) async {
     try {
-      return _channel.invokeMethod(
-          MethodNames.setRepeatMode, {ParamNames.repeatMode: repeatMode.index});
+      return _channel.invokeMethod(MethodNames.setRepeatMode, {
+        ParamNames.repeatMode: repeatMode.index,
+      });
     } on Exception catch (e) {
       _logException(MethodNames.setRepeatMode, e);
       rethrow;
@@ -654,7 +694,7 @@ class SpotifySdk {
     } else if (e is MissingPluginException) {
       _logger.e('$method not implemented');
     } else {
-      _logger.e('$method throws unhandled exception: ${e.toString()}');
+      _logger.e('$method throws unhandled exception: $e');
     }
   }
 }

@@ -4,9 +4,9 @@ import 'package:http/http.dart' as http;
 
 import 'android_setup.dart';
 
-/// [fetchLatestAppRemoteReleaseAssetDownloadUrl] fetches the latest release of the
-/// Spotify Android SDK from GitHub API and returns the name and download url of
-/// the spotify-app-remote-release-*.aar asset.
+/// [fetchLatestAppRemoteReleaseAssetDownloadUrl] fetches the latest release of
+/// the Spotify Android SDK from GitHub API and returns the name and download
+/// url of the spotify-app-remote-release-*.aar asset.
 /// Throws an exception if the request fails.
 class GitHubApi {
   static const String apiUrl = 'https://api.github.com/repos';
@@ -17,16 +17,16 @@ class GitHubApi {
   static Future<(String, Uri)>
       fetchLatestAppRemoteReleaseAssetDownloadUrl() async {
     // fetch the github api to get the latest release
-    Uri uri = Uri.parse(apiUrl + spotifyAndroidSdkRepo + latestRelease);
+    final uri = Uri.parse(apiUrl + spotifyAndroidSdkRepo + latestRelease);
     try {
       final response = await http.get(uri);
       if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
+        final data = jsonDecode(response.body) as Map<String, dynamic>;
         return _findAsset(data);
       } else {
         logger.e('Failed to fetch data from the API.');
       }
-    } catch (e) {
+    } on Exception catch (e) {
       logger.e('An error occurred: $e');
     }
     throw Exception();
@@ -34,36 +34,38 @@ class GitHubApi {
 
   static Future<(String, Uri)> fetchVersionedAppRemoteReleaseAssetDownloadUrl(
       String sdkVersion) async {
-    if (sdkVersion.startsWith('--sdk-version=')) {
-      sdkVersion = sdkVersion.substring(14);
+    var version = sdkVersion;
+    if (version.startsWith('--sdk-version=')) {
+      version = version.substring(14);
     }
-    if (sdkVersion.startsWith('v')) {
-      sdkVersion = sdkVersion.substring(1);
+    if (version.startsWith('v')) {
+      version = version.substring(1);
     }
 
     // fetch the github api to get all releases
-    Uri uri = Uri.parse(apiUrl + spotifyAndroidSdkRepo + allReleases);
+    final uri = Uri.parse(apiUrl + spotifyAndroidSdkRepo + allReleases);
     try {
       final response = await http.get(uri);
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body) as List<dynamic>;
 
-        logger.t(
-            'Found ${data.length} releases of the Spotify Android SDK on GitHub.');
+        logger.t('Found ${data.length} releases of the Spotify Android SDK '
+            'on GitHub.');
         final releaseData = data.firstWhere(
           (element) {
-            final tagName = element['tag_name'] as String;
-            return tagName.contains('v$sdkVersion');
+            final releaseMap = element as Map<String, dynamic>;
+            final tagName = releaseMap['tag_name'] as String;
+            return tagName.contains('v$version');
           },
           orElse: () {
-            logger.e('Failed to find a release with version "$sdkVersion".');
+            logger.e('Failed to find a release with version "$version".');
             throw Exception();
           },
-        );
+        ) as Map<String, dynamic>;
 
         return _findAsset(releaseData);
       }
-    } catch (e) {
+    } on Exception catch (e) {
       logger.e('An error occurred: $e');
     }
     throw Exception();
@@ -73,10 +75,11 @@ class GitHubApi {
     final assets = data['assets'] as List<dynamic>;
 
     final assetMap = <int, (String, String)>{};
-    for (var asset in assets) {
-      final id = asset['id'] as int;
-      final name = asset['name'] as String;
-      final url = asset['browser_download_url'] as String;
+    for (final asset in assets) {
+      final assetMapData = asset as Map<String, dynamic>;
+      final id = assetMapData['id'] as int;
+      final name = assetMapData['name'] as String;
+      final url = assetMapData['browser_download_url'] as String;
       assetMap[id] = (name, url);
     }
 

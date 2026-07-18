@@ -7,7 +7,7 @@ part of 'user_status.dart';
 // **************************************************************************
 
 UserStatus _$UserStatusFromJson(Map<String, dynamic> json) => UserStatus(
-      json['code'] as int,
+      (json['code'] as num).toInt(),
       json['short_text'] as String,
       json['long_text'] as String,
     );
