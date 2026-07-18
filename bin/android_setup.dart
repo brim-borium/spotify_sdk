@@ -86,8 +86,25 @@ Future<void> _runSetup({String? sdkVersion}) async {
   client.close();
   logger.t('downloaded $name to ${destination.path}');
 
-  // create the new module
+  // create the new module in the main plugin directory
   await AndroidModuleCreator(moduleName, name).createModuleDirectory();
+
+  final isPluginDevelopment = Directory('example').existsSync();
+  if (isPluginDevelopment) {
+    logger.i(
+      'Plugin development environment detected. '
+      'Setting up example app as well...',
+    );
+    final exampleDestination = File('example/android/$moduleName/$name')
+      ..createSync(recursive: true);
+    await destination.copy(exampleDestination.path);
+    logger.t('copied $name to ${exampleDestination.path}');
+    await AndroidModuleCreator(
+      moduleName,
+      name,
+      basePath: 'example',
+    ).createModuleDirectory();
+  }
 }
 
 /// Log filter to show all logs when running the script in release mode.

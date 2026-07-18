@@ -1,6 +1,7 @@
 name: spotify_sdk_example
 description: Demonstrates how to use the spotify_sdk plugin.
 publish_to: 'none'
+resolution: workspace
 
 environment:
   sdk: ^3.12.0
@@ -12,7 +13,7 @@ dependencies:
   flutter_dotenv: ^6.0.1
   logger: ^2.7.0
   spotify_sdk:
-    path: ../
+    path: ../packages/spotify_sdk
 
 dev_dependencies:
   flutter_test:

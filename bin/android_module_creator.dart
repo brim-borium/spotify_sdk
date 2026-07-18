@@ -7,9 +7,16 @@ import 'android_setup.dart';
 /// Responsible for creating a new android module in the /android directory
 /// of the flutter project.
 class AndroidModuleCreator {
-  AndroidModuleCreator(this.moduleName, this.aarFileName);
+  AndroidModuleCreator(this.moduleName, this.aarFileName, {this.basePath = ''});
   String moduleName;
   String aarFileName;
+  String basePath;
+
+  String get _prefix => basePath.isEmpty
+      ? ''
+      : basePath.endsWith('/')
+      ? basePath
+      : '$basePath/';
 
   String _gradleFileContent(String aarFileName) =>
       '''
@@ -33,7 +40,7 @@ flutter pub run spotify_sdk:android_setup --cleanup
 
   Future<void> createModuleDirectory() async {
     // create directory in /android
-    final aarDir = await Directory('android/$moduleName').create();
+    final aarDir = await Directory('${_prefix}android/$moduleName').create();
     logger.t('created new directory ${aarDir.path}');
 
     // create build.gradle file
@@ -53,12 +60,15 @@ flutter pub run spotify_sdk:android_setup --cleanup
 
   Future<void> _settingsGradle(Logger logger) async {
     // Check which settings file exists
-    final settingsFile = File('android/settings.gradle.kts').existsSync()
-        ? File('android/settings.gradle.kts')
-        : File('android/settings.gradle');
+    final settingsFile =
+        File('${_prefix}android/settings.gradle.kts').existsSync()
+        ? File('${_prefix}android/settings.gradle.kts')
+        : File('${_prefix}android/settings.gradle');
 
     if (!settingsFile.existsSync()) {
-      logger.e('Error: Neither settings.gradle.kts nor settings.gradle found.');
+      logger.e(
+        'Error: Neither settings.gradle.kts nor settings.gradle found in ${_prefix}android/.',
+      );
       return;
     }
 
@@ -73,8 +83,10 @@ flutter pub run spotify_sdk:android_setup --cleanup
         content.contains("include(':$moduleName')") ||
         content.contains('include ":$moduleName"') ||
         content.contains("include ':$moduleName'")) {
-      logger.t('${settingsFile.path} already contains include statement '
-          'for $moduleName');
+      logger.t(
+        '${settingsFile.path} already contains include statement '
+        'for $moduleName',
+      );
       return;
     }
 
@@ -85,11 +97,13 @@ flutter pub run spotify_sdk:android_setup --cleanup
           'include(":app")',
           'include(":app")\ninclude(":$moduleName")',
         );
-      } else {
+      } else if (content.contains("include(':app')")) {
         newContent = content.replaceFirst(
           "include(':app')",
           "include(':app')\ninclude(':$moduleName')",
         );
+      } else {
+        newContent = '${content.trim()}\ninclude(":$moduleName")\n';
       }
     } else {
       if (content.contains("include ':app'")) {
@@ -97,11 +111,13 @@ flutter pub run spotify_sdk:android_setup --cleanup
           "include ':app'",
           "include ':app'\ninclude ':$moduleName'",
         );
-      } else {
+      } else if (content.contains('include ":app"')) {
         newContent = content.replaceFirst(
           'include ":app"',
           'include ":app"\ninclude ":$moduleName"',
         );
+      } else {
+        newContent = '${content.trim()}\ninclude ":$moduleName"\n';
       }
     }
     await settingsFile.writeAsString(newContent);
@@ -110,11 +126,12 @@ flutter pub run spotify_sdk:android_setup --cleanup
 
   Future<void> _appAndroidManifest(Logger logger) async {
     // edit app/src/main/AndroidManifest.xml file
-    final manifestFile = File('android/app/src/main/AndroidManifest.xml');
+    final manifestPath = '${_prefix}android/app/src/main/AndroidManifest.xml';
+    final manifestFile = File(manifestPath);
     if (!manifestFile.existsSync()) {
-      logger.e(
-        'Error: The file "${manifestFile.path}" does not exist. '
-        'Your android project might be misconfigured.',
+      logger.t(
+        'AndroidManifest.xml does not exist at ${manifestFile.path}. '
+        'Skipping manifest injection.',
       );
       return;
     }

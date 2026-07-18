@@ -30,9 +30,16 @@ class PreconditionChecker {
     }
 
     // check if the necessary android files exist
-    final hasAppGradle = File('android/app/build.gradle').existsSync() ||
+    final hasAppGradle =
+        File('android/app/build.gradle').existsSync() ||
         File('android/app/build.gradle.kts').existsSync();
-    if (!hasAppGradle) {
+    final isPluginDevelopment = Directory('example').existsSync();
+    final hasExampleAppGradle =
+        isPluginDevelopment &&
+        (File('example/android/app/build.gradle').existsSync() ||
+            File('example/android/app/build.gradle.kts').existsSync());
+
+    if (!hasAppGradle && !hasExampleAppGradle) {
       logger.e(
         'Error: Neither "android/app/build.gradle" nor "build.gradle.kts" exists.',
       );
@@ -41,7 +48,8 @@ class PreconditionChecker {
 
     // check if the setup may have already been executed and recommend to run
     // the cleanup script
-    var prevRun = Directory('android/$moduleName').existsSync() ||
+    var prevRun =
+        Directory('android/$moduleName').existsSync() ||
         File('android/$moduleName/build.gradle').existsSync() ||
         File('android/$moduleName/build.gradle.kts').existsSync();
 
