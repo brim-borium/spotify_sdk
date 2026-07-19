@@ -1,3 +1,5 @@
+// Ignore lints because this is a local developer CLI script, not package code.
+// ignore_for_file: avoid_print, lines_longer_than_80_chars
 import 'dart:io';
 
 void main() {
