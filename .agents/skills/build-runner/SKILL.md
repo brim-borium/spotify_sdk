@@ -1,6 +1,6 @@
 ---
 name: build-runner
-description: Generates JSON serialization code and models using build_runner in the spotify_sdk package. Use this skill when modifying files in lib/models/ or when there are missing or outdated *.g.dart files.
+description: Generates JSON serialization code and models using build_runner in the spotify_sdk package. Use this skill when modifying files in packages/spotify_sdk_platform_interface/lib/models/ or when there are missing or outdated *.g.dart files.
 ---
 
 # Build Runner Skill for spotify_sdk
@@ -8,8 +8,8 @@ description: Generates JSON serialization code and models using build_runner in 
 This skill assists the agent in running `build_runner` to generate serialization models.
 
 ## When to Use
-- When you add or modify a Dart model class in the [lib/models/](file:///Users/tobi/Projects/spotify_sdk/lib/models) directory.
-- When compilation errors suggest that `*.g.dart` files (e.g., [player_state.g.dart](file:///Users/tobi/Projects/spotify_sdk/lib/models/player_state.g.dart)) are missing or out of sync.
+- When you add or modify a Dart model class in the [packages/spotify_sdk_platform_interface/lib/models/](file:///Users/tobi/Projects/spotify_sdk/packages/spotify_sdk_platform_interface/lib/models) directory.
+- When compilation errors suggest that `*.g.dart` files (e.g., [player_state.g.dart](file:///Users/tobi/Projects/spotify_sdk/packages/spotify_sdk_platform_interface/lib/models/player_state.g.dart)) are missing or out of sync.
 - When cleaning up conflicts in generated files.
 
 ## Workflow

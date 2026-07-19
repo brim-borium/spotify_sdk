@@ -34,7 +34,7 @@
         </activity>
             <!-- Added by spotify_sdk setup -->
         <activity
-            android:name="com.spotify.sdk.android.auth.RedirectUriReceiverActivity"
+            android:name="com.spotify.sdk.android.auth.browser.RedirectUriReceiverActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>

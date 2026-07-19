@@ -13,6 +13,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  http: ^1.2.0
+  logger: ^2.7.0
   spotify_sdk_android:
     path: ../spotify_sdk_android
   spotify_sdk_ios:

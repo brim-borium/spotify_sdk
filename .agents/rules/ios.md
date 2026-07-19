@@ -1,12 +1,12 @@
 # iOS Platform Rules for `spotify_sdk`
 
-Adhere to these rules when working in the [ios/](file:///Users/tobi/Projects/spotify_sdk/ios) directory.
+Adhere to these rules when working in the [packages/spotify_sdk_ios/ios/](file:///Users/tobi/Projects/spotify_sdk/packages/spotify_sdk_ios/ios) directory.
 
 ---
 
 ## 1. Project Organization
-- Native iOS Swift logic is written in `ios/Classes/SwiftSpotifySdkPlugin.swift`.
-- Method naming and channel names must align with `MethodNames` defined in [lib/platform_channels.dart](file:///Users/tobi/Projects/spotify_sdk/lib/platform_channels.dart).
+- Native iOS Swift logic is written in [packages/spotify_sdk_ios/ios/Classes/SwiftSpotifySdkPlugin.swift](file:///Users/tobi/Projects/spotify_sdk/packages/spotify_sdk_ios/ios/Classes/SwiftSpotifySdkPlugin.swift).
+- Method naming and channel names must align with `MethodNames` defined in [packages/spotify_sdk_platform_interface/lib/platform_channels.dart](file:///Users/tobi/Projects/spotify_sdk/packages/spotify_sdk_platform_interface/lib/platform_channels.dart).
 
 ---
 

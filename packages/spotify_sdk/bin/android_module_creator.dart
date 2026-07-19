@@ -137,7 +137,7 @@ flutter pub run spotify_sdk:android_setup --cleanup
     }
     final content = await manifestFile.readAsString();
     const activityName =
-        'com.spotify.sdk.android.auth.RedirectUriReceiverActivity';
+        'com.spotify.sdk.android.auth.browser.RedirectUriReceiverActivity';
     if (content.contains(activityName)) {
       logger.t(
         'AndroidManifest.xml already contains RedirectUriReceiverActivity.',
@@ -155,7 +155,7 @@ flutter pub run spotify_sdk:android_setup --cleanup
     const activityBlock = '''
         <!-- Added by spotify_sdk setup -->
         <activity
-            android:name="com.spotify.sdk.android.auth.RedirectUriReceiverActivity"
+            android:name="com.spotify.sdk.android.auth.browser.RedirectUriReceiverActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>

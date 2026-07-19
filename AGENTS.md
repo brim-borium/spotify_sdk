@@ -9,8 +9,8 @@ Welcome! You are operating as a Senior Flutter & Native Systems Developer in the
 This repository contains a **multi-platform Flutter plugin** bridging native Spotify SDKs (iOS, Android, Web). Your goal is to keep the platform implementations completely synchronized, clean, and robust.
 
 ### Centralized Bridge Pattern
-- **Central Constants**: All method channel name constants and parameter keys MUST be stored in [lib/platform_channels.dart](file:///Users/tobi/Projects/spotify_sdk/lib/platform_channels.dart).
-- **Consolidated API**: All public methods and event streams are exposed via the main entrypoint: [lib/spotify_sdk.dart](file:///Users/tobi/Projects/spotify_sdk/lib/spotify_sdk.dart).
+- **Central Constants**: All method channel name constants and parameter keys MUST be stored in [packages/spotify_sdk_platform_interface/lib/platform_channels.dart](file:///Users/tobi/Projects/spotify_sdk/packages/spotify_sdk_platform_interface/lib/platform_channels.dart).
+- **Consolidated API**: All public methods and event streams are exposed via the main entrypoint: [packages/spotify_sdk/lib/spotify_sdk.dart](file:///Users/tobi/Projects/spotify_sdk/packages/spotify_sdk/lib/spotify_sdk.dart).
 
 ---
 
@@ -26,7 +26,7 @@ When working in platform-specific folders, consult the scoped rule files:
 ## 3. General Development Constraints
 
 ### A. Code Generation & Models
-- All Dart models reside in [lib/models/](file:///Users/tobi/Projects/spotify_sdk/lib/models) and use `json_serializable`.
+- All Dart models reside in [packages/spotify_sdk_platform_interface/lib/models/](file:///Users/tobi/Projects/spotify_sdk/packages/spotify_sdk_platform_interface/lib/models) and use `json_serializable`.
 - **CRITICAL**: Never manually edit files ending in `.g.dart`. They must be auto-generated using `build_runner`.
 - Use the `@JsonKey(name: 'snake_case')` annotation for fields, matching the native Spotify SDK payload structure.
 

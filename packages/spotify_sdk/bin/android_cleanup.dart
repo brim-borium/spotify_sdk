@@ -62,14 +62,18 @@ Future<void> _cleanupDir(String basePath) async {
     final content = await manifestFile.readAsString();
     const activityName =
         'com.spotify.sdk.android.auth.RedirectUriReceiverActivity';
-    if (content.contains(activityName)) {
+    const activityNameBrowser =
+        'com.spotify.sdk.android.auth.browser.RedirectUriReceiverActivity';
+    if (content.contains(activityName) ||
+        content.contains(activityNameBrowser)) {
       final activityPattern = RegExp(
         r'\s*<!-- Added by spotify_sdk setup -->\s*<activity\s+'
-        r'android:name="com\.spotify\.sdk\.android\.auth\.'
+        r'android:name="com\.spotify\.sdk\.android\.auth\.(?:browser\.)?'
         r'RedirectUriReceiverActivity"[\s\S]*?</activity>',
       );
       final activityPatternSimple = RegExp(
-        r'\s*<activity\s+android:name="com\.spotify\.sdk\.android\.auth\.'
+        r'\s*<activity\s+'
+        r'android:name="com\.spotify\.sdk\.android\.auth\.(?:browser\.)?'
         r'RedirectUriReceiverActivity"[\s\S]*?</activity>',
       );
       final newContent = content

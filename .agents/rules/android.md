@@ -1,19 +1,19 @@
 # Android Platform Rules for `spotify_sdk`
 
-Adhere to these rules when working in the [android/](file:///Users/tobi/Projects/spotify_sdk/android) directory.
+Adhere to these rules when working in the [packages/spotify_sdk_android/android/](file:///Users/tobi/Projects/spotify_sdk/packages/spotify_sdk_android/android) directory.
 
 ---
 
 ## 1. Project Organization
-- Native Android logic is written in Kotlin and located in [android/src/main/kotlin/de/minimalme/spotify_sdk/SpotifySdkPlugin.kt](file:///Users/tobi/Projects/spotify_sdk/android/src/main/kotlin/de/minimalme/spotify_sdk/SpotifySdkPlugin.kt).
-- Central method-channel callbacks must match the names defined in `MethodNames` inside [lib/platform_channels.dart](file:///Users/tobi/Projects/spotify_sdk/lib/platform_channels.dart) exactly.
+- Native Android logic is written in Kotlin and located in [packages/spotify_sdk_android/android/src/main/kotlin/de/minimalme/spotify_sdk/SpotifySdkPlugin.kt](file:///Users/tobi/Projects/spotify_sdk/packages/spotify_sdk_android/android/src/main/kotlin/de/minimalme/spotify_sdk/SpotifySdkPlugin.kt).
+- Central method-channel callbacks must match the names defined in `MethodNames` inside [packages/spotify_sdk_platform_interface/lib/platform_channels.dart](file:///Users/tobi/Projects/spotify_sdk/packages/spotify_sdk_platform_interface/lib/platform_channels.dart) exactly.
 
 ---
 
 ## 2. Dependencies & Build Configuration
 
 - The Spotify App Remote AAR file is downloaded locally. Do not hardcode or commit this file.
-- Always verify the module definition at `android/spotify-app-remote/build.gradle` and import references inside the main `android/build.gradle` file.
+- Always verify the module definition at `packages/spotify_sdk_android/android/spotify-app-remote/build.gradle` and import references inside the main `packages/spotify_sdk_android/android/build.gradle.kts` file.
 - If dependency errors occur, consult the `android-setup` skill to trigger `dart run spotify_sdk:android_setup --cleanup` followed by setup.
 
 ---

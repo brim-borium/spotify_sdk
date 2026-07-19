@@ -58,14 +58,25 @@ artifacts.add("default", file('spotify-app-remote-release-x.x.x.aar'))
 include ':spotify-app-remote'
 ```
 
-5. In the app/build.gradle add the following to the default config
+5. Since Spotify Android Auth SDK version 5.0.0, the redirect receiver activity is no longer automatically registered. You must explicitly declare the `RedirectUriReceiverActivity` inside the `<application>` tag of your `android/app/src/main/AndroidManifest.xml` file, substituting your scheme and host where appropriate:
 
-```groovy
-defaultConfig {
-        manifestPlaceholders = [redirectSchemeName: "spotify-sdk", redirectHostName: "auth"]
-        ...
-    }
+```xml
+<activity
+    android:name="com.spotify.sdk.android.auth.browser.RedirectUriReceiverActivity"
+    android:exported="true">
+    <intent-filter>
+        <action android:name="android.intent.action.VIEW"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+        <category android:name="android.intent.category.BROWSABLE"/>
+        <data
+            android:scheme="spotify-sdk"
+            android:host="auth"/>
+    </intent-filter>
+</activity>
 ```
+
+> [!WARNING]
+> Ensure you use the exact class name `com.spotify.sdk.android.auth.browser.RedirectUriReceiverActivity` (note the `.browser.` in the package path). The old `manifestPlaceholders` in `app/build.gradle` are no longer used.
 
 ### iOS
 

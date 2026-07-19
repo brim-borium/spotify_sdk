@@ -22,8 +22,8 @@ dart run spotify_sdk:android_setup
 This script:
 1. Connects to GitHub releases of the Spotify Android SDK.
 2. Downloads the required `.aar` file.
-3. Automatically places it in `android/spotify-app-remote/`.
-4. Dynamically updates `android/settings.gradle` and `android/spotify-app-remote/build.gradle`.
+3. Automatically places it in `packages/spotify_sdk_android/android/spotify-app-remote/` (and `example/android/spotify-app-remote/` in development).
+4. Dynamically updates `settings.gradle`/`settings.gradle.kts` and `spotify-app-remote/build.gradle` in both directories.
 
 ### 2. Troubleshooting & Cleaning Up
 If the Android setup or Gradle build gets into a broken state, run:
