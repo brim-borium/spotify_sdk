@@ -41,6 +41,9 @@ jobs:
           flutter pub global activate melos
           melos bootstrap
 
+      - name: Create Env File for Example App
+        run: cp packages/spotify_sdk/example/.env.sample packages/spotify_sdk/example/.env
+
       - name: Verify Generated Code is Up-to-Date
         run: |
           melos run generate:all
@@ -60,12 +63,12 @@ jobs:
 
       - name: Build Android Example App
         run: |
-          cd example
+          cd packages/spotify_sdk/example
           flutter build apk --debug
 
       - name: Build Web Example App
         run: |
-          cd example
+          cd packages/spotify_sdk/example
           flutter build web
 
   # macOS Job: Tests iOS compilation (Swift, CocoaPods)
@@ -84,9 +87,12 @@ jobs:
           flutter pub get
           dart run melos bootstrap
 
+      - name: Create Env File for Example App
+        run: cp packages/spotify_sdk/example/.env.sample packages/spotify_sdk/example/.env
+
       - name: Build iOS Example App (No Codesign)
         run: |
-          cd example
+          cd packages/spotify_sdk/example
           flutter build ios --no-codesign
 
   # Package Score Job: Verifies pub.dev package compatibility score using pana

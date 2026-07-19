@@ -12,7 +12,7 @@ workspace:
   - packages/spotify_sdk_android
   - packages/spotify_sdk_ios
   - packages/spotify_sdk_web
-  - example
+  - packages/spotify_sdk/example
 
 dev_dependencies:
   melos: ^8.2.2
@@ -22,6 +22,8 @@ melos:
   command:
     bootstrap:
       usePubspecOverrides: true
+      hooks:
+        post: melos run sync:license && melos run sync:readme
     version:
       ignore:
         - "spotify_sdk_example"
@@ -45,6 +47,14 @@ melos:
     version:
       run: melos version
       description: Automatically bump versions and generate changelogs using Conventional Commits.
+
+    sync:license:
+      run: melos exec -- cp "\$MELOS_ROOT_PATH/LICENSE" .
+      description: Sync the root LICENSE file to all sub-packages.
+
+    sync:readme:
+      run: cp README.md packages/spotify_sdk/README.md
+      description: Sync the root README file to the core packages/spotify_sdk folder.
 
     publish:dry-run:
       run: melos publish --dry-run --yes
