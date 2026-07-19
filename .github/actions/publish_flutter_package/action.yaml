@@ -5,6 +5,10 @@ inputs:
   working-directory:
     description: directory with-in the repository where the package is located (if not in the repository root)
     required: false
+  shell:
+    description: shell to use for running commands
+    required: false
+    default: bash
 
 runs:
   using: "composite"
@@ -13,6 +17,9 @@ runs:
       uses: actions/checkout@v4
     - name: 🐦 Setup Flutter
       uses: subosito/flutter-action@v2
+      with:
+        flutter-version-file: '.fvmrc'
+        cache: true
 
     - name: 🪪 Get Id Token
       uses: actions/github-script@v6

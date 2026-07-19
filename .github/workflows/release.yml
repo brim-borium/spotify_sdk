@@ -10,15 +10,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
+        with:
+          flutter-version-file: '.fvmrc'
+          cache: true
 
       - name: Install Dependencies
         run: |
-          flutter packages get
+          flutter pub get
           flutter pub global activate pana
           sudo apt-get install webp
 
       - name: Verify Pub Score
-        run: ./.github/scripts/verify_pub_score.sh
+        run: |
+          cd packages/spotify_sdk
+          ../../.github/scripts/verify_pub_score.sh
 
   publish:
     needs: pana

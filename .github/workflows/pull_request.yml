@@ -1,38 +1,108 @@
 name: spotify_sdk
-on: pull_request
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+# Cancel outdated builds for the same branch/PR to save GitHub Actions runner minutes
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
 
 jobs:
-  build:
+  # Linux Job: Handles linting, formatting, analysis, unit tests, and compiles Android & Web
+  build-linux:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Setup Gradle Cache
+        uses: gradle/actions/setup-gradle@v3
+
       - uses: subosito/flutter-action@v2
         with:
-          channel: 'stable'
-      - name: Install Dependencies
-        run: flutter packages get
-      - name: Format
-        run: dart format --set-exit-if-changed lib test example
-      - name: Analyze
-        run: flutter analyze lib test example --no-fatal-infos
-      - name: Publish dry run
-        run: flutter pub publish --dry-run
-      - name: Build web version
-        run: |
-              cd example
-              flutter build web
+          flutter-version-file: '.fvmrc'
+          cache: true
 
+      - name: Bootstrap Workspace
+        run: |
+          flutter pub get
+          dart run melos bootstrap
+
+      - name: Verify Generated Code is Up-to-Date
+        run: |
+          dart run melos run generate:all
+          git diff --exit-code || (echo "Generated files are out of date! Please run 'melos run generate:all' locally and commit the changes." && exit 1)
+
+      - name: Format Check
+        run: dart run melos run format
+
+      - name: Static Analysis
+        run: dart run melos run analyze
+
+      - name: Run Tests
+        run: dart run melos run test:all
+
+      - name: Build Android Example App
+        run: |
+          cd example
+          flutter build apk --debug
+
+      - name: Build Web Example App
+        run: |
+          cd example
+          flutter build web
+
+  # macOS Job: Tests iOS compilation (Swift, CocoaPods)
+  build-ios:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version-file: '.fvmrc'
+          cache: true
+
+      - name: Bootstrap Workspace
+        run: |
+          flutter pub get
+          dart run melos bootstrap
+
+      - name: Build iOS Example App (No Codesign)
+        run: |
+          cd example
+          flutter build ios --no-codesign
+
+  # Package Score Job: Verifies pub.dev package compatibility score using pana
   pana:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - uses: subosito/flutter-action@v2
+        with:
+          flutter-version-file: '.fvmrc'
+          cache: true
 
       - name: Install Dependencies
         run: |
-          flutter packages get
+          flutter pub get
           flutter pub global activate pana
           sudo apt-get install webp
 
       - name: Verify Pub Score
-        run: ./.github/scripts/verify_pub_score.sh
+        run: |
+          cd packages/spotify_sdk
+          ../../.github/scripts/verify_pub_score.sh

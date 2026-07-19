@@ -22,6 +22,9 @@ melos:
   command:
     bootstrap:
       usePubspecOverrides: true
+    version:
+      ignore:
+        - "spotify_sdk_example"
   scripts:
     analyze:
       run: melos exec -- flutter analyze
@@ -38,3 +41,7 @@ melos:
     generate:all:
       run: melos exec --depends-on="build_runner" -- flutter pub run build_runner build --delete-conflicting-outputs
       description: Run build_runner code generation across all packages.
+
+    version:
+      run: melos version
+      description: Automatically bump versions and generate changelogs using Conventional Commits.

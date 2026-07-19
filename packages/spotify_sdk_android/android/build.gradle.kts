@@ -123,3 +123,15 @@ kotlin {
         jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
     }
 }
+
+tasks.register("downloadSpotifySdk") {
+    group = "verification"
+    description = "Verify and download the Spotify App Remote SDK AAR file"
+    doLast {
+        if (aarDestFile.exists()) {
+            println("Spotify App Remote SDK is successfully downloaded and located at: ${aarDestFile.absolutePath}")
+        } else {
+            throw GradleException("Spotify App Remote SDK download failed or file is missing.")
+        }
+    }
+}
