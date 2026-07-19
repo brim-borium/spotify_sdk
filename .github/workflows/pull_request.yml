@@ -116,4 +116,4 @@ jobs:
       - name: Verify Pub Score
         run: |
           cd packages/spotify_sdk
-          ../../.github/scripts/verify_pub_score.sh
+          ../../.github/scripts/verify_pub_score.sh 140

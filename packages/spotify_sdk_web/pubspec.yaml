@@ -32,4 +32,4 @@ flutter:
     platforms:
       web:
         pluginClass: SpotifySdkPlugin
-        fileName: lib/spotify_sdk_web.dart
+        fileName: spotify_sdk_web.dart
