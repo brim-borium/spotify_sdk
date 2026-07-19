@@ -38,24 +38,25 @@ jobs:
       - name: Bootstrap Workspace
         run: |
           flutter pub get
-          dart run melos bootstrap
+          flutter pub global activate melos
+          melos bootstrap
 
       - name: Verify Generated Code is Up-to-Date
         run: |
-          dart run melos run generate:all
+          melos run generate:all
           git diff --exit-code || (echo "Generated files are out of date! Please run 'melos run generate:all' locally and commit the changes." && exit 1)
 
       - name: Format Check
-        run: dart run melos run format
+        run: melos run format
 
       - name: Static Analysis
-        run: dart run melos run analyze
+        run: melos run analyze
 
       - name: Run Tests
-        run: dart run melos run test:all
+        run: melos run test:all
 
       - name: Run Publish Dry-Run Checks
-        run: dart run melos run publish:dry-run
+        run: melos run publish:dry-run
 
       - name: Build Android Example App
         run: |
