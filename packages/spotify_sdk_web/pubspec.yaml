@@ -15,7 +15,6 @@ dependencies:
     sdk: flutter
   flutter_web_plugins:
     sdk: flutter
-  js: ^0.7.2
   spotify_sdk_platform_interface:
     path: ../spotify_sdk_platform_interface
   synchronized: ^3.4.1
