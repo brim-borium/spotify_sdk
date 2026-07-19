@@ -91,6 +91,11 @@ jobs:
       - name: Create Env File for Example App
         run: cp packages/spotify_sdk/example/.env.sample packages/spotify_sdk/example/.env
 
+      - name: Prepare iOS Spotify SDK
+        run: |
+          cd packages/spotify_sdk_ios/ios
+          ./prepare-iOS-SDK.sh
+
       - name: Build iOS Example App (No Codesign)
         run: |
           cd packages/spotify_sdk/example

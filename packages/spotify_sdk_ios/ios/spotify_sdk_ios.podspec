@@ -13,13 +13,13 @@ Unofficial Spotify Flutter SDK.
   s.license          = { :file => '../LICENSE' }
   s.author           = { 'Your Company' => 'fdimanidis@gmail.com' }
   s.source           = { :path => '.' }
-  s.source_files = 'Classes/**/*'
+  s.source_files = 'spotify_sdk_ios/Classes/**/*'
   s.dependency 'Flutter'
   s.platform = :ios, '12.0'
   s.ios.deployment_target = '12.0'
   s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES' }
   s.swift_version = '5.0'
   s.prepare_command = './prepare-iOS-SDK.sh'
-  s.vendored_frameworks = 'ios-sdk/SpotifyiOS.xcframework'
-  s.preserve_paths = 'ios-sdk/SpotifyiOS.xcframework'
+  s.vendored_frameworks = 'spotify_sdk_ios/ios-sdk/SpotifyiOS.xcframework'
+  s.preserve_paths = 'spotify_sdk_ios/ios-sdk/SpotifyiOS.xcframework'
   end

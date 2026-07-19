@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/services.dart';
-import 'package:logger/logger.dart';
+import 'package:spotify_sdk_platform_interface/logging/logger.dart';
 import 'package:spotify_sdk_platform_interface/platform_channels.dart';
 import 'package:spotify_sdk_platform_interface/spotify_sdk_platform_interface.dart';
 
@@ -35,9 +35,7 @@ class MethodChannelSpotifySdk extends SpotifySdkPlatform {
   );
 
   //logging
-  static final Logger _logger = Logger(
-    printer: PrettyPrinter(),
-  );
+  static final Logger _logger = Logger();
 
   @override
   Future<bool> connectToSpotifyRemote({
