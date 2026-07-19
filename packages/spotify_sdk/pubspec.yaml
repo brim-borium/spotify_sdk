@@ -1,0 +1,33 @@
+name: spotify_sdk
+description: A flutter plugin that let's you communicate with the spotify sdk and auth lib
+version: 4.0.0-dev.1
+homepage: https://github.com/brim-borium/spotify_sdk
+issue_tracker: https://github.com/brim-borium/spotify_sdk/issues
+resolution: workspace
+
+environment:
+  sdk: ^3.12.0
+  flutter: '>=3.44.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  spotify_sdk_android: ^1.0.0
+  spotify_sdk_ios: ^1.0.0
+  spotify_sdk_platform_interface: ^1.0.0
+  spotify_sdk_web: ^1.0.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  very_good_analysis: ^10.3.0
+
+flutter:
+  plugin:
+    platforms:
+      android:
+        default_package: spotify_sdk_android
+      ios:
+        default_package: spotify_sdk_ios
+      web:
+        default_package: spotify_sdk_web

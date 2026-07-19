@@ -1,0 +1,24 @@
+name: spotify_sdk_platform_interface
+description: Platform interface contract for spotify_sdk.
+version: 1.0.0
+homepage: https://github.com/brim-borium/spotify_sdk
+repository: https://github.com/brim-borium/spotify_sdk/tree/main/packages/spotify_sdk_platform_interface
+resolution: workspace
+
+environment:
+  sdk: ^3.12.0
+  flutter: '>=3.44.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  json_annotation: ^4.12.0
+  logger: ^2.7.0
+  plugin_platform_interface: ^2.1.8
+
+dev_dependencies:
+  build_runner: ^2.15.1
+  flutter_test:
+    sdk: flutter
+  json_serializable: ^6.14.0
+  very_good_analysis: ^10.3.0

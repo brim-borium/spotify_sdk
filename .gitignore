@@ -11,8 +11,6 @@ flutter_export_environment.sh
 
 examples/all_plugins/pubspec.yaml
 
-Podfile
-Podfile.lock
 Pods/
 .symlinks/
 **/Flutter/App.framework/
@@ -48,3 +46,16 @@ build/
 SpotifyiOS.framework
 **/doc/api/
 /ios/ios-sdk/
+
+# FVM SDK cache
+.fvm/
+
+# Local agent artifacts
+.artifacts/
+
+# Local environment variables
+.env
+*.env
+
+# Dynamically downloaded Spotify App Remote Maven repository
+**/m2repository/

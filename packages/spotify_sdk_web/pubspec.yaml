@@ -1,0 +1,34 @@
+name: spotify_sdk_web
+description: Web implementation of spotify_sdk.
+version: 1.0.0
+homepage: https://github.com/brim-borium/spotify_sdk
+repository: https://github.com/brim-borium/spotify_sdk/tree/main/packages/spotify_sdk_web
+resolution: workspace
+
+environment:
+  sdk: ^3.12.0
+  flutter: '>=3.44.0'
+
+dependencies:
+  crypto: ^3.0.7
+  dio: ^5.10.0
+  flutter:
+    sdk: flutter
+  flutter_web_plugins:
+    sdk: flutter
+  spotify_sdk_platform_interface: ^1.0.0
+  synchronized: ^3.4.1
+  web: ^1.1.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  very_good_analysis: ^10.3.0
+
+flutter:
+  plugin:
+    implements: spotify_sdk
+    platforms:
+      web:
+        pluginClass: SpotifySdkPlugin
+        fileName: spotify_sdk_web.dart

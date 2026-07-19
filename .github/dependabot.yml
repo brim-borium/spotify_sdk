@@ -1,12 +1,24 @@
-# To get started with Dependabot version updates, you'll need to specify which
-# package ecosystems to update and where the package manifests are located.
-# Please see the documentation for all configuration options:
-# https://docs.github.com/github/administering-a-repository/configuration-options-for-dependency-updates
+# Dependabot configuration for spotify_sdk monorepo
+# Documented options: https://docs.github.com/github/administering-a-repository/configuration-options-for-dependency-updates
 
 version: 2
 updates:
-  - package-ecosystem: "pub" # See documentation for possible values
-    directory: "/" # Location of package manifests
+  # Root workspace pub dependencies
+  - package-ecosystem: "pub"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+    groups:
+      spotify_sdk_root:
+        patterns:
+          - "*"
+
+  # App-facing package pub dependencies
+  - package-ecosystem: "pub"
+    directory: "/packages/spotify_sdk"
     schedule:
       interval: "weekly"
     commit-message:
@@ -16,9 +28,62 @@ updates:
       spotify_sdk:
         patterns:
           - "*"
-      
+
+  # Android package pub dependencies
   - package-ecosystem: "pub"
-    directory: "/example" # Location of package manifests in the example directory
+    directory: "/packages/spotify_sdk_android"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+    groups:
+      spotify_sdk_android:
+        patterns:
+          - "*"
+
+  # iOS package pub dependencies
+  - package-ecosystem: "pub"
+    directory: "/packages/spotify_sdk_ios"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+    groups:
+      spotify_sdk_ios:
+        patterns:
+          - "*"
+
+  # Platform Interface package pub dependencies
+  - package-ecosystem: "pub"
+    directory: "/packages/spotify_sdk_platform_interface"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+    groups:
+      spotify_sdk_platform_interface:
+        patterns:
+          - "*"
+
+  # Web package pub dependencies
+  - package-ecosystem: "pub"
+    directory: "/packages/spotify_sdk_web"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+    groups:
+      spotify_sdk_web:
+        patterns:
+          - "*"
+
+  # Example app pub dependencies
+  - package-ecosystem: "pub"
+    directory: "/example"
     schedule:
       interval: "weekly"
     commit-message:
@@ -28,7 +93,8 @@ updates:
       spotify_sdk_example:
         patterns:
           - "*"
-      
+
+  # GitHub Actions workflow updates
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
@@ -38,5 +104,31 @@ updates:
       include: "scope"
     groups:
       github_actions:
+        patterns:
+          - "*"
+
+  # Gradle updates for Android plugin
+  - package-ecosystem: "gradle"
+    directory: "/packages/spotify_sdk_android/android"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+    groups:
+      gradle_android:
+        patterns:
+          - "*"
+
+  # Gradle updates for Example app
+  - package-ecosystem: "gradle"
+    directory: "/example/android"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+    groups:
+      gradle_example:
         patterns:
           - "*"

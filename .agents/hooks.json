@@ -1,0 +1,75 @@
+{
+  "analytics-hook": {
+    "PreToolUse": [
+      {
+        "matcher": ".*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/.agents/hooks/analytics.py\"",
+            "timeout": 15
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": ".*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/.agents/hooks/analytics.py\"",
+            "timeout": 15
+          }
+        ]
+      }
+    ],
+    "PreInvocation": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/.agents/hooks/analytics.py\"",
+            "timeout": 15
+          }
+        ]
+      }
+    ],
+    "PostInvocation": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/.agents/hooks/analytics.py\"",
+            "timeout": 15
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/.agents/hooks/analytics.py\"",
+            "timeout": 15
+          }
+        ]
+      }
+    ]
+  },
+  "formatter-hook": {
+    "PostToolUse": [
+      {
+        "matcher": "write_to_file|replace_file_content|multi_replace_file_content",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "case \"$CLAUDE_TOOL_INPUT_FILE_PATH\" in *.dart) dart format \"$CLAUDE_TOOL_INPUT_FILE_PATH\" ;; esac",
+            "timeout": 15
+          }
+        ]
+      }
+    ]
+  }
+}

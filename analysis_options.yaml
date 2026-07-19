@@ -1,12 +1,12 @@
-include: package:flutter_lints/flutter.yaml
+include: package:very_good_analysis/analysis_options.yaml
 
 analyzer:
   exclude:
-    # Ignore generated files
     - "**/*.g.dart"
     - "lib/generated/**"
+    - ".github/**"
   errors:
     close_sinks: ignore
+
 linter:
-  rules:
-    unsafe_html: false
+  rules: []
