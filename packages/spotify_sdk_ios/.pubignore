@@ -1,0 +1,8 @@
+# Pubignore for spotify_sdk_ios
+# Excludes development/IDE files but ensures compiled iOS SDK binaries are published to pub.dev
+.DS_Store
+.idea/
+.vscode/
+build/
+*.swp
+.git/
