@@ -4,7 +4,6 @@ import java.net.HttpURLConnection
 
 plugins {
     id("com.android.library")
-    id("org.jetbrains.kotlin.android")
 }
 
 group = "de.minimalme.spotify_sdk"
@@ -46,6 +45,7 @@ android {
     defaultConfig {
         minSdk = 21
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles("consumer-rules.pro")
     }
 
     lint {

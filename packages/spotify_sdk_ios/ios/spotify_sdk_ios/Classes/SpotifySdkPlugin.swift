@@ -1,8 +1,8 @@
 import Flutter
 import SpotifyiOS
 
-public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
-    private static var instance = SwiftSpotifySdkPlugin()
+public class SpotifySdkPlugin: NSObject, FlutterPlugin {
+    private static var instance = SpotifySdkPlugin()
     private var appRemote: SPTAppRemote?
     private var connectionStatusHandler: ConnectionStatusHandler?
     private var playerStateHandler: PlayerStateHandler?
@@ -343,10 +343,10 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
             appRemote.delegate = connectionStatusHandler
             let playerDelegate = PlayerDelegate()
             playerStateHandler = PlayerStateHandler(appRemote: appRemote, playerDelegate: playerDelegate)
-            SwiftSpotifySdkPlugin.playerStateChannel?.setStreamHandler(playerStateHandler)
+            SpotifySdkPlugin.playerStateChannel?.setStreamHandler(playerStateHandler)
 
             playerContextHandler = PlayerContextHandler(appRemote: appRemote, playerDelegate: playerDelegate)
-            SwiftSpotifySdkPlugin.playerContextChannel?.setStreamHandler(playerContextHandler)
+            SpotifySdkPlugin.playerContextChannel?.setStreamHandler(playerContextHandler)
 
             appRemote.connectionParameters.accessToken = accessToken
             self.appRemote = appRemote
@@ -375,7 +375,7 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
     }
 }
 
-extension SwiftSpotifySdkPlugin {
+extension SpotifySdkPlugin {
     public func application(_ application: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
         setAccessTokenFromURL(url: url)
         return true
