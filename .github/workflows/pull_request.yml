@@ -54,6 +54,9 @@ jobs:
       - name: Run Tests
         run: dart run melos run test:all
 
+      - name: Run Publish Dry-Run Checks
+        run: dart run melos run publish:dry-run
+
       - name: Build Android Example App
         run: |
           cd example

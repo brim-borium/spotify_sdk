@@ -45,3 +45,7 @@ melos:
     version:
       run: melos version
       description: Automatically bump versions and generate changelogs using Conventional Commits.
+
+    publish:dry-run:
+      run: melos publish --dry-run --yes
+      description: Run dry-run package publishing check across all packages in the workspace.
