@@ -32,8 +32,31 @@ jobs:
       id-token: write # Required for authentication using OIDC
     runs-on: ubuntu-latest
     steps:
-    - name: 📚 Git Checkout
-      uses: actions/checkout@v4
-      with:
-        submodules: recursive
-    - uses: ./.github/actions/publish_flutter_package
+      - name: 📚 Git Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version-file: '.fvmrc'
+          cache: true
+      - name: Bootstrap Workspace
+        run: |
+          flutter pub get
+          flutter pub global activate melos
+          melos bootstrap
+      - name: 🪪 Get Id Token
+        uses: actions/github-script@v6
+        with:
+          script: |
+            let pub_token = await core.getIDToken('https://pub.dev')
+            core.exportVariable('PUB_TOKEN', pub_token)
+      - name: 📢 Authenticate pub.dev
+        run: flutter pub pub token add https://pub.dev --env-var PUB_TOKEN
+      - name: 📢 Publish packages via Melos
+        run: melos publish --yes
