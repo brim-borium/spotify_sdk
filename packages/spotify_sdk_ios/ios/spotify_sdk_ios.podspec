@@ -3,7 +3,7 @@
 # Run `pod lib lint spotify_sdk.podspec' to validate before publishing.
 #
 Pod::Spec.new do |s|
-  s.name             = 'spotify_sdk'
+  s.name             = 'spotify_sdk_ios'
   s.version          = '0.0.1'
   s.summary          = 'Unofficial Spotify Flutter SDK.'
   s.description      = <<-DESC
