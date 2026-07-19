@@ -14,7 +14,7 @@ repositories {
 
 android {
     namespace = "de.minimalme.spotify_sdk"
-    compileSdk = 35
+    compileSdk = 36
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
@@ -39,7 +39,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:2.2.20")
     implementation("com.spotify.android:auth:5.0.0")
     implementation(project(":spotify-app-remote"))
-    implementation("com.google.code.gson:gson:2.10.1")
+    implementation("com.google.code.gson:gson:2.14.0")
     implementation("com.github.stuhlmeier:kotlin-events:v2.0")
 }
 
