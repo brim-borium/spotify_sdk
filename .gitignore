@@ -51,3 +51,6 @@ SpotifyiOS.framework
 
 # FVM SDK cache
 .fvm/
+
+# Local agent artifacts
+.artifacts/
