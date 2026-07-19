@@ -28,6 +28,7 @@ melos:
       ignore:
         - "spotify_sdk_example"
         - "spotify_sdk_monorepo"
+      gitTagVersion: false
     publish:
       hooks:
         pre: melos run generate:all
@@ -49,8 +50,8 @@ melos:
       description: Run build_runner code generation across all packages.
 
     version:
-      run: melos version
-      description: Automatically bump versions and generate changelogs using Conventional Commits.
+      run: melos version && dart run tool/tag_version.dart
+      description: Automatically bump versions, generate changelogs, and tag the release with just the version number.
 
     sync:license:
       run: melos exec -- cp "\$MELOS_ROOT_PATH/LICENSE" .

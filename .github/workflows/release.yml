@@ -59,4 +59,4 @@ jobs:
       - name: 📢 Authenticate pub.dev
         run: flutter pub pub token add https://pub.dev --env-var PUB_TOKEN
       - name: 📢 Publish packages via Melos
-        run: melos publish --yes
+        run: melos publish --no-dry-run --yes
