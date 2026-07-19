@@ -85,7 +85,8 @@ jobs:
       - name: Bootstrap Workspace
         run: |
           flutter pub get
-          dart run melos bootstrap
+          flutter pub global activate melos
+          melos bootstrap
 
       - name: Create Env File for Example App
         run: cp packages/spotify_sdk/example/.env.sample packages/spotify_sdk/example/.env

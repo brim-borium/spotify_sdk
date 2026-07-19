@@ -27,6 +27,10 @@ melos:
     version:
       ignore:
         - "spotify_sdk_example"
+        - "spotify_sdk_monorepo"
+    publish:
+      hooks:
+        pre: melos run generate:all
   scripts:
     analyze:
       run: melos exec -- flutter analyze
