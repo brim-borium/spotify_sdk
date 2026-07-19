@@ -54,3 +54,7 @@ SpotifyiOS.framework
 
 # Local agent artifacts
 .artifacts/
+
+# Local environment variables
+.env
+*.env
