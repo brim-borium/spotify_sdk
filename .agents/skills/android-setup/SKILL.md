@@ -1,39 +1,37 @@
 ---
 name: android-setup
-description: Downloads and configures the Spotify App Remote SDK AAR file for the Android platform module in the spotify_sdk package. Use this skill when building the Android module or setting up the workspace on Android.
+description: Explains how the Spotify App Remote SDK AAR is automatically resolved and configured on Android in the spotify_sdk package.
 ---
 
 # Android Setup Skill for spotify_sdk
 
-The Spotify App Remote SDK (`spotify-app-remote-*.aar`) is not checked into version control. It must be downloaded and set up locally for Android compilation.
+As of version **4.0.0-dev**, the Spotify App Remote SDK (`spotify-app-remote-*.aar`) is **automatically downloaded** during compile time by the plugin's Gradle build script. Running manual setup commands is no longer required.
 
-## When to Use
-- When you first clone the repository and need to compile or run the project on Android.
-- If Android builds fail due to missing dependencies on `spotify-app-remote` or class/module import failures.
+## Gradle Auto-Download Workflow
 
-## Workflow
+When the project builds:
+1. The plugin checks if the AAR exists in its local Maven layout (`packages/spotify_sdk_android/android/m2repository/`).
+2. If missing, it downloads it directly from Spotify's GitHub Releases tag `v0.8.0-appremote_v2.1.0-auth`.
+3. It creates a local POM file and registers this directory as a Maven repository in the `rootProject.allprojects` block, allowing the client application to resolve it transitively.
 
-### 1. Setting up the Android SDK
-Run the built-in Dart CLI setup script from the root of the project:
-```bash
-dart run spotify_sdk:android_setup
+## Required Developer Configuration
+
+The only manual setup step required for Android is declaring the redirect receiver activity in your app's `android/app/src/main/AndroidManifest.xml`:
+
+```xml
+<activity
+    android:name="com.spotify.sdk.android.auth.browser.RedirectUriReceiverActivity"
+    android:exported="true">
+    <intent-filter>
+        <action android:name="android.intent.action.VIEW"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+        <category android:name="android.intent.category.BROWSABLE"/>
+        <data
+            android:scheme="spotify-sdk"
+            android:host="auth"/>
+    </intent-filter>
+</activity>
 ```
 
-This script:
-1. Connects to GitHub releases of the Spotify Android SDK.
-2. Downloads the required `.aar` file.
-3. Automatically places it in `packages/spotify_sdk_android/android/spotify-app-remote/` (and `example/android/spotify-app-remote/` in development).
-4. Dynamically updates `settings.gradle`/`settings.gradle.kts` and `spotify-app-remote/build.gradle` in both directories.
-
-### 2. Troubleshooting & Cleaning Up
-If the Android setup or Gradle build gets into a broken state, run:
-```bash
-dart run spotify_sdk:android_setup --cleanup
-```
-And then re-run:
-```bash
-dart run spotify_sdk:android_setup --verbose
-```
-
-> [!TIP]
-> The `--verbose` flag is highly recommended for troubleshooting network connection issues or Gradle dependency mapping issues during the SDK download.
+> [!WARNING]
+> Since Spotify Android Auth library version 5.0.0, the activity must use the `.auth.browser.RedirectUriReceiverActivity` package path. Do not use the old `manifestPlaceholders` in `build.gradle` as they are no longer supported.

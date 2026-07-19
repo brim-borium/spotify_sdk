@@ -16,49 +16,12 @@ This is a flutter package that wraps the native [iOS](https://github.com/spotify
 
 ### Android
 
-This package is using both the spotify-app-remote sdk and spotify-auth library. The auth library is needed to get the access token to work with the web api.
+This package uses both the Spotify App Remote SDK and the Spotify Authentication Library.
 
-From the [Spotify Android SDK Quick Start](https://developer.spotify.com/documentation/android/quick-start/). You need two things:
+From the [Spotify Android SDK Quick Start](https://developer.spotify.com/documentation/android/quick-start/), you need to do the following:
 
-1. Register your app in the [spotify developer portal](https://developer.spotify.com/dashboard/). You also need to create a sha-1 fingerprint and add this and your package name to the app settings on the dashboard as well as a redirect url.
-2. Follow the steps below for either [Option A: Auto setup](#option-a-auto-setup) or [Option B: Manual setup](#option-b-manual-setup-instructions-for-android-studio-42).
-
-#### Option A: Auto setup
-
-Use the provided setup script to automatically download the latest version of the spotify-app-remote sdk from GitHub and setup the gradle files inside your android project. Run the following command in the root folder of your flutter project.
-
-```bash
-dart run spotify_sdk:android_setup
-```
-
-Use the `--help` flag to see all available options.
-
-#### Option B: Manual setup, instructions for Android Studio 4.2+
-
-Download the current [Spotify Android SDK](https://github.com/spotify/android-sdk/releases). Here you need the `spotify-app-remote-\*.aar``.
-
-After you are all setup you need to add the SDKs `\*.aar`` file to your Android Project as Module. See the [Spotify Android SDK Quick Start](https://developer.spotify.com/documentation/android/quick-start/) for detailed information.
-
-Since Android Studio 4.2 you need to manually perform these steps in order to add .jar/.aar files:
-
-1. Open the android folder of your flutter project as an Android Studio project
-2. In the android root folder create a single folder for `spotify-app-remote`, place the corresponding aar file and create an empty build.gradle file, like on the screenshot below:
-   ![image](https://user-images.githubusercontent.com/42183561/125422846-24e03bf0-ec7f-409f-b382-0ef2d0213d08.png)
-   
-3.  Content of the `spotify-app-remote/build.gradle` file:
-
-```groovy
-configurations.maybeCreate("default")
-artifacts.add("default", file('spotify-app-remote-release-x.x.x.aar'))
-```
-
-4. In the android root folder find `settings.gradle` file, open it and add the following line at the top of the file:
-
-```groovy
-include ':spotify-app-remote'
-```
-
-5. Since Spotify Android Auth SDK version 5.0.0, the redirect receiver activity is no longer automatically registered. You must explicitly declare the `RedirectUriReceiverActivity` inside the `<application>` tag of your `android/app/src/main/AndroidManifest.xml` file, substituting your scheme and host where appropriate:
+1. **Register your app** in the [Spotify Developer Portal](https://developer.spotify.com/dashboard/). Add your package name, a SHA-1 fingerprint of your signing certificate, and a Redirect URI in the app settings on the dashboard.
+2. **Register the Redirect Activity**: Inside the `<application>` tag of your `android/app/src/main/AndroidManifest.xml` file, declare the `RedirectUriReceiverActivity` (note the `.browser.` in the package path required by Spotify Auth SDK v5.0.0):
 
 ```xml
 <activity
@@ -76,7 +39,9 @@ include ':spotify-app-remote'
 ```
 
 > [!WARNING]
-> Ensure you use the exact class name `com.spotify.sdk.android.auth.browser.RedirectUriReceiverActivity` (note the `.browser.` in the package path). The old `manifestPlaceholders` in `app/build.gradle` are no longer used.
+> You must use the exact class name `com.spotify.sdk.android.auth.browser.RedirectUriReceiverActivity`. The old `manifestPlaceholders` in `app/build.gradle` are no longer supported.
+
+3. **No SDK Download Needed**: The plugin automatically resolves, downloads, and configures the `spotify-app-remote` library AAR file during compilation. You do not need to manually download AAR files or edit your `settings.gradle` file.
 
 ### iOS
 

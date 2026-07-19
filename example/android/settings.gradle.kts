@@ -24,7 +24,6 @@ plugins {
 }
 
 include(":app")
-include(":spotify-app-remote")
 
 
 

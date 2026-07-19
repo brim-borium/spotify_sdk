@@ -1,27 +1,20 @@
-## Unreleased
-* **MODERNIZED**: Updated to latest Dart and Flutter conventions and best practices
-  * **Dart SDK**: Updated to `^3.10.0` (was `^3.8.0`) - enables modern language features (pattern matching, records, sealed classes)
-  * **Flutter SDK**: Minimum still `>=3.3.0` (v3.38+ available for future upgrades)
-  * **Web Platform**: Migrated from `dart:html` to `package:web` (^0.5.1) for modern type-safe browser APIs
-  * **Linting**: Replaced manual lint configuration with `very_good_analysis` (^6.1.0) package from Very Good Ventures
-    - Provides comprehensive, opinionated, and regularly maintained lint rules
-    - Cleaner configuration management in `analysis_options.yaml`
-    - Includes strict type checking and modern Dart conventions
-    - Easy to override specific rules per project needs
-  * **Conventions**: 
-    - Constants now use lowerCamelCase (not UPPER_CASE) per modern Dart conventions
-    - Improved null safety patterns compatible with Dart 3.10 features
-    - Pattern matching ready for future adoption where appropriate
+## 4.0.0-dev.1
+* **BREAKING: Android Zero-Configuration SDK Auto-Download**:
+  * The plugin now automatically downloads the Spotify App Remote SDK AAR binary during compilation, storing it in a local Maven repository (`m2repository`) within the plugin folder.
+  * The manual `dart run spotify_sdk:android_setup` command is deprecated and has been removed.
+  * Users no longer need to add `include ':spotify-app-remote'` to their `settings.gradle` file. Existing users should delete the `android/spotify-app-remote` folder and remove it from `settings.gradle`.
+* **BREAKING: Spotify Android Auth SDK v5.0.0 Migration**:
+  * Upgraded to `com.spotify.android:auth:5.0.0`.
+  * Removed support for `manifestPlaceholders` in `build.gradle`.
+  * Existing and new users must explicitly register `com.spotify.sdk.android.auth.browser.RedirectUriReceiverActivity` (note the `.browser.` in the package path) in their `AndroidManifest.xml` file.
+* **Modernization & Code Cleanups**:
+  * Cleaned up core dependencies by removing legacy setup scripts and their packages (`logger` and `http`).
+  * Updated to latest Dart and Flutter conventions and best practices:
+    * **Dart SDK**: Updated to `^3.10.0` (was `^3.8.0`) - enables modern language features (pattern matching, records, sealed classes).
+    * **Web Platform**: Migrated from `dart:html` to `package:web` for modern type-safe browser APIs.
+    * **Linting**: Replaced manual lint configuration with `very_good_analysis` package.
+    * **Conventions**: Constants now use lowerCamelCase (not UPPER_CASE) per modern Dart conventions.
 
-* chore: Update all Dart/Flutter dependencies to current standards
-  * **SDK**: Updated Dart SDK constraint to `^3.8.0` (was `^3.5.0`)
-  * **Build Tools**: `build_runner` ^2.10.5 (was ^2.4.13), `json_serializable` ^6.12.0 (was ^6.8.0)
-  * **HTTP & Async**: `dio` ^5.9.1 (was ^5.7.0), `http` ^1.6.0 (was ^1.2.2)
-  * **Serialization**: `json_annotation` ^4.10.0 (was ^4.9.0)
-  * **Logging**: `logger` ^2.6.2 (was ^2.4.0)
-  * **Utilities**: `synchronized` ^3.4.0 (was ^3.3.0+3), `crypto` ^3.0.7 (was ^3.0.5)
-  * **JS Interop**: `js` constraint relaxed to `>=0.6.7 <1.0.0` (was `>=0.6.7 <0.8.0`) for web platform compatibility
-  * **Linting**: Replaced `flutter_lints` ^5.0.0 with `very_good_analysis` ^6.1.0 for superior maintainability
 
 ## 3.0.2
 * chore: update deprications (#224)

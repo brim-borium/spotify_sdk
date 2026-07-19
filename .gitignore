@@ -58,3 +58,6 @@ SpotifyiOS.framework
 # Local environment variables
 .env
 *.env
+
+# Dynamically downloaded Spotify App Remote Maven repository
+**/m2repository/
