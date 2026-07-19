@@ -1112,8 +1112,8 @@ class SpotifySdkPlugin extends SpotifySdkPlatform {
 
     final imageUrl =
         (albumRaw?.images != null && albumRaw!.images!.toDart.isNotEmpty)
-            ? albumRaw.images!.toDart[0].url ?? ''
-            : '';
+        ? albumRaw.images!.toDart[0].url ?? ''
+        : '';
 
     return PlayerState(
       trackRaw != null
