@@ -1,6 +1,6 @@
 name: spotify_sdk_platform_interface
 description: Platform interface contract for spotify_sdk.
-version: 1.0.0
+version: 2.0.0
 homepage: https://github.com/brim-borium/spotify_sdk
 repository: https://github.com/brim-borium/spotify_sdk/tree/main/packages/spotify_sdk_platform_interface
 resolution: workspace

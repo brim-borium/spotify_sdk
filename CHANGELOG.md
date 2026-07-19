@@ -1,3 +1,52 @@
+# Change Log
+
+All notable changes to this project will be documented in this file.
+See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+
+## 2026-07-19
+
+### Changes
+
+---
+
+Packages with breaking changes:
+
+ - [`spotify_sdk` - `v4.0.0-dev.2`](#spotify_sdk---v400-dev2)
+ - [`spotify_sdk_android` - `v2.0.0`](#spotify_sdk_android---v200)
+ - [`spotify_sdk_ios` - `v2.0.0`](#spotify_sdk_ios---v200)
+ - [`spotify_sdk_platform_interface` - `v2.0.0`](#spotify_sdk_platform_interface---v200)
+ - [`spotify_sdk_web` - `v2.0.0`](#spotify_sdk_web---v200)
+
+Packages with other changes:
+
+ - There are no other changes in this release.
+
+---
+
+#### `spotify_sdk` - `v4.0.0-dev.2`
+
+ - **FIX**: resolve Web/WASM, SwiftPM and Kotlin scoring warnings on pub.dev (#254).
+ - **BREAKING** **FEAT**: update all to latest (#251).
+
+#### `spotify_sdk_android` - `v2.0.0`
+
+ - **FIX**: resolve Web/WASM, SwiftPM and Kotlin scoring warnings on pub.dev (#254).
+ - **BREAKING** **FEAT**: update all to latest (#251).
+
+#### `spotify_sdk_ios` - `v2.0.0`
+
+ - **FIX**: resolve Web/WASM, SwiftPM and Kotlin scoring warnings on pub.dev (#254).
+ - **BREAKING** **FEAT**: update all to latest (#251).
+
+#### `spotify_sdk_platform_interface` - `v2.0.0`
+
+ - **FIX**: resolve Web/WASM, SwiftPM and Kotlin scoring warnings on pub.dev (#254).
+ - **BREAKING** **FEAT**: update all to latest (#251).
+
+#### `spotify_sdk_web` - `v2.0.0`
+
+ - **BREAKING** **FEAT**: update all to latest (#251).
+
 ## 4.0.0-dev.1
 * **BREAKING: Android Zero-Configuration SDK Auto-Download**:
   * The plugin now automatically downloads the Spotify App Remote SDK AAR binary during compilation, storing it in a local Maven repository (`m2repository`) within the plugin folder.

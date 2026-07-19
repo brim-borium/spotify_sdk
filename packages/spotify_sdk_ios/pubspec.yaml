@@ -1,6 +1,6 @@
 name: spotify_sdk_ios
 description: iOS implementation of spotify_sdk.
-version: 1.0.0
+version: 2.0.0
 homepage: https://github.com/brim-borium/spotify_sdk
 repository: https://github.com/brim-borium/spotify_sdk/tree/main/packages/spotify_sdk_ios
 resolution: workspace
@@ -12,7 +12,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  spotify_sdk_platform_interface: ^1.0.0
+  spotify_sdk_platform_interface: ^2.0.0
 
 dev_dependencies:
   flutter_test:

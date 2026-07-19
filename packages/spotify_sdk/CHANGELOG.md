@@ -1,3 +1,10 @@
+## 4.0.0-dev.2
+
+> Note: This release has breaking changes.
+
+ - **FIX**: resolve Web/WASM, SwiftPM and Kotlin scoring warnings on pub.dev (#254).
+ - **BREAKING** **FEAT**: update all to latest (#251).
+
 ## 4.0.0-dev.1
 * **BREAKING: Android Zero-Configuration SDK Auto-Download**:
   * The plugin now automatically downloads the Spotify App Remote SDK AAR binary during compilation, storing it in a local Maven repository (`m2repository`) within the plugin folder.
