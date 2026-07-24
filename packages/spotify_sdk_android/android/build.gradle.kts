@@ -111,7 +111,7 @@ if (!aarDestFile.exists()) {
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:2.2.20")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:2.4.10")
     implementation("com.spotify.android:auth:5.0.0")
     implementation("com.spotify.android:spotify-app-remote:$spotifyAarVersion")
     implementation("com.google.code.gson:gson:2.14.0")
