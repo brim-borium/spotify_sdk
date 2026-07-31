@@ -1,19 +1,19 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:flutter/services.dart';
-import 'package:spotify_sdk_platform_interface/logging/logger.dart';
 import 'package:spotify_sdk_platform_interface/platform_channels.dart';
 import 'package:spotify_sdk_platform_interface/spotify_sdk_platform_interface.dart';
+import 'package:spotify_sdk_platform_interface/src/platform_channel_gateway.dart';
 
 /// An implementation of [SpotifySdkPlatform] that uses method channels.
 class MethodChannelSpotifySdk extends SpotifySdkPlatform {
-  // method channel
-  static const MethodChannel _channel = MethodChannel(
-    MethodChannels.spotifySdk,
-  );
+  /// Creates a [MethodChannelSpotifySdk], optionally taking a custom [gateway].
+  MethodChannelSpotifySdk({PlatformChannelGateway? gateway})
+    : _gateway = gateway ?? PlatformChannelGateway();
 
-  //player event channels
+  final PlatformChannelGateway _gateway;
+
+  // player event channels
   static const EventChannel _playerContextChannel = EventChannel(
     EventChannels.playerContext,
   );
@@ -34,9 +34,6 @@ class MethodChannelSpotifySdk extends SpotifySdkPlatform {
     EventChannels.connectionStatus,
   );
 
-  //logging
-  static final Logger _logger = Logger();
-
   @override
   Future<bool> connectToSpotifyRemote({
     required String clientId,
@@ -47,24 +44,19 @@ class MethodChannelSpotifySdk extends SpotifySdkPlatform {
     String playerName = 'Spotify SDK',
     String? accessToken,
   }) async {
-    try {
-      final result = await _channel.invokeMethod<bool>(
-        MethodNames.connectToSpotify,
-        {
-          ParamNames.clientId: clientId,
-          ParamNames.redirectUrl: redirectUrl,
-          ParamNames.playerName: playerName,
-          ParamNames.accessToken: accessToken,
-          ParamNames.scope: scope,
-          ParamNames.spotifyUri: spotifyUri,
-          ParamNames.asRadio: asRadio,
-        },
-      );
-      return result ?? false;
-    } on Exception catch (e) {
-      _logException(MethodNames.connectToSpotify, e);
-      rethrow;
-    }
+    final result = await _gateway.invoke<bool>(
+      MethodNames.connectToSpotify,
+      arguments: {
+        ParamNames.clientId: clientId,
+        ParamNames.redirectUrl: redirectUrl,
+        ParamNames.playerName: playerName,
+        ParamNames.accessToken: accessToken,
+        ParamNames.scope: scope,
+        ParamNames.spotifyUri: spotifyUri,
+        ParamNames.asRadio: asRadio,
+      },
+    );
+    return result ?? false;
   }
 
   @override
@@ -75,427 +67,215 @@ class MethodChannelSpotifySdk extends SpotifySdkPlatform {
     bool asRadio = false,
     String? scope,
   }) async {
-    try {
-      final authorization = await _channel.invokeMethod(
-        MethodNames.getAccessToken,
-        {
-          ParamNames.clientId: clientId,
-          ParamNames.redirectUrl: redirectUrl,
-          ParamNames.scope: scope,
-          ParamNames.spotifyUri: spotifyUri,
-          ParamNames.asRadio: asRadio,
-        },
-      );
-      return authorization.toString();
-    } on Exception catch (e) {
-      _logException(MethodNames.getAccessToken, e);
-      rethrow;
-    }
+    final authorization = await _gateway.invoke<dynamic>(
+      MethodNames.getAccessToken,
+      arguments: {
+        ParamNames.clientId: clientId,
+        ParamNames.redirectUrl: redirectUrl,
+        ParamNames.scope: scope,
+        ParamNames.spotifyUri: spotifyUri,
+        ParamNames.asRadio: asRadio,
+      },
+    );
+    return authorization.toString();
   }
 
   @override
   Future<bool> disconnect() async {
-    try {
-      final result = await _channel.invokeMethod<bool>(
-        MethodNames.disconnectFromSpotify,
-      );
-      return result ?? false;
-    } on Exception catch (e) {
-      _logException(MethodNames.disconnectFromSpotify, e);
-      rethrow;
-    }
+    final result = await _gateway.invoke<bool>(
+      MethodNames.disconnectFromSpotify,
+    );
+    return result ?? false;
   }
 
   @override
-  Future<CrossfadeState?> getCrossFadeState() async {
-    try {
-      final crossfadeStateJson = await _channel.invokeMethod<String>(
+  Future<CrossfadeState?> getCrossFadeState() =>
+      _gateway.invoke<CrossfadeState>(
         MethodNames.getCrossfadeState,
+        decode: (json) => CrossfadeState.fromJson(json as Map<String, dynamic>),
       );
-      if (crossfadeStateJson == null) {
-        return null;
-      }
-      final crossfadeStateMap =
-          jsonDecode(crossfadeStateJson) as Map<String, dynamic>;
-      final crossfadeState = CrossfadeState.fromJson(crossfadeStateMap);
-      return crossfadeState;
-    } on Exception catch (e) {
-      _logException(MethodNames.getCrossfadeState, e);
-      rethrow;
-    }
-  }
 
   @override
-  Future<PlayerState?> getPlayerState() async {
-    try {
-      final playerStateJson = await _channel.invokeMethod<String>(
-        MethodNames.getPlayerState,
-      );
-      if (playerStateJson == null) {
-        return null;
-      }
-      final playerStateMap =
-          jsonDecode(playerStateJson) as Map<String, dynamic>;
-      final playerState = PlayerState.fromJson(playerStateMap);
-      return playerState;
-    } on Exception catch (e) {
-      _logException(MethodNames.getPlayerState, e);
-      rethrow;
-    }
-  }
+  Future<PlayerState?> getPlayerState() => _gateway.invoke<PlayerState>(
+    MethodNames.getPlayerState,
+    decode: (json) => PlayerState.fromJson(json as Map<String, dynamic>),
+  );
 
   @override
-  Future<void> queue({required String spotifyUri}) async {
-    try {
-      await _channel.invokeMethod(MethodNames.queueTrack, {
-        ParamNames.spotifyUri: spotifyUri,
-      });
-    } on Exception catch (e) {
-      _logException(MethodNames.queueTrack, e);
-      rethrow;
-    }
-  }
+  Future<void> queue({required String spotifyUri}) => _gateway.invoke<void>(
+    MethodNames.queueTrack,
+    arguments: {ParamNames.spotifyUri: spotifyUri},
+  );
 
   @override
   Future<void> play({
     required String spotifyUri,
     bool asRadio = false,
-  }) async {
-    try {
-      await _channel.invokeMethod(MethodNames.play, {
-        ParamNames.spotifyUri: spotifyUri,
-        ParamNames.asRadio: asRadio,
-      });
-    } on Exception catch (e) {
-      _logException(MethodNames.play, e);
-      rethrow;
-    }
-  }
+  }) => _gateway.invoke<void>(
+    MethodNames.play,
+    arguments: {
+      ParamNames.spotifyUri: spotifyUri,
+      ParamNames.asRadio: asRadio,
+    },
+  );
 
   @override
-  Future<void> pause() async {
-    try {
-      await _channel.invokeMethod(MethodNames.pause);
-    } on Exception catch (e) {
-      _logException(MethodNames.pause, e);
-      rethrow;
-    }
-  }
+  Future<void> pause() => _gateway.invoke<void>(MethodNames.pause);
 
   @override
-  Future<void> resume() async {
-    try {
-      await _channel.invokeMethod(MethodNames.resume);
-    } on Exception catch (e) {
-      _logException(MethodNames.resume, e);
-      rethrow;
-    }
-  }
+  Future<void> resume() => _gateway.invoke<void>(MethodNames.resume);
 
   @override
   Future<void> setPodcastPlaybackSpeed({
     required PodcastPlaybackSpeed podcastPlaybackSpeed,
-  }) async {
-    try {
-      await _channel.invokeMethod(MethodNames.setPodcastPlaybackSpeed, {
-        ParamNames.podcastPlaybackSpeed: podcastPlaybackSpeed.value,
-      });
-    } on Exception catch (e) {
-      _logException(MethodNames.resume, e);
-      rethrow;
-    }
-  }
+  }) => _gateway.invoke<void>(
+    MethodNames.setPodcastPlaybackSpeed,
+    arguments: {
+      ParamNames.podcastPlaybackSpeed: podcastPlaybackSpeed.value,
+    },
+  );
 
   @override
-  Future<void> skipNext() async {
-    try {
-      await _channel.invokeMethod(MethodNames.skipNext);
-    } on Exception catch (e) {
-      _logException(MethodNames.skipNext, e);
-      rethrow;
-    }
-  }
+  Future<void> skipNext() => _gateway.invoke<void>(MethodNames.skipNext);
 
   @override
-  Future<void> skipPrevious() async {
-    try {
-      await _channel.invokeMethod(MethodNames.skipPrevious);
-    } on Exception catch (e) {
-      _logException(MethodNames.skipPrevious, e);
-      rethrow;
-    }
-  }
+  Future<void> skipPrevious() =>
+      _gateway.invoke<void>(MethodNames.skipPrevious);
 
   @override
   Future<void> skipToIndex({
     required String spotifyUri,
     required int trackIndex,
-  }) async {
-    try {
-      await _channel.invokeMethod(MethodNames.skipToIndex, {
-        ParamNames.spotifyUri: spotifyUri,
-        ParamNames.trackIndex: trackIndex,
-      });
-    } on Exception catch (e) {
-      _logException(MethodNames.skipToIndex, e);
-      rethrow;
-    }
-  }
+  }) => _gateway.invoke<void>(
+    MethodNames.skipToIndex,
+    arguments: {
+      ParamNames.spotifyUri: spotifyUri,
+      ParamNames.trackIndex: trackIndex,
+    },
+  );
 
   @override
-  Future<void> seekTo({required int positionedMilliseconds}) async {
-    try {
-      await _channel.invokeMethod(MethodNames.seekTo, {
-        ParamNames.positionedMilliseconds: positionedMilliseconds,
-      });
-    } on Exception catch (e) {
-      _logException(MethodNames.seekTo, e);
-      rethrow;
-    }
-  }
+  Future<void> seekTo({required int positionedMilliseconds}) =>
+      _gateway.invoke<void>(
+        MethodNames.seekTo,
+        arguments: {
+          ParamNames.positionedMilliseconds: positionedMilliseconds,
+        },
+      );
 
   @override
   Future<void> seekToRelativePosition({
     required int relativeMilliseconds,
-  }) async {
-    try {
-      await _channel.invokeMethod(MethodNames.seekToRelativePosition, {
-        ParamNames.relativeMilliseconds: relativeMilliseconds,
-      });
-    } on Exception catch (e) {
-      _logException(MethodNames.seekToRelativePosition, e);
-      rethrow;
-    }
-  }
+  }) => _gateway.invoke<void>(
+    MethodNames.seekToRelativePosition,
+    arguments: {
+      ParamNames.relativeMilliseconds: relativeMilliseconds,
+    },
+  );
 
   @override
-  Future<void> switchToLocalDevice() async {
-    try {
-      await _channel.invokeMethod(MethodNames.switchToLocalDevice);
-    } on Exception catch (e) {
-      _logException(MethodNames.switchToLocalDevice, e);
-      rethrow;
-    }
-  }
+  Future<void> switchToLocalDevice() =>
+      _gateway.invoke<void>(MethodNames.switchToLocalDevice);
 
   @override
-  Future<void> toggleShuffle() async {
-    try {
-      await _channel.invokeMethod(MethodNames.toggleShuffle);
-    } on Exception catch (e) {
-      _logException(MethodNames.toggleShuffle, e);
-      rethrow;
-    }
-  }
+  Future<void> toggleShuffle() =>
+      _gateway.invoke<void>(MethodNames.toggleShuffle);
 
   @override
-  Future<void> toggleRepeat() async {
-    try {
-      await _channel.invokeMethod(MethodNames.toggleRepeat);
-    } on Exception catch (e) {
-      _logException(MethodNames.toggleRepeat, e);
-      rethrow;
-    }
-  }
+  Future<void> toggleRepeat() =>
+      _gateway.invoke<void>(MethodNames.toggleRepeat);
 
   @override
-  Future<void> addToLibrary({required String spotifyUri}) async {
-    try {
-      await _channel.invokeMethod(MethodNames.addToLibrary, {
-        ParamNames.spotifyUri: spotifyUri,
-      });
-    } on Exception catch (e) {
-      _logException(MethodNames.addToLibrary, e);
-      rethrow;
-    }
-  }
+  Future<void> addToLibrary({required String spotifyUri}) =>
+      _gateway.invoke<void>(
+        MethodNames.addToLibrary,
+        arguments: {ParamNames.spotifyUri: spotifyUri},
+      );
 
   @override
-  Future<void> removeFromLibrary({required String spotifyUri}) async {
-    try {
-      await _channel.invokeMethod(MethodNames.removeFromLibrary, {
-        ParamNames.spotifyUri: spotifyUri,
-      });
-    } on Exception catch (e) {
-      _logException(MethodNames.removeFromLibrary, e);
-      rethrow;
-    }
-  }
+  Future<void> removeFromLibrary({required String spotifyUri}) =>
+      _gateway.invoke<void>(
+        MethodNames.removeFromLibrary,
+        arguments: {ParamNames.spotifyUri: spotifyUri},
+      );
 
   @override
   Future<Capabilities?> getCapabilities({
     required String spotifyUri,
-  }) async {
-    try {
-      final capabilitiesJson = await _channel.invokeMethod<String>(
-        MethodNames.getCapabilities,
-      );
-
-      if (capabilitiesJson != null && capabilitiesJson.isNotEmpty) {
-        final capabilitiesMap =
-            jsonDecode(capabilitiesJson) as Map<String, dynamic>;
-        return Capabilities.fromJson(capabilitiesMap);
-      }
-
-      return null;
-    } on Exception catch (e) {
-      _logException(MethodNames.getCapabilities, e);
-      rethrow;
-    }
-  }
+  }) => _gateway.invoke<Capabilities>(
+    MethodNames.getCapabilities,
+    decode: (json) => Capabilities.fromJson(json as Map<String, dynamic>),
+  );
 
   @override
   Future<LibraryState?> getLibraryState({
     required String spotifyUri,
-  }) async {
-    try {
-      final libraryStateJson = await _channel.invokeMethod<String>(
-        MethodNames.getLibraryState,
-        {ParamNames.spotifyUri: spotifyUri},
-      );
-      if (libraryStateJson == null) {
-        return null;
-      }
-      final libraryStateMap =
-          jsonDecode(libraryStateJson) as Map<String, dynamic>;
-      return LibraryState.fromJson(libraryStateMap);
-    } on Exception catch (e) {
-      _logException(MethodNames.getLibraryState, e);
-      rethrow;
-    }
-  }
+  }) => _gateway.invoke<LibraryState>(
+    MethodNames.getLibraryState,
+    arguments: {ParamNames.spotifyUri: spotifyUri},
+    decode: (json) => LibraryState.fromJson(json as Map<String, dynamic>),
+  );
 
   @override
   Future<Uint8List?> getImage({
     required ImageUri imageUri,
     ImageDimension dimension = ImageDimension.medium,
-  }) async {
-    try {
-      return _channel.invokeMethod(MethodNames.getImage, {
-        ParamNames.imageUri: imageUri.raw,
-        ParamNames.imageDimension: dimension.value,
-      });
-    } on Exception catch (e) {
-      _logException(MethodNames.getImage, e);
-      rethrow;
-    }
-  }
+  }) => _gateway.invoke<Uint8List>(
+    MethodNames.getImage,
+    arguments: {
+      ParamNames.imageUri: imageUri.raw,
+      ParamNames.imageDimension: dimension.value,
+    },
+  );
 
   @override
-  Future<void> setShuffle({required bool shuffle}) async {
-    try {
-      return _channel.invokeMethod(MethodNames.setShuffle, {
-        ParamNames.shuffle: shuffle,
-      });
-    } on Exception catch (e) {
-      _logException(MethodNames.setShuffle, e);
-      rethrow;
-    }
-  }
+  Future<void> setShuffle({required bool shuffle}) => _gateway.invoke<void>(
+    MethodNames.setShuffle,
+    arguments: {ParamNames.shuffle: shuffle},
+  );
 
   @override
   Future<void> setRepeatMode({
     required SpotifyRepeatMode repeatMode,
-  }) async {
-    try {
-      return _channel.invokeMethod(MethodNames.setRepeatMode, {
-        ParamNames.repeatMode: repeatMode.index,
-      });
-    } on Exception catch (e) {
-      _logException(MethodNames.setRepeatMode, e);
-      rethrow;
-    }
-  }
+  }) => _gateway.invoke<void>(
+    MethodNames.setRepeatMode,
+    arguments: {ParamNames.repeatMode: repeatMode.index},
+  );
 
   @override
-  Stream<PlayerContext> subscribePlayerContext() {
-    try {
-      final playerContextSubscription = _playerContextChannel
-          .receiveBroadcastStream();
-      return playerContextSubscription.asyncMap((playerContextJson) {
-        final playerContextMap =
-            jsonDecode(playerContextJson.toString()) as Map<String, dynamic>;
-        return PlayerContext.fromJson(playerContextMap);
-      });
-    } on Exception catch (e) {
-      _logException(MethodNames.subscribePlayerContext, e);
-      rethrow;
-    }
-  }
+  Stream<PlayerContext> subscribePlayerContext() =>
+      _gateway.listen<PlayerContext>(
+        _playerContextChannel,
+        MethodNames.subscribePlayerContext,
+        PlayerContext.fromJson,
+      );
 
   @override
-  Stream<PlayerState> subscribePlayerState() {
-    try {
-      final playerStateSubscription = _playerStateChannel
-          .receiveBroadcastStream();
-      return playerStateSubscription.asyncMap((playerStateJson) {
-        final playerStateMap =
-            jsonDecode(playerStateJson.toString()) as Map<String, dynamic>;
-        return PlayerState.fromJson(playerStateMap);
-      });
-    } on Exception catch (e) {
-      _logException(MethodNames.subscribePlayerState, e);
-      rethrow;
-    }
-  }
+  Stream<PlayerState> subscribePlayerState() => _gateway.listen<PlayerState>(
+    _playerStateChannel,
+    MethodNames.subscribePlayerState,
+    PlayerState.fromJson,
+  );
 
   @override
-  Stream<ConnectionStatus> subscribeConnectionStatus() {
-    try {
-      final connectionStatusSubscription = _connectionStatusChannel
-          .receiveBroadcastStream();
-      return connectionStatusSubscription.asyncMap((connectionStatusJson) {
-        final connectionStatusMap =
-            jsonDecode(connectionStatusJson.toString()) as Map<String, dynamic>;
-        return ConnectionStatus.fromJson(connectionStatusMap);
-      });
-    } on Exception catch (e) {
-      _logException(MethodNames.subscribeConnectionStatus, e);
-      rethrow;
-    }
-  }
+  Stream<ConnectionStatus> subscribeConnectionStatus() =>
+      _gateway.listen<ConnectionStatus>(
+        _connectionStatusChannel,
+        MethodNames.subscribeConnectionStatus,
+        ConnectionStatus.fromJson,
+      );
 
   @override
-  Stream<Capabilities> subscribeCapabilities() {
-    try {
-      final capabilitiesSubscription = _capabilitiesChannel
-          .receiveBroadcastStream();
-      return capabilitiesSubscription.asyncMap((capabilitiesJson) {
-        final capabilitiesMap =
-            jsonDecode(capabilitiesJson.toString()) as Map<String, dynamic>;
-        return Capabilities.fromJson(capabilitiesMap);
-      });
-    } on Exception catch (e) {
-      _logException(MethodNames.subscribePlayerContext, e);
-      rethrow;
-    }
-  }
+  Stream<Capabilities> subscribeCapabilities() => _gateway.listen<Capabilities>(
+    _capabilitiesChannel,
+    MethodNames.getCapabilities,
+    Capabilities.fromJson,
+  );
 
   @override
-  Stream<UserStatus> subscribeUserStatus() {
-    try {
-      final userStatusSubscription = _userStatusChannel
-          .receiveBroadcastStream();
-      return userStatusSubscription.asyncMap((userStatusJson) {
-        final userStatusMap =
-            jsonDecode(userStatusJson.toString()) as Map<String, dynamic>;
-        return UserStatus.fromJson(userStatusMap);
-      });
-    } on Exception catch (e) {
-      _logException(MethodNames.subscribePlayerContext, e);
-      rethrow;
-    }
-  }
-
-  void _logException(String method, Exception e) {
-    if (e is PlatformException) {
-      var message = e.message ?? '';
-      message += e.details != null ? '\n${e.details}' : '';
-      _logger.e('$method failed with: $message');
-    } else if (e is MissingPluginException) {
-      _logger.e('$method not implemented');
-    } else {
-      _logger.e('$method throws unhandled exception: $e');
-    }
-  }
+  Stream<UserStatus> subscribeUserStatus() => _gateway.listen<UserStatus>(
+    _userStatusChannel,
+    EventChannels.userStatus,
+    UserStatus.fromJson,
+  );
 }

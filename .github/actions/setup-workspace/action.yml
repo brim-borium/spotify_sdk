@@ -1,0 +1,47 @@
+name: 'Setup Monorepo Workspace'
+description: 'Checks out repo, sets up Java, Gradle, Flutter, and bootstraps Melos workspace.'
+
+inputs:
+  setup-java:
+    description: 'Whether to set up Java JDK 17'
+    required: false
+    default: 'false'
+  setup-gradle:
+    description: 'Whether to set up Gradle caching'
+    required: false
+    default: 'false'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: 📚 Git Checkout
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+
+    - name: ☕ Set up Java
+      if: inputs.setup-java == 'true'
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'zulu'
+        java-version: '17'
+
+    - name: 🐘 Setup Gradle Cache
+      if: inputs.setup-gradle == 'true'
+      uses: gradle/actions/setup-gradle@v3
+
+    - name: 💙 Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version-file: '.fvmrc'
+        cache: true
+
+    - name: 🚀 Bootstrap Monorepo Workspace
+      shell: bash
+      run: |
+        flutter pub get
+        flutter pub global activate melos
+        melos bootstrap
+        if [ -f packages/spotify_sdk/example/.env.sample ]; then
+          cp packages/spotify_sdk/example/.env.sample packages/spotify_sdk/example/.env
+        fi

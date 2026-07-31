@@ -48,7 +48,7 @@ melos:
       description: Run all package tests.
 
     generate:all:
-      run: melos exec --depends-on="build_runner" -- flutter pub run build_runner build --delete-conflicting-outputs
+      run: melos exec --depends-on="build_runner" -- dart run build_runner build --delete-conflicting-outputs
       description: Run build_runner code generation across all packages.
 
     sync:license:
