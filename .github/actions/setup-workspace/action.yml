@@ -1,5 +1,5 @@
 name: 'Setup Monorepo Workspace'
-description: 'Checks out repo, sets up Java, Gradle, Flutter, and bootstraps Melos workspace.'
+description: 'Sets up Java, Gradle, Flutter, and bootstraps Melos workspace.'
 
 inputs:
   setup-java:
@@ -14,11 +14,6 @@ inputs:
 runs:
   using: 'composite'
   steps:
-    - name: 📚 Git Checkout
-      uses: actions/checkout@v4
-      with:
-        submodules: recursive
-
     - name: ☕ Set up Java
       if: inputs.setup-java == 'true'
       uses: actions/setup-java@v4

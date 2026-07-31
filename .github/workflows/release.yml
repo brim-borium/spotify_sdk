@@ -8,6 +8,10 @@ jobs:
   pana:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
       - name: Setup Workspace
         uses: ./.github/actions/setup-workspace
 
@@ -28,6 +32,10 @@ jobs:
       id-token: write # Required for authentication using OIDC
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
       - name: Setup Workspace
         uses: ./.github/actions/setup-workspace
         with:

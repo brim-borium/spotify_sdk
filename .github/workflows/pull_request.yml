@@ -19,6 +19,10 @@ jobs:
   build-linux:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
       - name: Setup Workspace
         uses: ./.github/actions/setup-workspace
         with:
@@ -56,6 +60,10 @@ jobs:
   build-ios:
     runs-on: macos-latest
     steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
       - name: Setup Workspace
         uses: ./.github/actions/setup-workspace
 
@@ -73,6 +81,10 @@ jobs:
   pana:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
       - name: Setup Workspace
         uses: ./.github/actions/setup-workspace
 
