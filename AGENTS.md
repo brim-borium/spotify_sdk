@@ -47,3 +47,15 @@ When working in platform-specific folders, consult the scoped rule files:
 1. **Static Analysis**: Run `flutter analyze` before proposing any changes.
 2. **Formatting**: Let the automatic formatting hook run `dart format` on files you write.
 3. **Manual Verification**: Run the companion demo application in the [example/](file:///Users/tobi/Projects/spotify_sdk/example) directory for end-to-end testing.
+
+---
+
+## Agent skills
+
+### Issue tracker
+
+Issues and PRDs for this repo live as GitHub issues. See `docs/agents/issue-tracker.md`.
+
+### Domain docs
+
+Single-context layout with one `CONTEXT.md` and `docs/adr/` at the repo root. See `docs/agents/domain.md`.
