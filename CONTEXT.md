@@ -21,6 +21,11 @@ To avoid ambiguity, the codebase aligns on the following terminology:
 *   **Crossfade Configuration**: The user setting determining if playback transitions between subsequent tracks overlap smoothly, defined by an enablement flag and transition duration.
 *   **Library State**: The status indicating whether a given Spotify resource is currently saved to the user's personal collection/library (`isSaved`) and whether the user's account tier allows saving this type of item (`canSave`).
 *   **Spotify URI**: A unique, resource-specific identifier string (e.g., `spotify:track:<id>`, `spotify:album:<id>`, `spotify:playlist:<id>`) used across all platform implementations to target playback, queueing, or library actions.
+*   **Podcast Playback Speed** (represented in code by `PodcastPlaybackSpeed`): Discrete playback rate multipliers applied exclusively during podcast episode playback.
+*   **Repeat Mode** (represented in code by `SpotifyRepeatMode`): The loop behavior of the current playback queue (`off`, `track`, `context`).
+*   **Player Options**: Toggleable flags governing player behavior, including shuffle state (`isShuffling`) and repeat mode (`repeatMode`).
+*   **Player Restrictions**: Operation permissions dictated by user subscription tier or resource licensing (e.g., `canSkipNext`, `canSeek`, `canToggleShuffle`).
+*   **Artwork Image** (represented in code by `ImageUri` and `ImageDimension`): Identifiers and resolution descriptors (`large`, `medium`, `small`) for fetching raw image byte buffers from native Spotify caches.
 
 ## Architectural Conventions
 
