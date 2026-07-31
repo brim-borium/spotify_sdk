@@ -44,7 +44,7 @@ melos:
       description: Ensure all packages match standard formatting.
 
     test:all:
-      run: melos exec --dir-exists="test" -- flutter test
+      run: melos exec --dir-exists="test" --ignore="spotify_sdk_web" -- flutter test && melos exec --scope="spotify_sdk_web" -- flutter test --platform chrome
       description: Run all package tests.
 
     generate:all:
