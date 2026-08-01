@@ -114,6 +114,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:2.2.20")
     implementation("com.spotify.android:auth:5.0.0")
     implementation("com.spotify.android:spotify-app-remote:$spotifyAarVersion")
+    implementation("com.fasterxml.jackson.core:jackson-annotations:2.18.2")
     implementation("com.google.code.gson:gson:2.14.0")
     implementation("com.github.stuhlmeier:kotlin-events:v2.0")
 }
