@@ -4,12 +4,12 @@ import 'dart:core';
 import 'dart:developer';
 import 'dart:js_interop';
 
-import 'package:dio/dio.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 import 'package:spotify_sdk_platform_interface/platform_channels.dart';
 import 'package:spotify_sdk_platform_interface/spotify_sdk_platform_interface.dart'
     hide PlayerOptions;
+import 'package:spotify_sdk_web/src/api/spotify_web_api_client.dart';
 import 'package:spotify_sdk_web/src/auth/oauth_window_adapter.dart';
 import 'package:spotify_sdk_web/src/auth/spotify_auth_session.dart';
 import 'package:spotify_sdk_web/src/interop/web_playback_sdk.dart';
@@ -19,6 +19,7 @@ import 'package:web/web.dart' as web;
 export 'package:spotify_sdk_platform_interface/enums/image_dimension_enum.dart';
 export 'package:spotify_sdk_platform_interface/enums/repeat_mode_enum.dart';
 export 'package:spotify_sdk_platform_interface/extensions/image_dimension_extension.dart';
+export 'package:spotify_sdk_web/src/api/spotify_web_api_client.dart';
 export 'package:spotify_sdk_web/src/auth/auth_session_storage.dart';
 export 'package:spotify_sdk_web/src/auth/oauth_window_adapter.dart';
 export 'package:spotify_sdk_web/src/auth/spotify_auth_session.dart';
@@ -38,7 +39,10 @@ class SpotifySdkPlugin extends SpotifySdkPlatform {
     this.connectionStatusEventController, {
     SpotifyAuthSession? authSession,
     WebPlayerDispatcher? playerDispatcher,
+    SpotifyWebApiClient? webApiClient,
   }) : _authSession = authSession ?? SpotifyAuthSession() {
+    _webApiClient =
+        webApiClient ?? SpotifyWebApiClient(authSession: _authSession);
     _playerDispatcher =
         playerDispatcher ??
         WebPlayerDispatcher(
@@ -52,6 +56,7 @@ class SpotifySdkPlugin extends SpotifySdkPlatform {
 
   final SpotifyAuthSession _authSession;
   late final WebPlayerDispatcher _playerDispatcher;
+  late final SpotifyWebApiClient _webApiClient;
 
   /// authentication token error id
   static const String errorAuthenticationTokenError =
@@ -83,13 +88,6 @@ class SpotifySdkPlugin extends SpotifySdkPlatform {
 
   /// connection status event stream controller
   final StreamController<String> connectionStatusEventController;
-
-  /// Dio http client
-  final Dio _dio = Dio(
-    BaseOptions(
-      baseUrl: 'https://api.spotify.com/v1/me/player',
-    ),
-  );
 
   /// Default scopes that are required for Web SDK to work
   static const String defaultScopes =
@@ -524,41 +522,11 @@ class SpotifySdkPlugin extends SpotifySdkPlatform {
       _sdkLoadFuture ??= _initializeSpotify();
       await _sdkLoadFuture;
     }
-    if (_currentPlayer?.deviceID == null) {
-      throw PlatformException(
-        message: 'Spotify player not connected!',
-        code: 'Playback Error',
-      );
-    }
-    try {
-      final token = await _authSession.getValidToken();
-      final body = <String, dynamic>{
-        if (spotifyUri.contains(':track:'))
-          'uris': [spotifyUri]
-        else
-          'context_uri': spotifyUri,
-        'offset': {'position': trackIndex},
-      };
-      await _dio.put<void>(
-        '/play',
-        data: body,
-        queryParameters: {'device_id': _currentPlayer!.deviceID},
-        options: Options(
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer $token',
-          },
-        ),
-      );
-    } on Object catch (e) {
-      final message = e is DioException && e.response?.data != null
-          ? '${e.response?.data}'
-          : '$e';
-      throw PlatformException(
-        message: 'Skip to index failed: $message',
-        code: 'Playback Error',
-      );
-    }
+    return _webApiClient.skipToIndex(
+      spotifyUri: spotifyUri,
+      trackIndex: trackIndex,
+      deviceId: _currentPlayer?.deviceID,
+    );
   }
 
   @override
@@ -619,23 +587,7 @@ class SpotifySdkPlugin extends SpotifySdkPlatform {
       _sdkLoadFuture ??= _initializeSpotify();
       await _sdkLoadFuture;
     }
-    final id = _extractId(spotifyUri);
-    if (id == null) return;
-    try {
-      final token = await _authSession.getValidToken();
-      await Dio().put<void>(
-        'https://api.spotify.com/v1/me/tracks',
-        queryParameters: {'ids': id},
-        options: Options(
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer $token',
-          },
-        ),
-      );
-    } on Object catch (e) {
-      log('addToLibrary error: $e');
-    }
+    await _webApiClient.addToLibrary(spotifyUri: spotifyUri);
   }
 
   @override
@@ -644,23 +596,7 @@ class SpotifySdkPlugin extends SpotifySdkPlatform {
       _sdkLoadFuture ??= _initializeSpotify();
       await _sdkLoadFuture;
     }
-    final id = _extractId(spotifyUri);
-    if (id == null) return;
-    try {
-      final token = await _authSession.getValidToken();
-      await Dio().delete<void>(
-        'https://api.spotify.com/v1/me/tracks',
-        queryParameters: {'ids': id},
-        options: Options(
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer $token',
-          },
-        ),
-      );
-    } on Object catch (e) {
-      log('removeFromLibrary error: $e');
-    }
+    await _webApiClient.removeFromLibrary(spotifyUri: spotifyUri);
   }
 
   @override
@@ -682,72 +618,18 @@ class SpotifySdkPlugin extends SpotifySdkPlatform {
       _sdkLoadFuture ??= _initializeSpotify();
       await _sdkLoadFuture;
     }
-    final id = _extractId(spotifyUri);
-    if (id == null) {
-      return LibraryState(spotifyUri, isSaved: false, canSave: true);
-    }
-    try {
-      final token = await _authSession.getValidToken();
-      final response = await Dio().get<List<dynamic>>(
-        'https://api.spotify.com/v1/me/tracks/contains',
-        queryParameters: {'ids': id},
-        options: Options(
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer $token',
-          },
-        ),
-      );
-      final isSaved =
-          response.data != null &&
-          response.data!.isNotEmpty &&
-          (response.data![0] == true);
-      return LibraryState(spotifyUri, isSaved: isSaved, canSave: true);
-    } on Object catch (e) {
-      log('getLibraryState error: $e');
-      return LibraryState(spotifyUri, isSaved: false, canSave: true);
-    }
-  }
-
-  String? _extractId(String uri) {
-    if (uri.contains(':')) {
-      final parts = uri.split(':');
-      return parts.isNotEmpty ? parts.last : null;
-    }
-    return uri.isNotEmpty ? uri : null;
+    return _webApiClient.getLibraryState(spotifyUri: spotifyUri);
   }
 
   @override
   Future<void> switchToLocalDevice() async {
-    if (_currentPlayer?.deviceID == null) {
-      throw PlatformException(
-        message: 'Spotify player not connected!',
-        code: 'Connect Error',
-      );
+    if (!_sdkLoaded) {
+      _sdkLoadFuture ??= _initializeSpotify();
+      await _sdkLoadFuture;
     }
-    try {
-      final token = await _authSession.getValidToken();
-      await _dio.put<void>(
-        '',
-        data: {
-          'device_ids': [_currentPlayer!.deviceID],
-        },
-        options: Options(
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer $token',
-          },
-        ),
-      );
-    } on Object catch (e) {
-      final message = e is DioException && e.response?.data != null
-          ? '${e.response?.data}'
-          : '$e';
-      throw PlatformException(
-        message: 'Switch to local device failed: $message',
-        code: 'Connect Error',
-      );
-    }
+    return _webApiClient.switchToLocalDevice(
+      deviceId: _currentPlayer?.deviceID,
+    );
   }
 
   @override
@@ -755,34 +637,11 @@ class SpotifySdkPlugin extends SpotifySdkPlatform {
     required ImageUri imageUri,
     ImageDimension dimension = ImageDimension.medium,
   }) async {
-    final rawUri = imageUri.raw;
-    if (rawUri.isEmpty) {
-      return null;
+    if (!_sdkLoaded) {
+      _sdkLoadFuture ??= _initializeSpotify();
+      await _sdkLoadFuture;
     }
-
-    final String imageUrl;
-    if (rawUri.startsWith('http://') || rawUri.startsWith('https://')) {
-      imageUrl = rawUri;
-    } else if (rawUri.startsWith('spotify:image:')) {
-      final imageHash = rawUri.split(':').last;
-      imageUrl = 'https://i.scdn.co/image/$imageHash';
-    } else {
-      imageUrl = 'https://i.scdn.co/image/$rawUri';
-    }
-
-    try {
-      final response = await _dio.get<List<int>>(
-        imageUrl,
-        options: Options(responseType: ResponseType.bytes),
-      );
-      if (response.data != null) {
-        return Uint8List.fromList(response.data!);
-      }
-      return null;
-    } on Object catch (e) {
-      log('Failed to fetch image: $e');
-      return null;
-    }
+    return _webApiClient.getImage(imageUri: imageUri, dimension: dimension);
   }
 
   @override
@@ -928,158 +787,28 @@ class SpotifySdkPlugin extends SpotifySdkPlatform {
     _playerDispatcher.unregisterPlayerEvents(player);
   }
 
-  /// Starts track playback on the device.
-  Future<void> _play(String? uri) async {
-    if (_currentPlayer?.deviceID == null) {
-      throw PlatformException(
-        message: 'Spotify player not connected!',
-        code: 'Playback Error',
-      );
-    }
-
-    try {
-      final token = await _authSession.getValidToken();
-      final body = <String, dynamic>{};
-      if (uri != null && uri.isNotEmpty) {
-        if (uri.contains(':track:')) {
-          body['uris'] = [uri];
-        } else {
-          body['context_uri'] = uri;
-        }
-      }
-
-      await _dio.put<void>(
-        '/play',
-        data: body,
-        queryParameters: {'device_id': _currentPlayer!.deviceID},
-        options: Options(
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer $token',
-          },
-        ),
-      );
-    } on Object catch (e) {
-      final message = e is DioException && e.response?.data != null
-          ? '${e.response?.data}'
-          : '$e';
-      throw PlatformException(
-        message: 'Play failed: $message',
-        code: 'Playback Error',
-      );
-    }
-  }
+  /// Plays a track or context on the Spotify Web player.
+  Future<void> _play(String? uri) => _webApiClient.play(
+    uri: uri,
+    deviceId: _currentPlayer?.deviceID,
+  );
 
   /// Adds a given track to the playback queue.
-  Future<void> _queue(String? uri) async {
-    if (_currentPlayer?.deviceID == null) {
-      throw PlatformException(
-        message: 'Spotify player not connected!',
-        code: 'Playback Error',
-      );
-    }
-
-    try {
-      final token = await _authSession.getValidToken();
-      await _dio.post<void>(
-        '/queue',
-        queryParameters: {'uri': uri, 'device_id': _currentPlayer!.deviceID},
-        options: Options(
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer $token',
-          },
-        ),
-      );
-    } on Object catch (e) {
-      final message = e is DioException && e.response?.data != null
-          ? '${e.response?.data}'
-          : '$e';
-      throw PlatformException(
-        message: 'Queue failed: $message',
-        code: 'Playback Error',
-      );
-    }
-  }
+  Future<void> _queue(String? uri) => _webApiClient.queue(
+    uri: uri,
+    deviceId: _currentPlayer?.deviceID,
+  );
 
   /// Sets whether shuffle should be enabled.
-  Future<void> _setShuffle(bool? shuffleEnabled) async {
-    if (_currentPlayer?.deviceID == null) {
-      throw PlatformException(
-        message: 'Spotify player not connected!',
-        code: 'Set Shuffle Error',
-      );
-    }
-
-    try {
-      final token = await _authSession.getValidToken();
-      await _dio.put<void>(
-        '/shuffle',
-        queryParameters: {
-          'state': (shuffleEnabled ?? true).toString(),
-          'device_id': _currentPlayer!.deviceID,
-        },
-        options: Options(
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer $token',
-          },
-        ),
-      );
-    } on Object catch (e) {
-      final message = e is DioException && e.response?.data != null
-          ? '${e.response?.data}'
-          : '$e';
-      throw PlatformException(
-        message: 'Set shuffle failed: $message',
-        code: 'Set Shuffle Error',
-      );
-    }
-  }
+  Future<void> _setShuffle(bool? shuffleEnabled) => _webApiClient.setShuffle(
+    shuffleEnabled: shuffleEnabled,
+    deviceId: _currentPlayer?.deviceID,
+  );
 
   /// Sets the repeat mode.
-  Future<void> _setRepeatMode(SpotifyRepeatMode? repeatMode) async {
-    if (_currentPlayer?.deviceID == null) {
-      throw PlatformException(
-        message: 'Spotify player not connected!',
-        code: 'Set Repeat Mode Error',
+  Future<void> _setRepeatMode(SpotifyRepeatMode? repeatMode) =>
+      _webApiClient.setRepeatMode(
+        repeatMode: repeatMode,
+        deviceId: _currentPlayer?.deviceID,
       );
-    }
-
-    late String state;
-    switch (repeatMode) {
-      case SpotifyRepeatMode.context:
-        state = 'context';
-      case SpotifyRepeatMode.track:
-        state = 'track';
-      case SpotifyRepeatMode.off:
-      case null:
-        state = 'off';
-    }
-
-    try {
-      final token = await _authSession.getValidToken();
-      await _dio.put<void>(
-        '/repeat',
-        queryParameters: {
-          'state': state,
-          'device_id': _currentPlayer!.deviceID,
-        },
-        options: Options(
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer $token',
-          },
-        ),
-      );
-    } on Object catch (e) {
-      final message = e is DioException && e.response?.data != null
-          ? '${e.response?.data}'
-          : '$e';
-      throw PlatformException(
-        message: 'Set repeat mode failed: $message',
-        code: 'Set Repeat Mode Error',
-      );
-    }
-  }
 }

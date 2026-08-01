@@ -50,3 +50,6 @@ To maintain synchronization and consistency across all platform wrappers, the co
     *   Dedicated deep module in `spotify_sdk_web` managing browser OAuth PKCE code verifier/challenge math, token storage seams (`AuthSessionStorage`), popup authorization seams (`OAuthWindowAdapter`), and reentrant refresh locks.
 7.  **Web Player Dispatcher (`WebPlayerDispatcher`) & JS Interop (`web_playback_sdk.dart`)**:
     *   Isolated deep modules separating low-level `@JS()` browser extension bindings and player event stream dispatching from `SpotifySdkPlugin`.
+8.  **Web API Client (`SpotifyWebApiClient`)**:
+    *   Dedicated deep module in `spotify_sdk_web` encapsulating Spotify REST Web API requests (library state, queueing, playback seeking, artwork HTTP fetching, device switching) with automatic bearer token authorization via `SpotifyAuthSession` and error translation.
+
