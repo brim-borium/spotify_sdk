@@ -51,38 +51,42 @@ Follow the instructions in the section `Setup the iOS SDK` of [Spotify iOS SDK Q
 
 ### Web
 
-1. Register your app in the [spotify developer portal](https://developer.spotify.com/dashboard/). You need to provide a redirect URL which points to a dedicated page on a website you own.
+1. **Register your app** in the [Spotify Developer Portal](https://developer.spotify.com/dashboard/). Add a **Redirect URI** in your app settings:
+   - For local development, Spotify requires explicit loopback IP addresses such as `http://127.0.0.1:8080/` (Spotify no longer accepts `localhost`).
+   - For production, provide a secure `https://` URI (e.g. `https://myapp.com/`).
 
-2. Paste the following onto the webpage, which you linked to in your redirect URL.  
-```html
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>Authenticating Spotify</title>
-  </head>
-  <body>
-	<p>Please wait while we authenticate Spotify...</p>
-	<script type="text/javascript">
-		if(window.opener) {
-			window.opener.postMessage('?' + window.location.href.split('?')[1], "*");
-		} else {
-			window.close();
-		}
-	</script>
-  </body>
-</html>
-```
+2. **Handle the Auth Popup Callback**:
+   - If your Redirect URI points directly to your Flutter Web application (e.g. `http://127.0.0.1:8080/`), add this lightweight script inside the `<head>` tag of your `web/index.html`:
+     ```html
+     <script>
+       if (window.opener && (window.location.search.includes('code=') || window.location.search.includes('error='))) {
+         window.opener.postMessage(window.location.search, '*');
+         window.close();
+       }
+     </script>
+     ```
+   - Alternatively, if your Redirect URI points to a dedicated callback HTML page on your web server, include the following on that callback page:
+     ```html
+     <!DOCTYPE html>
+     <html>
+       <head>
+         <title>Authenticating Spotify</title>
+       </head>
+       <body>
+         <p>Please wait while we authenticate Spotify...</p>
+         <script type="text/javascript">
+           if (window.opener) {
+             window.opener.postMessage(window.location.search, "*");
+             window.close();
+           }
+         </script>
+       </body>
+     </html>
+     ```
 
-3. Optionally add this to your Flutter app web/index.html to avoid a Javascript `TypeError: r.__extends is not a function` error in development mode.
-
-```html
-<script src="https://sdk.scdn.co/spotify-player.js"></script>
-<script>
-  window.onSpotifyWebPlaybackSDKReady = (evt) => {};
-</script>
-```
-
-[You need Spotify Premium to access the Web SDK.](https://developer.spotify.com/documentation/web-playback-sdk/quick-start/)
+3. **Required Scopes & Premium Account**:
+   - [A Spotify Premium subscription is required for the Web Playback SDK](https://developer.spotify.com/documentation/web-playback-sdk/).
+   - Ensure your authorization request includes the `streaming`, `user-modify-playback-state`, and `user-read-playback-state` scopes for full player control.
 
 ## Usage
 
@@ -157,9 +161,9 @@ The playerApi as described [here](https://spotify.github.io/android-sdk/app-remo
 | playWithStreamType      | Play the given Spotify uri with specific behaviour for that streamtype | 🚧 |  🚧 | 🚧 |
 | queue                   | Queues given spotifyUri |✔ | ✔  | ✔ |
 | resume                  | Resumes the current track |✔ |  ✔ | ✔ |
-| seekTo                  | Seeks the current track to the given position in milliseconds | ✔ | ✔ | 🚧 |
-| seekToRelativePosition  | Adds to the current position of the track the given milliseconds | ✔ | ❌ | 🚧 |
-| setPodcastPlaybackSpeed | Set playback speed for Podcast  | ✔ | 🚧 | 🚧 |
+| seekTo                  | Seeks the current track to the given position in milliseconds | ✔ | ✔ | ✔ |
+| seekToRelativePosition  | Adds to the current position of the track the given milliseconds | ✔ | ❌ | ✔ |
+| setPodcastPlaybackSpeed | Set playback speed for Podcast  | ✔ | 🚧 | ❌ |
 | setRepeatMode           | Set the repeat mode | ✔ |  ✔ | ✔ |
 | setShuffle              | Set the shuffle mode | ✔ |  ✔ | ✔ |
 | skipNext                | Skips to next track | ✔ | ✔  | ✔ |
@@ -167,8 +171,8 @@ The playerApi as described [here](https://spotify.github.io/android-sdk/app-remo
 | skipToIndex             | Skips to track at specified index in album or playlist |✔ |  ✔ | 🚧  |
 | subscribePlayerContext  | Subscribes to the current player context | ✔ | ✔ | ✔ |
 | subscribePlayerState    | Subscribes to the current player state | ✔ | ✔ | ✔ |
-| toggleRepeat            | Cycles through the repeat modes | ✔ |  ✔ | ❌ |
-| toggleShuffle           | Cycles through the shuffle modes | ✔ | ❌ | ❌ |
+| toggleRepeat            | Cycles through the repeat modes | ✔ |  ✔ | ✔ |
+| toggleShuffle           | Cycles through the shuffle modes | ✔ | ❌ | ✔ |
 
 On Web, an automatic call to play may not work due to media activation policies which send an error: "Authentication Error: Browser prevented autoplay due to lack of interaction". This error is ignored by the SDK so you can still present a button for the user to click to `play` or `resume` to start playback. See the [Web SDK Troubleshooting guide](https://developer.spotify.com/documentation/web-playback-sdk/reference/#troubleshooting) for more details.
 
@@ -178,7 +182,7 @@ The imagesApi as described [here](https://spotify.github.io/android-sdk/app-remo
 
 | Function  | Description| Android | iOS | Web |
 |---|---|---|---|---|
-|  getImage | Get the image from the given spotifyUri | ✔ |  ✔ | 🚧 |
+|  getImage | Get the image from the given spotifyUri | ✔ |  ✔ | ✔ |
 
 #### User Api
 
@@ -202,7 +206,7 @@ The connectApi as described [here](https://spotify.github.io/android-sdk/app-rem
 | connectDecreaseVolume      | Decrease volume by a step size determined  | 🚧 | 🚧 | 🚧 |
 | connectIncreaseVolume      | Increase volume by a step size determined  | 🚧 | 🚧 | 🚧 |
 | connectSetVolume           | Set a volume on the currently active device | 🚧 | 🚧 | 🚧 |
-| connectSwitchToLocalDevice | Switch to play music on this (local) device | ✔ | 🚧 | 🚧 |
+| connectSwitchToLocalDevice | Switch to play music on this (local) device | ✔ | 🚧 | ✔ |
 | subscribeToVolumeState     | Subscribe to volume state                  | 🚧 | 🚧 | 🚧 |
 
 #### Content Api

@@ -13,6 +13,12 @@
 
   <title>spotify_sdk</title>
   <link rel="manifest" href="/manifest.json">
+  <script>
+    if (window.opener && (window.location.search.includes('code=') || window.location.search.includes('error='))) {
+      window.opener.postMessage(window.location.search, '*');
+      window.close();
+    }
+  </script>
 </head>
 <body>
   <!-- This script installs service_worker.js to provide PWA functionality to

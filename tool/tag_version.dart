@@ -30,7 +30,12 @@ void main() {
   }
 
   // Create git tag
-  final result = Process.runSync('git', ['tag', version, '-m', 'release: $version']);
+  final result = Process.runSync('git', [
+    'tag',
+    version,
+    '-m',
+    'release: $version',
+  ]);
   if (result.exitCode != 0) {
     print('Error creating git tag: ${result.stderr}');
     exit(result.exitCode);

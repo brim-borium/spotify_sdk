@@ -10,6 +10,7 @@ import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 import 'package:spotify_sdk_platform_interface/platform_channels.dart';
 import 'package:spotify_sdk_platform_interface/spotify_sdk_platform_interface.dart'
     hide PlayerOptions;
+import 'package:spotify_sdk_web/src/auth/oauth_window_adapter.dart';
 import 'package:spotify_sdk_web/src/auth/spotify_auth_session.dart';
 import 'package:spotify_sdk_web/src/interop/web_playback_sdk.dart';
 import 'package:spotify_sdk_web/src/player/web_player_dispatcher.dart';
@@ -92,7 +93,8 @@ class SpotifySdkPlugin extends SpotifySdkPlatform {
 
   /// Default scopes that are required for Web SDK to work
   static const String defaultScopes =
-      'streaming user-read-email user-read-private';
+      'streaming user-read-email user-read-private '
+      'user-modify-playback-state user-read-playback-state';
 
   /// The URL for the token swap service.
   static String? get tokenSwapURL => SpotifyAuthSession.tokenSwapURL;
@@ -106,6 +108,8 @@ class SpotifySdkPlugin extends SpotifySdkPlatform {
 
   /// registers plugin method channels
   static void registerWith(Registrar registrar) {
+    BrowserWindowAdapter.handlePopupCallback();
+
     // method channel
     final channel = MethodChannel(
       MethodChannels.spotifySdk,
@@ -486,6 +490,89 @@ class SpotifySdkPlugin extends SpotifySdkPlatform {
   }
 
   @override
+  Future<void> seekToRelativePosition({
+    required int relativeMilliseconds,
+  }) async {
+    if (!_sdkLoaded) {
+      _sdkLoadFuture ??= _initializeSpotify();
+      await _sdkLoadFuture;
+    }
+    final stateRaw =
+        (await _currentPlayer?.getCurrentState().toDart) as WebPlaybackState?;
+    final currentPos = stateRaw?.position ?? 0;
+    final targetPos = (currentPos + relativeMilliseconds).clamp(0, 86400000);
+    await _currentPlayer?.seek(targetPos).toDart;
+  }
+
+  @override
+  Future<void> switchToLocalDevice() async {
+    if (_currentPlayer?.deviceID == null) {
+      throw PlatformException(
+        message: 'Spotify player not connected!',
+        code: 'Connect Error',
+      );
+    }
+    try {
+      final token = await _authSession.getValidToken();
+      await _dio.put<void>(
+        '',
+        data: {
+          'device_ids': [_currentPlayer!.deviceID],
+        },
+        options: Options(
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $token',
+          },
+        ),
+      );
+    } on Object catch (e) {
+      final message = e is DioException && e.response?.data != null
+          ? '${e.response?.data}'
+          : '$e';
+      throw PlatformException(
+        message: 'Switch to local device failed: $message',
+        code: 'Connect Error',
+      );
+    }
+  }
+
+  @override
+  Future<Uint8List?> getImage({
+    required ImageUri imageUri,
+    ImageDimension dimension = ImageDimension.medium,
+  }) async {
+    final rawUri = imageUri.raw;
+    if (rawUri.isEmpty) {
+      return null;
+    }
+
+    final String imageUrl;
+    if (rawUri.startsWith('http://') || rawUri.startsWith('https://')) {
+      imageUrl = rawUri;
+    } else if (rawUri.startsWith('spotify:image:')) {
+      final imageHash = rawUri.split(':').last;
+      imageUrl = 'https://i.scdn.co/image/$imageHash';
+    } else {
+      imageUrl = 'https://i.scdn.co/image/$rawUri';
+    }
+
+    try {
+      final response = await _dio.get<List<int>>(
+        imageUrl,
+        options: Options(responseType: ResponseType.bytes),
+      );
+      if (response.data != null) {
+        return Uint8List.fromList(response.data!);
+      }
+      return null;
+    } on Object catch (e) {
+      log('Failed to fetch image: $e');
+      return null;
+    }
+  }
+
+  @override
   Future<void> setShuffle({required bool shuffle}) async {
     if (!_sdkLoaded) {
       _sdkLoadFuture ??= _initializeSpotify();
@@ -637,19 +724,30 @@ class SpotifySdkPlugin extends SpotifySdkPlatform {
       );
     }
 
-    await _dio.put<void>(
-      '/play',
-      data: {
-        'uris': [uri],
-      },
-      queryParameters: {'device_id': _currentPlayer!.deviceID},
-      options: Options(
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ${await _authSession.getValidToken()}',
+    try {
+      final token = await _authSession.getValidToken();
+      await _dio.put<void>(
+        '/play',
+        data: {
+          if (uri != null && uri.isNotEmpty) 'uris': [uri],
         },
-      ),
-    );
+        queryParameters: {'device_id': _currentPlayer!.deviceID},
+        options: Options(
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $token',
+          },
+        ),
+      );
+    } on Object catch (e) {
+      final message = e is DioException && e.response?.data != null
+          ? '${e.response?.data}'
+          : '$e';
+      throw PlatformException(
+        message: 'Play failed: $message',
+        code: 'Playback Error',
+      );
+    }
   }
 
   /// Adds a given track to the playback queue.
@@ -661,16 +759,27 @@ class SpotifySdkPlugin extends SpotifySdkPlatform {
       );
     }
 
-    await _dio.post<void>(
-      '/queue',
-      queryParameters: {'uri': uri, 'device_id': _currentPlayer!.deviceID},
-      options: Options(
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ${await _authSession.getValidToken()}',
-        },
-      ),
-    );
+    try {
+      final token = await _authSession.getValidToken();
+      await _dio.post<void>(
+        '/queue',
+        queryParameters: {'uri': uri, 'device_id': _currentPlayer!.deviceID},
+        options: Options(
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $token',
+          },
+        ),
+      );
+    } on Object catch (e) {
+      final message = e is DioException && e.response?.data != null
+          ? '${e.response?.data}'
+          : '$e';
+      throw PlatformException(
+        message: 'Queue failed: $message',
+        code: 'Playback Error',
+      );
+    }
   }
 
   /// Sets whether shuffle should be enabled.
@@ -682,19 +791,30 @@ class SpotifySdkPlugin extends SpotifySdkPlatform {
       );
     }
 
-    await _dio.put<void>(
-      '/shuffle',
-      queryParameters: {
-        'state': shuffleEnabled,
-        'device_id': _currentPlayer!.deviceID,
-      },
-      options: Options(
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ${await _authSession.getValidToken()}',
+    try {
+      final token = await _authSession.getValidToken();
+      await _dio.put<void>(
+        '/shuffle',
+        queryParameters: {
+          'state': (shuffleEnabled ?? true).toString(),
+          'device_id': _currentPlayer!.deviceID,
         },
-      ),
-    );
+        options: Options(
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $token',
+          },
+        ),
+      );
+    } on Object catch (e) {
+      final message = e is DioException && e.response?.data != null
+          ? '${e.response?.data}'
+          : '$e';
+      throw PlatformException(
+        message: 'Set shuffle failed: $message',
+        code: 'Set Shuffle Error',
+      );
+    }
   }
 
   /// Sets the repeat mode.
@@ -706,19 +826,31 @@ class SpotifySdkPlugin extends SpotifySdkPlatform {
       );
     }
 
-    await _dio.put<void>(
-      '/repeat',
-      queryParameters: {
-        'state': repeatMode.toString().substring(18),
-        'device_id': _currentPlayer!.deviceID,
-      },
-      options: Options(
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ${await _authSession.getValidToken()}',
+    try {
+      final token = await _authSession.getValidToken();
+      final modeStr = repeatMode?.name ?? 'off';
+      await _dio.put<void>(
+        '/repeat',
+        queryParameters: {
+          'state': modeStr,
+          'device_id': _currentPlayer!.deviceID,
         },
-      ),
-    );
+        options: Options(
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $token',
+          },
+        ),
+      );
+    } on Object catch (e) {
+      final message = e is DioException && e.response?.data != null
+          ? '${e.response?.data}'
+          : '$e';
+      throw PlatformException(
+        message: 'Set repeat mode failed: $message',
+        code: 'Set Repeat Mode Error',
+      );
+    }
   }
 
   /// Toggles shuffle on the current player.
@@ -731,16 +863,39 @@ class SpotifySdkPlugin extends SpotifySdkPlatform {
       );
     }
 
-    await _dio.put<void>(
-      '/shuffle',
-      queryParameters: {'state': state, 'device_id': _currentPlayer!.deviceID},
-      options: Options(
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ${await _authSession.getValidToken()}',
+    try {
+      final token = await _authSession.getValidToken();
+      final bool targetState;
+      if (state != null) {
+        targetState = state;
+      } else {
+        final currentState =
+            (await _currentPlayer?.getCurrentState().toDart)
+                as WebPlaybackState?;
+        targetState = !(currentState?.shuffle ?? false);
+      }
+      await _dio.put<void>(
+        '/shuffle',
+        queryParameters: {
+          'state': targetState.toString(),
+          'device_id': _currentPlayer!.deviceID,
         },
-      ),
-    );
+        options: Options(
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $token',
+          },
+        ),
+      );
+    } on Object catch (e) {
+      final message = e is DioException && e.response?.data != null
+          ? '${e.response?.data}'
+          : '$e';
+      throw PlatformException(
+        message: 'Toggle shuffle failed: $message',
+        code: 'Playback Error',
+      );
+    }
   }
 
   /// Toggles repeat on the current player.
@@ -753,16 +908,48 @@ class SpotifySdkPlugin extends SpotifySdkPlatform {
       );
     }
 
-    await _dio.put<void>(
-      '/repeat',
-      queryParameters: {'state': state, 'device_id': _currentPlayer!.deviceID},
-      options: Options(
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ${await _authSession.getValidToken()}',
+    try {
+      final token = await _authSession.getValidToken();
+      final String targetMode;
+      if (state != null) {
+        targetMode = state ? 'context' : 'off';
+      } else {
+        final currentState =
+            (await _currentPlayer?.getCurrentState().toDart)
+                as WebPlaybackState?;
+        final currentMode = currentState?.repeat_mode ?? 0;
+        switch (currentMode) {
+          case 0:
+            targetMode = 'context';
+          case 1:
+            targetMode = 'track';
+          case 2:
+          default:
+            targetMode = 'off';
+        }
+      }
+      await _dio.put<void>(
+        '/repeat',
+        queryParameters: {
+          'state': targetMode,
+          'device_id': _currentPlayer!.deviceID,
         },
-      ),
-    );
+        options: Options(
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $token',
+          },
+        ),
+      );
+    } on Object catch (e) {
+      final message = e is DioException && e.response?.data != null
+          ? '${e.response?.data}'
+          : '$e';
+      throw PlatformException(
+        message: 'Toggle repeat failed: $message',
+        code: 'Playback Error',
+      );
+    }
   }
 
   /// Converts a native WebPlaybackState to the library PlayerState

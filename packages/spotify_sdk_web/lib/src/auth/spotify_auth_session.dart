@@ -28,7 +28,8 @@ class SpotifyAuthSession {
 
   /// Default scopes required for Web SDK to work.
   static const String defaultScopes =
-      'streaming user-read-email user-read-private';
+      'streaming user-read-email user-read-private '
+      'user-modify-playback-state user-read-playback-state';
 
   /// Service URL for token swap.
   static String? tokenSwapURL;
@@ -145,26 +146,28 @@ class SpotifyAuthSession {
   }) async {
     final RequestOptions req;
     if (tokenSwapURL == null) {
+      final payload = <String, String>{
+        'client_id': clientId,
+        'grant_type': 'authorization_code',
+        'code': authCode,
+        'redirect_uri': redirectUrl,
+        'code_verifier': codeVerifier,
+      };
       req = RequestOptions(
         path: 'https://accounts.spotify.com/api/token',
         method: 'POST',
-        data: {
-          'client_id': clientId,
-          'grant_type': 'authorization_code',
-          'code': authCode,
-          'redirect_uri': redirectUrl,
-          'code_verifier': codeVerifier,
-        },
+        data: Uri(queryParameters: payload).query,
         contentType: Headers.formUrlEncodedContentType,
       );
     } else {
+      final payload = <String, String>{
+        'code': authCode,
+        'redirect_uri': redirectUrl,
+      };
       req = RequestOptions(
         path: tokenSwapURL!,
         method: 'POST',
-        data: {
-          'code': authCode,
-          'redirect_uri': redirectUrl,
-        },
+        data: Uri(queryParameters: payload).query,
         contentType: Headers.formUrlEncodedContentType,
       );
     }
@@ -179,6 +182,12 @@ class SpotifyAuthSession {
       }
       return response.data!;
     } catch (e) {
+      if (e is DioException && e.response?.data != null) {
+        throw PlatformException(
+          message: 'Token exchange failed: ${e.response?.data}',
+          code: 'Authentication Error',
+        );
+      }
       throw PlatformException(
         message: 'Token exchange failed: $e',
         code: 'Authentication Error',
@@ -193,21 +202,23 @@ class SpotifyAuthSession {
   ) async {
     final RequestOptions req;
     if (tokenRefreshURL == null) {
+      final payload = <String, String>{
+        'client_id': clientId,
+        'grant_type': 'refresh_token',
+        'refresh_token': refreshToken,
+      };
       req = RequestOptions(
         path: 'https://accounts.spotify.com/api/token',
         method: 'POST',
-        data: {
-          'client_id': clientId,
-          'grant_type': 'refresh_token',
-          'refresh_token': refreshToken,
-        },
+        data: Uri(queryParameters: payload).query,
         contentType: Headers.formUrlEncodedContentType,
       );
     } else {
+      final payload = <String, String>{'refresh_token': refreshToken};
       req = RequestOptions(
         path: tokenRefreshURL!,
         method: 'POST',
-        data: {'refresh_token': refreshToken},
+        data: Uri(queryParameters: payload).query,
         contentType: Headers.formUrlEncodedContentType,
       );
     }
@@ -222,6 +233,12 @@ class SpotifyAuthSession {
       }
       return response.data!;
     } catch (e) {
+      if (e is DioException && e.response?.data != null) {
+        throw PlatformException(
+          message: 'Token refresh failed: ${e.response?.data}',
+          code: 'Authentication Error',
+        );
+      }
       throw PlatformException(
         message: 'Token refresh failed: $e',
         code: 'Authentication Error',
@@ -232,25 +249,33 @@ class SpotifyAuthSession {
   /// Creates PKCE code verifier.
   static String createCodeVerifier() {
     final rand = math.Random.secure();
-    final codeUnits = List.generate(128, (index) {
-      return rand.nextInt(33) + 89;
-    });
-    return base64Url.encode(codeUnits).replaceAll('=', '');
+    final bytes = List<int>.generate(64, (_) => rand.nextInt(256));
+    return base64Url
+        .encode(bytes)
+        .replaceAll('=', '')
+        .replaceAll('+', '-')
+        .replaceAll('/', '_');
   }
 
   /// Creates PKCE code challenge.
   static String createCodeChallenge(String codeVerifier) {
     final bytes = utf8.encode(codeVerifier);
     final digest = sha256.convert(bytes);
-    return base64Url.encode(digest.bytes).replaceAll('=', '');
+    return base64Url
+        .encode(digest.bytes)
+        .replaceAll('=', '')
+        .replaceAll('+', '-')
+        .replaceAll('/', '_');
   }
 
   /// Creates PKCE auth state.
   static String createAuthState() {
     final rand = math.Random.secure();
-    final codeUnits = List.generate(16, (index) {
-      return rand.nextInt(33) + 89;
-    });
-    return base64Url.encode(codeUnits).replaceAll('=', '');
+    final bytes = List<int>.generate(16, (_) => rand.nextInt(256));
+    return base64Url
+        .encode(bytes)
+        .replaceAll('=', '')
+        .replaceAll('+', '-')
+        .replaceAll('/', '_');
   }
 }
