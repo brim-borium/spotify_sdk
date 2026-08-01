@@ -103,7 +103,9 @@ class SpotifyController extends ChangeNotifier {
             detail: details.isNotEmpty ? details.join(' ') : null,
             severity: status.connected
                 ? LogSeverity.success
-                : (status.hasError() ? LogSeverity.error : LogSeverity.warning),
+                : (status.hasError()
+                    ? LogSeverity.error
+                    : LogSeverity.warning),
           );
           notifyListeners();
         },
@@ -174,6 +176,35 @@ class SpotifyController extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<T?> _runSdkCall<T>(
+    String actionName,
+    Future<T?> Function() call, {
+    void Function(T? result)? onSuccess,
+  }) async {
+    try {
+      final result = await call();
+      onSuccess?.call(result);
+      return result;
+    } on PlatformException catch (e) {
+      log(
+        'Error $actionName',
+        detail: '${e.code}: ${e.message}',
+        severity: LogSeverity.error,
+      );
+      return null;
+    } on MissingPluginException {
+      log('$actionName not implemented', severity: LogSeverity.error);
+      return null;
+    } on Exception catch (e) {
+      log(
+        'Unexpected error $actionName',
+        detail: '$e',
+        severity: LogSeverity.error,
+      );
+      return null;
+    }
+  }
+
   /// Connects to Spotify Remote using `.env` credentials.
   Future<bool> connectToSpotifyRemote() async {
     _setLoading(true);
@@ -223,24 +254,16 @@ class SpotifyController extends ChangeNotifier {
 
   /// Retrieves current PlayerState on demand.
   Future<PlayerState?> getPlayerState() async {
-    try {
-      final state = await SpotifySdk.getPlayerState();
-      if (state != null) {
-        _lastPlayerState = state;
-        notifyListeners();
-      }
-      return state;
-    } on PlatformException catch (e) {
-      log(
-        'Error getting player state',
-        detail: '${e.code}: ${e.message}',
-        severity: LogSeverity.error,
-      );
-      return null;
-    } on MissingPluginException {
-      log('GetPlayerState not implemented', severity: LogSeverity.error);
-      return null;
-    }
+    return _runSdkCall(
+      'getting player state',
+      SpotifySdk.getPlayerState,
+      onSuccess: (state) {
+        if (state != null) {
+          _lastPlayerState = state;
+          notifyListeners();
+        }
+      },
+    );
   }
 
   /// Retrieves Spotify OAuth access token.
@@ -326,120 +349,99 @@ class SpotifyController extends ChangeNotifier {
 
   /// Plays track or context URI.
   Future<void> play({required String spotifyUri, bool asRadio = false}) async {
-    try {
-      await SpotifySdk.play(spotifyUri: spotifyUri, asRadio: asRadio);
-      log('Started playing: $spotifyUri', severity: LogSeverity.success);
-      await Future<void>.delayed(const Duration(milliseconds: 300));
-      await getPlayerState();
-      await Future<void>.delayed(const Duration(milliseconds: 700));
-      await getPlayerState();
-    } on PlatformException catch (e) {
-      log(
-        'Error playing URI',
-        detail: '${e.code}: ${e.message}',
-        severity: LogSeverity.error,
-      );
-    } on MissingPluginException {
-      log('Play not implemented on platform', severity: LogSeverity.error);
-    }
+    await _runSdkCall(
+      'playing URI',
+      () => SpotifySdk.play(spotifyUri: spotifyUri, asRadio: asRadio),
+      onSuccess: (_) async {
+        log('Started playing: $spotifyUri', severity: LogSeverity.success);
+        await Future<void>.delayed(const Duration(milliseconds: 300));
+        await getPlayerState();
+        await Future<void>.delayed(const Duration(milliseconds: 700));
+        await getPlayerState();
+      },
+    );
   }
 
   /// Pauses active playback.
   Future<void> pause() async {
-    try {
-      await SpotifySdk.pause();
-      log('Playback paused');
-      if (_lastPlayerState != null) {
-        _lastPlayerState = PlayerState(
-          _lastPlayerState!.track,
-          _lastPlayerState!.playbackSpeed,
-          _lastPlayerState!.playbackPosition,
-          _lastPlayerState!.playbackOptions,
-          _lastPlayerState!.playbackRestrictions,
-          isPaused: true,
+    await _runSdkCall(
+      'pausing playback',
+      SpotifySdk.pause,
+      onSuccess: (_) {
+        log('Playback paused');
+        if (_lastPlayerState != null) {
+          _lastPlayerState = PlayerState(
+            _lastPlayerState!.track,
+            _lastPlayerState!.playbackSpeed,
+            _lastPlayerState!.playbackPosition,
+            _lastPlayerState!.playbackOptions,
+            _lastPlayerState!.playbackRestrictions,
+            isPaused: true,
+          );
+          notifyListeners();
+        }
+        unawaited(
+          Future<void>.delayed(const Duration(milliseconds: 250))
+              .then((_) => getPlayerState()),
         );
-        notifyListeners();
-      }
-      await Future<void>.delayed(const Duration(milliseconds: 250));
-      unawaited(getPlayerState());
-    } on PlatformException catch (e) {
-      log(
-        'Error pausing playback',
-        detail: '${e.code}: ${e.message}',
-        severity: LogSeverity.error,
-      );
-    } on MissingPluginException {
-      log('Pause not implemented', severity: LogSeverity.error);
-    }
+      },
+    );
   }
 
   /// Resumes paused playback.
   Future<void> resume() async {
-    try {
-      await SpotifySdk.resume();
-      log('Playback resumed');
-      if (_lastPlayerState != null) {
-        _lastPlayerState = PlayerState(
-          _lastPlayerState!.track,
-          _lastPlayerState!.playbackSpeed,
-          _lastPlayerState!.playbackPosition,
-          _lastPlayerState!.playbackOptions,
-          _lastPlayerState!.playbackRestrictions,
-          isPaused: false,
+    await _runSdkCall(
+      'resuming playback',
+      SpotifySdk.resume,
+      onSuccess: (_) {
+        log('Playback resumed');
+        if (_lastPlayerState != null) {
+          _lastPlayerState = PlayerState(
+            _lastPlayerState!.track,
+            _lastPlayerState!.playbackSpeed,
+            _lastPlayerState!.playbackPosition,
+            _lastPlayerState!.playbackOptions,
+            _lastPlayerState!.playbackRestrictions,
+            isPaused: false,
+          );
+          notifyListeners();
+        }
+        unawaited(
+          Future<void>.delayed(const Duration(milliseconds: 250))
+              .then((_) => getPlayerState()),
         );
-        notifyListeners();
-      }
-      await Future<void>.delayed(const Duration(milliseconds: 250));
-      unawaited(getPlayerState());
-    } on PlatformException catch (e) {
-      log(
-        'Error resuming playback',
-        detail: '${e.code}: ${e.message}',
-        severity: LogSeverity.error,
-      );
-    } on MissingPluginException {
-      log('Resume not implemented', severity: LogSeverity.error);
-    }
+      },
+    );
   }
 
   /// Skips to next track.
   Future<void> skipNext() async {
-    try {
-      await SpotifySdk.skipNext();
-      log('Skipped to next track');
-      await Future<void>.delayed(const Duration(milliseconds: 300));
-      await getPlayerState();
-      await Future<void>.delayed(const Duration(milliseconds: 700));
-      await getPlayerState();
-    } on PlatformException catch (e) {
-      log(
-        'Error skipping next',
-        detail: '${e.code}: ${e.message}',
-        severity: LogSeverity.error,
-      );
-    } on MissingPluginException {
-      log('SkipNext not implemented', severity: LogSeverity.error);
-    }
+    await _runSdkCall(
+      'skipping next',
+      SpotifySdk.skipNext,
+      onSuccess: (_) async {
+        log('Skipped to next track');
+        await Future<void>.delayed(const Duration(milliseconds: 300));
+        await getPlayerState();
+        await Future<void>.delayed(const Duration(milliseconds: 700));
+        await getPlayerState();
+      },
+    );
   }
 
   /// Skips to previous track.
   Future<void> skipPrevious() async {
-    try {
-      await SpotifySdk.skipPrevious();
-      log('Skipped to previous track');
-      await Future<void>.delayed(const Duration(milliseconds: 300));
-      await getPlayerState();
-      await Future<void>.delayed(const Duration(milliseconds: 700));
-      await getPlayerState();
-    } on PlatformException catch (e) {
-      log(
-        'Error skipping previous',
-        detail: '${e.code}: ${e.message}',
-        severity: LogSeverity.error,
-      );
-    } on MissingPluginException {
-      log('SkipPrevious not implemented', severity: LogSeverity.error);
-    }
+    await _runSdkCall(
+      'skipping previous',
+      SpotifySdk.skipPrevious,
+      onSuccess: (_) async {
+        log('Skipped to previous track');
+        await Future<void>.delayed(const Duration(milliseconds: 300));
+        await getPlayerState();
+        await Future<void>.delayed(const Duration(milliseconds: 700));
+        await getPlayerState();
+      },
+    );
   }
 
   /// Skips to specific track index in context.
@@ -447,376 +449,306 @@ class SpotifyController extends ChangeNotifier {
     required String spotifyUri,
     required int index,
   }) async {
-    try {
-      await SpotifySdk.skipToIndex(spotifyUri: spotifyUri, trackIndex: index);
-      log('Skipped to index $index in $spotifyUri');
-      await Future<void>.delayed(const Duration(milliseconds: 300));
-      await getPlayerState();
-      await Future<void>.delayed(const Duration(milliseconds: 700));
-      await getPlayerState();
-    } on PlatformException catch (e) {
-      log(
-        'Error skipping to index',
-        detail: '${e.code}: ${e.message}',
-        severity: LogSeverity.error,
-      );
-    } on MissingPluginException {
-      log('SkipToIndex not implemented', severity: LogSeverity.error);
-    }
+    await _runSdkCall(
+      'skipping to index',
+      () => SpotifySdk.skipToIndex(spotifyUri: spotifyUri, trackIndex: index),
+      onSuccess: (_) async {
+        log('Skipped to index $index in $spotifyUri');
+        await Future<void>.delayed(const Duration(milliseconds: 300));
+        await getPlayerState();
+        await Future<void>.delayed(const Duration(milliseconds: 700));
+        await getPlayerState();
+      },
+    );
   }
 
   /// Queues a Spotify track URI.
   Future<void> queue({required String spotifyUri}) async {
-    try {
-      await SpotifySdk.queue(spotifyUri: spotifyUri);
-      log('Queued URI: $spotifyUri', severity: LogSeverity.success);
-      await Future<void>.delayed(const Duration(milliseconds: 250));
-      unawaited(getPlayerState());
-    } on PlatformException catch (e) {
-      log(
-        'Error queueing track',
-        detail: '${e.code}: ${e.message}',
-        severity: LogSeverity.error,
-      );
-    } on MissingPluginException {
-      log('Queue not implemented', severity: LogSeverity.error);
-    }
+    await _runSdkCall(
+      'queueing track',
+      () => SpotifySdk.queue(spotifyUri: spotifyUri),
+      onSuccess: (_) {
+        log('Queued URI: $spotifyUri', severity: LogSeverity.success);
+        unawaited(
+          Future<void>.delayed(const Duration(milliseconds: 250))
+              .then((_) => getPlayerState()),
+        );
+      },
+    );
   }
 
   /// Seeks to absolute milliseconds.
   Future<void> seekTo(int ms) async {
-    try {
-      await SpotifySdk.seekTo(positionedMilliseconds: ms);
-      log('Sought to ${ms}ms');
-      if (_lastPlayerState != null) {
-        _lastPlayerState = PlayerState(
-          _lastPlayerState!.track,
-          _lastPlayerState!.playbackSpeed,
-          ms,
-          _lastPlayerState!.playbackOptions,
-          _lastPlayerState!.playbackRestrictions,
-          isPaused: _lastPlayerState!.isPaused,
+    await _runSdkCall(
+      'seeking',
+      () => SpotifySdk.seekTo(positionedMilliseconds: ms),
+      onSuccess: (_) {
+        log('Sought to ${ms}ms');
+        if (_lastPlayerState != null) {
+          _lastPlayerState = PlayerState(
+            _lastPlayerState!.track,
+            _lastPlayerState!.playbackSpeed,
+            ms,
+            _lastPlayerState!.playbackOptions,
+            _lastPlayerState!.playbackRestrictions,
+            isPaused: _lastPlayerState!.isPaused,
+          );
+          notifyListeners();
+        }
+        unawaited(
+          Future<void>.delayed(const Duration(milliseconds: 250))
+              .then((_) => getPlayerState()),
         );
-        notifyListeners();
-      }
-      await Future<void>.delayed(const Duration(milliseconds: 250));
-      unawaited(getPlayerState());
-    } on PlatformException catch (e) {
-      log(
-        'Error seeking',
-        detail: '${e.code}: ${e.message}',
-        severity: LogSeverity.error,
-      );
-    } on MissingPluginException {
-      log('SeekTo not implemented', severity: LogSeverity.error);
-    }
+      },
+    );
   }
 
   /// Seeks relative milliseconds.
   Future<void> seekToRelative(int relativeMs) async {
-    try {
-      await SpotifySdk.seekToRelativePosition(
+    await _runSdkCall(
+      'relative seek',
+      () => SpotifySdk.seekToRelativePosition(
         relativeMilliseconds: relativeMs,
-      );
-      log('Sought relative ${relativeMs}ms');
-      if (_lastPlayerState != null) {
-        final currentMs = _lastPlayerState!.playbackPosition;
-        final duration = _lastPlayerState!.track?.duration ?? 0;
-        final newMs = (currentMs + relativeMs).clamp(0, duration);
-        _lastPlayerState = PlayerState(
-          _lastPlayerState!.track,
-          _lastPlayerState!.playbackSpeed,
-          newMs,
-          _lastPlayerState!.playbackOptions,
-          _lastPlayerState!.playbackRestrictions,
-          isPaused: _lastPlayerState!.isPaused,
+      ),
+      onSuccess: (_) {
+        log('Sought relative ${relativeMs}ms');
+        if (_lastPlayerState != null) {
+          final currentMs = _lastPlayerState!.playbackPosition;
+          final duration = _lastPlayerState!.track?.duration ?? 0;
+          final newMs = (currentMs + relativeMs).clamp(0, duration);
+          _lastPlayerState = PlayerState(
+            _lastPlayerState!.track,
+            _lastPlayerState!.playbackSpeed,
+            newMs,
+            _lastPlayerState!.playbackOptions,
+            _lastPlayerState!.playbackRestrictions,
+            isPaused: _lastPlayerState!.isPaused,
+          );
+          notifyListeners();
+        }
+        unawaited(
+          Future<void>.delayed(const Duration(milliseconds: 250))
+              .then((_) => getPlayerState()),
         );
-        notifyListeners();
-      }
-      await Future<void>.delayed(const Duration(milliseconds: 250));
-      unawaited(getPlayerState());
-    } on PlatformException catch (e) {
-      log(
-        'Error relative seek',
-        detail: '${e.code}: ${e.message}',
-        severity: LogSeverity.error,
-      );
-    } on MissingPluginException {
-      log('SeekRelative not implemented', severity: LogSeverity.error);
-    }
+      },
+    );
   }
 
   /// Toggles shuffle mode.
   Future<void> toggleShuffle() async {
-    try {
-      await SpotifySdk.toggleShuffle();
-      log('Toggled shuffle mode');
-      if (_lastPlayerState != null) {
-        final currentShuffle = _lastPlayerState!.playbackOptions.isShuffling;
-        final newOptions = PlayerOptions(
-          _lastPlayerState!.playbackOptions.repeatMode,
-          isShuffling: !currentShuffle,
+    await _runSdkCall(
+      'toggling shuffle',
+      SpotifySdk.toggleShuffle,
+      onSuccess: (_) {
+        log('Toggled shuffle mode');
+        if (_lastPlayerState != null) {
+          final currentShuffle = _lastPlayerState!.playbackOptions.isShuffling;
+          final newOptions = PlayerOptions(
+            _lastPlayerState!.playbackOptions.repeatMode,
+            isShuffling: !currentShuffle,
+          );
+          _lastPlayerState = PlayerState(
+            _lastPlayerState!.track,
+            _lastPlayerState!.playbackSpeed,
+            _lastPlayerState!.playbackPosition,
+            newOptions,
+            _lastPlayerState!.playbackRestrictions,
+            isPaused: _lastPlayerState!.isPaused,
+          );
+          notifyListeners();
+        }
+        unawaited(
+          Future<void>.delayed(const Duration(milliseconds: 250))
+              .then((_) => getPlayerState()),
         );
-        _lastPlayerState = PlayerState(
-          _lastPlayerState!.track,
-          _lastPlayerState!.playbackSpeed,
-          _lastPlayerState!.playbackPosition,
-          newOptions,
-          _lastPlayerState!.playbackRestrictions,
-          isPaused: _lastPlayerState!.isPaused,
-        );
-        notifyListeners();
-      }
-      await Future<void>.delayed(const Duration(milliseconds: 250));
-      unawaited(getPlayerState());
-    } on PlatformException catch (e) {
-      log(
-        'Error toggling shuffle',
-        detail: '${e.code}: ${e.message}',
-        severity: LogSeverity.error,
-      );
-    } on MissingPluginException {
-      log('ToggleShuffle not implemented', severity: LogSeverity.error);
-    }
+      },
+    );
   }
 
   /// Explicitly sets shuffle status.
   Future<void> setShuffle({required bool shuffle}) async {
-    try {
-      await SpotifySdk.setShuffle(shuffle: shuffle);
-      log('Set shuffle to $shuffle');
-      if (_lastPlayerState != null) {
-        final newOptions = PlayerOptions(
-          _lastPlayerState!.playbackOptions.repeatMode,
-          isShuffling: shuffle,
+    await _runSdkCall(
+      'setting shuffle',
+      () => SpotifySdk.setShuffle(shuffle: shuffle),
+      onSuccess: (_) {
+        log('Set shuffle to $shuffle');
+        if (_lastPlayerState != null) {
+          final newOptions = PlayerOptions(
+            _lastPlayerState!.playbackOptions.repeatMode,
+            isShuffling: shuffle,
+          );
+          _lastPlayerState = PlayerState(
+            _lastPlayerState!.track,
+            _lastPlayerState!.playbackSpeed,
+            _lastPlayerState!.playbackPosition,
+            newOptions,
+            _lastPlayerState!.playbackRestrictions,
+            isPaused: _lastPlayerState!.isPaused,
+          );
+          notifyListeners();
+        }
+        unawaited(
+          Future<void>.delayed(const Duration(milliseconds: 250))
+              .then((_) => getPlayerState()),
         );
-        _lastPlayerState = PlayerState(
-          _lastPlayerState!.track,
-          _lastPlayerState!.playbackSpeed,
-          _lastPlayerState!.playbackPosition,
-          newOptions,
-          _lastPlayerState!.playbackRestrictions,
-          isPaused: _lastPlayerState!.isPaused,
-        );
-        notifyListeners();
-      }
-      await Future<void>.delayed(const Duration(milliseconds: 250));
-      unawaited(getPlayerState());
-    } on PlatformException catch (e) {
-      log(
-        'Error setting shuffle',
-        detail: '${e.code}: ${e.message}',
-        severity: LogSeverity.error,
-      );
-    } on MissingPluginException {
-      log('SetShuffle not implemented', severity: LogSeverity.error);
-    }
+      },
+    );
   }
 
   /// Toggles repeat mode.
   Future<void> toggleRepeat() async {
-    try {
-      await SpotifySdk.toggleRepeat();
-      log('Toggled repeat mode');
-      if (_lastPlayerState != null) {
-        final currentMode = _lastPlayerState!.playbackOptions.repeatMode;
-        final nextMode = currentMode == SpotifyRepeatMode.off
-            ? SpotifyRepeatMode.context
-            : (currentMode == SpotifyRepeatMode.context
-                  ? SpotifyRepeatMode.track
-                  : SpotifyRepeatMode.off);
-        final newOptions = PlayerOptions(
-          nextMode,
-          isShuffling: _lastPlayerState!.playbackOptions.isShuffling,
+    await _runSdkCall(
+      'toggling repeat',
+      SpotifySdk.toggleRepeat,
+      onSuccess: (_) {
+        log('Toggled repeat mode');
+        if (_lastPlayerState != null) {
+          final currentMode = _lastPlayerState!.playbackOptions.repeatMode;
+          final nextMode = currentMode == SpotifyRepeatMode.off
+              ? SpotifyRepeatMode.context
+              : (currentMode == SpotifyRepeatMode.context
+                    ? SpotifyRepeatMode.track
+                    : SpotifyRepeatMode.off);
+          final newOptions = PlayerOptions(
+            nextMode,
+            isShuffling: _lastPlayerState!.playbackOptions.isShuffling,
+          );
+          _lastPlayerState = PlayerState(
+            _lastPlayerState!.track,
+            _lastPlayerState!.playbackSpeed,
+            _lastPlayerState!.playbackPosition,
+            newOptions,
+            _lastPlayerState!.playbackRestrictions,
+            isPaused: _lastPlayerState!.isPaused,
+          );
+          notifyListeners();
+        }
+        unawaited(
+          Future<void>.delayed(const Duration(milliseconds: 250))
+              .then((_) => getPlayerState()),
         );
-        _lastPlayerState = PlayerState(
-          _lastPlayerState!.track,
-          _lastPlayerState!.playbackSpeed,
-          _lastPlayerState!.playbackPosition,
-          newOptions,
-          _lastPlayerState!.playbackRestrictions,
-          isPaused: _lastPlayerState!.isPaused,
-        );
-        notifyListeners();
-      }
-      await Future<void>.delayed(const Duration(milliseconds: 250));
-      unawaited(getPlayerState());
-    } on PlatformException catch (e) {
-      log(
-        'Error toggling repeat',
-        detail: '${e.code}: ${e.message}',
-        severity: LogSeverity.error,
-      );
-    } on MissingPluginException {
-      log('ToggleRepeat not implemented', severity: LogSeverity.error);
-    }
+      },
+    );
   }
 
   /// Sets explicit repeat mode.
   Future<void> setRepeatMode(SpotifyRepeatMode mode) async {
-    try {
-      await SpotifySdk.setRepeatMode(repeatMode: mode);
-      log('Set repeat mode to ${mode.name}');
-      if (_lastPlayerState != null) {
-        final newOptions = PlayerOptions(
-          mode,
-          isShuffling: _lastPlayerState!.playbackOptions.isShuffling,
+    await _runSdkCall(
+      'setting repeat mode',
+      () => SpotifySdk.setRepeatMode(repeatMode: mode),
+      onSuccess: (_) {
+        log('Set repeat mode to ${mode.name}');
+        if (_lastPlayerState != null) {
+          final newOptions = PlayerOptions(
+            mode,
+            isShuffling: _lastPlayerState!.playbackOptions.isShuffling,
+          );
+          _lastPlayerState = PlayerState(
+            _lastPlayerState!.track,
+            _lastPlayerState!.playbackSpeed,
+            _lastPlayerState!.playbackPosition,
+            newOptions,
+            _lastPlayerState!.playbackRestrictions,
+            isPaused: _lastPlayerState!.isPaused,
+          );
+          notifyListeners();
+        }
+        unawaited(
+          Future<void>.delayed(const Duration(milliseconds: 250))
+              .then((_) => getPlayerState()),
         );
-        _lastPlayerState = PlayerState(
-          _lastPlayerState!.track,
-          _lastPlayerState!.playbackSpeed,
-          _lastPlayerState!.playbackPosition,
-          newOptions,
-          _lastPlayerState!.playbackRestrictions,
-          isPaused: _lastPlayerState!.isPaused,
-        );
-        notifyListeners();
-      }
-      await Future<void>.delayed(const Duration(milliseconds: 250));
-      unawaited(getPlayerState());
-    } on PlatformException catch (e) {
-      log(
-        'Error setting repeat mode',
-        detail: '${e.code}: ${e.message}',
-        severity: LogSeverity.error,
-      );
-    } on MissingPluginException {
-      log('SetRepeatMode not implemented', severity: LogSeverity.error);
-    }
+      },
+    );
   }
 
   /// Sets podcast playback speed.
   Future<void> setPodcastPlaybackSpeed(PodcastPlaybackSpeed speed) async {
-    try {
-      await SpotifySdk.setPodcastPlaybackSpeed(podcastPlaybackSpeed: speed);
-      log('Set podcast speed to ${speed.name}');
-      await Future<void>.delayed(const Duration(milliseconds: 250));
-      unawaited(getPlayerState());
-    } on PlatformException catch (e) {
-      log(
-        'Error setting podcast speed',
-        detail: '${e.code}: ${e.message}',
-        severity: LogSeverity.error,
-      );
-    } on MissingPluginException {
-      log(
-        'SetPodcastPlaybackSpeed not implemented',
-        severity: LogSeverity.error,
-      );
-    }
+    await _runSdkCall(
+      'setting podcast speed',
+      () => SpotifySdk.setPodcastPlaybackSpeed(podcastPlaybackSpeed: speed),
+      onSuccess: (_) {
+        log('Set podcast speed to ${speed.name}');
+        unawaited(
+          Future<void>.delayed(const Duration(milliseconds: 250))
+              .then((_) => getPlayerState()),
+        );
+      },
+    );
   }
 
   /// Adds item to user library.
   Future<void> addToLibrary({required String spotifyUri}) async {
-    try {
-      await SpotifySdk.addToLibrary(spotifyUri: spotifyUri);
-      log('Added $spotifyUri to library', severity: LogSeverity.success);
-    } on PlatformException catch (e) {
-      log(
-        'Error adding to library',
-        detail: '${e.code}: ${e.message}',
-        severity: LogSeverity.error,
-      );
-    } on MissingPluginException {
-      log('AddToLibrary not implemented', severity: LogSeverity.error);
-    }
+    await _runSdkCall(
+      'adding to library',
+      () => SpotifySdk.addToLibrary(spotifyUri: spotifyUri),
+      onSuccess: (_) {
+        log('Added $spotifyUri to library', severity: LogSeverity.success);
+      },
+    );
   }
 
   /// Removes item from user library.
   Future<void> removeFromLibrary({required String spotifyUri}) async {
-    try {
-      await SpotifySdk.removeFromLibrary(spotifyUri: spotifyUri);
-      log('Removed $spotifyUri from library');
-    } on PlatformException catch (e) {
-      log(
-        'Error removing from library',
-        detail: '${e.code}: ${e.message}',
-        severity: LogSeverity.error,
-      );
-    } on MissingPluginException {
-      log('RemoveFromLibrary not implemented', severity: LogSeverity.error);
-    }
+    await _runSdkCall(
+      'removing from library',
+      () => SpotifySdk.removeFromLibrary(spotifyUri: spotifyUri),
+      onSuccess: (_) {
+        log('Removed $spotifyUri from library');
+      },
+    );
   }
 
   /// Gets library state of item.
   Future<LibraryState?> getLibraryState({required String spotifyUri}) async {
-    try {
-      final state = await SpotifySdk.getLibraryState(spotifyUri: spotifyUri);
-      _lastLibraryState = state;
-      log('Fetched library state for $spotifyUri');
-      notifyListeners();
-      return state;
-    } on PlatformException catch (e) {
-      log(
-        'Error getting library state',
-        detail: '${e.code}: ${e.message}',
-        severity: LogSeverity.error,
-      );
-      return null;
-    } on MissingPluginException {
-      log('GetLibraryState not implemented', severity: LogSeverity.error);
-      return null;
-    }
+    return _runSdkCall(
+      'getting library state',
+      () => SpotifySdk.getLibraryState(spotifyUri: spotifyUri),
+      onSuccess: (state) {
+        _lastLibraryState = state;
+        log('Fetched library state for $spotifyUri');
+        notifyListeners();
+      },
+    );
   }
 
   /// Gets user capabilities for URI.
   Future<Capabilities?> getCapabilities({required String spotifyUri}) async {
-    try {
-      final capabilities = await SpotifySdk.getCapabilities(
-        spotifyUri: spotifyUri,
-      );
-      _userCapabilities = capabilities;
-      log('Fetched capabilities for $spotifyUri');
-      notifyListeners();
-      return capabilities;
-    } on PlatformException catch (e) {
-      log(
-        'Error getting capabilities',
-        detail: '${e.code}: ${e.message}',
-        severity: LogSeverity.error,
-      );
-      return null;
-    } on MissingPluginException {
-      log('GetCapabilities not implemented', severity: LogSeverity.error);
-      return null;
-    }
+    return _runSdkCall(
+      'getting capabilities',
+      () => SpotifySdk.getCapabilities(spotifyUri: spotifyUri),
+      onSuccess: (capabilities) {
+        _userCapabilities = capabilities;
+        log('Fetched capabilities for $spotifyUri');
+        notifyListeners();
+      },
+    );
   }
 
   /// Fetches current crossfade state.
   Future<CrossfadeState?> getCrossfadeState() async {
-    try {
-      final state = await SpotifySdk.getCrossFadeState();
-      _crossfadeState = state;
-      log('Fetched crossfade state: enabled=${state?.isEnabled}');
-      notifyListeners();
-      return state;
-    } on PlatformException catch (e) {
-      log(
-        'Error getting crossfade state',
-        detail: '${e.code}: ${e.message}',
-        severity: LogSeverity.error,
-      );
-      return null;
-    } on MissingPluginException {
-      log('GetCrossfadeState not implemented', severity: LogSeverity.error);
-      return null;
-    }
+    return _runSdkCall(
+      'getting crossfade state',
+      SpotifySdk.getCrossFadeState,
+      onSuccess: (state) {
+        _crossfadeState = state;
+        log('Fetched crossfade state: enabled=${state?.isEnabled}');
+        notifyListeners();
+      },
+    );
   }
 
   /// Switches playback to local device.
   Future<void> switchToLocalDevice() async {
-    try {
-      await SpotifySdk.switchToLocalDevice();
-      log('Switched playback to local device', severity: LogSeverity.success);
-    } on PlatformException catch (e) {
-      log(
-        'Error switching to local device',
-        detail: '${e.code}: ${e.message}',
-        severity: LogSeverity.error,
-      );
-    } on MissingPluginException {
-      log('SwitchToLocalDevice not implemented', severity: LogSeverity.error);
-    }
+    await _runSdkCall(
+      'switching to local device',
+      SpotifySdk.switchToLocalDevice,
+      onSuccess: (_) {
+        log(
+          'Switched playback to local device',
+          severity: LogSeverity.success,
+        );
+      },
+    );
   }
 
   @override
