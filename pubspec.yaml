@@ -55,10 +55,6 @@ melos:
       run: melos exec -- cp "\$MELOS_ROOT_PATH/LICENSE" .
       description: Sync the root LICENSE file to all sub-packages.
 
-    sync:readme:
-      run: cp README.md packages/spotify_sdk/README.md
-      description: Sync the root README file to the core packages/spotify_sdk folder.
-
     publish:dry-run:
       run: melos publish --dry-run --yes
       description: Run dry-run package publishing check across all packages in the workspace.
