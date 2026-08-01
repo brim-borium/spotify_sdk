@@ -103,9 +103,7 @@ class SpotifyController extends ChangeNotifier {
             detail: details.isNotEmpty ? details.join(' ') : null,
             severity: status.connected
                 ? LogSeverity.success
-                : (status.hasError()
-                    ? LogSeverity.error
-                    : LogSeverity.warning),
+                : (status.hasError() ? LogSeverity.error : LogSeverity.warning),
           );
           notifyListeners();
         },
@@ -381,8 +379,9 @@ class SpotifyController extends ChangeNotifier {
           notifyListeners();
         }
         unawaited(
-          Future<void>.delayed(const Duration(milliseconds: 250))
-              .then((_) => getPlayerState()),
+          Future<void>.delayed(
+            const Duration(milliseconds: 250),
+          ).then((_) => getPlayerState()),
         );
       },
     );
@@ -407,8 +406,9 @@ class SpotifyController extends ChangeNotifier {
           notifyListeners();
         }
         unawaited(
-          Future<void>.delayed(const Duration(milliseconds: 250))
-              .then((_) => getPlayerState()),
+          Future<void>.delayed(
+            const Duration(milliseconds: 250),
+          ).then((_) => getPlayerState()),
         );
       },
     );
@@ -470,8 +470,9 @@ class SpotifyController extends ChangeNotifier {
       onSuccess: (_) {
         log('Queued URI: $spotifyUri', severity: LogSeverity.success);
         unawaited(
-          Future<void>.delayed(const Duration(milliseconds: 250))
-              .then((_) => getPlayerState()),
+          Future<void>.delayed(
+            const Duration(milliseconds: 250),
+          ).then((_) => getPlayerState()),
         );
       },
     );
@@ -496,8 +497,9 @@ class SpotifyController extends ChangeNotifier {
           notifyListeners();
         }
         unawaited(
-          Future<void>.delayed(const Duration(milliseconds: 250))
-              .then((_) => getPlayerState()),
+          Future<void>.delayed(
+            const Duration(milliseconds: 250),
+          ).then((_) => getPlayerState()),
         );
       },
     );
@@ -527,8 +529,9 @@ class SpotifyController extends ChangeNotifier {
           notifyListeners();
         }
         unawaited(
-          Future<void>.delayed(const Duration(milliseconds: 250))
-              .then((_) => getPlayerState()),
+          Future<void>.delayed(
+            const Duration(milliseconds: 250),
+          ).then((_) => getPlayerState()),
         );
       },
     );
@@ -558,8 +561,9 @@ class SpotifyController extends ChangeNotifier {
           notifyListeners();
         }
         unawaited(
-          Future<void>.delayed(const Duration(milliseconds: 250))
-              .then((_) => getPlayerState()),
+          Future<void>.delayed(
+            const Duration(milliseconds: 250),
+          ).then((_) => getPlayerState()),
         );
       },
     );
@@ -588,8 +592,9 @@ class SpotifyController extends ChangeNotifier {
           notifyListeners();
         }
         unawaited(
-          Future<void>.delayed(const Duration(milliseconds: 250))
-              .then((_) => getPlayerState()),
+          Future<void>.delayed(
+            const Duration(milliseconds: 250),
+          ).then((_) => getPlayerState()),
         );
       },
     );
@@ -624,8 +629,9 @@ class SpotifyController extends ChangeNotifier {
           notifyListeners();
         }
         unawaited(
-          Future<void>.delayed(const Duration(milliseconds: 250))
-              .then((_) => getPlayerState()),
+          Future<void>.delayed(
+            const Duration(milliseconds: 250),
+          ).then((_) => getPlayerState()),
         );
       },
     );
@@ -654,8 +660,9 @@ class SpotifyController extends ChangeNotifier {
           notifyListeners();
         }
         unawaited(
-          Future<void>.delayed(const Duration(milliseconds: 250))
-              .then((_) => getPlayerState()),
+          Future<void>.delayed(
+            const Duration(milliseconds: 250),
+          ).then((_) => getPlayerState()),
         );
       },
     );
@@ -669,8 +676,9 @@ class SpotifyController extends ChangeNotifier {
       onSuccess: (_) {
         log('Set podcast speed to ${speed.name}');
         unawaited(
-          Future<void>.delayed(const Duration(milliseconds: 250))
-              .then((_) => getPlayerState()),
+          Future<void>.delayed(
+            const Duration(milliseconds: 250),
+          ).then((_) => getPlayerState()),
         );
       },
     );
