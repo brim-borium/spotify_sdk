@@ -94,7 +94,8 @@ class SpotifySdkPlugin extends SpotifySdkPlatform {
   /// Default scopes that are required for Web SDK to work
   static const String defaultScopes =
       'streaming user-read-email user-read-private '
-      'user-modify-playback-state user-read-playback-state';
+      'user-modify-playback-state user-read-playback-state '
+      'user-library-modify user-library-read';
 
   /// The URL for the token swap service.
   static String? get tokenSwapURL => SpotifyAuthSession.tokenSwapURL;
@@ -268,6 +269,10 @@ class SpotifySdkPlugin extends SpotifySdkPlatform {
           _onSpotifyDisconnected();
           return true;
         }
+      case MethodNames.getCrossfadeState:
+        final crossfade = await getCrossFadeState();
+        if (crossfade == null) return null;
+        return jsonEncode(crossfade.toJson());
       case MethodNames.play:
         await _play(arguments?[ParamNames.spotifyUri] as String?);
       case MethodNames.queueTrack:
@@ -278,6 +283,16 @@ class SpotifySdkPlugin extends SpotifySdkPlatform {
         await _setRepeatMode(
           arguments?[ParamNames.repeatMode] as SpotifyRepeatMode?,
         );
+      case MethodNames.toggleShuffle:
+        await toggleShuffle();
+      case MethodNames.toggleRepeat:
+        await toggleRepeat();
+      case MethodNames.skipToIndex:
+        final spotifyUri = arguments?[ParamNames.spotifyUri] as String?;
+        final trackIndex = arguments?[ParamNames.trackIndex] as int?;
+        if (spotifyUri != null && trackIndex != null) {
+          await skipToIndex(spotifyUri: spotifyUri, trackIndex: trackIndex);
+        }
       case MethodNames.resume:
         await _currentPlayer?.resume().toDart;
       case MethodNames.pause:
@@ -291,7 +306,7 @@ class SpotifySdkPlugin extends SpotifySdkPlatform {
             (await _currentPlayer?.getCurrentState().toDart)
                 as WebPlaybackState?;
         if (stateRaw == null) return null;
-        return jsonEncode(toPlayerState(stateRaw)!.toJson());
+        return jsonEncode(_playerDispatcher.toPlayerState(stateRaw)!.toJson());
       default:
         throw PlatformException(
           code: 'Unimplemented',
@@ -412,6 +427,15 @@ class SpotifySdkPlugin extends SpotifySdkPlatform {
   }
 
   @override
+  Future<CrossfadeState?> getCrossFadeState() async {
+    if (!_sdkLoaded) {
+      _sdkLoadFuture ??= _initializeSpotify();
+      await _sdkLoadFuture;
+    }
+    return CrossfadeState(0, isEnabled: false);
+  }
+
+  @override
   Future<PlayerState?> getPlayerState() async {
     if (!_sdkLoaded) {
       _sdkLoadFuture ??= _initializeSpotify();
@@ -420,7 +444,7 @@ class SpotifySdkPlugin extends SpotifySdkPlatform {
     final stateRaw =
         (await _currentPlayer?.getCurrentState().toDart) as WebPlaybackState?;
     if (stateRaw == null) return null;
-    return toPlayerState(stateRaw);
+    return _playerDispatcher.toPlayerState(stateRaw);
   }
 
   @override
@@ -463,6 +487,17 @@ class SpotifySdkPlugin extends SpotifySdkPlatform {
   }
 
   @override
+  Future<void> setPodcastPlaybackSpeed({
+    required PodcastPlaybackSpeed podcastPlaybackSpeed,
+  }) async {
+    if (!_sdkLoaded) {
+      _sdkLoadFuture ??= _initializeSpotify();
+      await _sdkLoadFuture;
+    }
+    log('setPodcastPlaybackSpeed is not supported on Spotify Web API');
+  }
+
+  @override
   Future<void> skipNext() async {
     if (!_sdkLoaded) {
       _sdkLoadFuture ??= _initializeSpotify();
@@ -478,6 +513,52 @@ class SpotifySdkPlugin extends SpotifySdkPlatform {
       await _sdkLoadFuture;
     }
     await _currentPlayer?.previousTrack().toDart;
+  }
+
+  @override
+  Future<void> skipToIndex({
+    required String spotifyUri,
+    required int trackIndex,
+  }) async {
+    if (!_sdkLoaded) {
+      _sdkLoadFuture ??= _initializeSpotify();
+      await _sdkLoadFuture;
+    }
+    if (_currentPlayer?.deviceID == null) {
+      throw PlatformException(
+        message: 'Spotify player not connected!',
+        code: 'Playback Error',
+      );
+    }
+    try {
+      final token = await _authSession.getValidToken();
+      final body = <String, dynamic>{
+        if (spotifyUri.contains(':track:'))
+          'uris': [spotifyUri]
+        else
+          'context_uri': spotifyUri,
+        'offset': {'position': trackIndex},
+      };
+      await _dio.put<void>(
+        '/play',
+        data: body,
+        queryParameters: {'device_id': _currentPlayer!.deviceID},
+        options: Options(
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $token',
+          },
+        ),
+      );
+    } on Object catch (e) {
+      final message = e is DioException && e.response?.data != null
+          ? '${e.response?.data}'
+          : '$e';
+      throw PlatformException(
+        message: 'Skip to index failed: $message',
+        code: 'Playback Error',
+      );
+    }
   }
 
   @override
@@ -502,6 +583,138 @@ class SpotifySdkPlugin extends SpotifySdkPlatform {
     final currentPos = stateRaw?.position ?? 0;
     final targetPos = (currentPos + relativeMilliseconds).clamp(0, 86400000);
     await _currentPlayer?.seek(targetPos).toDart;
+  }
+
+  @override
+  Future<void> toggleShuffle() async {
+    if (!_sdkLoaded) {
+      _sdkLoadFuture ??= _initializeSpotify();
+      await _sdkLoadFuture;
+    }
+    final currentState = await getPlayerState();
+    final currentShuffle = currentState?.playbackOptions.isShuffling ?? false;
+    await setShuffle(shuffle: !currentShuffle);
+  }
+
+  @override
+  Future<void> toggleRepeat() async {
+    if (!_sdkLoaded) {
+      _sdkLoadFuture ??= _initializeSpotify();
+      await _sdkLoadFuture;
+    }
+    final currentState = await getPlayerState();
+    final currentMode =
+        currentState?.playbackOptions.repeatMode ?? SpotifyRepeatMode.off;
+    final nextMode = currentMode == SpotifyRepeatMode.off
+        ? SpotifyRepeatMode.context
+        : (currentMode == SpotifyRepeatMode.context
+              ? SpotifyRepeatMode.track
+              : SpotifyRepeatMode.off);
+    await setRepeatMode(repeatMode: nextMode);
+  }
+
+  @override
+  Future<void> addToLibrary({required String spotifyUri}) async {
+    if (!_sdkLoaded) {
+      _sdkLoadFuture ??= _initializeSpotify();
+      await _sdkLoadFuture;
+    }
+    final id = _extractId(spotifyUri);
+    if (id == null) return;
+    try {
+      final token = await _authSession.getValidToken();
+      await Dio().put<void>(
+        'https://api.spotify.com/v1/me/tracks',
+        queryParameters: {'ids': id},
+        options: Options(
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $token',
+          },
+        ),
+      );
+    } on Object catch (e) {
+      log('addToLibrary error: $e');
+    }
+  }
+
+  @override
+  Future<void> removeFromLibrary({required String spotifyUri}) async {
+    if (!_sdkLoaded) {
+      _sdkLoadFuture ??= _initializeSpotify();
+      await _sdkLoadFuture;
+    }
+    final id = _extractId(spotifyUri);
+    if (id == null) return;
+    try {
+      final token = await _authSession.getValidToken();
+      await Dio().delete<void>(
+        'https://api.spotify.com/v1/me/tracks',
+        queryParameters: {'ids': id},
+        options: Options(
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $token',
+          },
+        ),
+      );
+    } on Object catch (e) {
+      log('removeFromLibrary error: $e');
+    }
+  }
+
+  @override
+  Future<Capabilities?> getCapabilities({
+    required String spotifyUri,
+  }) async {
+    if (!_sdkLoaded) {
+      _sdkLoadFuture ??= _initializeSpotify();
+      await _sdkLoadFuture;
+    }
+    return Capabilities(canPlayOnDemand: true);
+  }
+
+  @override
+  Future<LibraryState?> getLibraryState({
+    required String spotifyUri,
+  }) async {
+    if (!_sdkLoaded) {
+      _sdkLoadFuture ??= _initializeSpotify();
+      await _sdkLoadFuture;
+    }
+    final id = _extractId(spotifyUri);
+    if (id == null) {
+      return LibraryState(spotifyUri, isSaved: false, canSave: true);
+    }
+    try {
+      final token = await _authSession.getValidToken();
+      final response = await Dio().get<List<dynamic>>(
+        'https://api.spotify.com/v1/me/tracks/contains',
+        queryParameters: {'ids': id},
+        options: Options(
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $token',
+          },
+        ),
+      );
+      final isSaved =
+          response.data != null &&
+          response.data!.isNotEmpty &&
+          (response.data![0] == true);
+      return LibraryState(spotifyUri, isSaved: isSaved, canSave: true);
+    } on Object catch (e) {
+      log('getLibraryState error: $e');
+      return LibraryState(spotifyUri, isSaved: false, canSave: true);
+    }
+  }
+
+  String? _extractId(String uri) {
+    if (uri.contains(':')) {
+      final parts = uri.split(':');
+      return parts.isNotEmpty ? parts.last : null;
+    }
+    return uri.isNotEmpty ? uri : null;
   }
 
   @override
@@ -726,11 +939,18 @@ class SpotifySdkPlugin extends SpotifySdkPlatform {
 
     try {
       final token = await _authSession.getValidToken();
+      final body = <String, dynamic>{};
+      if (uri != null && uri.isNotEmpty) {
+        if (uri.contains(':track:')) {
+          body['uris'] = [uri];
+        } else {
+          body['context_uri'] = uri;
+        }
+      }
+
       await _dio.put<void>(
         '/play',
-        data: {
-          if (uri != null && uri.isNotEmpty) 'uris': [uri],
-        },
+        data: body,
         queryParameters: {'device_id': _currentPlayer!.deviceID},
         options: Options(
           headers: {
@@ -826,13 +1046,23 @@ class SpotifySdkPlugin extends SpotifySdkPlatform {
       );
     }
 
+    late String state;
+    switch (repeatMode) {
+      case SpotifyRepeatMode.context:
+        state = 'context';
+      case SpotifyRepeatMode.track:
+        state = 'track';
+      case SpotifyRepeatMode.off:
+      case null:
+        state = 'off';
+    }
+
     try {
       final token = await _authSession.getValidToken();
-      final modeStr = repeatMode?.name ?? 'off';
       await _dio.put<void>(
         '/repeat',
         queryParameters: {
-          'state': modeStr,
+          'state': state,
           'device_id': _currentPlayer!.deviceID,
         },
         options: Options(
@@ -852,136 +1082,4 @@ class SpotifySdkPlugin extends SpotifySdkPlatform {
       );
     }
   }
-
-  /// Toggles shuffle on the current player.
-  @override
-  Future<void> toggleShuffle({bool? state}) async {
-    if (_currentPlayer?.deviceID == null) {
-      throw PlatformException(
-        message: 'Spotify player not connected!',
-        code: 'Playback Error',
-      );
-    }
-
-    try {
-      final token = await _authSession.getValidToken();
-      final bool targetState;
-      if (state != null) {
-        targetState = state;
-      } else {
-        final currentState =
-            (await _currentPlayer?.getCurrentState().toDart)
-                as WebPlaybackState?;
-        targetState = !(currentState?.shuffle ?? false);
-      }
-      await _dio.put<void>(
-        '/shuffle',
-        queryParameters: {
-          'state': targetState.toString(),
-          'device_id': _currentPlayer!.deviceID,
-        },
-        options: Options(
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer $token',
-          },
-        ),
-      );
-    } on Object catch (e) {
-      final message = e is DioException && e.response?.data != null
-          ? '${e.response?.data}'
-          : '$e';
-      throw PlatformException(
-        message: 'Toggle shuffle failed: $message',
-        code: 'Playback Error',
-      );
-    }
-  }
-
-  /// Toggles repeat on the current player.
-  @override
-  Future<void> toggleRepeat({bool? state}) async {
-    if (_currentPlayer?.deviceID == null) {
-      throw PlatformException(
-        message: 'Spotify player not connected!',
-        code: 'Playback Error',
-      );
-    }
-
-    try {
-      final token = await _authSession.getValidToken();
-      final String targetMode;
-      if (state != null) {
-        targetMode = state ? 'context' : 'off';
-      } else {
-        final currentState =
-            (await _currentPlayer?.getCurrentState().toDart)
-                as WebPlaybackState?;
-        final currentMode = currentState?.repeat_mode ?? 0;
-        switch (currentMode) {
-          case 0:
-            targetMode = 'context';
-          case 1:
-            targetMode = 'track';
-          case 2:
-          default:
-            targetMode = 'off';
-        }
-      }
-      await _dio.put<void>(
-        '/repeat',
-        queryParameters: {
-          'state': targetMode,
-          'device_id': _currentPlayer!.deviceID,
-        },
-        options: Options(
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer $token',
-          },
-        ),
-      );
-    } on Object catch (e) {
-      final message = e is DioException && e.response?.data != null
-          ? '${e.response?.data}'
-          : '$e';
-      throw PlatformException(
-        message: 'Toggle repeat failed: $message',
-        code: 'Playback Error',
-      );
-    }
-  }
-
-  /// Converts a native WebPlaybackState to the library PlayerState
-  PlayerState? toPlayerState(WebPlaybackState? state) {
-    return _playerDispatcher.toPlayerState(state);
-  }
-
-  /// Converts a native WebPlaybackState to the library PlayerContext
-  PlayerContext? toPlayerContext(WebPlaybackState? state) {
-    return _playerDispatcher.toPlayerContext(state);
-  }
-}
-
-/// Spotify token object.
-class SpotifyToken {
-  /// constructor
-  SpotifyToken({
-    required this.clientId,
-    required this.accessToken,
-    required this.refreshToken,
-    required this.expiry,
-  });
-
-  /// Currently used client id.
-  final String clientId;
-
-  /// Access token data.
-  final String accessToken;
-
-  /// Refresh token data.
-  final String refreshToken;
-
-  /// Token expiry time in unix seconds.
-  final int expiry;
 }

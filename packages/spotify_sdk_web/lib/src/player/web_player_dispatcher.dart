@@ -154,13 +154,15 @@ class WebPlayerDispatcher {
         ? albumRaw.images!.toDart[0].url ?? ''
         : '';
 
+    final duration = state.duration ?? trackRaw?.duration_ms ?? 0;
+
     return PlayerState(
       trackRaw != null
           ? Track(
               Album(albumRaw?.name ?? '', albumRaw?.uri ?? ''),
               artists[0],
               artists,
-              -1,
+              duration,
               ImageUri(imageUrl),
               trackRaw.name ?? '',
               trackRaw.uri ?? '',

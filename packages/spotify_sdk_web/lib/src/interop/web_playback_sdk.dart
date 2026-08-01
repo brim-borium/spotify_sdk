@@ -109,6 +109,7 @@ extension type WebPlaybackState._(JSObject _) implements JSObject {
     WebPlayerDisallows? disallows,
     bool? paused,
     int? position,
+    int? duration,
     int? repeat_mode,
     bool? shuffle,
     WebPlayerTrackWindow? track_window,
@@ -125,6 +126,9 @@ extension type WebPlaybackState._(JSObject _) implements JSObject {
 
   /// position
   external int? get position;
+
+  /// duration
+  external int? get duration;
 
   /// repeat mode
   external int? get repeat_mode;
@@ -238,6 +242,7 @@ extension type WebPlaybackTrack._(JSObject _) implements JSObject {
     String? type,
     String? media_type,
     String? name,
+    int? duration_ms,
     bool? is_playable,
     WebPlaybackAlbum? album,
     JSArray<WebPlaybackArtist>? artists,
@@ -258,6 +263,9 @@ extension type WebPlaybackTrack._(JSObject _) implements JSObject {
 
   /// name
   external String? get name;
+
+  /// duration_ms
+  external int? get duration_ms;
 
   /// is playable
   external bool? get is_playable;
