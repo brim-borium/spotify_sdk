@@ -52,4 +52,6 @@ To maintain synchronization and consistency across all platform wrappers, the co
     *   Isolated deep modules separating low-level `@JS()` browser extension bindings and player event stream dispatching from `SpotifySdkPlugin`.
 8.  **Web API Client (`SpotifyWebApiClient`)**:
     *   Dedicated deep module in `spotify_sdk_web` encapsulating Spotify REST Web API requests (library state, queueing, playback seeking, artwork HTTP fetching, device switching) with automatic bearer token authorization via `SpotifyAuthSession` and error translation.
+9.  **Android Remote Controller (`SpotifyRemoteController`)**:
+    *   Stateful native controller in `spotify_sdk_android` managing `SpotifyAppRemote` connection lifecycle, activity lifecycle events, stream handlers, and safe async method channel result completion.
 
