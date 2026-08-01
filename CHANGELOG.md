@@ -3,6 +3,55 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 2026-08-01
+
+### Changes
+
+---
+
+Packages with breaking changes:
+
+ - [`spotify_sdk` - `v4.0.0-dev.3`](#spotify_sdk---v400-dev3)
+ - [`spotify_sdk_android` - `v3.0.0`](#spotify_sdk_android---v300)
+ - [`spotify_sdk_ios` - `v3.0.0`](#spotify_sdk_ios---v300)
+ - [`spotify_sdk_platform_interface` - `v3.0.0`](#spotify_sdk_platform_interface---v300)
+ - [`spotify_sdk_web` - `v3.0.0`](#spotify_sdk_web---v300)
+
+Packages with other changes:
+
+ - There are no other changes in this release.
+
+---
+
+#### `spotify_sdk` - `v4.0.0-dev.3`
+
+ - **REFACTOR**: introduce PlatformChannelGateway to centralize method chann… (#256).
+ - **FIX**: resolve Web/WASM, SwiftPM and Kotlin scoring warnings on pub.dev (#254).
+ - **BREAKING** **FEAT**: update all to latest (#251).
+
+#### `spotify_sdk_android` - `v3.0.0`
+
+ - **REFACTOR**: introduce PlatformChannelGateway to centralize method chann… (#256).
+ - **FIX**: resolve Web/WASM, SwiftPM and Kotlin scoring warnings on pub.dev (#254).
+ - **BREAKING** **FEAT**: update all to latest (#251).
+
+#### `spotify_sdk_ios` - `v3.0.0`
+
+ - **FIX**: resolve Web/WASM, SwiftPM and Kotlin scoring warnings on pub.dev (#254).
+ - **BREAKING** **FEAT**: update all to latest (#251).
+
+#### `spotify_sdk_platform_interface` - `v3.0.0`
+
+ - **REFACTOR**: introduce PlatformChannelGateway to centralize method chann… (#256).
+ - **FIX**: resolve Web/WASM, SwiftPM and Kotlin scoring warnings on pub.dev (#254).
+ - **BREAKING** **FEAT**: update all to latest (#251).
+
+#### `spotify_sdk_web` - `v3.0.0`
+
+ - **REFACTOR**: introduce PlatformChannelGateway to centralize method chann… (#256).
+ - **BREAKING** **FEAT**: update all to latest (#251).
+
+
 ## 2026-07-19
 
 ### Changes
