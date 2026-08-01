@@ -296,29 +296,20 @@ class SpotifyRemoteController : PluginRegistry.ActivityResultListener {
             return
         }
         withAppRemote(result) { remote ->
-            remote.playerApi.playerState.setResultCallback { state ->
-                val targetPos = state.playbackPosition + castedMilliseconds
-                remote.playerApi.seekTo(targetPos)
-                    .setResultCallback { result.success(true) }
-                    .setErrorCallback { throwable -> result.error("seekToError", "error when seeking relative position", throwable.toString()) }
-            }.setErrorCallback { throwable ->
-                result.error("seekToError", "error getting player state for relative seek", throwable.toString())
-            }
+            remote.playerApi.seekToRelativePosition(castedMilliseconds)
+                .setResultCallback { result.success(true) }
+                .setErrorCallback { throwable -> result.error("seekToError", "error when seeking relative position", throwable.toString()) }
         }
     }
 
-    private fun setPodcastPlaybackSpeed(speed: Float?, result: Result) {
+    private fun setPodcastPlaybackSpeed(speed: Int?, result: Result) {
         if (speed == null) {
             result.error("podcastPlaybackSpeedError", "podcastPlaybackSpeed has invalid format or is not set", "")
             return
         }
-        val playbackSpeed = PlaybackSpeed.values().firstOrNull { it.value == speed }
-        if (playbackSpeed == null) {
-            result.error("podcastPlaybackSpeedError", "podcastPlaybackSpeed value is invalid", "")
-            return
-        }
+        val podcastPlaybackSpeed = PlaybackSpeed.PodcastPlaybackSpeed.values().firstOrNull { it.value == speed }
         withAppRemote(result) { remote ->
-            remote.playerApi.setPodcastPlaybackSpeed(playbackSpeed)
+            remote.playerApi.setPodcastPlaybackSpeed(podcastPlaybackSpeed)
                 .setResultCallback { result.success(true) }
                 .setErrorCallback { throwable -> result.error("podcastPlaybackSpeedError", "error setting podcast playback speed", throwable.toString()) }
         }
@@ -346,13 +337,9 @@ class SpotifyRemoteController : PluginRegistry.ActivityResultListener {
             return
         }
         withAppRemote(result) { remote ->
-            remote.contentApi.fetchContentItemForURI(spotifyUri)
-                .setResultCallback { contentItem ->
-                    remote.playerApi.play(contentItem, trackIndex)
-                        .setResultCallback { result.success(true) }
-                        .setErrorCallback { throwable -> result.error("skipToIndexError", "error playing content item at index", throwable.toString()) }
-                }
-                .setErrorCallback { throwable -> result.error("skipToIndexError", "error fetching content item for uri", throwable.toString()) }
+            remote.playerApi.skipToIndex(spotifyUri, trackIndex)
+                .setResultCallback { result.success(true) }
+                .setErrorCallback { throwable -> result.error("skipToIndexError", "error skipping to index", throwable.toString()) }
         }
     }
 
@@ -390,7 +377,7 @@ class SpotifyRemoteController : PluginRegistry.ActivityResultListener {
             return
         }
         withAppRemote(result) { remote ->
-            remote.playerApi.setRepeatMode(repeatMode)
+            remote.playerApi.setRepeat(repeatMode)
                 .setResultCallback { result.success(true) }
                 .setErrorCallback { throwable -> result.error("setRepeatModeError", "error setting repeat mode", throwable.toString()) }
         }
