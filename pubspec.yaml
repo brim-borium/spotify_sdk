@@ -23,7 +23,7 @@ melos:
     bootstrap:
       usePubspecOverrides: true
       hooks:
-        post: melos run sync:license && melos run sync:readme
+        post: melos run sync:license
     version:
       ignore:
         - "spotify_sdk_example"
