@@ -5,6 +5,21 @@ import 'package:spotify_sdk_platform_interface/models/image_uri.dart';
 
 part 'track.g.dart';
 
+Object? _readDuration(Map map, String key) =>
+    map['duration'] ?? map['duration_ms'] ?? map['durationMs'] ?? 0;
+
+Object? _readImageUri(Map map, String key) =>
+    map['imageUri'] ?? map['image_id'] ?? map['imageId'];
+
+Object? _readIsEpisode(Map map, String key) =>
+    map['isEpisode'] ?? map['is_episode'] ?? false;
+
+Object? _readIsPodcast(Map map, String key) =>
+    map['isPodcast'] ?? map['is_podcast'] ?? false;
+
+Object? _readLinkedFromUri(Map map, String key) =>
+    map['linkedFromUri'] ?? map['linked_from_uri'];
+
 /// A track in the Spotify library.
 @JsonSerializable()
 class Track {
@@ -35,19 +50,19 @@ class Track {
   final List<Artist> artists;
 
   /// The duration of the track in milliseconds.
-  @JsonKey(name: 'duration_ms')
+  @JsonKey(name: 'duration_ms', readValue: _readDuration)
   final int duration;
 
   /// The URI for the track image.
-  @JsonKey(name: 'image_id')
+  @JsonKey(name: 'image_id', readValue: _readImageUri)
   final ImageUri imageUri;
 
   /// Whether the track is an episode.
-  @JsonKey(name: 'is_episode')
+  @JsonKey(name: 'is_episode', readValue: _readIsEpisode)
   final bool isEpisode;
 
   /// Whether the track is a podcast.
-  @JsonKey(name: 'is_podcast')
+  @JsonKey(name: 'is_podcast', readValue: _readIsPodcast)
   final bool isPodcast;
 
   /// The name of the track.
@@ -57,7 +72,7 @@ class Track {
   final String uri;
 
   /// The URI of the track this one was linked from.
-  @JsonKey(name: 'linked_from_uri')
+  @JsonKey(name: 'linked_from_uri', readValue: _readLinkedFromUri)
   final String? linkedFromUri;
 
   /// Converts a [Track] to a [Map<String, dynamic>].

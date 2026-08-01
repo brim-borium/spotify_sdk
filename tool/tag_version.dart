@@ -1,5 +1,5 @@
 // Ignore lints because this is a local developer CLI script, not package code.
-// ignore_for_file: avoid_print, lines_longer_than_80_chars
+// ignore_for_file: avoid_print
 import 'dart:io';
 
 void main() {
@@ -30,7 +30,12 @@ void main() {
   }
 
   // Create git tag
-  final result = Process.runSync('git', ['tag', version, '-m', 'release: $version']);
+  final result = Process.runSync('git', [
+    'tag',
+    version,
+    '-m',
+    'release: $version',
+  ]);
   if (result.exitCode != 0) {
     print('Error creating git tag: ${result.stderr}');
     exit(result.exitCode);

@@ -29,10 +29,10 @@ flutter run
 ```
 
 ### 3. Web Testing
-To run the example app on Web specifically:
+To run the example app on Web specifically (note Spotify requires `127.0.0.1` loopback IP):
 ```bash
 cd example
-flutter run -d chrome
+flutter run -d chrome --web-hostname=127.0.0.1 --web-port=8080
 ```
 
 ## Guidelines

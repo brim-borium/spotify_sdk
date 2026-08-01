@@ -127,7 +127,7 @@ You can optionally specify "token swap" URLs to manage tokens with a backend ser
 ```dart
 SpotifySdkPlugin.tokenSwapURL = 'https://example.com/api/spotify/token';
 SpotifySdkPlugin.tokenRefreshURL = 'https://example.com/api/spotify/refresh';
-````
+```
 
 On web, this package will perform an Authorization Code (without PKCE) flow, then exchange the code and refresh the token with a backend service you run at the URLs provided.
 
@@ -142,7 +142,7 @@ Token Swap is for now "web only". While the iOS SDK also supports the "token swa
 | connectToSpotifyRemote  | Connects the App to Spotify | ✔ | ✔ | ✔ |
 |  getAccessToken | Gets the Access Token that you can use to work with the [Web Api](https://developer.spotify.com/documentation/web-api/) | ✔ |  ✔ | ✔ |
 |  disconnect | Disconnects the app connection | ✔ |  ✔ | ✔ |
-|  subscribeConnectionStatus | Subscribes to the current player state. | ✔ |  ✔ | 🚧 |
+|  subscribeConnectionStatus | Subscribes to the current connection status. | ✔ |  ✔ | ✔ |
 
 #### Player Api
 
@@ -150,25 +150,25 @@ The playerApi as described [here](https://spotify.github.io/android-sdk/app-remo
 
 | Function                | Description | Android | iOS | Web |
 |-------------------------|---|--|---|---|
-| getCrossfadeState       | Gets the current crossfade state | ✔ | ✔ | ❌ |
+| getCrossfadeState       | Gets the current crossfade state | ✔ | ✔ | ✔ |
 | getPlayerState          | Gets the current player state |✔ |  ✔ | ✔ |
 | pause                   | Pauses the current track  |✔ | ✔  | ✔ |
 | play                    | Plays the given spotifyUri |✔ |  ✔ | ✔ |
 | playWithStreamType      | Play the given Spotify uri with specific behaviour for that streamtype | 🚧 |  🚧 | 🚧 |
 | queue                   | Queues given spotifyUri |✔ | ✔  | ✔ |
 | resume                  | Resumes the current track |✔ |  ✔ | ✔ |
-| seekTo                  | Seeks the current track to the given position in milliseconds | ✔ | ✔ | 🚧 |
-| seekToRelativePosition  | Adds to the current position of the track the given milliseconds | ✔ | ❌ | 🚧 |
+| seekTo                  | Seeks the current track to the given position in milliseconds | ✔ | ✔ | ✔ |
+| seekToRelativePosition  | Adds to the current position of the track the given milliseconds | ✔ | ❌ | ✔ |
 | setPodcastPlaybackSpeed | Set playback speed for Podcast  | ✔ | 🚧 | 🚧 |
 | setRepeatMode           | Set the repeat mode | ✔ |  ✔ | ✔ |
 | setShuffle              | Set the shuffle mode | ✔ |  ✔ | ✔ |
 | skipNext                | Skips to next track | ✔ | ✔  | ✔ |
 | skipPrevious            | Skips to previous track |✔ |  ✔ | ✔ |
-| skipToIndex             | Skips to track at specified index in album or playlist |✔ |  ✔ | 🚧  |
+| skipToIndex             | Skips to track at specified index in album or playlist |✔ |  ✔ | ✔ |
 | subscribePlayerContext  | Subscribes to the current player context | ✔ | ✔ | ✔ |
 | subscribePlayerState    | Subscribes to the current player state | ✔ | ✔ | ✔ |
-| toggleRepeat            | Cycles through the repeat modes | ✔ |  ✔ | ❌ |
-| toggleShuffle           | Cycles through the shuffle modes | ✔ | ❌ | ❌ |
+| toggleRepeat            | Cycles through the repeat modes | ✔ |  ✔ | ✔ |
+| toggleShuffle           | Cycles through the shuffle modes | ✔ | ❌ | ✔ |
 
 On Web, an automatic call to play may not work due to media activation policies which send an error: "Authentication Error: Browser prevented autoplay due to lack of interaction". This error is ignored by the SDK so you can still present a button for the user to click to `play` or `resume` to start playback. See the [Web SDK Troubleshooting guide](https://developer.spotify.com/documentation/web-playback-sdk/reference/#troubleshooting) for more details.
 
@@ -178,7 +178,7 @@ The imagesApi as described [here](https://spotify.github.io/android-sdk/app-remo
 
 | Function  | Description| Android | iOS | Web |
 |---|---|---|---|---|
-|  getImage | Get the image from the given spotifyUri | ✔ |  ✔ | 🚧 |
+|  getImage | Get the image from the given spotifyUri | ✔ |  ✔ | ✔ |
 
 #### User Api
 
@@ -186,10 +186,10 @@ The userApi as described [here](https://spotify.github.io/android-sdk/app-remote
 
 | Function  | Description| Android | iOS | Web |
 |---|---|---|---|---|
-|  addToLibrary | Adds the given spotifyUri to the users library | ✔ | ✔ | 🚧 |
-|  getCapabilities | Gets the current users capabilities | ✔ | ✔ | 🚧 |
-|  getLibraryState | Gets the current library state | ✔ | ✔ | 🚧 |
-|  removeFromLibrary | Removes the given spotifyUri to the users library | ✔ | ✔ | 🚧 |
+|  addToLibrary | Adds the given spotifyUri to the users library | ✔ | ✔ | ✔ |
+|  getCapabilities | Gets the current users capabilities | ✔ | ✔ | ✔ |
+|  getLibraryState | Gets the current library state | ✔ | ✔ | ✔ |
+|  removeFromLibrary | Removes the given spotifyUri to the users library | ✔ | ✔ | ✔ |
 |  subscribeCapabilities |  Subscribes to the current users capabilities | ✔ | 🚧 | 🚧 |
 |  subscribeUserStatus |  Subscribes to  the current users status | ✔ | 🚧 | 🚧 |
 
@@ -202,7 +202,7 @@ The connectApi as described [here](https://spotify.github.io/android-sdk/app-rem
 | connectDecreaseVolume      | Decrease volume by a step size determined  | 🚧 | 🚧 | 🚧 |
 | connectIncreaseVolume      | Increase volume by a step size determined  | 🚧 | 🚧 | 🚧 |
 | connectSetVolume           | Set a volume on the currently active device | 🚧 | 🚧 | 🚧 |
-| connectSwitchToLocalDevice | Switch to play music on this (local) device | ✔ | 🚧 | 🚧 |
+| connectSwitchToLocalDevice | Switch to play music on this (local) device | ✔ | 🚧 | ✔ |
 | subscribeToVolumeState     | Subscribe to volume state                  | 🚧 | 🚧 | 🚧 |
 
 #### Content Api
@@ -229,5 +229,3 @@ The contentApi as described [here](https://spotify.github.io/android-sdk/app-rem
 - [Auth](https://spotify.github.io/android-sdk/auth-lib/docs/index.html)
 - [App Remote](https://spotify.github.io/android-sdk/app-remote-lib/docs/index.html)
 - [Web Playback SDK](https://developer.spotify.com/documentation/web-playback-sdk/)
-
-

@@ -11,11 +11,11 @@ environment:
 
 dependencies:
   crypto: ^3.0.7
-  dio: ^5.10.0
   flutter:
     sdk: flutter
   flutter_web_plugins:
     sdk: flutter
+  http: ^1.2.0
   spotify_sdk_platform_interface: ^2.0.0
   synchronized: ^3.4.1
   web: ^1.1.1

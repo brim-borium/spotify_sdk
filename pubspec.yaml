@@ -23,7 +23,7 @@ melos:
     bootstrap:
       usePubspecOverrides: true
       hooks:
-        post: melos run sync:license && melos run sync:readme
+        post: melos run sync:license
     version:
       ignore:
         - "spotify_sdk_example"
@@ -44,20 +44,16 @@ melos:
       description: Ensure all packages match standard formatting.
 
     test:all:
-      run: melos exec --dir-exists="test" -- flutter test
+      run: melos exec --dir-exists="test" --ignore="spotify_sdk_web" -- flutter test && melos exec --scope="spotify_sdk_web" -- flutter test --platform chrome
       description: Run all package tests.
 
     generate:all:
-      run: melos exec --depends-on="build_runner" -- flutter pub run build_runner build --delete-conflicting-outputs
+      run: melos exec --depends-on="build_runner" -- dart run build_runner build --delete-conflicting-outputs
       description: Run build_runner code generation across all packages.
 
     sync:license:
       run: melos exec -- cp "\$MELOS_ROOT_PATH/LICENSE" .
       description: Sync the root LICENSE file to all sub-packages.
-
-    sync:readme:
-      run: cp README.md packages/spotify_sdk/README.md
-      description: Sync the root README file to the core packages/spotify_sdk folder.
 
     publish:dry-run:
       run: melos publish --dry-run --yes
