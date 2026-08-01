@@ -3,8 +3,8 @@ import 'dart:convert';
 import 'dart:math' as math;
 
 import 'package:crypto/crypto.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter/services.dart';
+import 'package:http/http.dart' as http;
 import 'package:spotify_sdk_web/src/auth/auth_session_storage.dart';
 import 'package:spotify_sdk_web/src/auth/oauth_window_adapter.dart';
 import 'package:synchronized/synchronized.dart' as synchronized;
@@ -16,14 +16,14 @@ class SpotifyAuthSession {
   SpotifyAuthSession({
     AuthSessionStorage? storage,
     OAuthWindowAdapter? windowAdapter,
-    Dio? authDio,
+    http.Client? httpClient,
   }) : _storage = storage ?? BrowserAuthStorage(),
        _windowAdapter = windowAdapter ?? BrowserWindowAdapter(),
-       _authDio = authDio ?? Dio();
+       _httpClient = httpClient ?? http.Client();
 
   final AuthSessionStorage _storage;
   final OAuthWindowAdapter _windowAdapter;
-  final Dio _authDio;
+  final http.Client _httpClient;
   final synchronized.Lock _tokenLock = synchronized.Lock(reentrant: true);
 
   /// Default scopes required for Web SDK to work.
@@ -144,50 +144,52 @@ class SpotifyAuthSession {
     required String authCode,
     required String codeVerifier,
   }) async {
-    final RequestOptions req;
+    final String urlStr;
+    final Map<String, String> payload;
+
     if (tokenSwapURL == null) {
-      final payload = <String, String>{
+      urlStr = 'https://accounts.spotify.com/api/token';
+      payload = <String, String>{
         'client_id': clientId,
         'grant_type': 'authorization_code',
         'code': authCode,
         'redirect_uri': redirectUrl,
         'code_verifier': codeVerifier,
       };
-      req = RequestOptions(
-        path: 'https://accounts.spotify.com/api/token',
-        method: 'POST',
-        data: Uri(queryParameters: payload).query,
-        contentType: Headers.formUrlEncodedContentType,
-      );
     } else {
-      final payload = <String, String>{
+      urlStr = tokenSwapURL!;
+      payload = <String, String>{
         'code': authCode,
         'redirect_uri': redirectUrl,
       };
-      req = RequestOptions(
-        path: tokenSwapURL!,
-        method: 'POST',
-        data: Uri(queryParameters: payload).query,
-        contentType: Headers.formUrlEncodedContentType,
-      );
     }
 
     try {
-      final response = await _authDio.fetch<Map<String, dynamic>>(req);
-      if (response.data == null) {
+      final response = await _httpClient.post(
+        Uri.parse(urlStr),
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: payload,
+      );
+
+      if (response.statusCode >= 400) {
         throw PlatformException(
-          message: 'Failed to exchange authorization code for token',
+          message: 'Token exchange failed: ${response.body}',
           code: 'Authentication Error',
         );
       }
-      return response.data!;
-    } catch (e) {
-      if (e is DioException && e.response?.data != null) {
-        throw PlatformException(
-          message: 'Token exchange failed: ${e.response?.data}',
-          code: 'Authentication Error',
-        );
+
+      final dynamic parsed = jsonDecode(response.body);
+      if (parsed is Map<String, dynamic>) {
+        return parsed;
       }
+      throw PlatformException(
+        message: 'Failed to exchange authorization code for token',
+        code: 'Authentication Error',
+      );
+    } on Exception catch (e) {
+      if (e is PlatformException) rethrow;
       throw PlatformException(
         message: 'Token exchange failed: $e',
         code: 'Authentication Error',
@@ -200,45 +202,47 @@ class SpotifyAuthSession {
     String clientId,
     String refreshToken,
   ) async {
-    final RequestOptions req;
+    final String urlStr;
+    final Map<String, String> payload;
+
     if (tokenRefreshURL == null) {
-      final payload = <String, String>{
+      urlStr = 'https://accounts.spotify.com/api/token';
+      payload = <String, String>{
         'client_id': clientId,
         'grant_type': 'refresh_token',
         'refresh_token': refreshToken,
       };
-      req = RequestOptions(
-        path: 'https://accounts.spotify.com/api/token',
-        method: 'POST',
-        data: Uri(queryParameters: payload).query,
-        contentType: Headers.formUrlEncodedContentType,
-      );
     } else {
-      final payload = <String, String>{'refresh_token': refreshToken};
-      req = RequestOptions(
-        path: tokenRefreshURL!,
-        method: 'POST',
-        data: Uri(queryParameters: payload).query,
-        contentType: Headers.formUrlEncodedContentType,
-      );
+      urlStr = tokenRefreshURL!;
+      payload = <String, String>{'refresh_token': refreshToken};
     }
 
     try {
-      final response = await _authDio.fetch<Map<String, dynamic>>(req);
-      if (response.data == null) {
+      final response = await _httpClient.post(
+        Uri.parse(urlStr),
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: payload,
+      );
+
+      if (response.statusCode >= 400) {
         throw PlatformException(
-          message: 'Failed to refresh token',
+          message: 'Token refresh failed: ${response.body}',
           code: 'Authentication Error',
         );
       }
-      return response.data!;
-    } catch (e) {
-      if (e is DioException && e.response?.data != null) {
-        throw PlatformException(
-          message: 'Token refresh failed: ${e.response?.data}',
-          code: 'Authentication Error',
-        );
+
+      final dynamic parsed = jsonDecode(response.body);
+      if (parsed is Map<String, dynamic>) {
+        return parsed;
       }
+      throw PlatformException(
+        message: 'Failed to refresh token',
+        code: 'Authentication Error',
+      );
+    } on Exception catch (e) {
+      if (e is PlatformException) rethrow;
       throw PlatformException(
         message: 'Token refresh failed: $e',
         code: 'Authentication Error',

@@ -9,7 +9,8 @@ import 'package:spotify_sdk_web/src/auth/spotify_auth_session.dart';
 /// Deep module managing all Spotify Web REST API endpoints.
 ///
 /// Encapsulates authentication headers, URI parsing, endpoint URLs,
-/// JSON deserialization, and HTTP exception handling using standard [http.Client].
+/// JSON deserialization, and HTTP exception handling using standard
+/// [http.Client].
 class SpotifyWebApiClient {
   /// Creates a [SpotifyWebApiClient].
   SpotifyWebApiClient({
