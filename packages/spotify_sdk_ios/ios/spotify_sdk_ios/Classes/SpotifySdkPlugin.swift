@@ -20,6 +20,12 @@ public class SpotifySdkPlugin: NSObject, FlutterPlugin {
         playerStateChannel = FlutterEventChannel(name: "player_state_subscription", binaryMessenger: registrar.messenger())
         playerContextChannel = FlutterEventChannel(name: "player_context_subscription", binaryMessenger: registrar.messenger())
         registrar.addApplicationDelegate(instance)
+        if #available(iOS 13.0, *) {
+            let selector = NSSelectorFromString("addSceneDelegate:")
+            if (registrar as AnyObject).responds(to: selector) {
+                (registrar as AnyObject).perform(selector, with: instance)
+            }
+        }
         registrar.addMethodCallDelegate(instance, channel: spotifySDKChannel)
         instance.connectionStatusHandler = ConnectionStatusHandler()
         connectionStatusChannel.setStreamHandler(instance.connectionStatusHandler)
@@ -417,3 +423,26 @@ extension SpotifySdkPlugin {
         appRemote.connect()
     }
 }
+
+@available(iOS 13.0, *)
+extension SpotifySdkPlugin: UIWindowSceneDelegate {
+    public func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
+        guard let url = URLContexts.first?.url else { return }
+        setAccessTokenFromURL(url: url)
+    }
+
+    public func scene(_ scene: UIScene, continue userActivity: NSUserActivity) {
+        guard userActivity.activityType == NSUserActivityTypeBrowsingWeb,
+              let url = userActivity.webpageURL
+        else {
+            connectionStatusHandler?.connectionResult?(FlutterError(code: "errorConnecting", message: "client id or redirectUrl is invalid", details: nil))
+            connectionStatusHandler?.tokenResult?(FlutterError(code: "errorConnecting", message: "client id or redirectUrl is invalid", details: nil))
+            connectionStatusHandler?.connectionResult = nil
+            connectionStatusHandler?.tokenResult = nil
+            return
+        }
+
+        setAccessTokenFromURL(url: url)
+    }
+}
+

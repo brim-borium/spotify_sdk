@@ -191,7 +191,7 @@ class SpotifyRemoteController : PluginRegistry.ActivityResultListener {
             return
         }
         val scopeArray = scope?.split(",")?.toTypedArray()
-        "connectToSpotify".checkAndSetPendingOperation(result)
+        "getAccessToken".checkAndSetPendingOperation(result)
 
         val builder = AuthorizationRequest.Builder(clientId, AuthorizationResponse.Type.TOKEN, redirectUrl)
         builder.setScopes(scopeArray)
@@ -468,8 +468,10 @@ class SpotifyRemoteController : PluginRegistry.ActivityResultListener {
 
         when (response.type) {
             AuthorizationResponse.Type.TOKEN -> op.result.success(response.accessToken)
-            AuthorizationResponse.Type.ERROR -> op.result.error("authenticationTokenError", "Authentication went wrong", response.error)
-            else -> op.result.notImplemented()
+            AuthorizationResponse.Type.CODE -> op.result.success(response.code)
+            AuthorizationResponse.Type.EMPTY -> op.result.error("userCancelled", "User cancelled authentication", response.error)
+            AuthorizationResponse.Type.ERROR -> op.result.error("authenticationTokenError", response.error ?: "Authentication went wrong", null)
+            else -> op.result.error("authenticationTokenError", "Unknown authorization response type", null)
         }
     }
 
