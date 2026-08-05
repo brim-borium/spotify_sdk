@@ -1,3 +1,7 @@
+## 4.0.0-dev.4
+
+ - **REFACTOR**: web plugin deepening (#257).
+
 ## 4.0.0-dev.3
 
 > Note: This release has breaking changes.

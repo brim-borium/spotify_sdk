@@ -3,6 +3,56 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 2026-08-05
+
+### Changes
+
+---
+
+Packages with breaking changes:
+
+ - [`spotify_sdk_android` - `v4.0.0-dev.4`](#spotify_sdk_android---v400-dev4)
+ - [`spotify_sdk_ios` - `v4.0.0-dev.4`](#spotify_sdk_ios---v400-dev4)
+ - [`spotify_sdk_platform_interface` - `v4.0.0-dev.4`](#spotify_sdk_platform_interface---v400-dev4)
+ - [`spotify_sdk_web` - `v4.0.0-dev.4`](#spotify_sdk_web---v400-dev4)
+
+Packages with other changes:
+
+ - [`spotify_sdk` - `v4.0.0-dev.4`](#spotify_sdk---v400-dev4)
+
+---
+
+#### `spotify_sdk_android` - `v4.0.0-dev.4`
+
+ - **REFACTOR**: web plugin deepening (#257).
+ - **REFACTOR**: introduce PlatformChannelGateway to centralize method chann… (#256).
+ - **FIX**: resolve Web/WASM, SwiftPM and Kotlin scoring warnings on pub.dev (#254).
+ - **BREAKING** **FEAT**: update all to latest (#251).
+
+#### `spotify_sdk_ios` - `v4.0.0-dev.4`
+
+ - **REFACTOR**: web plugin deepening (#257).
+ - **FIX**: resolve Web/WASM, SwiftPM and Kotlin scoring warnings on pub.dev (#254).
+ - **BREAKING** **FEAT**: update all to latest (#251).
+
+#### `spotify_sdk_platform_interface` - `v4.0.0-dev.4`
+
+ - **REFACTOR**: web plugin deepening (#257).
+ - **REFACTOR**: introduce PlatformChannelGateway to centralize method chann… (#256).
+ - **FIX**: resolve Web/WASM, SwiftPM and Kotlin scoring warnings on pub.dev (#254).
+ - **BREAKING** **FEAT**: update all to latest (#251).
+
+#### `spotify_sdk_web` - `v4.0.0-dev.4`
+
+ - **REFACTOR**: web plugin deepening (#257).
+ - **REFACTOR**: introduce PlatformChannelGateway to centralize method chann… (#256).
+ - **BREAKING** **FEAT**: update all to latest (#251).
+
+#### `spotify_sdk` - `v4.0.0-dev.4`
+
+ - **REFACTOR**: web plugin deepening (#257).
+
+
 ## 2026-08-01
 
 ### Changes
