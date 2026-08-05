@@ -7,7 +7,7 @@ This document defines the shared domain vocabulary, boundaries, and architectura
 The entire repository operates under a single bounded context: **Spotify Client Integration**. This context maps native platform capabilities to a unified Flutter interface, supporting two primary capabilities:
 
 1. **App Remote Connection**: Managing local IPC connection to the Spotify player app on mobile, or instantiating/controlling the Web Playback SDK on Web.
-2. **Access Token Flow**: The OAuth credential retrieval path, which can optionally feed into the App Remote flow (e.g. for Web playback initialization) or be returned directly to the host application for custom Web API calls.
+2. **Access Token & Token Swap Flow**: The OAuth credential retrieval path, supporting direct client tokens (including PKCE on Web) and backend Token Swap codes (`getSwapToken`), as well as native installation checks (`isSpotifyInstalled`).
 
 ## Glossary
 

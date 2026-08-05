@@ -120,18 +120,23 @@ On iOS Spotify starts playing music when attempting connection. This is a defaul
 
 Have a look [in the example](example/lib/main.dart) for detailed insights on how you can use this package.
 
-### Token Swap
+### Token Swap & Utilities
 
-You can optionally specify "token swap" URLs to manage tokens with a backend service that protects your OAuth client secret. For more information refer to the [Spotify Token Swap and Refresh Guide](https://developer.spotify.com/documentation/ios/guides/token-swap-and-refresh/)
+If your application architecture uses an intermediate backend to exchange Spotify authorization codes and protect your Client Secret, you can retrieve the raw authorization code using `getSwapToken(...)`:
 
 ```dart
-SpotifySdkPlugin.tokenSwapURL = 'https://example.com/api/spotify/token';
-SpotifySdkPlugin.tokenRefreshURL = 'https://example.com/api/spotify/refresh';
+final authorizationCode = await SpotifySdk.getSwapToken(
+  clientId: "YOUR_CLIENT_ID",
+  redirectUrl: "YOUR_REDIRECT_URL",
+  scope: "app-remote-control,user-modify-playback-state",
+);
 ```
 
-On web, this package will perform an Authorization Code (without PKCE) flow, then exchange the code and refresh the token with a backend service you run at the URLs provided.
+You can also check if the native Spotify application is installed on the user's device:
 
-Token Swap is for now "web only". While the iOS SDK also supports the "token swap", this flow is not yet supported.
+```dart
+final isInstalled = await SpotifySdk.isSpotifyInstalled();
+```
 
 ### Api
 
@@ -140,9 +145,11 @@ Token Swap is for now "web only". While the iOS SDK also supports the "token swa
 | Function  | Description| Android | iOS | Web |
 |---|---|---|---|---|
 | connectToSpotifyRemote  | Connects the App to Spotify | ✔ | ✔ | ✔ |
-|  getAccessToken | Gets the Access Token that you can use to work with the [Web Api](https://developer.spotify.com/documentation/web-api/) | ✔ |  ✔ | ✔ |
-|  disconnect | Disconnects the app connection | ✔ |  ✔ | ✔ |
-|  subscribeConnectionStatus | Subscribes to the current connection status. | ✔ |  ✔ | ✔ |
+| getAccessToken | Gets the Access Token that you can use to work with the [Web Api](https://developer.spotify.com/documentation/web-api/) | ✔ |  ✔ | ✔ |
+| getSwapToken | Gets an OAuth Authorization Code for custom token swap backend servers | ✔ | ✔ | ✔ |
+| isSpotifyInstalled | Checks if the Spotify application is installed on the device | ✔ | ✔ | ✔ |
+| disconnect | Disconnects the app connection | ✔ |  ✔ | ✔ |
+| subscribeConnectionStatus | Subscribes to the current connection status. | ✔ |  ✔ | ✔ |
 
 #### Player Api
 

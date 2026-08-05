@@ -42,6 +42,23 @@ class SpotifySdk {
     scope: scope,
   );
 
+  /// Returns a swap token for Spotify using token swap authentication.
+  static Future<String> getSwapToken({
+    required String clientId,
+    required String redirectUrl,
+    String? scope,
+    String? tokenSwapUrl,
+  }) => SpotifySdkPlatform.instance.getSwapToken(
+    clientId: clientId,
+    redirectUrl: redirectUrl,
+    scope: scope,
+    tokenSwapUrl: tokenSwapUrl,
+  );
+
+  /// Checks if Spotify is installed on the device.
+  static Future<bool> isSpotifyInstalled() =>
+      SpotifySdkPlatform.instance.isSpotifyInstalled();
+
   /// Logs the user out and disconnects the app from the users spotify account.
   static Future<bool> disconnect() => SpotifySdkPlatform.instance.disconnect();
 

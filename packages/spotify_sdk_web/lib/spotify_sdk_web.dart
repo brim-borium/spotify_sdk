@@ -364,6 +364,25 @@ class SpotifySdkPlugin extends SpotifySdkPlatform {
   }
 
   @override
+  Future<String> getSwapToken({
+    required String clientId,
+    required String redirectUrl,
+    String? scope,
+    String? tokenSwapUrl,
+  }) async {
+    return getAccessToken(
+      clientId: clientId,
+      redirectUrl: redirectUrl,
+      scope: scope,
+    );
+  }
+
+  @override
+  Future<bool> isSpotifyInstalled() async {
+    return _sdkLoaded;
+  }
+
+  @override
   Future<bool> disconnect() async {
     await _ensureSdkLoaded();
     log('Disconnecting from Spotify...');

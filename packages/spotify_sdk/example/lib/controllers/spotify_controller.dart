@@ -315,6 +315,73 @@ class SpotifyController extends ChangeNotifier {
     }
   }
 
+  /// Checks whether Spotify app is installed on the device.
+  Future<bool> checkIsSpotifyInstalled() async {
+    _setLoading(true);
+    try {
+      final installed = await SpotifySdk.isSpotifyInstalled();
+      log(
+        installed ? 'Spotify app is installed' : 'Spotify app is NOT installed',
+        severity: installed ? LogSeverity.success : LogSeverity.info,
+      );
+      return installed;
+    } on Exception catch (e) {
+      log(
+        'Error checking if Spotify is installed',
+        detail: '$e',
+        severity: LogSeverity.error,
+      );
+      return false;
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  /// Retrieves Spotify OAuth swap token for custom token-swap backend
+  /// architectures.
+  Future<String?> getSwapToken() async {
+    _setLoading(true);
+    try {
+      final clientId = dotenv.env['CLIENT_ID'] ?? '';
+      final redirectUrl = dotenv.env['REDIRECT_URL'] ?? '';
+
+      const scope =
+          'app-remote-control, '
+          'user-modify-playback-state, '
+          'playlist-read-private, '
+          'playlist-modify-public,user-read-currently-playing';
+
+      final token = await SpotifySdk.getSwapToken(
+        clientId: clientId,
+        redirectUrl: redirectUrl,
+        scope: scope,
+      );
+
+      log(
+        'Acquired Swap Token / Authorization Code',
+        detail: token,
+        severity: LogSeverity.success,
+      );
+      return token;
+    } on PlatformException catch (e) {
+      log(
+        'PlatformException getting swap token',
+        detail: '${e.code}: ${e.message}',
+        severity: LogSeverity.error,
+      );
+      return null;
+    } on Exception catch (e) {
+      log(
+        'Error getting swap token',
+        detail: '$e',
+        severity: LogSeverity.error,
+      );
+      return null;
+    } finally {
+      _setLoading(false);
+    }
+  }
+
   /// Disconnects from Spotify Remote.
   Future<bool> disconnect() async {
     _setLoading(true);

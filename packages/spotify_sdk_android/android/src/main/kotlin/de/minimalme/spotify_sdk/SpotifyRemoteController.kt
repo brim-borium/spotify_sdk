@@ -59,6 +59,13 @@ class SpotifyRemoteController : PluginRegistry.ActivityResultListener {
                 call.argument("scope"),
                 result
             )
+            "getSwapToken" -> getSwapToken(
+                call.argument("clientId"),
+                call.argument("redirectUrl"),
+                call.argument("scope"),
+                result
+            )
+            "isSpotifyInstalled" -> isSpotifyInstalled(result)
             "disconnectFromSpotify" -> disconnectFromSpotify(result)
             "switchToLocalDevice" -> switchToLocalDevice(result)
             "getCrossfadeState" -> getCrossfadeState(result)
@@ -197,6 +204,34 @@ class SpotifyRemoteController : PluginRegistry.ActivityResultListener {
         builder.setScopes(scopeArray)
         val request = builder.build()
         AuthorizationClient.openLoginActivity(activity, requestCodeAuthentication, request)
+    }
+
+    private fun getSwapToken(clientId: String?, redirectUrl: String?, scope: String?, result: Result) {
+        val activity = applicationActivity
+        if (activity == null) {
+            result.error("errorConnecting", "getSwapToken needs a foreground activity", "")
+            return
+        }
+        if (clientId.isNullOrBlank() || redirectUrl.isNullOrBlank()) {
+            result.error("errorConnecting", "client id or redirectUrl are not set or have invalid format", "")
+            return
+        }
+        val scopeArray = scope?.split(",")?.toTypedArray()
+        "getSwapToken".checkAndSetPendingOperation(result)
+
+        val builder = AuthorizationRequest.Builder(clientId, AuthorizationResponse.Type.CODE, redirectUrl)
+        builder.setScopes(scopeArray)
+        val request = builder.build()
+        AuthorizationClient.openLoginActivity(activity, requestCodeAuthentication, request)
+    }
+
+    private fun isSpotifyInstalled(result: Result) {
+        val context = applicationContext
+        if (context == null) {
+            result.success(false)
+            return
+        }
+        result.success(SpotifyAppRemote.isSpotifyInstalled(context))
     }
 
     private fun disconnectFromSpotify(result: Result) {

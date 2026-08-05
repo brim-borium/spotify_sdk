@@ -60,6 +60,33 @@ class MethodChannelSpotifySdk extends SpotifySdkPlatform {
   }
 
   @override
+  Future<String> getSwapToken({
+    required String clientId,
+    required String redirectUrl,
+    String? scope,
+    String? tokenSwapUrl,
+  }) async {
+    final token = await _gateway.invoke<dynamic>(
+      MethodNames.getSwapToken,
+      arguments: {
+        ParamNames.clientId: clientId,
+        ParamNames.redirectUrl: redirectUrl,
+        ParamNames.scope: scope,
+        ParamNames.tokenSwapUrl: tokenSwapUrl,
+      },
+    );
+    return token.toString();
+  }
+
+  @override
+  Future<bool> isSpotifyInstalled() async {
+    final installed = await _gateway.invoke<bool>(
+      MethodNames.isSpotifyInstalled,
+    );
+    return installed ?? false;
+  }
+
+  @override
   Future<bool> disconnect() async {
     final result = await _gateway.invoke<bool>(
       MethodNames.disconnectFromSpotify,

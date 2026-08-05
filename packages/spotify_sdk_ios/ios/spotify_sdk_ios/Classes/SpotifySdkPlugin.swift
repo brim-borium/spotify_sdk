@@ -76,7 +76,7 @@ public class SpotifySdkPlugin: NSObject, FlutterPlugin {
                 return
             }
 
-        case SpotifySdkConstants.methodGetAccessToken:
+        case SpotifySdkConstants.methodGetAccessToken, SpotifySdkConstants.methodGetSwapToken:
             guard let swiftArguments = call.arguments as? [String:Any],
                 let clientID = swiftArguments[SpotifySdkConstants.paramClientId] as? String,
                 let url = swiftArguments[SpotifySdkConstants.paramRedirectUrl] as? String else {
@@ -96,6 +96,9 @@ public class SpotifySdkPlugin: NSObject, FlutterPlugin {
                 result(FlutterError(code: "CouldNotFindSpotifyApp", message: "The Spotify app is not installed on the device", details: nil))
                 return
             }
+
+        case SpotifySdkConstants.methodIsSpotifyInstalled:
+            result(SPTAppRemote.checkIfSpotifyAppIsInstalled())
         case SpotifySdkConstants.methodGetImage:
             guard let appRemote = appRemote else {
                 result(FlutterError(code: "Connection Error", message: "AppRemote is null", details: nil))
