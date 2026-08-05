@@ -1,3 +1,7 @@
+## 4.1.0
+
+ - **FEAT**: release version 4.0.0 with native iOS playback features and improved pub.dev Pana compliance across all packages.
+
 ## 4.0.0
 
  - **FEAT**: update version to 4.0.0 and update package description length for pub.dev Pana compliance.

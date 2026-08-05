@@ -1,3 +1,7 @@
+## 4.0.0-dev.5
+
+ - **FEAT**: release version 4.0.0 with native iOS playback features and improved pub.dev Pana compliance across all packages.
+
 ## 4.0.0-dev.4
 
  - **DOCS**: align README API tables with true platform support matrices and Dart API method names (`getCrossFadeState`, `switchToLocalDevice`).

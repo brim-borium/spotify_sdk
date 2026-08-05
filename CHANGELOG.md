@@ -11,6 +11,47 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 Packages with breaking changes:
 
+ - There are no breaking changes in this release.
+
+Packages with other changes:
+
+ - [`spotify_sdk` - `v4.0.0-dev.5`](#spotify_sdk---v400-dev5)
+ - [`spotify_sdk_android` - `v4.1.0`](#spotify_sdk_android---v410)
+ - [`spotify_sdk_ios` - `v4.1.0`](#spotify_sdk_ios---v410)
+ - [`spotify_sdk_platform_interface` - `v4.1.0`](#spotify_sdk_platform_interface---v410)
+ - [`spotify_sdk_web` - `v4.1.0`](#spotify_sdk_web---v410)
+
+---
+
+#### `spotify_sdk` - `v4.0.0-dev.5`
+
+ - **FEAT**: release version 4.0.0 with native iOS playback features and improved pub.dev Pana compliance across all packages.
+
+#### `spotify_sdk_android` - `v4.1.0`
+
+ - **FEAT**: release version 4.0.0 with native iOS playback features and improved pub.dev Pana compliance across all packages.
+
+#### `spotify_sdk_ios` - `v4.1.0`
+
+ - **FEAT**: release version 4.0.0 with native iOS playback features and improved pub.dev Pana compliance across all packages.
+
+#### `spotify_sdk_platform_interface` - `v4.1.0`
+
+ - **FEAT**: release version 4.0.0 with native iOS playback features and improved pub.dev Pana compliance across all packages.
+
+#### `spotify_sdk_web` - `v4.1.0`
+
+ - **FEAT**: release version 4.0.0 with native iOS playback features and improved pub.dev Pana compliance across all packages.
+
+
+## 2026-08-05
+
+### Changes
+
+---
+
+Packages with breaking changes:
+
  - [`spotify_sdk_android` - `v4.0.0-dev.4`](#spotify_sdk_android---v400-dev4)
  - [`spotify_sdk_ios` - `v4.0.0-dev.4`](#spotify_sdk_ios---v400-dev4)
  - [`spotify_sdk_platform_interface` - `v4.0.0-dev.4`](#spotify_sdk_platform_interface---v400-dev4)
