@@ -29,6 +29,11 @@ void main() {
                 return true;
               case 'disconnectFromSpotify':
                 return true;
+              case 'getCrossfadeState':
+                return jsonEncode({
+                  'isEnabled': true,
+                  'duration': 5000,
+                });
               case 'getPlayerState':
                 return jsonEncode({
                   'track': {
@@ -60,6 +65,16 @@ void main() {
                     'can_repeat_context': true,
                   },
                 });
+              case 'getCapabilities':
+                return jsonEncode({'can_play_on_demand': true});
+              case 'getLibraryState':
+                return jsonEncode({
+                  'uri': 'spotify:track:123',
+                  'saved': true,
+                  'can_save': true,
+                });
+              case 'getImage':
+                return Uint8List.fromList([1, 2, 3]);
               default:
                 return null;
             }
@@ -119,6 +134,15 @@ void main() {
       expect(log.first.method, 'disconnectFromSpotify');
     });
 
+    test('getCrossFadeState deserializes CrossfadeState', () async {
+      final crossfade = await platform.getCrossFadeState();
+
+      expect(crossfade, isNotNull);
+      expect(crossfade!.isEnabled, true);
+      expect(crossfade.duration, 5000);
+      expect(log.first.method, 'getCrossfadeState');
+    });
+
     test('getPlayerState deserializes PlayerState correctly', () async {
       final playerState = await platform.getPlayerState();
 
@@ -126,6 +150,204 @@ void main() {
       expect(playerState!.track?.name, 'Test Track');
       expect(playerState.isPaused, false);
       expect(log.first.method, 'getPlayerState');
+    });
+
+    test('queue sends expected parameters', () async {
+      await platform.queue(spotifyUri: 'spotify:track:123');
+
+      expect(log, hasLength(1));
+      expect(log.first.method, 'queueTrack');
+      final args = log.first.arguments as Map<dynamic, dynamic>;
+      expect(args['spotifyUri'], 'spotify:track:123');
+    });
+
+    test('play sends expected parameters', () async {
+      await platform.play(spotifyUri: 'spotify:track:123', asRadio: true);
+
+      expect(log, hasLength(1));
+      expect(log.first.method, 'play');
+      final args = log.first.arguments as Map<dynamic, dynamic>;
+      expect(args['spotifyUri'], 'spotify:track:123');
+      expect(args['asRadio'], true);
+    });
+
+    test('pause sends method call', () async {
+      await platform.pause();
+
+      expect(log, hasLength(1));
+      expect(log.first.method, 'pause');
+    });
+
+    test('resume sends method call', () async {
+      await platform.resume();
+
+      expect(log, hasLength(1));
+      expect(log.first.method, 'resume');
+    });
+
+    test('setPodcastPlaybackSpeed sends expected speed value', () async {
+      await platform.setPodcastPlaybackSpeed(
+        podcastPlaybackSpeed: PodcastPlaybackSpeed.playbackSpeed_150,
+      );
+
+      expect(log, hasLength(1));
+      expect(log.first.method, 'setPodcastPlaybackSpeed');
+      final args = log.first.arguments as Map<dynamic, dynamic>;
+      expect(
+        args['podcastPlaybackSpeed'],
+        PodcastPlaybackSpeed.playbackSpeed_150.value,
+      );
+    });
+
+    test('skipNext sends method call', () async {
+      await platform.skipNext();
+
+      expect(log, hasLength(1));
+      expect(log.first.method, 'skipNext');
+    });
+
+    test('skipPrevious sends method call', () async {
+      await platform.skipPrevious();
+
+      expect(log, hasLength(1));
+      expect(log.first.method, 'skipPrevious');
+    });
+
+    test('skipToIndex sends expected parameters', () async {
+      await platform.skipToIndex(
+        spotifyUri: 'spotify:album:123',
+        trackIndex: 3,
+      );
+
+      expect(log, hasLength(1));
+      expect(log.first.method, 'skipToIndex');
+      final args = log.first.arguments as Map<dynamic, dynamic>;
+      expect(args['spotifyUri'], 'spotify:album:123');
+      expect(args['trackIndex'], 3);
+    });
+
+    test('seekTo sends expected position', () async {
+      await platform.seekTo(positionedMilliseconds: 45000);
+
+      expect(log, hasLength(1));
+      expect(log.first.method, 'seekTo');
+      final args = log.first.arguments as Map<dynamic, dynamic>;
+      expect(args['positionedMilliseconds'], 45000);
+    });
+
+    test('seekToRelativePosition sends expected relative ms', () async {
+      await platform.seekToRelativePosition(relativeMilliseconds: 15000);
+
+      expect(log, hasLength(1));
+      expect(log.first.method, 'seekToRelativePosition');
+      final args = log.first.arguments as Map<dynamic, dynamic>;
+      expect(args['relativeMilliseconds'], 15000);
+    });
+
+    test('switchToLocalDevice sends method call', () async {
+      await platform.switchToLocalDevice();
+
+      expect(log, hasLength(1));
+      expect(log.first.method, 'switchToLocalDevice');
+    });
+
+    test('toggleShuffle sends method call', () async {
+      await platform.toggleShuffle();
+
+      expect(log, hasLength(1));
+      expect(log.first.method, 'toggleShuffle');
+    });
+
+    test('toggleRepeat sends method call', () async {
+      await platform.toggleRepeat();
+
+      expect(log, hasLength(1));
+      expect(log.first.method, 'toggleRepeat');
+    });
+
+    test('addToLibrary sends expected uri', () async {
+      await platform.addToLibrary(spotifyUri: 'spotify:track:123');
+
+      expect(log, hasLength(1));
+      expect(log.first.method, 'addToLibrary');
+      final args = log.first.arguments as Map<dynamic, dynamic>;
+      expect(args['spotifyUri'], 'spotify:track:123');
+    });
+
+    test('removeFromLibrary sends expected uri', () async {
+      await platform.removeFromLibrary(spotifyUri: 'spotify:track:123');
+
+      expect(log, hasLength(1));
+      expect(log.first.method, 'removeFromLibrary');
+      final args = log.first.arguments as Map<dynamic, dynamic>;
+      expect(args['spotifyUri'], 'spotify:track:123');
+    });
+
+    test('getCapabilities deserializes Capabilities', () async {
+      final capabilities = await platform.getCapabilities(
+        spotifyUri: 'spotify:track:123',
+      );
+
+      expect(capabilities, isNotNull);
+      expect(capabilities!.canPlayOnDemand, true);
+      expect(log.first.method, 'getCapabilities');
+    });
+
+    test('getLibraryState deserializes LibraryState', () async {
+      final state = await platform.getLibraryState(
+        spotifyUri: 'spotify:track:123',
+      );
+
+      expect(state, isNotNull);
+      expect(state!.isSaved, true);
+      expect(state.canSave, true);
+      expect(log.first.method, 'getLibraryState');
+    });
+
+    test('getImage returns Uint8List bytes', () async {
+      final bytes = await platform.getImage(
+        imageUri: ImageUri('spotify:image:123'),
+        dimension: ImageDimension.large,
+      );
+
+      expect(bytes, equals(Uint8List.fromList([1, 2, 3])));
+      expect(log.first.method, 'getImage');
+      final args = log.first.arguments as Map<dynamic, dynamic>;
+      expect(args['imageUri'], 'spotify:image:123');
+      expect(args['imageDimension'], ImageDimension.large.value);
+    });
+
+    test('setShuffle sends expected boolean', () async {
+      await platform.setShuffle(shuffle: true);
+
+      expect(log, hasLength(1));
+      expect(log.first.method, 'setShuffle');
+      final args = log.first.arguments as Map<dynamic, dynamic>;
+      expect(args['shuffle'], true);
+    });
+
+    test('setRepeatMode sends expected mode index', () async {
+      await platform.setRepeatMode(repeatMode: SpotifyRepeatMode.track);
+
+      expect(log, hasLength(1));
+      expect(log.first.method, 'setRepeatMode');
+      final args = log.first.arguments as Map<dynamic, dynamic>;
+      expect(args['repeatMode'], SpotifyRepeatMode.track.index);
+    });
+
+    test('rethrows PlatformException when method channel fails', () async {
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(channel, (methodCall) async {
+            throw PlatformException(
+              code: 'TEST_ERROR',
+              message: 'Failed operation',
+            );
+          });
+
+      expect(
+        () => platform.play(spotifyUri: 'spotify:track:123'),
+        throwsA(isA<PlatformException>()),
+      );
     });
   });
 }
