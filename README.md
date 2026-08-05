@@ -157,16 +157,15 @@ The playerApi as described [here](https://spotify.github.io/android-sdk/app-remo
 
 | Function                | Description | Android | iOS | Web |
 |-------------------------|---|--|---|---|
-| getCrossfadeState       | Gets the current crossfade state | ✔ | ✔ | ✔ |
+| getCrossFadeState       | Gets the current crossfade state | ✔ | ✔ | ✔ |
 | getPlayerState          | Gets the current player state |✔ |  ✔ | ✔ |
 | pause                   | Pauses the current track  |✔ | ✔  | ✔ |
 | play                    | Plays the given spotifyUri |✔ |  ✔ | ✔ |
-| playWithStreamType      | Play the given Spotify uri with specific behaviour for that streamtype | 🚧 |  🚧 | 🚧 |
 | queue                   | Queues given spotifyUri |✔ | ✔  | ✔ |
 | resume                  | Resumes the current track |✔ |  ✔ | ✔ |
 | seekTo                  | Seeks the current track to the given position in milliseconds | ✔ | ✔ | ✔ |
-| seekToRelativePosition  | Adds to the current position of the track the given milliseconds | ✔ | ❌ | ✔ |
-| setPodcastPlaybackSpeed | Set playback speed for Podcast  | ✔ | 🚧 | 🚧 |
+| seekToRelativePosition  | Adds to the current position of the track the given milliseconds | ✔ | ✔ | ✔ |
+| setPodcastPlaybackSpeed | Set playback speed for Podcast  | ✔ | ❌ | ❌ |
 | setRepeatMode           | Set the repeat mode | ✔ |  ✔ | ✔ |
 | setShuffle              | Set the shuffle mode | ✔ |  ✔ | ✔ |
 | skipNext                | Skips to next track | ✔ | ✔  | ✔ |
@@ -175,7 +174,7 @@ The playerApi as described [here](https://spotify.github.io/android-sdk/app-remo
 | subscribePlayerContext  | Subscribes to the current player context | ✔ | ✔ | ✔ |
 | subscribePlayerState    | Subscribes to the current player state | ✔ | ✔ | ✔ |
 | toggleRepeat            | Cycles through the repeat modes | ✔ |  ✔ | ✔ |
-| toggleShuffle           | Cycles through the shuffle modes | ✔ | ❌ | ✔ |
+| toggleShuffle           | Cycles through the shuffle modes | ✔ | ✔ | ✔ |
 
 On Web, an automatic call to play may not work due to media activation policies which send an error: "Authentication Error: Browser prevented autoplay due to lack of interaction". This error is ignored by the SDK so you can still present a button for the user to click to `play` or `resume` to start playback. See the [Web SDK Troubleshooting guide](https://developer.spotify.com/documentation/web-playback-sdk/reference/#troubleshooting) for more details.
 
@@ -197,8 +196,8 @@ The userApi as described [here](https://spotify.github.io/android-sdk/app-remote
 |  getCapabilities | Gets the current users capabilities | ✔ | ✔ | ✔ |
 |  getLibraryState | Gets the current library state | ✔ | ✔ | ✔ |
 |  removeFromLibrary | Removes the given spotifyUri to the users library | ✔ | ✔ | ✔ |
-|  subscribeCapabilities |  Subscribes to the current users capabilities | ✔ | 🚧 | 🚧 |
-|  subscribeUserStatus |  Subscribes to  the current users status | ✔ | 🚧 | 🚧 |
+|  subscribeCapabilities |  Subscribes to the current users capabilities | ✔ | ❌ | ✔ |
+|  subscribeUserStatus |  Subscribes to  the current users status | ✔ | ❌ | ✔ |
 
 #### Connect Api
 
@@ -206,21 +205,7 @@ The connectApi as described [here](https://spotify.github.io/android-sdk/app-rem
 
 | Function                   | Description                                | Android | iOS | Web |
 |----------------------------|--------------------------------------------|---|---|---|
-| connectDecreaseVolume      | Decrease volume by a step size determined  | 🚧 | 🚧 | 🚧 |
-| connectIncreaseVolume      | Increase volume by a step size determined  | 🚧 | 🚧 | 🚧 |
-| connectSetVolume           | Set a volume on the currently active device | 🚧 | 🚧 | 🚧 |
-| connectSwitchToLocalDevice | Switch to play music on this (local) device | ✔ | 🚧 | ✔ |
-| subscribeToVolumeState     | Subscribe to volume state                  | 🚧 | 🚧 | 🚧 |
-
-#### Content Api
-
-The contentApi as described [here](https://spotify.github.io/android-sdk/app-remote-lib/docs/com/spotify/android/appremote/api/ContentApi.html).
-
-| Function  | Description| Android | iOS | Web |
-|---|---|---|---|---|
-| getChildrenOfItem | tbd | 🚧 | 🚧 | 🚧 |
-| getRecommendedContentItems | tbd | 🚧 | 🚧 | 🚧 |
-| playContentItem | tbd | 🚧 | 🚧 | 🚧 |
+| switchToLocalDevice        | Switch to play music on this (local) device | ✔ | ❌ | ✔ |
 
 ## Migration 
 
