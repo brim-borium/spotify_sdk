@@ -22,34 +22,41 @@ Packages with other changes:
 
 ---
 
-#### `spotify_sdk_android` - `v4.0.0-dev.4`
+#### `spotify_sdk_android` - `v4.0.0`
 
+ - **FEAT**: update version to 4.0.0 and update package description length for pub.dev Pana compliance.
  - **REFACTOR**: web plugin deepening (#257).
  - **REFACTOR**: introduce PlatformChannelGateway to centralize method chann… (#256).
  - **FIX**: resolve Web/WASM, SwiftPM and Kotlin scoring warnings on pub.dev (#254).
  - **BREAKING** **FEAT**: update all to latest (#251).
 
-#### `spotify_sdk_ios` - `v4.0.0-dev.4`
+#### `spotify_sdk_ios` - `v4.0.0`
 
+ - **FEAT**: add native support for `toggleRepeat`, `toggleShuffle`, and `seekToRelativePosition`.
+ - **FEAT**: update version to 4.0.0 and update package description length for pub.dev Pana compliance.
  - **REFACTOR**: web plugin deepening (#257).
  - **FIX**: resolve Web/WASM, SwiftPM and Kotlin scoring warnings on pub.dev (#254).
  - **BREAKING** **FEAT**: update all to latest (#251).
 
-#### `spotify_sdk_platform_interface` - `v4.0.0-dev.4`
+#### `spotify_sdk_platform_interface` - `v4.0.0`
 
+ - **FEAT**: update version to 4.0.0 and update package description length for pub.dev Pana compliance.
  - **REFACTOR**: web plugin deepening (#257).
  - **REFACTOR**: introduce PlatformChannelGateway to centralize method chann… (#256).
  - **FIX**: resolve Web/WASM, SwiftPM and Kotlin scoring warnings on pub.dev (#254).
  - **BREAKING** **FEAT**: update all to latest (#251).
 
-#### `spotify_sdk_web` - `v4.0.0-dev.4`
+#### `spotify_sdk_web` - `v4.0.0`
 
+ - **FEAT**: update version to 4.0.0 and update package description length for pub.dev Pana compliance.
  - **REFACTOR**: web plugin deepening (#257).
  - **REFACTOR**: introduce PlatformChannelGateway to centralize method chann… (#256).
  - **BREAKING** **FEAT**: update all to latest (#251).
 
 #### `spotify_sdk` - `v4.0.0-dev.4`
 
+ - **DOCS**: align README API tables with true platform support matrices and Dart API method names (`getCrossFadeState`, `switchToLocalDevice`).
+ - **FEAT**: update pubspec description for pub.dev Pana compliance and target sub-packages `^4.0.0`.
  - **REFACTOR**: web plugin deepening (#257).
 
 

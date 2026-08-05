@@ -1,6 +1,6 @@
 name: spotify_sdk_platform_interface
-description: Platform interface contract for spotify_sdk.
-version: 4.0.0-dev.4
+description: A common platform interface and data models contract for the spotify_sdk plugin.
+version: 4.0.0
 homepage: https://github.com/brim-borium/spotify_sdk
 repository: https://github.com/brim-borium/spotify_sdk/tree/main/packages/spotify_sdk_platform_interface
 topics:

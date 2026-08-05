@@ -1,5 +1,7 @@
 ## 4.0.0-dev.4
 
+ - **DOCS**: align README API tables with true platform support matrices and Dart API method names (`getCrossFadeState`, `switchToLocalDevice`).
+ - **FEAT**: update pubspec description for pub.dev Pana compliance and target sub-packages `^4.0.0`.
  - **REFACTOR**: web plugin deepening (#257).
 
 ## 4.0.0-dev.3

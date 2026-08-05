@@ -1,3 +1,8 @@
+## 4.0.0
+
+ - **FEAT**: add native support for `toggleRepeat`, `toggleShuffle`, and `seekToRelativePosition`.
+ - **FEAT**: update version to 4.0.0 and update package description length for pub.dev Pana compliance.
+
 ## 4.0.0-dev.4
 
 > Note: This release has breaking changes.
