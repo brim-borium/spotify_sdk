@@ -98,7 +98,7 @@ public class SpotifySdkPlugin: NSObject, FlutterPlugin {
             }
 
         case SpotifySdkConstants.methodIsSpotifyInstalled:
-            result(SPTAppRemote.checkIfSpotifyAppIsInstalled())
+            result(UIApplication.shared.canOpenURL(URL(string: "spotify:")!))
         case SpotifySdkConstants.methodGetImage:
             guard let appRemote = appRemote else {
                 result(FlutterError(code: "Connection Error", message: "AppRemote is null", details: nil))
