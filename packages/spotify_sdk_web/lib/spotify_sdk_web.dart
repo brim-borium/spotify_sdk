@@ -144,7 +144,9 @@ class SpotifySdkPlugin extends SpotifySdkPlatform {
     );
     final connectionStatusEventController =
         StreamController<String>.broadcast();
-    connectionStatusEventChannel.setController(connectionStatusEventController);
+    connectionStatusEventChannel.setController(
+      connectionStatusEventController,
+    );
 
     final instance = SpotifySdkPlugin(
       playerContextEventController,
@@ -158,153 +160,113 @@ class SpotifySdkPlugin extends SpotifySdkPlatform {
     channel.setMethodCallHandler(instance.handleMethodCall);
   }
 
-  /// handles method coming through the method channel
-  Future<dynamic> handleMethodCall(MethodCall call) async {
-    // check if spotify is loaded
+  /// Ensures that the Spotify Web SDK script is loaded.
+  Future<void> _ensureSdkLoaded() async {
     if (!_sdkLoaded) {
       _sdkLoadFuture ??= _initializeSpotify();
       await _sdkLoadFuture;
     }
+  }
 
+  /// Handles method coming through the method channel by delegating directly
+  /// to [SpotifySdkPlatform] interface methods on this instance.
+  Future<dynamic> handleMethodCall(MethodCall call) async {
     final arguments = call.arguments as Map<dynamic, dynamic>?;
 
     switch (call.method) {
       case MethodNames.connectToSpotify:
-        if (_currentPlayer != null) {
-          return true;
-        }
-        log('Connecting to Spotify...');
-        final clientId = arguments?[ParamNames.clientId] as String?;
-        final redirectUrl = arguments?[ParamNames.redirectUrl] as String?;
-        final playerName = arguments?[ParamNames.playerName] as String?;
-        final scopes = arguments?[ParamNames.scope] as String? ?? defaultScopes;
-        final accessToken = arguments?[ParamNames.accessToken] as String?;
-
-        // ensure that required arguments are present
-        if (clientId == null ||
-            clientId.isEmpty ||
-            redirectUrl == null ||
-            redirectUrl.isEmpty) {
-          throw PlatformException(
-            message:
-                'Client id or redirectUrl are not set or have invalid format',
-            code: 'Authentication Error',
-          );
-        }
-
-        // get initial token if not supplied
-        if (accessToken == null || accessToken.isEmpty) {
-          await _authSession.authorize(
-            clientId: clientId,
-            redirectUrl: redirectUrl,
-            scopes: scopes,
-          );
-        }
-
-        // create player
-        _currentPlayer = Player(
-          PlayerOptions(
-            name: playerName,
-            getOAuthToken: ((JSFunction callback, JSAny? t) {
-              unawaited(
-                _authSession.getValidToken().then((value) {
-                  callback.callAsFunction(null, value.toJS);
-                }),
-              );
-            }).toJS,
-          ),
+        return connectToSpotifyRemote(
+          clientId: arguments?[ParamNames.clientId] as String? ?? '',
+          redirectUrl: arguments?[ParamNames.redirectUrl] as String? ?? '',
+          spotifyUri: arguments?[ParamNames.spotifyUri] as String? ?? '',
+          asRadio: arguments?[ParamNames.asRadio] as bool? ?? false,
+          scope: arguments?[ParamNames.scope] as String?,
+          playerName:
+              arguments?[ParamNames.playerName] as String? ?? 'Spotify SDK',
+          accessToken: arguments?[ParamNames.accessToken] as String?,
         );
-
-        _registerPlayerEvents(_currentPlayer!);
-        final result = await _currentPlayer!.connect().toDart;
-        if (result != null && (result as JSBoolean).toDart) {
-          // wait for the confirmation
-          num time = 0;
-          while (_currentPlayer!.deviceID == null) {
-            await Future<void>.delayed(const Duration(milliseconds: 200));
-            time += 200;
-            if (time > 10000) {
-              return false;
-            }
-          }
-          return true;
-        } else {
-          // disconnected
-          _onSpotifyDisconnected(
-            errorCode: 'Initialization Error',
-            errorDetails: 'Attempt to connect to the Spotify SDK failed',
-          );
-          return false;
-        }
       case MethodNames.getAccessToken:
-        final clientId = arguments?[ParamNames.clientId] as String?;
-        final redirectUrl = arguments?[ParamNames.redirectUrl] as String?;
-
-        // ensure that required arguments are present
-        if (clientId == null ||
-            clientId.isEmpty ||
-            redirectUrl == null ||
-            redirectUrl.isEmpty) {
-          throw PlatformException(
-            message:
-                'Client id or redirectUrl are not set or have invalid format',
-            code: 'Authentication Error',
-          );
-        }
-
-        return _authSession.authorize(
-          clientId: clientId,
-          redirectUrl: redirectUrl,
-          scopes: arguments?[ParamNames.scope] as String? ?? defaultScopes,
+        return getAccessToken(
+          clientId: arguments?[ParamNames.clientId] as String? ?? '',
+          redirectUrl: arguments?[ParamNames.redirectUrl] as String? ?? '',
+          spotifyUri: arguments?[ParamNames.spotifyUri] as String? ?? '',
+          asRadio: arguments?[ParamNames.asRadio] as bool? ?? false,
+          scope: arguments?[ParamNames.scope] as String?,
         );
       case MethodNames.disconnectFromSpotify:
-        log('Disconnecting from Spotify...');
-        _authSession.clearToken();
-        if (_currentPlayer == null) {
-          return true;
-        } else {
-          _currentPlayer!.disconnect();
-          _onSpotifyDisconnected();
-          return true;
-        }
+        return disconnect();
       case MethodNames.getCrossfadeState:
         final crossfade = await getCrossFadeState();
-        if (crossfade == null) return null;
-        return jsonEncode(crossfade.toJson());
+        return crossfade != null ? jsonEncode(crossfade.toJson()) : null;
       case MethodNames.play:
-        await _play(arguments?[ParamNames.spotifyUri] as String?);
-      case MethodNames.queueTrack:
-        await _queue(arguments?[ParamNames.spotifyUri] as String?);
-      case MethodNames.setShuffle:
-        await _setShuffle(arguments?[ParamNames.shuffle] as bool?);
-      case MethodNames.setRepeatMode:
-        await _setRepeatMode(
-          arguments?[ParamNames.repeatMode] as SpotifyRepeatMode?,
+        await play(
+          spotifyUri: arguments?[ParamNames.spotifyUri] as String? ?? '',
+          asRadio: arguments?[ParamNames.asRadio] as bool? ?? false,
         );
+      case MethodNames.queueTrack:
+        await queue(
+          spotifyUri: arguments?[ParamNames.spotifyUri] as String? ?? '',
+        );
+      case MethodNames.setShuffle:
+        await setShuffle(
+          shuffle: arguments?[ParamNames.shuffle] as bool? ?? false,
+        );
+      case MethodNames.setRepeatMode:
+        final rawMode = arguments?[ParamNames.repeatMode];
+        final repeatMode = rawMode is SpotifyRepeatMode
+            ? rawMode
+            : (rawMode is int
+                  ? SpotifyRepeatMode.values[rawMode]
+                  : SpotifyRepeatMode.off);
+        await setRepeatMode(repeatMode: repeatMode);
       case MethodNames.toggleShuffle:
         await toggleShuffle();
       case MethodNames.toggleRepeat:
         await toggleRepeat();
       case MethodNames.skipToIndex:
-        final spotifyUri = arguments?[ParamNames.spotifyUri] as String?;
-        final trackIndex = arguments?[ParamNames.trackIndex] as int?;
-        if (spotifyUri != null && trackIndex != null) {
-          await skipToIndex(spotifyUri: spotifyUri, trackIndex: trackIndex);
-        }
+        final spotifyUri = arguments?[ParamNames.spotifyUri] as String? ?? '';
+        final trackIndex = arguments?[ParamNames.trackIndex] as int? ?? 0;
+        await skipToIndex(spotifyUri: spotifyUri, trackIndex: trackIndex);
       case MethodNames.resume:
-        await _currentPlayer?.resume().toDart;
+        await resume();
       case MethodNames.pause:
-        await _currentPlayer?.pause().toDart;
+        await pause();
       case MethodNames.skipNext:
-        await _currentPlayer?.nextTrack().toDart;
+        await skipNext();
       case MethodNames.skipPrevious:
-        await _currentPlayer?.previousTrack().toDart;
+        await skipPrevious();
       case MethodNames.getPlayerState:
-        final stateRaw =
-            (await _currentPlayer?.getCurrentState().toDart)
-                as WebPlaybackState?;
-        if (stateRaw == null) return null;
-        return jsonEncode(_playerDispatcher.toPlayerState(stateRaw)!.toJson());
+        final state = await getPlayerState();
+        return state != null ? jsonEncode(state.toJson()) : null;
+      case MethodNames.switchToLocalDevice:
+        await switchToLocalDevice();
+      case MethodNames.addToLibrary:
+        await addToLibrary(
+          spotifyUri: arguments?[ParamNames.spotifyUri] as String? ?? '',
+        );
+      case MethodNames.removeFromLibrary:
+        await removeFromLibrary(
+          spotifyUri: arguments?[ParamNames.spotifyUri] as String? ?? '',
+        );
+      case MethodNames.getLibraryState:
+        final libraryState = await getLibraryState(
+          spotifyUri: arguments?[ParamNames.spotifyUri] as String? ?? '',
+        );
+        return libraryState != null ? jsonEncode(libraryState.toJson()) : null;
+      case MethodNames.getImage:
+        final rawDimension = arguments?[ParamNames.imageDimension];
+        final dimension = rawDimension is ImageDimension
+            ? rawDimension
+            : (rawDimension is int
+                  ? ImageDimension.values.firstWhere(
+                      (d) => d.value == rawDimension,
+                      orElse: () => ImageDimension.medium,
+                    )
+                  : ImageDimension.medium);
+        return getImage(
+          imageUri: ImageUri(arguments?[ParamNames.imageUri] as String? ?? ''),
+          dimension: dimension,
+        );
       default:
         throw PlatformException(
           code: 'Unimplemented',
@@ -323,10 +285,7 @@ class SpotifySdkPlugin extends SpotifySdkPlatform {
     String playerName = 'Spotify SDK',
     String? accessToken,
   }) async {
-    if (!_sdkLoaded) {
-      _sdkLoadFuture ??= _initializeSpotify();
-      await _sdkLoadFuture;
-    }
+    await _ensureSdkLoaded();
     if (_currentPlayer != null) {
       return true;
     }
@@ -390,10 +349,7 @@ class SpotifySdkPlugin extends SpotifySdkPlatform {
     bool asRadio = false,
     String? scope,
   }) async {
-    if (!_sdkLoaded) {
-      _sdkLoadFuture ??= _initializeSpotify();
-      await _sdkLoadFuture;
-    }
+    await _ensureSdkLoaded();
     if (clientId.isEmpty || redirectUrl.isEmpty) {
       throw PlatformException(
         message: 'Client id or redirectUrl are not set or have invalid format',
@@ -408,11 +364,27 @@ class SpotifySdkPlugin extends SpotifySdkPlatform {
   }
 
   @override
+  Future<String> getSwapToken({
+    required String clientId,
+    required String redirectUrl,
+    String? scope,
+    String? tokenSwapUrl,
+  }) async {
+    return getAccessToken(
+      clientId: clientId,
+      redirectUrl: redirectUrl,
+      scope: scope,
+    );
+  }
+
+  @override
+  Future<bool> isSpotifyInstalled() async {
+    return _sdkLoaded;
+  }
+
+  @override
   Future<bool> disconnect() async {
-    if (!_sdkLoaded) {
-      _sdkLoadFuture ??= _initializeSpotify();
-      await _sdkLoadFuture;
-    }
+    await _ensureSdkLoaded();
     log('Disconnecting from Spotify...');
     _authSession.clearToken();
     if (_currentPlayer == null) {
@@ -426,19 +398,13 @@ class SpotifySdkPlugin extends SpotifySdkPlatform {
 
   @override
   Future<CrossfadeState?> getCrossFadeState() async {
-    if (!_sdkLoaded) {
-      _sdkLoadFuture ??= _initializeSpotify();
-      await _sdkLoadFuture;
-    }
+    await _ensureSdkLoaded();
     return CrossfadeState(0, isEnabled: false);
   }
 
   @override
   Future<PlayerState?> getPlayerState() async {
-    if (!_sdkLoaded) {
-      _sdkLoadFuture ??= _initializeSpotify();
-      await _sdkLoadFuture;
-    }
+    await _ensureSdkLoaded();
     final stateRaw =
         (await _currentPlayer?.getCurrentState().toDart) as WebPlaybackState?;
     if (stateRaw == null) return null;
@@ -447,11 +413,11 @@ class SpotifySdkPlugin extends SpotifySdkPlatform {
 
   @override
   Future<void> queue({required String spotifyUri}) async {
-    if (!_sdkLoaded) {
-      _sdkLoadFuture ??= _initializeSpotify();
-      await _sdkLoadFuture;
-    }
-    await _queue(spotifyUri);
+    await _ensureSdkLoaded();
+    await _webApiClient.queue(
+      uri: spotifyUri,
+      deviceId: _currentPlayer?.deviceID,
+    );
   }
 
   @override
@@ -459,28 +425,22 @@ class SpotifySdkPlugin extends SpotifySdkPlatform {
     required String spotifyUri,
     bool asRadio = false,
   }) async {
-    if (!_sdkLoaded) {
-      _sdkLoadFuture ??= _initializeSpotify();
-      await _sdkLoadFuture;
-    }
-    await _play(spotifyUri);
+    await _ensureSdkLoaded();
+    await _webApiClient.play(
+      uri: spotifyUri,
+      deviceId: _currentPlayer?.deviceID,
+    );
   }
 
   @override
   Future<void> pause() async {
-    if (!_sdkLoaded) {
-      _sdkLoadFuture ??= _initializeSpotify();
-      await _sdkLoadFuture;
-    }
+    await _ensureSdkLoaded();
     await _currentPlayer?.pause().toDart;
   }
 
   @override
   Future<void> resume() async {
-    if (!_sdkLoaded) {
-      _sdkLoadFuture ??= _initializeSpotify();
-      await _sdkLoadFuture;
-    }
+    await _ensureSdkLoaded();
     await _currentPlayer?.resume().toDart;
   }
 
@@ -488,28 +448,19 @@ class SpotifySdkPlugin extends SpotifySdkPlatform {
   Future<void> setPodcastPlaybackSpeed({
     required PodcastPlaybackSpeed podcastPlaybackSpeed,
   }) async {
-    if (!_sdkLoaded) {
-      _sdkLoadFuture ??= _initializeSpotify();
-      await _sdkLoadFuture;
-    }
+    await _ensureSdkLoaded();
     log('setPodcastPlaybackSpeed is not supported on Spotify Web API');
   }
 
   @override
   Future<void> skipNext() async {
-    if (!_sdkLoaded) {
-      _sdkLoadFuture ??= _initializeSpotify();
-      await _sdkLoadFuture;
-    }
+    await _ensureSdkLoaded();
     await _currentPlayer?.nextTrack().toDart;
   }
 
   @override
   Future<void> skipPrevious() async {
-    if (!_sdkLoaded) {
-      _sdkLoadFuture ??= _initializeSpotify();
-      await _sdkLoadFuture;
-    }
+    await _ensureSdkLoaded();
     await _currentPlayer?.previousTrack().toDart;
   }
 
@@ -518,10 +469,7 @@ class SpotifySdkPlugin extends SpotifySdkPlatform {
     required String spotifyUri,
     required int trackIndex,
   }) async {
-    if (!_sdkLoaded) {
-      _sdkLoadFuture ??= _initializeSpotify();
-      await _sdkLoadFuture;
-    }
+    await _ensureSdkLoaded();
     return _webApiClient.skipToIndex(
       spotifyUri: spotifyUri,
       trackIndex: trackIndex,
@@ -531,10 +479,7 @@ class SpotifySdkPlugin extends SpotifySdkPlatform {
 
   @override
   Future<void> seekTo({required int positionedMilliseconds}) async {
-    if (!_sdkLoaded) {
-      _sdkLoadFuture ??= _initializeSpotify();
-      await _sdkLoadFuture;
-    }
+    await _ensureSdkLoaded();
     await _currentPlayer?.seek(positionedMilliseconds).toDart;
   }
 
@@ -542,10 +487,7 @@ class SpotifySdkPlugin extends SpotifySdkPlatform {
   Future<void> seekToRelativePosition({
     required int relativeMilliseconds,
   }) async {
-    if (!_sdkLoaded) {
-      _sdkLoadFuture ??= _initializeSpotify();
-      await _sdkLoadFuture;
-    }
+    await _ensureSdkLoaded();
     final stateRaw =
         (await _currentPlayer?.getCurrentState().toDart) as WebPlaybackState?;
     final currentPos = stateRaw?.position ?? 0;
@@ -555,10 +497,7 @@ class SpotifySdkPlugin extends SpotifySdkPlatform {
 
   @override
   Future<void> toggleShuffle() async {
-    if (!_sdkLoaded) {
-      _sdkLoadFuture ??= _initializeSpotify();
-      await _sdkLoadFuture;
-    }
+    await _ensureSdkLoaded();
     final currentState = await getPlayerState();
     final currentShuffle = currentState?.playbackOptions.isShuffling ?? false;
     await setShuffle(shuffle: !currentShuffle);
@@ -566,10 +505,7 @@ class SpotifySdkPlugin extends SpotifySdkPlatform {
 
   @override
   Future<void> toggleRepeat() async {
-    if (!_sdkLoaded) {
-      _sdkLoadFuture ??= _initializeSpotify();
-      await _sdkLoadFuture;
-    }
+    await _ensureSdkLoaded();
     final currentState = await getPlayerState();
     final currentMode =
         currentState?.playbackOptions.repeatMode ?? SpotifyRepeatMode.off;
@@ -583,19 +519,13 @@ class SpotifySdkPlugin extends SpotifySdkPlatform {
 
   @override
   Future<void> addToLibrary({required String spotifyUri}) async {
-    if (!_sdkLoaded) {
-      _sdkLoadFuture ??= _initializeSpotify();
-      await _sdkLoadFuture;
-    }
+    await _ensureSdkLoaded();
     await _webApiClient.addToLibrary(spotifyUri: spotifyUri);
   }
 
   @override
   Future<void> removeFromLibrary({required String spotifyUri}) async {
-    if (!_sdkLoaded) {
-      _sdkLoadFuture ??= _initializeSpotify();
-      await _sdkLoadFuture;
-    }
+    await _ensureSdkLoaded();
     await _webApiClient.removeFromLibrary(spotifyUri: spotifyUri);
   }
 
@@ -603,10 +533,7 @@ class SpotifySdkPlugin extends SpotifySdkPlatform {
   Future<Capabilities?> getCapabilities({
     required String spotifyUri,
   }) async {
-    if (!_sdkLoaded) {
-      _sdkLoadFuture ??= _initializeSpotify();
-      await _sdkLoadFuture;
-    }
+    await _ensureSdkLoaded();
     return Capabilities(canPlayOnDemand: true);
   }
 
@@ -614,19 +541,13 @@ class SpotifySdkPlugin extends SpotifySdkPlatform {
   Future<LibraryState?> getLibraryState({
     required String spotifyUri,
   }) async {
-    if (!_sdkLoaded) {
-      _sdkLoadFuture ??= _initializeSpotify();
-      await _sdkLoadFuture;
-    }
+    await _ensureSdkLoaded();
     return _webApiClient.getLibraryState(spotifyUri: spotifyUri);
   }
 
   @override
   Future<void> switchToLocalDevice() async {
-    if (!_sdkLoaded) {
-      _sdkLoadFuture ??= _initializeSpotify();
-      await _sdkLoadFuture;
-    }
+    await _ensureSdkLoaded();
     return _webApiClient.switchToLocalDevice(
       deviceId: _currentPlayer?.deviceID,
     );
@@ -637,29 +558,26 @@ class SpotifySdkPlugin extends SpotifySdkPlatform {
     required ImageUri imageUri,
     ImageDimension dimension = ImageDimension.medium,
   }) async {
-    if (!_sdkLoaded) {
-      _sdkLoadFuture ??= _initializeSpotify();
-      await _sdkLoadFuture;
-    }
+    await _ensureSdkLoaded();
     return _webApiClient.getImage(imageUri: imageUri, dimension: dimension);
   }
 
   @override
   Future<void> setShuffle({required bool shuffle}) async {
-    if (!_sdkLoaded) {
-      _sdkLoadFuture ??= _initializeSpotify();
-      await _sdkLoadFuture;
-    }
-    await _setShuffle(shuffle);
+    await _ensureSdkLoaded();
+    await _webApiClient.setShuffle(
+      shuffleEnabled: shuffle,
+      deviceId: _currentPlayer?.deviceID,
+    );
   }
 
   @override
   Future<void> setRepeatMode({required SpotifyRepeatMode repeatMode}) async {
-    if (!_sdkLoaded) {
-      _sdkLoadFuture ??= _initializeSpotify();
-      await _sdkLoadFuture;
-    }
-    await _setRepeatMode(repeatMode);
+    await _ensureSdkLoaded();
+    await _webApiClient.setRepeatMode(
+      repeatMode: repeatMode,
+      deviceId: _currentPlayer?.deviceID,
+    );
   }
 
   @override
@@ -786,29 +704,4 @@ class SpotifySdkPlugin extends SpotifySdkPlatform {
   void _unregisterPlayerEvents(Player player) {
     _playerDispatcher.unregisterPlayerEvents(player);
   }
-
-  /// Plays a track or context on the Spotify Web player.
-  Future<void> _play(String? uri) => _webApiClient.play(
-    uri: uri,
-    deviceId: _currentPlayer?.deviceID,
-  );
-
-  /// Adds a given track to the playback queue.
-  Future<void> _queue(String? uri) => _webApiClient.queue(
-    uri: uri,
-    deviceId: _currentPlayer?.deviceID,
-  );
-
-  /// Sets whether shuffle should be enabled.
-  Future<void> _setShuffle(bool? shuffleEnabled) => _webApiClient.setShuffle(
-    shuffleEnabled: shuffleEnabled,
-    deviceId: _currentPlayer?.deviceID,
-  );
-
-  /// Sets the repeat mode.
-  Future<void> _setRepeatMode(SpotifyRepeatMode? repeatMode) =>
-      _webApiClient.setRepeatMode(
-        repeatMode: repeatMode,
-        deviceId: _currentPlayer?.deviceID,
-      );
 }

@@ -20,6 +20,12 @@ public class SpotifySdkPlugin: NSObject, FlutterPlugin {
         playerStateChannel = FlutterEventChannel(name: "player_state_subscription", binaryMessenger: registrar.messenger())
         playerContextChannel = FlutterEventChannel(name: "player_context_subscription", binaryMessenger: registrar.messenger())
         registrar.addApplicationDelegate(instance)
+        if #available(iOS 13.0, *) {
+            let selector = NSSelectorFromString("addSceneDelegate:")
+            if (registrar as AnyObject).responds(to: selector) {
+                (registrar as AnyObject).perform(selector, with: instance)
+            }
+        }
         registrar.addMethodCallDelegate(instance, channel: spotifySDKChannel)
         instance.connectionStatusHandler = ConnectionStatusHandler()
         connectionStatusChannel.setStreamHandler(instance.connectionStatusHandler)
@@ -70,7 +76,7 @@ public class SpotifySdkPlugin: NSObject, FlutterPlugin {
                 return
             }
 
-        case SpotifySdkConstants.methodGetAccessToken:
+        case SpotifySdkConstants.methodGetAccessToken, SpotifySdkConstants.methodGetSwapToken:
             guard let swiftArguments = call.arguments as? [String:Any],
                 let clientID = swiftArguments[SpotifySdkConstants.paramClientId] as? String,
                 let url = swiftArguments[SpotifySdkConstants.paramRedirectUrl] as? String else {
@@ -90,6 +96,9 @@ public class SpotifySdkPlugin: NSObject, FlutterPlugin {
                 result(FlutterError(code: "CouldNotFindSpotifyApp", message: "The Spotify app is not installed on the device", details: nil))
                 return
             }
+
+        case SpotifySdkConstants.methodIsSpotifyInstalled:
+            result(UIApplication.shared.canOpenURL(URL(string: "spotify:")!))
         case SpotifySdkConstants.methodGetImage:
             guard let appRemote = appRemote else {
                 result(FlutterError(code: "Connection Error", message: "AppRemote is null", details: nil))
@@ -267,6 +276,28 @@ public class SpotifySdkPlugin: NSObject, FlutterPlugin {
                     return
             }
             appRemote.playerAPI?.seek(toPosition: position, callback: defaultPlayAPICallback)
+        case SpotifySdkConstants.methodSeekToRelativePosition:
+            guard let appRemote = appRemote else {
+                result(FlutterError(code: "Connection Error", message: "AppRemote is null", details: nil))
+                return
+            }
+            guard let swiftArguments = call.arguments as? [String:Any],
+                let relativeMilliseconds = swiftArguments[SpotifySdkConstants.paramRelativeMilliseconds] as? Int else {
+                    result(FlutterError(code: "Position error", message: "No relative position was specified", details: nil))
+                    return
+            }
+            appRemote.playerAPI?.getPlayerState({ (playerState, error) in
+                guard error == nil else {
+                    result(FlutterError(code: "PlayerAPI Error", message: error?.localizedDescription, details: nil))
+                    return
+                }
+                guard let playerState = playerState as? SPTAppRemotePlayerState else {
+                    result(FlutterError(code: "PlayerAPI Error", message: "PlayerState is empty", details: nil))
+                    return
+                }
+                let targetPos = max(0, playerState.playbackPosition + relativeMilliseconds)
+                appRemote.playerAPI?.seek(toPosition: targetPos, callback: defaultPlayAPICallback)
+            })
         case SpotifySdkConstants.methodGetCrossfadeState:
             guard let appRemote = appRemote else {
                 result(FlutterError(code: "Connection Error", message: "AppRemote is null", details: nil))
@@ -294,6 +325,23 @@ public class SpotifySdkPlugin: NSObject, FlutterPlugin {
                     return
             }
             appRemote.playerAPI?.setShuffle(shuffle, callback: defaultPlayAPICallback)
+        case SpotifySdkConstants.methodToggleShuffle:
+            guard let appRemote = appRemote else {
+                result(FlutterError(code: "Connection Error", message: "AppRemote is null", details: nil))
+                return
+            }
+            appRemote.playerAPI?.getPlayerState({ (playerState, error) in
+                guard error == nil else {
+                    result(FlutterError(code: "PlayerAPI Error", message: error?.localizedDescription, details: nil))
+                    return
+                }
+                guard let playerState = playerState as? SPTAppRemotePlayerState else {
+                    result(FlutterError(code: "PlayerAPI Error", message: "PlayerState is empty", details: nil))
+                    return
+                }
+                let currentShuffle = playerState.playbackOptions.isShuffling
+                appRemote.playerAPI?.setShuffle(!currentShuffle, callback: defaultPlayAPICallback)
+            })
         case SpotifySdkConstants.methodSetRepeatMode:
             guard let appRemote = appRemote else {
                 result(FlutterError(code: "Connection Error", message: "AppRemote is null", details: nil))
@@ -306,6 +354,33 @@ public class SpotifySdkPlugin: NSObject, FlutterPlugin {
                     return
             }
             appRemote.playerAPI?.setRepeatMode(repeatMode, callback: defaultPlayAPICallback)
+        case SpotifySdkConstants.methodToggleRepeat:
+            guard let appRemote = appRemote else {
+                result(FlutterError(code: "Connection Error", message: "AppRemote is null", details: nil))
+                return
+            }
+            appRemote.playerAPI?.getPlayerState({ (playerState, error) in
+                guard error == nil else {
+                    result(FlutterError(code: "PlayerAPI Error", message: error?.localizedDescription, details: nil))
+                    return
+                }
+                guard let playerState = playerState as? SPTAppRemotePlayerState else {
+                    result(FlutterError(code: "PlayerAPI Error", message: "PlayerState is empty", details: nil))
+                    return
+                }
+                let nextMode: SPTAppRemotePlaybackOptionsRepeatMode
+                switch playerState.playbackOptions.repeatMode {
+                case .off:
+                    nextMode = .context
+                case .context:
+                    nextMode = .track
+                case .track:
+                    nextMode = .off
+                @unknown default:
+                    nextMode = .off
+                }
+                appRemote.playerAPI?.setRepeatMode(nextMode, callback: defaultPlayAPICallback)
+            })
         case SpotifySdkConstants.getLibraryState:
             guard let appRemote = appRemote else {
                 result(FlutterError(code: "Connection Error", message: "AppRemote is null", details: nil))
@@ -417,3 +492,26 @@ extension SpotifySdkPlugin {
         appRemote.connect()
     }
 }
+
+@available(iOS 13.0, *)
+extension SpotifySdkPlugin: UIWindowSceneDelegate {
+    public func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
+        guard let url = URLContexts.first?.url else { return }
+        setAccessTokenFromURL(url: url)
+    }
+
+    public func scene(_ scene: UIScene, continue userActivity: NSUserActivity) {
+        guard userActivity.activityType == NSUserActivityTypeBrowsingWeb,
+              let url = userActivity.webpageURL
+        else {
+            connectionStatusHandler?.connectionResult?(FlutterError(code: "errorConnecting", message: "client id or redirectUrl is invalid", details: nil))
+            connectionStatusHandler?.tokenResult?(FlutterError(code: "errorConnecting", message: "client id or redirectUrl is invalid", details: nil))
+            connectionStatusHandler?.connectionResult = nil
+            connectionStatusHandler?.tokenResult = nil
+            return
+        }
+
+        setAccessTokenFromURL(url: url)
+    }
+}
+

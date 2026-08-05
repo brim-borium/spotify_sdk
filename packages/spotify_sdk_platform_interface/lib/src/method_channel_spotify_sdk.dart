@@ -13,27 +13,6 @@ class MethodChannelSpotifySdk extends SpotifySdkPlatform {
 
   final PlatformChannelGateway _gateway;
 
-  // player event channels
-  static const EventChannel _playerContextChannel = EventChannel(
-    EventChannels.playerContext,
-  );
-  static const EventChannel _playerStateChannel = EventChannel(
-    EventChannels.playerState,
-  );
-
-  // user event channels
-  static const EventChannel _userStatusChannel = EventChannel(
-    EventChannels.userStatus,
-  );
-  static const EventChannel _capabilitiesChannel = EventChannel(
-    EventChannels.capabilities,
-  );
-
-  // connection status channel
-  static const EventChannel _connectionStatusChannel = EventChannel(
-    EventChannels.connectionStatus,
-  );
-
   @override
   Future<bool> connectToSpotifyRemote({
     required String clientId,
@@ -81,6 +60,33 @@ class MethodChannelSpotifySdk extends SpotifySdkPlatform {
   }
 
   @override
+  Future<String> getSwapToken({
+    required String clientId,
+    required String redirectUrl,
+    String? scope,
+    String? tokenSwapUrl,
+  }) async {
+    final token = await _gateway.invoke<dynamic>(
+      MethodNames.getSwapToken,
+      arguments: {
+        ParamNames.clientId: clientId,
+        ParamNames.redirectUrl: redirectUrl,
+        ParamNames.scope: scope,
+        ParamNames.tokenSwapUrl: tokenSwapUrl,
+      },
+    );
+    return token.toString();
+  }
+
+  @override
+  Future<bool> isSpotifyInstalled() async {
+    final installed = await _gateway.invoke<bool>(
+      MethodNames.isSpotifyInstalled,
+    );
+    return installed ?? false;
+  }
+
+  @override
   Future<bool> disconnect() async {
     final result = await _gateway.invoke<bool>(
       MethodNames.disconnectFromSpotify,
@@ -90,19 +96,19 @@ class MethodChannelSpotifySdk extends SpotifySdkPlatform {
 
   @override
   Future<CrossfadeState?> getCrossFadeState() =>
-      _gateway.invoke<CrossfadeState>(
+      _gateway.invokeJson<CrossfadeState>(
         MethodNames.getCrossfadeState,
-        decode: (json) => CrossfadeState.fromJson(json as Map<String, dynamic>),
+        decode: CrossfadeState.fromJson,
       );
 
   @override
-  Future<PlayerState?> getPlayerState() => _gateway.invoke<PlayerState>(
+  Future<PlayerState?> getPlayerState() => _gateway.invokeJson<PlayerState>(
     MethodNames.getPlayerState,
-    decode: (json) => PlayerState.fromJson(json as Map<String, dynamic>),
+    decode: PlayerState.fromJson,
   );
 
   @override
-  Future<void> queue({required String spotifyUri}) => _gateway.invoke<void>(
+  Future<void> queue({required String spotifyUri}) => _gateway.invokeVoid(
     MethodNames.queueTrack,
     arguments: {ParamNames.spotifyUri: spotifyUri},
   );
@@ -111,7 +117,7 @@ class MethodChannelSpotifySdk extends SpotifySdkPlatform {
   Future<void> play({
     required String spotifyUri,
     bool asRadio = false,
-  }) => _gateway.invoke<void>(
+  }) => _gateway.invokeVoid(
     MethodNames.play,
     arguments: {
       ParamNames.spotifyUri: spotifyUri,
@@ -120,15 +126,15 @@ class MethodChannelSpotifySdk extends SpotifySdkPlatform {
   );
 
   @override
-  Future<void> pause() => _gateway.invoke<void>(MethodNames.pause);
+  Future<void> pause() => _gateway.invokeVoid(MethodNames.pause);
 
   @override
-  Future<void> resume() => _gateway.invoke<void>(MethodNames.resume);
+  Future<void> resume() => _gateway.invokeVoid(MethodNames.resume);
 
   @override
   Future<void> setPodcastPlaybackSpeed({
     required PodcastPlaybackSpeed podcastPlaybackSpeed,
-  }) => _gateway.invoke<void>(
+  }) => _gateway.invokeVoid(
     MethodNames.setPodcastPlaybackSpeed,
     arguments: {
       ParamNames.podcastPlaybackSpeed: podcastPlaybackSpeed.value,
@@ -136,17 +142,16 @@ class MethodChannelSpotifySdk extends SpotifySdkPlatform {
   );
 
   @override
-  Future<void> skipNext() => _gateway.invoke<void>(MethodNames.skipNext);
+  Future<void> skipNext() => _gateway.invokeVoid(MethodNames.skipNext);
 
   @override
-  Future<void> skipPrevious() =>
-      _gateway.invoke<void>(MethodNames.skipPrevious);
+  Future<void> skipPrevious() => _gateway.invokeVoid(MethodNames.skipPrevious);
 
   @override
   Future<void> skipToIndex({
     required String spotifyUri,
     required int trackIndex,
-  }) => _gateway.invoke<void>(
+  }) => _gateway.invokeVoid(
     MethodNames.skipToIndex,
     arguments: {
       ParamNames.spotifyUri: spotifyUri,
@@ -156,7 +161,7 @@ class MethodChannelSpotifySdk extends SpotifySdkPlatform {
 
   @override
   Future<void> seekTo({required int positionedMilliseconds}) =>
-      _gateway.invoke<void>(
+      _gateway.invokeVoid(
         MethodNames.seekTo,
         arguments: {
           ParamNames.positionedMilliseconds: positionedMilliseconds,
@@ -166,7 +171,7 @@ class MethodChannelSpotifySdk extends SpotifySdkPlatform {
   @override
   Future<void> seekToRelativePosition({
     required int relativeMilliseconds,
-  }) => _gateway.invoke<void>(
+  }) => _gateway.invokeVoid(
     MethodNames.seekToRelativePosition,
     arguments: {
       ParamNames.relativeMilliseconds: relativeMilliseconds,
@@ -175,26 +180,25 @@ class MethodChannelSpotifySdk extends SpotifySdkPlatform {
 
   @override
   Future<void> switchToLocalDevice() =>
-      _gateway.invoke<void>(MethodNames.switchToLocalDevice);
+      _gateway.invokeVoid(MethodNames.switchToLocalDevice);
 
   @override
   Future<void> toggleShuffle() =>
-      _gateway.invoke<void>(MethodNames.toggleShuffle);
+      _gateway.invokeVoid(MethodNames.toggleShuffle);
 
   @override
-  Future<void> toggleRepeat() =>
-      _gateway.invoke<void>(MethodNames.toggleRepeat);
+  Future<void> toggleRepeat() => _gateway.invokeVoid(MethodNames.toggleRepeat);
 
   @override
   Future<void> addToLibrary({required String spotifyUri}) =>
-      _gateway.invoke<void>(
+      _gateway.invokeVoid(
         MethodNames.addToLibrary,
         arguments: {ParamNames.spotifyUri: spotifyUri},
       );
 
   @override
   Future<void> removeFromLibrary({required String spotifyUri}) =>
-      _gateway.invoke<void>(
+      _gateway.invokeVoid(
         MethodNames.removeFromLibrary,
         arguments: {ParamNames.spotifyUri: spotifyUri},
       );
@@ -202,18 +206,18 @@ class MethodChannelSpotifySdk extends SpotifySdkPlatform {
   @override
   Future<Capabilities?> getCapabilities({
     required String spotifyUri,
-  }) => _gateway.invoke<Capabilities>(
+  }) => _gateway.invokeJson<Capabilities>(
     MethodNames.getCapabilities,
-    decode: (json) => Capabilities.fromJson(json as Map<String, dynamic>),
+    decode: Capabilities.fromJson,
   );
 
   @override
   Future<LibraryState?> getLibraryState({
     required String spotifyUri,
-  }) => _gateway.invoke<LibraryState>(
+  }) => _gateway.invokeJson<LibraryState>(
     MethodNames.getLibraryState,
     arguments: {ParamNames.spotifyUri: spotifyUri},
-    decode: (json) => LibraryState.fromJson(json as Map<String, dynamic>),
+    decode: LibraryState.fromJson,
   );
 
   @override
@@ -229,7 +233,7 @@ class MethodChannelSpotifySdk extends SpotifySdkPlatform {
   );
 
   @override
-  Future<void> setShuffle({required bool shuffle}) => _gateway.invoke<void>(
+  Future<void> setShuffle({required bool shuffle}) => _gateway.invokeVoid(
     MethodNames.setShuffle,
     arguments: {ParamNames.shuffle: shuffle},
   );
@@ -237,44 +241,46 @@ class MethodChannelSpotifySdk extends SpotifySdkPlatform {
   @override
   Future<void> setRepeatMode({
     required SpotifyRepeatMode repeatMode,
-  }) => _gateway.invoke<void>(
+  }) => _gateway.invokeVoid(
     MethodNames.setRepeatMode,
     arguments: {ParamNames.repeatMode: repeatMode.index},
   );
 
   @override
   Stream<PlayerContext> subscribePlayerContext() =>
-      _gateway.listen<PlayerContext>(
-        _playerContextChannel,
+      _gateway.listenJson<PlayerContext>(
+        EventChannels.playerContext,
         MethodNames.subscribePlayerContext,
         PlayerContext.fromJson,
       );
 
   @override
-  Stream<PlayerState> subscribePlayerState() => _gateway.listen<PlayerState>(
-    _playerStateChannel,
-    MethodNames.subscribePlayerState,
-    PlayerState.fromJson,
-  );
+  Stream<PlayerState> subscribePlayerState() =>
+      _gateway.listenJson<PlayerState>(
+        EventChannels.playerState,
+        MethodNames.subscribePlayerState,
+        PlayerState.fromJson,
+      );
 
   @override
   Stream<ConnectionStatus> subscribeConnectionStatus() =>
-      _gateway.listen<ConnectionStatus>(
-        _connectionStatusChannel,
+      _gateway.listenJson<ConnectionStatus>(
+        EventChannels.connectionStatus,
         MethodNames.subscribeConnectionStatus,
         ConnectionStatus.fromJson,
       );
 
   @override
-  Stream<Capabilities> subscribeCapabilities() => _gateway.listen<Capabilities>(
-    _capabilitiesChannel,
-    MethodNames.getCapabilities,
-    Capabilities.fromJson,
-  );
+  Stream<Capabilities> subscribeCapabilities() =>
+      _gateway.listenJson<Capabilities>(
+        EventChannels.capabilities,
+        MethodNames.getCapabilities,
+        Capabilities.fromJson,
+      );
 
   @override
-  Stream<UserStatus> subscribeUserStatus() => _gateway.listen<UserStatus>(
-    _userStatusChannel,
+  Stream<UserStatus> subscribeUserStatus() => _gateway.listenJson<UserStatus>(
+    EventChannels.userStatus,
     EventChannels.userStatus,
     UserStatus.fromJson,
   );

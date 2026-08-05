@@ -83,6 +83,21 @@ abstract class SpotifySdkPlatform extends PlatformInterface {
     throw UnimplementedError('getAccessToken() has not been implemented.');
   }
 
+  /// Returns a swap token for Spotify using token swap authentication.
+  Future<String> getSwapToken({
+    required String clientId,
+    required String redirectUrl,
+    String? scope,
+    String? tokenSwapUrl,
+  }) {
+    throw UnimplementedError('getSwapToken() has not been implemented.');
+  }
+
+  /// Checks if Spotify is installed on the device.
+  Future<bool> isSpotifyInstalled() {
+    throw UnimplementedError('isSpotifyInstalled() has not been implemented.');
+  }
+
   /// Logs the user out and disconnects the app from the users spotify account.
   Future<bool> disconnect() {
     throw UnimplementedError('disconnect() has not been implemented.');

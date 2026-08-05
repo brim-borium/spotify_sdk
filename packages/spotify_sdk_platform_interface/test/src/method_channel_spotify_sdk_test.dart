@@ -23,6 +23,10 @@ void main() {
                 return true;
               case 'getAccessToken':
                 return 'mock_access_token';
+              case 'getSwapToken':
+                return 'mock_swap_code';
+              case 'isSpotifyInstalled':
+                return true;
               case 'disconnectFromSpotify':
                 return true;
               case 'getPlayerState':
@@ -89,6 +93,23 @@ void main() {
 
       expect(token, 'mock_access_token');
       expect(log.first.method, 'getAccessToken');
+    });
+
+    test('getSwapToken returns swap token string', () async {
+      final token = await platform.getSwapToken(
+        clientId: 'test_client_id',
+        redirectUrl: 'test_redirect_url',
+      );
+
+      expect(token, 'mock_swap_code');
+      expect(log.first.method, 'getSwapToken');
+    });
+
+    test('isSpotifyInstalled returns boolean', () async {
+      final result = await platform.isSpotifyInstalled();
+
+      expect(result, true);
+      expect(log.first.method, 'isSpotifyInstalled');
     });
 
     test('disconnect returns confirmation boolean', () async {

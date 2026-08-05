@@ -120,18 +120,23 @@ On iOS Spotify starts playing music when attempting connection. This is a defaul
 
 Have a look [in the example](example/lib/main.dart) for detailed insights on how you can use this package.
 
-### Token Swap
+### Token Swap & Utilities
 
-You can optionally specify "token swap" URLs to manage tokens with a backend service that protects your OAuth client secret. For more information refer to the [Spotify Token Swap and Refresh Guide](https://developer.spotify.com/documentation/ios/guides/token-swap-and-refresh/)
+If your application architecture uses an intermediate backend to exchange Spotify authorization codes and protect your Client Secret, you can retrieve the raw authorization code using `getSwapToken(...)`:
 
 ```dart
-SpotifySdkPlugin.tokenSwapURL = 'https://example.com/api/spotify/token';
-SpotifySdkPlugin.tokenRefreshURL = 'https://example.com/api/spotify/refresh';
+final authorizationCode = await SpotifySdk.getSwapToken(
+  clientId: "YOUR_CLIENT_ID",
+  redirectUrl: "YOUR_REDIRECT_URL",
+  scope: "app-remote-control,user-modify-playback-state",
+);
 ```
 
-On web, this package will perform an Authorization Code (without PKCE) flow, then exchange the code and refresh the token with a backend service you run at the URLs provided.
+You can also check if the native Spotify application is installed on the user's device:
 
-Token Swap is for now "web only". While the iOS SDK also supports the "token swap", this flow is not yet supported.
+```dart
+final isInstalled = await SpotifySdk.isSpotifyInstalled();
+```
 
 ### Api
 
@@ -140,9 +145,11 @@ Token Swap is for now "web only". While the iOS SDK also supports the "token swa
 | Function  | Description| Android | iOS | Web |
 |---|---|---|---|---|
 | connectToSpotifyRemote  | Connects the App to Spotify | ✔ | ✔ | ✔ |
-|  getAccessToken | Gets the Access Token that you can use to work with the [Web Api](https://developer.spotify.com/documentation/web-api/) | ✔ |  ✔ | ✔ |
-|  disconnect | Disconnects the app connection | ✔ |  ✔ | ✔ |
-|  subscribeConnectionStatus | Subscribes to the current connection status. | ✔ |  ✔ | ✔ |
+| getAccessToken | Gets the Access Token that you can use to work with the [Web Api](https://developer.spotify.com/documentation/web-api/) | ✔ |  ✔ | ✔ |
+| getSwapToken | Gets an OAuth Authorization Code for custom token swap backend servers | ✔ | ✔ | ✔ |
+| isSpotifyInstalled | Checks if the Spotify application is installed on the device | ✔ | ✔ | ✔ |
+| disconnect | Disconnects the app connection | ✔ |  ✔ | ✔ |
+| subscribeConnectionStatus | Subscribes to the current connection status. | ✔ |  ✔ | ✔ |
 
 #### Player Api
 
@@ -150,16 +157,15 @@ The playerApi as described [here](https://spotify.github.io/android-sdk/app-remo
 
 | Function                | Description | Android | iOS | Web |
 |-------------------------|---|--|---|---|
-| getCrossfadeState       | Gets the current crossfade state | ✔ | ✔ | ✔ |
+| getCrossFadeState       | Gets the current crossfade state | ✔ | ✔ | ✔ |
 | getPlayerState          | Gets the current player state |✔ |  ✔ | ✔ |
 | pause                   | Pauses the current track  |✔ | ✔  | ✔ |
 | play                    | Plays the given spotifyUri |✔ |  ✔ | ✔ |
-| playWithStreamType      | Play the given Spotify uri with specific behaviour for that streamtype | 🚧 |  🚧 | 🚧 |
 | queue                   | Queues given spotifyUri |✔ | ✔  | ✔ |
 | resume                  | Resumes the current track |✔ |  ✔ | ✔ |
 | seekTo                  | Seeks the current track to the given position in milliseconds | ✔ | ✔ | ✔ |
-| seekToRelativePosition  | Adds to the current position of the track the given milliseconds | ✔ | ❌ | ✔ |
-| setPodcastPlaybackSpeed | Set playback speed for Podcast  | ✔ | 🚧 | 🚧 |
+| seekToRelativePosition  | Adds to the current position of the track the given milliseconds | ✔ | ✔ | ✔ |
+| setPodcastPlaybackSpeed | Set playback speed for Podcast  | ✔ | ❌ | ❌ |
 | setRepeatMode           | Set the repeat mode | ✔ |  ✔ | ✔ |
 | setShuffle              | Set the shuffle mode | ✔ |  ✔ | ✔ |
 | skipNext                | Skips to next track | ✔ | ✔  | ✔ |
@@ -168,7 +174,7 @@ The playerApi as described [here](https://spotify.github.io/android-sdk/app-remo
 | subscribePlayerContext  | Subscribes to the current player context | ✔ | ✔ | ✔ |
 | subscribePlayerState    | Subscribes to the current player state | ✔ | ✔ | ✔ |
 | toggleRepeat            | Cycles through the repeat modes | ✔ |  ✔ | ✔ |
-| toggleShuffle           | Cycles through the shuffle modes | ✔ | ❌ | ✔ |
+| toggleShuffle           | Cycles through the shuffle modes | ✔ | ✔ | ✔ |
 
 On Web, an automatic call to play may not work due to media activation policies which send an error: "Authentication Error: Browser prevented autoplay due to lack of interaction". This error is ignored by the SDK so you can still present a button for the user to click to `play` or `resume` to start playback. See the [Web SDK Troubleshooting guide](https://developer.spotify.com/documentation/web-playback-sdk/reference/#troubleshooting) for more details.
 
@@ -190,8 +196,8 @@ The userApi as described [here](https://spotify.github.io/android-sdk/app-remote
 |  getCapabilities | Gets the current users capabilities | ✔ | ✔ | ✔ |
 |  getLibraryState | Gets the current library state | ✔ | ✔ | ✔ |
 |  removeFromLibrary | Removes the given spotifyUri to the users library | ✔ | ✔ | ✔ |
-|  subscribeCapabilities |  Subscribes to the current users capabilities | ✔ | 🚧 | 🚧 |
-|  subscribeUserStatus |  Subscribes to  the current users status | ✔ | 🚧 | 🚧 |
+|  subscribeCapabilities |  Subscribes to the current users capabilities | ✔ | ❌ | ✔ |
+|  subscribeUserStatus |  Subscribes to  the current users status | ✔ | ❌ | ✔ |
 
 #### Connect Api
 
@@ -199,21 +205,7 @@ The connectApi as described [here](https://spotify.github.io/android-sdk/app-rem
 
 | Function                   | Description                                | Android | iOS | Web |
 |----------------------------|--------------------------------------------|---|---|---|
-| connectDecreaseVolume      | Decrease volume by a step size determined  | 🚧 | 🚧 | 🚧 |
-| connectIncreaseVolume      | Increase volume by a step size determined  | 🚧 | 🚧 | 🚧 |
-| connectSetVolume           | Set a volume on the currently active device | 🚧 | 🚧 | 🚧 |
-| connectSwitchToLocalDevice | Switch to play music on this (local) device | ✔ | 🚧 | ✔ |
-| subscribeToVolumeState     | Subscribe to volume state                  | 🚧 | 🚧 | 🚧 |
-
-#### Content Api
-
-The contentApi as described [here](https://spotify.github.io/android-sdk/app-remote-lib/docs/com/spotify/android/appremote/api/ContentApi.html).
-
-| Function  | Description| Android | iOS | Web |
-|---|---|---|---|---|
-| getChildrenOfItem | tbd | 🚧 | 🚧 | 🚧 |
-| getRecommendedContentItems | tbd | 🚧 | 🚧 | 🚧 |
-| playContentItem | tbd | 🚧 | 🚧 | 🚧 |
+| switchToLocalDevice        | Switch to play music on this (local) device | ✔ | ❌ | ✔ |
 
 ## Migration 
 

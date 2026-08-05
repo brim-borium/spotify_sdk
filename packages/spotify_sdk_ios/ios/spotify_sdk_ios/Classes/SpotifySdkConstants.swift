@@ -5,6 +5,8 @@ public class SpotifySdkConstants
     //connecting
     public static let methodConnectToSpotify = "connectToSpotify"
     public static let methodGetAccessToken = "getAccessToken"
+    public static let methodGetSwapToken = "getSwapToken"
+    public static let methodIsSpotifyInstalled = "isSpotifyInstalled"
     public static let methodDisconnectFromSpotify = "disconnectFromSpotify"
 
     //player api
@@ -16,10 +18,13 @@ public class SpotifySdkConstants
     public static let methodSkipPrevious = "skipPrevious"
     public static let methodSkipToIndex = "skipToIndex"
     public static let methodSeekTo = "seekTo"
+    public static let methodSeekToRelativePosition = "seekToRelativePosition"
     public static let methodGetPlayerState = "getPlayerState"
     public static let methodGetCrossfadeState = "getCrossfadeState"
     public static let methodSetShuffle = "setShuffle"
+    public static let methodToggleShuffle = "toggleShuffle"
     public static let methodSetRepeatMode = "setRepeatMode"
+    public static let methodToggleRepeat = "toggleRepeat"
 
     //user api
     public static let methodAddToLibrary = "addToLibrary"

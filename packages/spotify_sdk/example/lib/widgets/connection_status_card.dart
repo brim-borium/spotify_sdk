@@ -150,6 +150,37 @@ class ConnectionStatusCard extends StatelessWidget {
                   ),
                 ],
               ),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      onPressed: controller.isLoading
+                          ? null
+                          : () => unawaited(controller.getSwapToken()),
+                      icon: const Icon(
+                        Icons.swap_horiz_rounded,
+                        color: SpotifyTheme.pastelBlue,
+                      ),
+                      label: const Text('Get Swap Token'),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      onPressed: controller.isLoading
+                          ? null
+                          : () =>
+                                unawaited(controller.checkIsSpotifyInstalled()),
+                      icon: const Icon(
+                        Icons.phone_android_rounded,
+                        color: SpotifyTheme.pastelMint,
+                      ),
+                      label: const Text('Check Installed'),
+                    ),
+                  ),
+                ],
+              ),
 
               if (!isConnected && status != null && status.message != null) ...[
                 const SizedBox(height: 14),
