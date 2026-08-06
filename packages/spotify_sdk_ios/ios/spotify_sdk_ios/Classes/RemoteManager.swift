@@ -1,17 +1,17 @@
 import Flutter
 import SpotifyiOS
 
-public class RemoteManager: NSObject {
-    public static let shared = RemoteManager()
+class RemoteManager: NSObject {
+    static let shared = RemoteManager()
 
-    public var appRemote: SPTAppRemote?
-    public var connectionStatusHandler: ConnectionStatusHandler?
-    public var playerStateHandler: PlayerStateHandler?
-    public var playerContextHandler: PlayerContextHandler?
-    public var playerStateChannel: FlutterEventChannel?
-    public var playerContextChannel: FlutterEventChannel?
+    var appRemote: SPTAppRemote?
+    var connectionStatusHandler: ConnectionStatusHandler?
+    var playerStateHandler: PlayerStateHandler?
+    var playerContextHandler: PlayerContextHandler?
+    static var playerStateChannel: FlutterEventChannel?
+    static var playerContextChannel: FlutterEventChannel?
 
-    public override init() {
+    override init() {
         super.init()
     }
 }

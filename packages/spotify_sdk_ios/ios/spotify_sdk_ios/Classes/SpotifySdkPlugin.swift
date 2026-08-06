@@ -11,13 +11,13 @@ public class SpotifySdkPlugin: NSObject, FlutterPlugin {
     private lazy var imageHandler = ImageHandler(remoteManager: remoteManager)
 
     public static func register(with registrar: FlutterPluginRegistrar) {
-        guard instance.remoteManager.playerStateChannel == nil else {
+        guard RemoteManager.playerStateChannel == nil else {
             return
         }
         let spotifySDKChannel = FlutterMethodChannel(name: "spotify_sdk", binaryMessenger: registrar.messenger())
         let connectionStatusChannel = FlutterEventChannel(name: "connection_status_subscription", binaryMessenger: registrar.messenger())
-        instance.remoteManager.playerStateChannel = FlutterEventChannel(name: "player_state_subscription", binaryMessenger: registrar.messenger())
-        instance.remoteManager.playerContextChannel = FlutterEventChannel(name: "player_context_subscription", binaryMessenger: registrar.messenger())
+        RemoteManager.playerStateChannel = FlutterEventChannel(name: "player_state_subscription", binaryMessenger: registrar.messenger())
+        RemoteManager.playerContextChannel = FlutterEventChannel(name: "player_context_subscription", binaryMessenger: registrar.messenger())
         registrar.addApplicationDelegate(instance)
 
         if #available(iOS 13.0, *) {
@@ -97,7 +97,7 @@ public class SpotifySdkPlugin: NSObject, FlutterPlugin {
     }
 
     public func application(_ application: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
-        remoteManager.connectionStatusHandler?.appRemote(remoteManager.appRemote, open: url)
+        setAccessTokenFromURL(url: url)
         return true
     }
 
@@ -106,7 +106,44 @@ public class SpotifySdkPlugin: NSObject, FlutterPlugin {
               let url = userActivity.webpageURL else {
             return false
         }
-        remoteManager.connectionStatusHandler?.appRemote(remoteManager.appRemote, open: url)
-        return true
+        setAccessTokenFromURL(url: url)
+        return false
+    }
+
+    private func setAccessTokenFromURL(url: URL) {
+        guard let appRemote = remoteManager.appRemote else {
+            remoteManager.connectionStatusHandler?.connectionResult?(FlutterError(code: "errorConnection", message: "AppRemote is null", details: nil))
+            remoteManager.connectionStatusHandler?.tokenResult?(FlutterError(code: "errorConnection", message: "AppRemote is null", details: nil))
+            remoteManager.connectionStatusHandler?.connectionResult = nil
+            remoteManager.connectionStatusHandler?.tokenResult = nil
+            return
+        }
+
+        guard let token = appRemote.authorizationParameters(from: url)?[SPTAppRemoteAccessTokenKey] else {
+            remoteManager.connectionStatusHandler?.connectionResult?(FlutterError(code: "authenticationTokenError", message: appRemote.authorizationParameters(from: url)?[SPTAppRemoteErrorDescriptionKey], details: nil))
+            remoteManager.connectionStatusHandler?.tokenResult?(FlutterError(code: "authenticationTokenError", message: appRemote.authorizationParameters(from: url)?[SPTAppRemoteErrorDescriptionKey], details: nil))
+            remoteManager.connectionStatusHandler?.connectionResult = nil
+            remoteManager.connectionStatusHandler?.tokenResult = nil
+            return
+        }
+
+        appRemote.connectionParameters.accessToken = token
+        appRemote.connect()
+    }
+}
+
+@available(iOS 13.0, *)
+extension SpotifySdkPlugin: UIWindowSceneDelegate {
+    public func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
+        guard let url = URLContexts.first?.url else { return }
+        setAccessTokenFromURL(url: url)
+    }
+
+    public func scene(_ scene: UIScene, continue userActivity: NSUserActivity) {
+        guard userActivity.activityType == NSUserActivityTypeBrowsingWeb,
+              let url = userActivity.webpageURL else {
+            return
+        }
+        setAccessTokenFromURL(url: url)
     }
 }

@@ -100,16 +100,7 @@ class PlayerHandler(private val remoteManager: RemoteManager) {
             result.error("setPodcastPlaybackSpeedError", "podcastPlaybackSpeed is not set", "")
             return
         }
-        val speedValue = when (podcastPlaybackSpeed) {
-            0.5 -> PlaybackSpeed.Value.PLAYBACK_SPEED_50
-            0.8 -> PlaybackSpeed.Value.PLAYBACK_SPEED_80
-            1.0 -> PlaybackSpeed.Value.PLAYBACK_SPEED_100
-            1.2 -> PlaybackSpeed.Value.PLAYBACK_SPEED_120
-            1.5 -> PlaybackSpeed.Value.PLAYBACK_SPEED_150
-            2.0 -> PlaybackSpeed.Value.PLAYBACK_SPEED_200
-            3.0 -> PlaybackSpeed.Value.PLAYBACK_SPEED_300
-            else -> null
-        }
+        val speedValue = PlaybackSpeed.PodcastPlaybackSpeed.values().firstOrNull { it.value.toDouble() == podcastPlaybackSpeed }
         if (speedValue == null) {
             result.error("setPodcastPlaybackSpeedError", "podcastPlaybackSpeed value is invalid", "")
             return
@@ -117,7 +108,7 @@ class PlayerHandler(private val remoteManager: RemoteManager) {
         remoteManager.withAppRemote(result) { remote ->
             remote.playerApi.setPodcastPlaybackSpeed(speedValue)
                 .setResultCallback { result.success(true) }
-                .setErrorCallback { throwable -> result.error("setPodcastPlaybackSpeedError", "error when setting podcast playback speed", throwable.toString()) }
+                .setErrorCallback { throwable -> result.error("setPodcastPlaybackSpeedError", "error when setting podcast playback speed", throwable?.toString() ?: "") }
         }
     }
 
@@ -183,9 +174,9 @@ class PlayerHandler(private val remoteManager: RemoteManager) {
             return
         }
         remoteManager.withAppRemote(result) { remote ->
-            remote.playerApi.setRepeatMode(repeatMode)
+            remote.playerApi.setRepeat(repeatMode)
                 .setResultCallback { result.success(true) }
-                .setErrorCallback { throwable -> result.error("setRepeatModeError", "error when setting repeat mode", throwable.toString()) }
+                .setErrorCallback { throwable -> result.error("setRepeatModeError", "error when setting repeat mode", throwable?.toString() ?: "") }
         }
     }
 }

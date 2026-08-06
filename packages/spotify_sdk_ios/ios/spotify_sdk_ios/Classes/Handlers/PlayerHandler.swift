@@ -256,10 +256,6 @@ public class PlayerHandler: NSObject {
     }
 
     public func switchToLocalDevice(result: @escaping FlutterResult) {
-        guard let appRemote = remoteManager.appRemote else {
-            result(SpotifyErrorMapper.notConnectedError())
-            return
-        }
-        appRemote.connectAPI?.connectSwitchToLocalDevice(defaultPlayCallback(result))
+        result(FlutterMethodNotImplemented)
     }
 }

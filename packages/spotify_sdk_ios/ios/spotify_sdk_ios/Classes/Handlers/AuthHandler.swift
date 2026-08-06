@@ -74,24 +74,38 @@ public class AuthHandler: NSObject {
         }
 
         let configuration = SPTConfiguration(clientID: clientId, redirectURL: redirectURL)
-        let appRemote = SPTAppRemote(configuration: configuration, logLevel: .debug)
+        let appRemote = SPTAppRemote(configuration: configuration, logLevel: .none)
         remoteManager.appRemote = appRemote
-
-        if remoteManager.playerStateHandler == nil {
-            remoteManager.playerStateHandler = PlayerStateHandler()
-        }
-        if remoteManager.playerContextHandler == nil {
-            remoteManager.playerContextHandler = PlayerContextHandler()
-        }
 
         appRemote.delegate = remoteManager.connectionStatusHandler
         appRemote.connectionParameters.accessToken = accessToken
 
-        if !SPTAppRemote.checkIfSpotifyAppIsInstalled() {
-            throw SpotifyError.spotifyAppNotInstalled
+        let playerDelegate = PlayerDelegate()
+        if remoteManager.playerStateHandler == nil {
+            remoteManager.playerStateHandler = PlayerStateHandler(appRemote: appRemote, playerDelegate: playerDelegate)
+            RemoteManager.playerStateChannel?.setStreamHandler(remoteManager.playerStateHandler)
+        }
+        if remoteManager.playerContextHandler == nil {
+            remoteManager.playerContextHandler = PlayerContextHandler(appRemote: appRemote, playerDelegate: playerDelegate)
+            RemoteManager.playerContextChannel?.setStreamHandler(remoteManager.playerContextHandler)
         }
 
-        let playURI = (spotifyUri.isEmpty) ? nil : spotifyUri
-        appRemote.authorizeAndPlayURI(playURI, asRadio: asRadio ?? false, additionalScopes: additionalScopes)
+        var scopes: [String]?
+        if let additionalScopes = additionalScopes {
+            scopes = additionalScopes.components(separatedBy: ",")
+        }
+
+        if accessToken != nil {
+            appRemote.connect()
+        } else {
+            appRemote.authorizeAndPlayURI(spotifyUri, asRadio: asRadio ?? false, additionalScopes: scopes) { success in
+                if (!success) {
+                    self.remoteManager.connectionStatusHandler?.connectionResult?(FlutterError(code: "spotifyNotInstalled", message: "Spotify app is not installed", details: nil))
+                    self.remoteManager.connectionStatusHandler?.tokenResult?(FlutterError(code: "spotifyNotInstalled", message: "Spotify app is not installed", details: nil))
+                    self.remoteManager.connectionStatusHandler?.connectionResult = nil
+                    self.remoteManager.connectionStatusHandler?.tokenResult = nil
+                }
+            }
+        }
     }
 }
