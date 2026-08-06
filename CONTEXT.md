@@ -49,8 +49,8 @@ To maintain synchronization and consistency across all platform wrappers, the co
     *   Centralized deep module in `spotify_sdk_platform_interface` encapsulating method channel invocations, JSON deserialization, event stream subscriptions, and method-bound exception logging.
 6.  **Web Auth Session (`SpotifyAuthSession`)**:
     *   Dedicated deep module in `spotify_sdk_web` managing browser OAuth PKCE code verifier/challenge math, token storage seams (`AuthSessionStorage`), popup authorization seams (`OAuthWindowAdapter`), and reentrant refresh locks.
-7.  **Web Player Dispatcher (`WebPlayerDispatcher`) & JS Interop (`web_playback_sdk.dart`)**:
-    *   Isolated deep modules separating low-level `@JS()` browser extension bindings and player event stream dispatching from `SpotifySdkPlugin`.
+7.  **Web Player Dispatcher (`WebPlayerDispatcher`), Web SDK Loader (`WebSdkLoader`), and Player Manager (`WebPlayerManager`)**:
+    *   Isolated deep modules in `spotify_sdk_web`: `WebSdkLoader` encapsulates DOM script injection and SDK ready callback detection; `WebPlayerManager` manages device ID resolution via event-driven `Completer<String>` (eliminating polling loops); `WebPlayerDispatcher` converts JS SDK events to Dart streams.
 8.  **Web API Client (`SpotifyWebApiClient`)**:
     *   Dedicated deep module in `spotify_sdk_web` encapsulating Spotify REST Web API requests (library state, queueing, playback seeking, artwork HTTP fetching, device switching) with automatic bearer token authorization via `SpotifyAuthSession` and error translation.
 9.  **Native Remote Managers (`RemoteManager`)**:
