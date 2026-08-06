@@ -4,7 +4,9 @@ on:
   push:
     branches: [ main ]
   pull_request:
+    types: [ opened, synchronize, reopened ]
     branches: [ main ]
+  workflow_dispatch:
 
 # Cancel outdated builds for the same branch/PR to save GitHub Actions runner minutes
 concurrency:
