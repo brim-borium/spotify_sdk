@@ -1,10 +1,10 @@
 import Flutter
 import SpotifyiOS
 
-public class LibraryHandler: NSObject {
+class LibraryHandler: NSObject {
     private unowned let remoteManager: RemoteManager
 
-    public init(remoteManager: RemoteManager) {
+    init(remoteManager: RemoteManager) {
         self.remoteManager = remoteManager
         super.init()
     }
