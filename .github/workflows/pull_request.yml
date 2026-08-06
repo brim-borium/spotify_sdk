@@ -13,6 +13,8 @@ concurrency:
 
 permissions:
   contents: read
+  pull-requests: write
+  checks: write
 
 jobs:
   # Linux Job: Handles linting, formatting, analysis, unit tests, and compiles Android & Web
@@ -40,8 +42,58 @@ jobs:
       - name: Static Analysis
         run: melos run analyze
 
-      - name: Run Tests
-        run: melos run test:all
+      - name: Run Tests with Coverage
+        run: melos run test:coverage
+
+      - name: Render Coverage Table & Filter Generated Code
+        if: always()
+        run: |
+          echo "### 📊 Monorepo Code Coverage Report" > coverage_report.md
+          echo "" >> coverage_report.md
+          echo "*Note: Auto-generated (\`*.g.dart\`) files are excluded from coverage statistics.*" >> coverage_report.md
+          echo "" >> coverage_report.md
+          echo "| Package | Coverage % | Hit / Total Lines | Status |" >> coverage_report.md
+          echo "| :--- | :---: | :---: | :---: |" >> coverage_report.md
+
+          for pkg in packages/spotify_sdk packages/spotify_sdk_platform_interface packages/spotify_sdk_web; do
+            lcov_file="$pkg/coverage/lcov.info"
+            pkg_name=$(basename "$pkg")
+            if [ -f "$lcov_file" ]; then
+              # Filter out *.g.dart generated files from lcov report
+              awk '/^SF:.*\.g\.dart$/{skip=1} /^end_of_record$/{if(skip){skip=0;next}} !skip' "$lcov_file" > "$lcov_file.tmp" && mv "$lcov_file.tmp" "$lcov_file"
+
+              stats=$(awk -F: '/^LF:/ {lines += $2} /^LH:/ {hit += $2} END {if (lines > 0) printf "%.1f%%|%d/%d", (hit/lines)*100, hit, lines; else print "N/A|0/0"}' "$lcov_file")
+              pct=$(echo "$stats" | cut -d'|' -f1)
+              counts=$(echo "$stats" | cut -d'|' -f2)
+              echo "| \`$pkg_name\` | **$pct** | $counts | ✅ Passed |" >> coverage_report.md
+            else
+              echo "| \`$pkg_name\` | *N/A* | - | ⚪ Skipped |" >> coverage_report.md
+            fi
+          done
+
+          # Output summary directly into GitHub Actions Run Summary tab
+          cat coverage_report.md >> $GITHUB_STEP_SUMMARY
+
+      - name: Post Sticky PR Coverage Comment
+        if: github.event_name == 'pull_request' && always()
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: monorepo-coverage
+          path: coverage_report.md
+
+      - name: Upload Raw Coverage Artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-reports
+          path: packages/*/coverage/lcov.info
+
+      - name: Upload Coverage to Codecov
+        uses: codecov/codecov-action@v4
+        continue-on-error: true
+        with:
+          files: packages/*/coverage/lcov.info
+          fail_ci_if_error: false
 
       - name: Run Publish Dry-Run Checks
         run: melos run publish:dry-run
@@ -93,7 +145,9 @@ jobs:
           flutter pub global activate pana
           sudo apt-get install -y webp
 
-      - name: Verify Pub Score
+      - name: Verify Monorepo Pub Scores
         run: |
-          cd packages/spotify_sdk
-          ../../.github/scripts/verify_pub_score.sh 140
+          for pkg in packages/spotify_sdk packages/spotify_sdk_platform_interface packages/spotify_sdk_android packages/spotify_sdk_ios packages/spotify_sdk_web; do
+            echo "Verifying Pana score for $pkg..."
+            (cd "$pkg" && ../../.github/scripts/verify_pub_score.sh 140)
+          done
