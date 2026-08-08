@@ -38,6 +38,9 @@ melos:
     analyze:
       run: melos exec -- flutter analyze
       description: Analyze all Dart code in the monorepo.
+    test:coverage:
+      run: melos exec --dir-exists="test" --ignore="spotify_sdk_web" -- flutter test --coverage && melos exec --scope="spotify_sdk_web" -- flutter test --platform chrome
+      description: Run unit tests with coverage enabled across monorepo packages.
 
     format:
       run: melos exec -- dart format . --set-exit-if-changed

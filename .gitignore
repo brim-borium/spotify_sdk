@@ -62,3 +62,7 @@ SpotifyiOS.framework
 
 # Dynamically downloaded Spotify App Remote Maven repository
 **/m2repository/
+
+# Coverage reports
+coverage/
+**/coverage/

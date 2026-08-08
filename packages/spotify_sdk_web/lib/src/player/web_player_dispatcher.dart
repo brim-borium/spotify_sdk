@@ -37,6 +37,9 @@ class WebPlayerDispatcher {
   final void Function({String? errorCode, String? errorDetails})
   onSpotifyDisconnected;
 
+  /// Most recent player state.
+  PlayerState? lastPlayerState;
+
   /// Registers Spotify player event handlers.
   void registerPlayerEvents(Player player) {
     player
@@ -46,6 +49,7 @@ class WebPlayerDispatcher {
           if (state == null) return;
           final pState = toPlayerState(state);
           if (pState != null) {
+            lastPlayerState = pState;
             playerStateEventController.add(jsonEncode(pState.toJson()));
           }
           final pContext = toPlayerContext(state);

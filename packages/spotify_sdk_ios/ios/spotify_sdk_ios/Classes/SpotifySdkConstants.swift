@@ -25,6 +25,7 @@ public class SpotifySdkConstants
     public static let methodToggleShuffle = "toggleShuffle"
     public static let methodSetRepeatMode = "setRepeatMode"
     public static let methodToggleRepeat = "toggleRepeat"
+    public static let methodSwitchToLocalDevice = "switchToLocalDevice"
 
     //user api
     public static let methodAddToLibrary = "addToLibrary"

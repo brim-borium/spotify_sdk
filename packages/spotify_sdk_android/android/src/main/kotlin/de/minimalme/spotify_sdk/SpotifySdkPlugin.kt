@@ -9,6 +9,10 @@ import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 import io.flutter.plugin.common.PluginRegistry
+import de.minimalme.spotify_sdk.handlers.AuthHandler
+import de.minimalme.spotify_sdk.handlers.ImageHandler
+import de.minimalme.spotify_sdk.handlers.LibraryHandler
+import de.minimalme.spotify_sdk.handlers.PlayerHandler
 import de.minimalme.spotify_sdk.subscriptions.ConnectionStatusChannel
 
 class SpotifySdkPlugin : MethodCallHandler, FlutterPlugin, ActivityAware, PluginRegistry.ActivityResultListener {
@@ -22,62 +26,103 @@ class SpotifySdkPlugin : MethodCallHandler, FlutterPlugin, ActivityAware, Plugin
     private val userStatusSubscription = "user_status_subscription"
     private val connectionStatusSubscription = "connection_status_subscription"
 
-    private val remoteController = SpotifyRemoteController()
+    val remoteManager = RemoteManager()
+    val authHandler = AuthHandler(remoteManager)
+    val playerHandler = PlayerHandler(remoteManager)
+    val libraryHandler = LibraryHandler(remoteManager)
+    val imageHandler = ImageHandler(remoteManager)
 
     override fun onAttachedToEngine(binding: FlutterPlugin.FlutterPluginBinding) {
-        remoteController.applicationContext = binding.applicationContext
+        remoteManager.applicationContext = binding.applicationContext
 
         methodChannel = MethodChannel(binding.binaryMessenger, channelName)
         methodChannel.setMethodCallHandler(this)
 
-        remoteController.playerContextChannel = EventChannel(binding.binaryMessenger, playerContextSubscription)
-        remoteController.playerStateChannel = EventChannel(binding.binaryMessenger, playerStateSubscription)
-        remoteController.capabilitiesChannel = EventChannel(binding.binaryMessenger, capabilitiesSubscription)
-        remoteController.userStatusChannel = EventChannel(binding.binaryMessenger, userStatusSubscription)
-        remoteController.connectionStatusChannel = EventChannel(binding.binaryMessenger, connectionStatusSubscription)
+        remoteManager.playerContextChannel = EventChannel(binding.binaryMessenger, playerContextSubscription)
+        remoteManager.playerStateChannel = EventChannel(binding.binaryMessenger, playerStateSubscription)
+        remoteManager.capabilitiesChannel = EventChannel(binding.binaryMessenger, capabilitiesSubscription)
+        remoteManager.userStatusChannel = EventChannel(binding.binaryMessenger, userStatusSubscription)
+        remoteManager.connectionStatusChannel = EventChannel(binding.binaryMessenger, connectionStatusSubscription)
 
-        remoteController.connectionStatusChannel?.setStreamHandler(ConnectionStatusChannel(remoteController.connStatusEventChannel))
+        remoteManager.connectionStatusChannel?.setStreamHandler(ConnectionStatusChannel(remoteManager.connStatusEventChannel))
     }
 
     override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
-        remoteController.applicationContext = null
+        remoteManager.applicationContext = null
         methodChannel.setMethodCallHandler(null)
 
-        remoteController.playerContextChannel?.setStreamHandler(null)
-        remoteController.playerStateChannel?.setStreamHandler(null)
-        remoteController.capabilitiesChannel?.setStreamHandler(null)
-        remoteController.userStatusChannel?.setStreamHandler(null)
-        remoteController.connectionStatusChannel?.setStreamHandler(null)
+        remoteManager.playerContextChannel?.setStreamHandler(null)
+        remoteManager.playerStateChannel?.setStreamHandler(null)
+        remoteManager.capabilitiesChannel?.setStreamHandler(null)
+        remoteManager.userStatusChannel?.setStreamHandler(null)
+        remoteManager.connectionStatusChannel?.setStreamHandler(null)
 
-        remoteController.playerContextChannel = null
-        remoteController.playerStateChannel = null
-        remoteController.capabilitiesChannel = null
-        remoteController.userStatusChannel = null
-        remoteController.connectionStatusChannel = null
+        remoteManager.playerContextChannel = null
+        remoteManager.playerStateChannel = null
+        remoteManager.capabilitiesChannel = null
+        remoteManager.userStatusChannel = null
+        remoteManager.connectionStatusChannel = null
     }
 
     override fun onAttachedToActivity(binding: ActivityPluginBinding) {
         binding.addActivityResultListener(this)
-        remoteController.applicationActivity = binding.activity
+        remoteManager.applicationActivity = binding.activity
     }
 
     override fun onDetachedFromActivityForConfigChanges() {
-        remoteController.applicationActivity = null
+        remoteManager.applicationActivity = null
     }
 
     override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {
-        remoteController.applicationActivity = binding.activity
+        remoteManager.applicationActivity = binding.activity
     }
 
     override fun onDetachedFromActivity() {
-        remoteController.applicationActivity = null
+        remoteManager.applicationActivity = null
     }
 
     override fun onMethodCall(call: MethodCall, result: Result) {
-        remoteController.handleMethodCall(call, result)
+        when (call.method) {
+            // Auth & Session
+            "connectToSpotify" -> authHandler.connectToSpotify(call.argument("clientId"), call.argument("redirectUrl"), result)
+            "getAccessToken" -> authHandler.getAccessToken(call.argument("clientId"), call.argument("redirectUrl"), call.argument("scope"), result)
+            "getSwapToken" -> authHandler.getSwapToken(call.argument("clientId"), call.argument("redirectUrl"), call.argument("scope"), result)
+            "isSpotifyInstalled" -> authHandler.isSpotifyInstalled(result)
+            "disconnectFromSpotify" -> authHandler.disconnectFromSpotify(result)
+
+            // Playback & Controls
+            "switchToLocalDevice" -> playerHandler.switchToLocalDevice(result)
+            "getCrossfadeState" -> playerHandler.getCrossfadeState(result)
+            "getPlayerState" -> playerHandler.getPlayerState(result)
+            "play" -> playerHandler.play(call.argument("spotifyUri"), result)
+            "pause" -> playerHandler.pause(result)
+            "queueTrack" -> playerHandler.queue(call.argument("spotifyUri"), result)
+            "resume" -> playerHandler.resume(result)
+            "seekTo" -> playerHandler.seekTo((call.argument<Number>("positionedMilliseconds"))?.toLong(), result)
+            "seekToRelativePosition" -> playerHandler.seekToRelativePosition((call.argument<Number>("relativeMilliseconds"))?.toLong(), result)
+            "setPodcastPlaybackSpeed" -> playerHandler.setPodcastPlaybackSpeed((call.argument<Number>("podcastPlaybackSpeed"))?.toDouble(), result)
+            "skipNext" -> playerHandler.skipNext(result)
+            "skipPrevious" -> playerHandler.skipPrevious(result)
+            "skipToIndex" -> playerHandler.skipToIndex(call.argument("spotifyUri"), call.argument("trackIndex"), result)
+            "toggleShuffle" -> playerHandler.toggleShuffle(result)
+            "setShuffle" -> playerHandler.setShuffle(call.argument("shuffle"), result)
+            "toggleRepeat" -> playerHandler.toggleRepeat(result)
+            "setRepeatMode" -> playerHandler.setRepeatMode(call.argument("repeatMode"), result)
+
+            // User Library & Capabilities
+            "addToLibrary" -> libraryHandler.addToUserLibrary(call.argument("spotifyUri"), result)
+            "removeFromLibrary" -> libraryHandler.removeFromUserLibrary(call.argument("spotifyUri"), result)
+            "getCapabilities" -> libraryHandler.getCapabilities(result)
+            "getLibraryState" -> libraryHandler.getLibraryState(call.argument("spotifyUri"), result)
+
+            // Cover Art Images
+            "getImage" -> imageHandler.getImage(call.argument("imageUri"), call.argument("imageDimension"), result)
+
+            else -> result.notImplemented()
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: android.content.Intent?): Boolean {
-        return remoteController.onActivityResult(requestCode, resultCode, data)
+        return authHandler.onActivityResult(requestCode, resultCode, data)
     }
 }

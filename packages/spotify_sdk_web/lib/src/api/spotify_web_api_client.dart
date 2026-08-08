@@ -110,6 +110,51 @@ class SpotifyWebApiClient {
     }
   }
 
+  /// Pauses playback on player device [deviceId].
+  Future<void> pause({required String? deviceId}) async {
+    if (deviceId == null || deviceId.isEmpty) return;
+    final headers = await _getAuthHeaders();
+    final url = Uri.parse('$_playerBaseUrl/pause?device_id=$deviceId');
+    await _httpClient.put(url, headers: headers);
+  }
+
+  /// Resumes playback on player device [deviceId].
+  Future<void> resume({required String? deviceId}) async {
+    if (deviceId == null || deviceId.isEmpty) return;
+    final headers = await _getAuthHeaders();
+    final url = Uri.parse('$_playerBaseUrl/play?device_id=$deviceId');
+    await _httpClient.put(url, headers: headers);
+  }
+
+  /// Seeks to a position in milliseconds on player device [deviceId].
+  Future<void> seekTo({
+    required int positionedMilliseconds,
+    required String? deviceId,
+  }) async {
+    if (deviceId == null || deviceId.isEmpty) return;
+    final headers = await _getAuthHeaders();
+    final url = Uri.parse(
+      '$_playerBaseUrl/seek?position_ms=$positionedMilliseconds&device_id=$deviceId',
+    );
+    await _httpClient.put(url, headers: headers);
+  }
+
+  /// Skips to the next track on player device [deviceId].
+  Future<void> skipNext({required String? deviceId}) async {
+    if (deviceId == null || deviceId.isEmpty) return;
+    final headers = await _getAuthHeaders();
+    final url = Uri.parse('$_playerBaseUrl/next?device_id=$deviceId');
+    await _httpClient.post(url, headers: headers);
+  }
+
+  /// Skips to the previous track on player device [deviceId].
+  Future<void> skipPrevious({required String? deviceId}) async {
+    if (deviceId == null || deviceId.isEmpty) return;
+    final headers = await _getAuthHeaders();
+    final url = Uri.parse('$_playerBaseUrl/previous?device_id=$deviceId');
+    await _httpClient.post(url, headers: headers);
+  }
+
   /// Sets whether shuffle should be enabled for player device [deviceId].
   Future<void> setShuffle({
     required bool? shuffleEnabled,
