@@ -1,3 +1,7 @@
+## 4.2.0
+
+ - **FEAT**: add test coverage report step summary, sticky PR comment, and ign… (#258).
+
 ## 4.1.0
 
  - **FEAT**: release version 4.0.0 with native iOS playback features and improved pub.dev Pana compliance across all packages.

@@ -3,6 +3,44 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 2026-08-08
+
+### Changes
+
+---
+
+Packages with breaking changes:
+
+ - There are no breaking changes in this release.
+
+Packages with other changes:
+
+ - [`spotify_sdk` - `v4.0.0-dev.6`](#spotify_sdk---v400-dev6)
+ - [`spotify_sdk_android` - `v4.2.0`](#spotify_sdk_android---v420)
+ - [`spotify_sdk_ios` - `v4.2.0`](#spotify_sdk_ios---v420)
+ - [`spotify_sdk_web` - `v4.2.0`](#spotify_sdk_web---v420)
+
+---
+
+#### `spotify_sdk` - `v4.0.0-dev.6`
+
+ - **FEAT**: update to gradle 9 (#261).
+ - **FEAT**: add test coverage report step summary, sticky PR comment, and ign… (#258).
+
+#### `spotify_sdk_android` - `v4.2.0`
+
+ - **FEAT**: update to gradle 9 (#261).
+ - **FEAT**: add test coverage report step summary, sticky PR comment, and ign… (#258).
+
+#### `spotify_sdk_ios` - `v4.2.0`
+
+ - **FEAT**: add test coverage report step summary, sticky PR comment, and ign… (#258).
+
+#### `spotify_sdk_web` - `v4.2.0`
+
+ - **FEAT**: add test coverage report step summary, sticky PR comment, and ign… (#258).
+
+
 ## 2026-08-05
 
 ### Changes

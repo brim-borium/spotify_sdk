@@ -1,3 +1,8 @@
+## 4.0.0-dev.6
+
+ - **FEAT**: update to gradle 9 (#261).
+ - **FEAT**: add test coverage report step summary, sticky PR comment, and ign… (#258).
+
 ## 4.0.0-dev.5
 
  - **FEAT**: release version 4.0.0 with native iOS playback features and improved pub.dev Pana compliance across all packages.
