@@ -1,61 +1,59 @@
 # Agent Guidelines for `spotify_sdk`
 
-Welcome! You are operating as a Senior Flutter & Native Systems Developer in the `spotify_sdk` workspace. Read and strictly adhere to the guidelines below for all development tasks.
+Multi-platform Flutter plugin bridging native Spotify SDKs (Android, iOS, Web). Keep platform implementations synchronized, clean, and robust.
 
 ---
 
 ## 1. Persona & Architectural Intent
 
-This repository contains a **multi-platform Flutter plugin** bridging native Spotify SDKs (iOS, Android, Web). Your goal is to keep the platform implementations completely synchronized, clean, and robust.
-
 ### Centralized Bridge Pattern
-- **Central Constants**: All method channel name constants and parameter keys MUST be stored in [packages/spotify_sdk_platform_interface/lib/platform_channels.dart](file:///Users/tobi/Projects/spotify_sdk/packages/spotify_sdk_platform_interface/lib/platform_channels.dart).
-- **Consolidated API**: All public methods and event streams are exposed via the main entrypoint: [packages/spotify_sdk/lib/spotify_sdk.dart](file:///Users/tobi/Projects/spotify_sdk/packages/spotify_sdk/lib/spotify_sdk.dart).
+- **Central Constants**: Store all method channel names and parameter keys in [packages/spotify_sdk_platform_interface/lib/platform_channels.dart](file:///Users/tobi/Projects/spotify_sdk/packages/spotify_sdk_platform_interface/lib/platform_channels.dart).
+- **Consolidated API**: Expose public methods and event streams through [packages/spotify_sdk/lib/spotify_sdk.dart](file:///Users/tobi/Projects/spotify_sdk/packages/spotify_sdk/lib/spotify_sdk.dart).
 
 ---
 
 ## 2. Platform Scopes
 
-When working in platform-specific folders, consult the scoped rule files:
+Consult scoped rule files when touching platform-specific directories:
 *   **Android**: See [.agents/rules/android.md](file:///Users/tobi/Projects/spotify_sdk/.agents/rules/android.md)
 *   **iOS**: See [.agents/rules/ios.md](file:///Users/tobi/Projects/spotify_sdk/.agents/rules/ios.md)
 *   **Web**: See [.agents/rules/web.md](file:///Users/tobi/Projects/spotify_sdk/.agents/rules/web.md)
+*   **E2E Testing**: See [.agents/rules/e2e_testing.md](file:///Users/tobi/Projects/spotify_sdk/.agents/rules/e2e_testing.md)
 
 ---
 
 ## 3. General Development Constraints
 
 ### A. Code Generation & Models
-- All Dart models reside in [packages/spotify_sdk_platform_interface/lib/models/](file:///Users/tobi/Projects/spotify_sdk/packages/spotify_sdk_platform_interface/lib/models) and use `json_serializable`.
-- **CRITICAL**: Never manually edit files ending in `.g.dart`. They must be auto-generated using `build_runner`.
-- Use the `@JsonKey(name: 'snake_case')` annotation for fields, matching the native Spotify SDK payload structure.
+- Place Dart models in [packages/spotify_sdk_platform_interface/lib/models/](file:///Users/tobi/Projects/spotify_sdk/packages/spotify_sdk_platform_interface/lib/models) using `json_serializable`.
+- Auto-generate all `.g.dart` files via `build_runner` (do not edit `.g.dart` files manually).
+- Annotate fields with `@JsonKey(name: 'snake_case')` matching native Spotify SDK payload structure.
 
 ### B. Error Handling & Exceptions
-- Wrap all native channel invocations in `try-on Exception` blocks.
-- Catch `PlatformException` (native-side errors) and `MissingPluginException` (unimplemented platform wrappers).
-- Log errors using the Logger package via the `_logException` helper, and then **always rethrow** the exception to allow client applications to react.
+- Wrap native channel invocations in `try-on Exception` blocks.
+- Catch `PlatformException` (native errors) and `MissingPluginException` (unimplemented wrappers).
+- Log errors via `_logException` with the Logger package, then rethrow the exception.
 
 ### C. Naming & Style Conventions
-- **Dart APIs**: Use `camelCase` for methods, parameters, and variable names.
-- **Native Bridges**: Matches the Dart name casing exactly.
-- **Event Channels**: Add a `_subscription` suffix to the channel name.
+- **Dart APIs**: Use `camelCase` for methods, parameters, and variables.
+- **Native Bridges**: Match Dart method casing exactly.
+- **Event Channels**: Append `_subscription` suffix to event channel names.
 
 ---
 
 ## 4. Verification Workflow
 
-1. **Static Analysis**: Run `flutter analyze` before proposing any changes.
-2. **Formatting**: Let the automatic formatting hook run `dart format` on files you write.
-3. **Manual Verification**: Run the companion demo application in the [example/](file:///Users/tobi/Projects/spotify_sdk/example) directory for end-to-end testing.
+1. **Static Analysis**: Run `flutter analyze` before finalizing changes.
+2. **Formatting**: Format Dart files with `dart format`.
+3. **Manual Verification**: Run the companion demo application in [example/](file:///Users/tobi/Projects/spotify_sdk/example) for end-to-end verification.
 
 ---
 
-## Agent skills
+## Agent Skills
 
-### Issue tracker
+### Issue Tracker
+GitHub issues house tasks and specs for this repository. See [docs/agents/issue-tracker.md](file:///Users/tobi/Projects/spotify_sdk/docs/agents/issue-tracker.md).
 
-Issues and PRDs for this repo live as GitHub issues. See `docs/agents/issue-tracker.md`.
+### Domain Docs
+Single-context layout with [CONTEXT.md](file:///Users/tobi/Projects/spotify_sdk/CONTEXT.md) and [docs/adr/](file:///Users/tobi/Projects/spotify_sdk/docs/adr/) at repo root. See [docs/agents/domain.md](file:///Users/tobi/Projects/spotify_sdk/docs/agents/domain.md).
 
-### Domain docs
-
-Single-context layout with one `CONTEXT.md` and `docs/adr/` at the repo root. See `docs/agents/domain.md`.

@@ -1,22 +1,22 @@
 ---
 name: android-setup
-description: Explains how the Spotify App Remote SDK AAR is automatically resolved and configured on Android in the spotify_sdk package.
+description: Configure or clean Spotify App Remote SDK AAR resolution on Android.
 ---
 
-# Android Setup Skill for spotify_sdk
+# Android Setup (`android-setup`)
 
-As of version **4.0.0-dev**, the Spotify App Remote SDK (`spotify-app-remote-*.aar`) is **automatically downloaded** during compile time by the plugin's Gradle build script. Running manual setup commands is no longer required.
+The Spotify App Remote SDK (`spotify-app-remote-*.aar`) is automatically downloaded at compile time by the plugin's Gradle build script.
 
-## Gradle Auto-Download Workflow
+## Gradle Resolution
 
 When the project builds:
-1. The plugin checks if the AAR exists in its local Maven layout (`packages/spotify_sdk_android/android/m2repository/`).
-2. If missing, it downloads it directly from Spotify's GitHub Releases tag `v0.8.0-appremote_v2.1.0-auth`.
-3. It creates a local POM file and registers this directory as a Maven repository in the `rootProject.allprojects` block, allowing the client application to resolve it transitively.
+1. The plugin checks for the AAR in `packages/spotify_sdk_android/android/m2repository/`.
+2. If missing, Gradle fetches it from Spotify GitHub Releases (`v0.8.0-appremote_v2.1.0-auth`).
+3. Registers local Maven repository in `rootProject.allprojects` for transitive resolution.
 
-## Required Developer Configuration
+## Manifest Configuration
 
-The only manual setup step required for Android is declaring the redirect receiver activity in your app's `android/app/src/main/AndroidManifest.xml`:
+Declare the redirect receiver in `android/app/src/main/AndroidManifest.xml`:
 
 ```xml
 <activity
@@ -34,4 +34,5 @@ The only manual setup step required for Android is declaring the redirect receiv
 ```
 
 > [!WARNING]
-> Since Spotify Android Auth library version 5.0.0, the activity must use the `.auth.browser.RedirectUriReceiverActivity` package path. Do not use the old `manifestPlaceholders` in `build.gradle` as they are no longer supported.
+> Use `com.spotify.sdk.android.auth.browser.RedirectUriReceiverActivity`. Legacy `manifestPlaceholders` are unsupported.
+
