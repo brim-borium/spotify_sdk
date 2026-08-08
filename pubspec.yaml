@@ -35,6 +35,9 @@ melos:
       hooks:
         pre: melos run generate:all
   scripts:
+    get:
+      run: melos exec -- flutter pub get
+      description: Get all packages.
     analyze:
       run: melos exec -- flutter analyze
       description: Analyze all Dart code in the monorepo.
