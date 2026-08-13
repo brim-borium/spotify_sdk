@@ -75,19 +75,19 @@ class SpotifySdkPlugin extends SpotifySdkPlatform {
       'authenticationTokenError';
 
   /// player context event stream controller
-  final StreamController<String> playerContextEventController;
+  final StreamController<PlayerContext> playerContextEventController;
 
   /// player state event stream controller
-  final StreamController<String> playerStateEventController;
+  final StreamController<PlayerState> playerStateEventController;
 
   /// player capabilities event stream controller
-  final StreamController<String> playerCapabilitiesEventController;
+  final StreamController<Capabilities> playerCapabilitiesEventController;
 
   /// user state event stream controller
-  final StreamController<String> userStateEventController;
+  final StreamController<UserStatus> userStateEventController;
 
   /// connection status event stream controller
-  final StreamController<String> connectionStatusEventController;
+  final StreamController<ConnectionStatus> connectionStatusEventController;
 
   /// Default scopes that are required for Web SDK to work
   static const String defaultScopes =
@@ -115,38 +115,16 @@ class SpotifySdkPlugin extends SpotifySdkPlatform {
       const StandardMethodCodec(),
       registrar,
     );
-    // event channels
-    const playerContextEventChannel = PluginEventChannel<String>(
-      EventChannels.playerContext,
-    );
-    final playerContextEventController = StreamController<String>.broadcast();
-    playerContextEventChannel.setController(playerContextEventController);
-    const playerStateEventChannel = PluginEventChannel<String>(
-      EventChannels.playerState,
-    );
-    final playerStateEventController = StreamController<String>.broadcast();
-    playerStateEventChannel.setController(playerStateEventController);
-    const playerCapabilitiesEventChannel = PluginEventChannel<String>(
-      EventChannels.capabilities,
-    );
+    // typed event stream controllers
+    final playerContextEventController =
+        StreamController<PlayerContext>.broadcast();
+    final playerStateEventController =
+        StreamController<PlayerState>.broadcast();
     final playerCapabilitiesEventController =
-        StreamController<String>.broadcast();
-    playerCapabilitiesEventChannel.setController(
-      playerCapabilitiesEventController,
-    );
-    const userStatusEventChannel = PluginEventChannel<String>(
-      EventChannels.userStatus,
-    );
-    final userStatusEventController = StreamController<String>.broadcast();
-    userStatusEventChannel.setController(userStatusEventController);
-    const connectionStatusEventChannel = PluginEventChannel<String>(
-      EventChannels.connectionStatus,
-    );
+        StreamController<Capabilities>.broadcast();
+    final userStatusEventController = StreamController<UserStatus>.broadcast();
     final connectionStatusEventController =
-        StreamController<String>.broadcast();
-    connectionStatusEventChannel.setController(
-      connectionStatusEventController,
-    );
+        StreamController<ConnectionStatus>.broadcast();
 
     final instance = SpotifySdkPlugin(
       playerContextEventController,
@@ -555,48 +533,23 @@ class SpotifySdkPlugin extends SpotifySdkPlatform {
   }
 
   @override
-  Stream<PlayerContext> subscribePlayerContext() {
-    return playerContextEventController.stream.map((playerContextJson) {
-      final playerContextMap =
-          jsonDecode(playerContextJson) as Map<String, dynamic>;
-      return PlayerContext.fromJson(playerContextMap);
-    });
-  }
+  Stream<PlayerContext> subscribePlayerContext() =>
+      playerContextEventController.stream;
 
   @override
-  Stream<PlayerState> subscribePlayerState() {
-    return playerStateEventController.stream.map((playerStateJson) {
-      final playerStateMap =
-          jsonDecode(playerStateJson) as Map<String, dynamic>;
-      return PlayerState.fromJson(playerStateMap);
-    });
-  }
+  Stream<PlayerState> subscribePlayerState() =>
+      playerStateEventController.stream;
 
   @override
-  Stream<ConnectionStatus> subscribeConnectionStatus() {
-    return connectionStatusEventController.stream.map((connectionStatusJson) {
-      final connectionStatusMap =
-          jsonDecode(connectionStatusJson) as Map<String, dynamic>;
-      return ConnectionStatus.fromJson(connectionStatusMap);
-    });
-  }
+  Stream<ConnectionStatus> subscribeConnectionStatus() =>
+      connectionStatusEventController.stream;
 
   @override
-  Stream<Capabilities> subscribeCapabilities() {
-    return playerCapabilitiesEventController.stream.map((capabilitiesJson) {
-      final capabilitiesMap =
-          jsonDecode(capabilitiesJson) as Map<String, dynamic>;
-      return Capabilities.fromJson(capabilitiesMap);
-    });
-  }
+  Stream<Capabilities> subscribeCapabilities() =>
+      playerCapabilitiesEventController.stream;
 
   @override
-  Stream<UserStatus> subscribeUserStatus() {
-    return userStateEventController.stream.map((userStatusJson) {
-      final userStatusMap = jsonDecode(userStatusJson) as Map<String, dynamic>;
-      return UserStatus.fromJson(userStatusMap);
-    });
-  }
+  Stream<UserStatus> subscribeUserStatus() => userStateEventController.stream;
 
   /// Called when the plugin successfully connects to the spotify web sdk.
   void _onSpotifyConnected(String deviceId) {
@@ -604,13 +557,11 @@ class SpotifySdkPlugin extends SpotifySdkPlatform {
 
     // emit connected event
     connectionStatusEventController.add(
-      jsonEncode(
-        ConnectionStatus(
-          'Spotify SDK connected',
-          '',
-          '',
-          connected: true,
-        ).toJson(),
+      ConnectionStatus(
+        'Spotify SDK connected',
+        '',
+        '',
+        connected: true,
       ),
     );
   }
@@ -627,13 +578,11 @@ class SpotifySdkPlugin extends SpotifySdkPlatform {
 
     // emit not connected event
     connectionStatusEventController.add(
-      jsonEncode(
-        ConnectionStatus(
-          'Spotify SDK disconnected',
-          errorCode ?? '',
-          errorDetails ?? '',
-          connected: false,
-        ).toJson(),
+      ConnectionStatus(
+        'Spotify SDK disconnected',
+        errorCode ?? '',
+        errorDetails ?? '',
+        connected: false,
       ),
     );
   }

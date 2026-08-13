@@ -1,19 +1,21 @@
 import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:spotify_sdk_platform_interface/spotify_sdk_platform_interface.dart';
 import 'package:spotify_sdk_web/src/player/web_player_dispatcher.dart';
 
 void main() {
   group('WebPlayerDispatcher', () {
-    late StreamController<String> playerContextController;
-    late StreamController<String> playerStateController;
-    late StreamController<String> connectionStatusController;
+    late StreamController<PlayerContext> playerContextController;
+    late StreamController<PlayerState> playerStateController;
+    late StreamController<ConnectionStatus> connectionStatusController;
     late WebPlayerDispatcher dispatcher;
 
     setUp(() {
-      playerContextController = StreamController<String>.broadcast();
-      playerStateController = StreamController<String>.broadcast();
-      connectionStatusController = StreamController<String>.broadcast();
+      playerContextController = StreamController<PlayerContext>.broadcast();
+      playerStateController = StreamController<PlayerState>.broadcast();
+      connectionStatusController =
+          StreamController<ConnectionStatus>.broadcast();
 
       dispatcher = WebPlayerDispatcher(
         playerContextEventController: playerContextController,

@@ -3,25 +3,27 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:spotify_sdk_platform_interface/platform_channels.dart';
+import 'package:spotify_sdk_platform_interface/spotify_sdk_platform_interface.dart';
 import 'package:spotify_sdk_web/spotify_sdk_web.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   group('SpotifySdkPlugin', () {
-    late StreamController<String> playerContextController;
-    late StreamController<String> playerStateController;
-    late StreamController<String> capabilitiesController;
-    late StreamController<String> userStatusController;
-    late StreamController<String> connectionStatusController;
+    late StreamController<PlayerContext> playerContextController;
+    late StreamController<PlayerState> playerStateController;
+    late StreamController<Capabilities> capabilitiesController;
+    late StreamController<UserStatus> userStatusController;
+    late StreamController<ConnectionStatus> connectionStatusController;
     late SpotifySdkPlugin plugin;
 
     setUp(() {
-      playerContextController = StreamController<String>.broadcast();
-      playerStateController = StreamController<String>.broadcast();
-      capabilitiesController = StreamController<String>.broadcast();
-      userStatusController = StreamController<String>.broadcast();
-      connectionStatusController = StreamController<String>.broadcast();
+      playerContextController = StreamController<PlayerContext>.broadcast();
+      playerStateController = StreamController<PlayerState>.broadcast();
+      capabilitiesController = StreamController<Capabilities>.broadcast();
+      userStatusController = StreamController<UserStatus>.broadcast();
+      connectionStatusController =
+          StreamController<ConnectionStatus>.broadcast();
 
       plugin = SpotifySdkPlugin(
         playerContextController,
@@ -43,6 +45,17 @@ void main() {
     test('registerWith sets SpotifySdkPlatform instance', () {
       expect(SpotifySdkPlugin.tokenSwapURL, isNull);
       expect(SpotifySdkPlugin.tokenRefreshURL, isNull);
+    });
+
+    test('typed stream subscriptions return expected stream instances', () {
+      expect(plugin.subscribePlayerContext(), isA<Stream<PlayerContext>>());
+      expect(plugin.subscribePlayerState(), isA<Stream<PlayerState>>());
+      expect(plugin.subscribeCapabilities(), isA<Stream<Capabilities>>());
+      expect(plugin.subscribeUserStatus(), isA<Stream<UserStatus>>());
+      expect(
+        plugin.subscribeConnectionStatus(),
+        isA<Stream<ConnectionStatus>>(),
+      );
     });
 
     test('handleMethodCall throws PlatformException for unknown method', () {
