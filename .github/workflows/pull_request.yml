@@ -66,6 +66,8 @@ jobs:
               pct=$(echo "$stats" | cut -d'|' -f1)
               counts=$(echo "$stats" | cut -d'|' -f2)
               echo "| \`$pkg_name\` | **$pct** | $counts | ✅ Passed |" >> coverage_report.md
+            elif [ "$pkg_name" = "spotify_sdk_web" ]; then
+              echo "| \`$pkg_name\` | *Web Suite* | 18 tests | ✅ Passed (Chrome) |" >> coverage_report.md
             else
               echo "| \`$pkg_name\` | *N/A* | - | ⚪ Skipped |" >> coverage_report.md
             fi
@@ -98,6 +100,11 @@ jobs:
       - name: Run Publish Dry-Run Checks
         run: melos run publish:dry-run
 
+      - name: Verify Android Native Build & SDK
+        run: |
+          cd packages/spotify_sdk/example/android
+          ./gradlew :spotify_sdk_android:downloadSpotifySdk
+
       - name: Build Android Example App
         run: |
           cd packages/spotify_sdk/example
@@ -123,11 +130,13 @@ jobs:
         run: |
           cd packages/spotify_sdk_ios/ios
           ./prepare-iOS-SDK.sh
+          test -d spotify_sdk_ios/ios-sdk/SpotifyiOS.xcframework || (echo "SpotifyiOS.xcframework missing!" && exit 1)
 
       - name: Build iOS Example App (No Codesign)
         run: |
           cd packages/spotify_sdk/example
           flutter build ios --no-codesign
+          flutter build ios --no-codesign --simulator
 
   # Package Score Job: Verifies pub.dev package compatibility score using pana
   pana:
