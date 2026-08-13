@@ -7,8 +7,9 @@ Multi-platform Flutter plugin bridging native Spotify SDKs (Android, iOS, Web). 
 ## 1. Persona & Architectural Intent
 
 ### Centralized Bridge Pattern
-- **Central Constants**: Store all method channel names and parameter keys in [packages/spotify_sdk_platform_interface/lib/platform_channels.dart](file:///Users/tobi/Projects/spotify_sdk/packages/spotify_sdk_platform_interface/lib/platform_channels.dart).
+- **Central Constants**: Store all method channel names and parameter keys in [packages/spotify_sdk_platform_interface/lib/platform_channels.dart](file:///Users/tobi/Projects/spotify_sdk/packages/spotify_sdk_platform_interface/lib/platform_channels.dart), mirrored natively in `SpotifySdkConstants.kt` (Android) and `SpotifySdkConstants.swift` (iOS).
 - **Consolidated API**: Expose public methods and event streams through [packages/spotify_sdk/lib/spotify_sdk.dart](file:///Users/tobi/Projects/spotify_sdk/packages/spotify_sdk/lib/spotify_sdk.dart).
+- **Synchronized Channels**: Support all 5 standard event channels across all platforms (`player_state`, `player_context`, `connection_status`, `capabilities`, `user_status`).
 
 ---
 
@@ -32,7 +33,8 @@ Consult scoped rule files when touching platform-specific directories:
 ### B. Error Handling & Exceptions
 - Wrap native channel invocations in `try-on Exception` blocks.
 - Catch `PlatformException` (native errors) and `MissingPluginException` (unimplemented wrappers).
-- Log errors via `_logException` with the Logger package, then rethrow the exception.
+- Log errors via `_logException` with the Logger package, mapping to typed `SpotifyException` domain instances.
+- Re-export and maintain the `SpotifyException` hierarchy in `spotify_sdk_platform_interface`.
 
 ### C. Naming & Style Conventions
 - **Dart APIs**: Use `camelCase` for methods, parameters, and variables.
@@ -56,4 +58,3 @@ GitHub issues house tasks and specs for this repository. See [docs/agents/issue-
 
 ### Domain Docs
 Single-context layout with [CONTEXT.md](file:///Users/tobi/Projects/spotify_sdk/CONTEXT.md) and [docs/adr/](file:///Users/tobi/Projects/spotify_sdk/docs/adr/) at repo root. See [docs/agents/domain.md](file:///Users/tobi/Projects/spotify_sdk/docs/agents/domain.md).
-
