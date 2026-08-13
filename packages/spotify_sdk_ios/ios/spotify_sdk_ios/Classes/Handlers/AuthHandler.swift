@@ -89,6 +89,11 @@ class AuthHandler: NSObject {
             remoteManager.playerContextHandler = PlayerContextHandler(appRemote: appRemote, playerDelegate: playerDelegate)
             RemoteManager.playerContextChannel?.setStreamHandler(remoteManager.playerContextHandler)
         }
+        if remoteManager.capabilitiesHandler == nil {
+            remoteManager.capabilitiesHandler = CapabilitiesHandler()
+            RemoteManager.capabilitiesChannel?.setStreamHandler(remoteManager.capabilitiesHandler)
+        }
+        remoteManager.capabilitiesHandler?.setAppRemote(appRemote)
 
         var scopes: [String]?
         if let additionalScopes = additionalScopes {

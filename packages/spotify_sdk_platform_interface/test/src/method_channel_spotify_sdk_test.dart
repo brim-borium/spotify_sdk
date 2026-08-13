@@ -349,5 +349,16 @@ void main() {
         throwsA(isA<PlatformException>()),
       );
     });
+
+    test('event stream subscriptions return streams without error', () {
+      expect(platform.subscribePlayerContext(), isA<Stream<PlayerContext>>());
+      expect(platform.subscribePlayerState(), isA<Stream<PlayerState>>());
+      expect(
+        platform.subscribeConnectionStatus(),
+        isA<Stream<ConnectionStatus>>(),
+      );
+      expect(platform.subscribeCapabilities(), isA<Stream<Capabilities>>());
+      expect(platform.subscribeUserStatus(), isA<Stream<UserStatus>>());
+    });
   });
 }

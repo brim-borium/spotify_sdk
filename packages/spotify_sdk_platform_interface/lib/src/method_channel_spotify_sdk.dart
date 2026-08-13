@@ -274,14 +274,14 @@ class MethodChannelSpotifySdk extends SpotifySdkPlatform {
   Stream<Capabilities> subscribeCapabilities() =>
       _gateway.listenJson<Capabilities>(
         EventChannels.capabilities,
-        MethodNames.getCapabilities,
+        MethodNames.subscribeCapabilities,
         Capabilities.fromJson,
       );
 
   @override
   Stream<UserStatus> subscribeUserStatus() => _gateway.listenJson<UserStatus>(
     EventChannels.userStatus,
-    EventChannels.userStatus,
+    MethodNames.subscribeUserStatus,
     UserStatus.fromJson,
   );
 }

@@ -10,6 +10,7 @@ import com.spotify.sdk.android.auth.AuthorizationRequest
 import com.spotify.sdk.android.auth.AuthorizationResponse
 import de.minimalme.spotify_sdk.RemoteManager
 import de.minimalme.spotify_sdk.SpotifyErrorMapper
+import de.minimalme.spotify_sdk.SpotifySdkConstants
 import de.minimalme.spotify_sdk.subscriptions.*
 import io.flutter.plugin.common.MethodChannel.Result
 
@@ -20,7 +21,7 @@ class AuthHandler(private val remoteManager: RemoteManager) {
 
     fun connectToSpotify(clientId: String?, redirectUrl: String?, result: Result) {
         if (clientId.isNullOrBlank() || redirectUrl.isNullOrBlank()) {
-            result.error("errorConnecting", "client id or redirectUrl are not set or have invalid format", "")
+            result.error(SpotifySdkConstants.ERROR_CONNECTING, "client id or redirectUrl are not set or have invalid format", "")
             return
         }
         val connectionParams = ConnectionParams.Builder(clientId)
@@ -63,15 +64,15 @@ class AuthHandler(private val remoteManager: RemoteManager) {
     fun getAccessToken(clientId: String?, redirectUrl: String?, scope: String?, result: Result) {
         val activity = remoteManager.applicationActivity
         if (activity == null) {
-            result.error("errorConnecting", "getAccessToken needs a foreground activity", "")
+            result.error(SpotifySdkConstants.ERROR_CONNECTING, "getAccessToken needs a foreground activity", "")
             return
         }
         if (clientId.isNullOrBlank() || redirectUrl.isNullOrBlank()) {
-            result.error("errorConnecting", "client id or redirectUrl are not set or have invalid format", "")
+            result.error(SpotifySdkConstants.ERROR_CONNECTING, "client id or redirectUrl are not set or have invalid format", "")
             return
         }
         val scopeArray = scope?.split(",")?.toTypedArray()
-        with(remoteManager) { "getAccessToken".checkAndSetPendingOperation(result) }
+        with(remoteManager) { SpotifySdkConstants.METHOD_GET_ACCESS_TOKEN.checkAndSetPendingOperation(result) }
 
         val builder = AuthorizationRequest.Builder(clientId, AuthorizationResponse.Type.TOKEN, redirectUrl)
         builder.setScopes(scopeArray)
@@ -82,15 +83,15 @@ class AuthHandler(private val remoteManager: RemoteManager) {
     fun getSwapToken(clientId: String?, redirectUrl: String?, scope: String?, result: Result) {
         val activity = remoteManager.applicationActivity
         if (activity == null) {
-            result.error("errorConnecting", "getSwapToken needs a foreground activity", "")
+            result.error(SpotifySdkConstants.ERROR_CONNECTING, "getSwapToken needs a foreground activity", "")
             return
         }
         if (clientId.isNullOrBlank() || redirectUrl.isNullOrBlank()) {
-            result.error("errorConnecting", "client id or redirectUrl are not set or have invalid format", "")
+            result.error(SpotifySdkConstants.ERROR_CONNECTING, "client id or redirectUrl are not set or have invalid format", "")
             return
         }
         val scopeArray = scope?.split(",")?.toTypedArray()
-        with(remoteManager) { "getSwapToken".checkAndSetPendingOperation(result) }
+        with(remoteManager) { SpotifySdkConstants.METHOD_GET_SWAP_TOKEN.checkAndSetPendingOperation(result) }
 
         val builder = AuthorizationRequest.Builder(clientId, AuthorizationResponse.Type.CODE, redirectUrl)
         builder.setScopes(scopeArray)

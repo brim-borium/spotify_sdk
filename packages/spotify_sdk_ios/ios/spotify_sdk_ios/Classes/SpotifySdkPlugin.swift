@@ -14,10 +14,14 @@ public class SpotifySdkPlugin: NSObject, FlutterPlugin {
         guard RemoteManager.playerStateChannel == nil else {
             return
         }
-        let spotifySDKChannel = FlutterMethodChannel(name: "spotify_sdk", binaryMessenger: registrar.messenger())
-        let connectionStatusChannel = FlutterEventChannel(name: "connection_status_subscription", binaryMessenger: registrar.messenger())
-        RemoteManager.playerStateChannel = FlutterEventChannel(name: "player_state_subscription", binaryMessenger: registrar.messenger())
-        RemoteManager.playerContextChannel = FlutterEventChannel(name: "player_context_subscription", binaryMessenger: registrar.messenger())
+        let spotifySDKChannel = FlutterMethodChannel(name: SpotifySdkConstants.channelSpotifySdk, binaryMessenger: registrar.messenger())
+        let connectionStatusChannel = FlutterEventChannel(name: SpotifySdkConstants.channelConnectionStatus, binaryMessenger: registrar.messenger())
+        RemoteManager.connectionStatusChannel = connectionStatusChannel
+        RemoteManager.playerStateChannel = FlutterEventChannel(name: SpotifySdkConstants.channelPlayerState, binaryMessenger: registrar.messenger())
+        RemoteManager.playerContextChannel = FlutterEventChannel(name: SpotifySdkConstants.channelPlayerContext, binaryMessenger: registrar.messenger())
+        RemoteManager.capabilitiesChannel = FlutterEventChannel(name: SpotifySdkConstants.channelCapabilities, binaryMessenger: registrar.messenger())
+        RemoteManager.userStatusChannel = FlutterEventChannel(name: SpotifySdkConstants.channelUserStatus, binaryMessenger: registrar.messenger())
+
         registrar.addApplicationDelegate(instance)
 
         if #available(iOS 13.0, *) {
@@ -27,8 +31,15 @@ public class SpotifySdkPlugin: NSObject, FlutterPlugin {
             }
         }
         registrar.addMethodCallDelegate(instance, channel: spotifySDKChannel)
+
         instance.remoteManager.connectionStatusHandler = ConnectionStatusHandler()
         connectionStatusChannel.setStreamHandler(instance.remoteManager.connectionStatusHandler)
+
+        instance.remoteManager.capabilitiesHandler = CapabilitiesHandler()
+        RemoteManager.capabilitiesChannel?.setStreamHandler(instance.remoteManager.capabilitiesHandler)
+
+        instance.remoteManager.userStatusHandler = UserStatusHandler()
+        RemoteManager.userStatusChannel?.setStreamHandler(instance.remoteManager.userStatusHandler)
     }
 
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
@@ -84,7 +95,7 @@ public class SpotifySdkPlugin: NSObject, FlutterPlugin {
             libraryHandler.removeFromLibrary(call: call, result: result)
         case SpotifySdkConstants.methodGetCapabilities:
             libraryHandler.getCapabilities(result: result)
-        case SpotifySdkConstants.getLibraryState:
+        case SpotifySdkConstants.methodGetLibraryState, SpotifySdkConstants.getLibraryState:
             libraryHandler.getLibraryState(call: call, result: result)
 
         // Cover Art Images
