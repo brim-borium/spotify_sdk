@@ -1,3 +1,8 @@
+## 4.2.0
+
+ - **REFACTOR**: synchronize native event channels and centralize Android constants (#262).
+ - **FEAT**(exceptions): introduce structured domain exceptions for Spotify SDK (#265).
+
 ## 4.1.0
 
  - **FEAT**: release version 4.0.0 with native iOS playback features and improved pub.dev Pana compliance across all packages.

@@ -1,3 +1,7 @@
+## 4.2.1
+
+ - **REFACTOR**: harden monorepo pipeline, unify release gates & optimize web event dispatcher (#264).
+
 ## 4.2.0
 
  - **FEAT**: add test coverage report step summary, sticky PR comment, and ign… (#258).

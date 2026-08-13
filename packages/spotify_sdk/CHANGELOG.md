@@ -1,3 +1,7 @@
+## 4.0.0-dev.7
+
+ - **FEAT**(exceptions): introduce structured domain exceptions for Spotify SDK (#265).
+
 ## 4.0.0-dev.6
 
  - **FEAT**: update to gradle 9 (#261).

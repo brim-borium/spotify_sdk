@@ -3,6 +3,50 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 2026-08-13
+
+### Changes
+
+---
+
+Packages with breaking changes:
+
+ - There are no breaking changes in this release.
+
+Packages with other changes:
+
+ - [`spotify_sdk` - `v4.0.0-dev.7`](#spotify_sdk---v400-dev7)
+ - [`spotify_sdk_android` - `v4.2.1`](#spotify_sdk_android---v421)
+ - [`spotify_sdk_ios` - `v4.2.1`](#spotify_sdk_ios---v421)
+ - [`spotify_sdk_platform_interface` - `v4.2.0`](#spotify_sdk_platform_interface---v420)
+ - [`spotify_sdk_web` - `v4.2.1`](#spotify_sdk_web---v421)
+
+---
+
+#### `spotify_sdk` - `v4.0.0-dev.7`
+
+ - **FEAT**(exceptions): introduce structured domain exceptions for Spotify SDK (#265).
+
+#### `spotify_sdk_android` - `v4.2.1`
+
+ - **REFACTOR**: synchronize native event channels and centralize Android constants (#262).
+ - **FIX**: decouple gradle AAR download and align iOS deployment targets (#263) (#263).
+
+#### `spotify_sdk_ios` - `v4.2.1`
+
+ - **REFACTOR**: synchronize native event channels and centralize Android constants (#262).
+ - **FIX**: decouple gradle AAR download and align iOS deployment targets (#263) (#263).
+
+#### `spotify_sdk_platform_interface` - `v4.2.0`
+
+ - **REFACTOR**: synchronize native event channels and centralize Android constants (#262).
+ - **FEAT**(exceptions): introduce structured domain exceptions for Spotify SDK (#265).
+
+#### `spotify_sdk_web` - `v4.2.1`
+
+ - **REFACTOR**: harden monorepo pipeline, unify release gates & optimize web event dispatcher (#264).
+
+
 ## 2026-08-08
 
 ### Changes

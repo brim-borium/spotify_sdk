@@ -1,3 +1,8 @@
+## 4.2.1
+
+ - **REFACTOR**: synchronize native event channels and centralize Android constants (#262).
+ - **FIX**: decouple gradle AAR download and align iOS deployment targets (#263) (#263).
+
 ## 4.2.0
 
  - **FEAT**: add test coverage report step summary, sticky PR comment, and ign… (#258).
