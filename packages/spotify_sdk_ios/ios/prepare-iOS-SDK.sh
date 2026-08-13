@@ -1,9 +1,8 @@
 #!/bin/sh
 REPO_NAME="ios-sdk"
 FRAMEWORK_NAME="SpotifyiOS.xcframework"
-
-#!/bin/sh
 TARGET_DIR="spotify_sdk_ios/${REPO_NAME}"
+
 rm -fR ${TARGET_DIR}
 mkdir -p ${TARGET_DIR}
 git clone https://github.com/spotify/${REPO_NAME} ${TARGET_DIR}

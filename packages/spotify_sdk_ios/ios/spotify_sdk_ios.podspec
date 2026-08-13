@@ -15,8 +15,8 @@ Unofficial Spotify Flutter SDK.
   s.source           = { :path => '.' }
   s.source_files = 'spotify_sdk_ios/Classes/**/*'
   s.dependency 'Flutter'
-  s.platform = :ios, '12.0'
-  s.ios.deployment_target = '12.0'
+  s.platform = :ios, '13.0'
+  s.ios.deployment_target = '13.0'
   s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES' }
   s.swift_version = '5.0'
   s.prepare_command = './prepare-iOS-SDK.sh'
