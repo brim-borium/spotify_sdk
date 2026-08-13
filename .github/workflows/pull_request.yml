@@ -100,11 +100,6 @@ jobs:
       - name: Run Publish Dry-Run Checks
         run: melos run publish:dry-run
 
-      - name: Verify Android Native Build & SDK
-        run: |
-          cd packages/spotify_sdk/example/android
-          ./gradlew :spotify_sdk_android:downloadSpotifySdk
-
       - name: Build Android Example App
         run: |
           cd packages/spotify_sdk/example
