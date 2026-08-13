@@ -1,6 +1,8 @@
 import 'dart:convert';
+
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:spotify_sdk_platform_interface/exceptions/spotify_exceptions.dart';
 import 'package:spotify_sdk_platform_interface/src/platform_channel_gateway.dart';
 
 void main() {
@@ -58,6 +60,36 @@ void main() {
       expect(
         () => gateway.invoke<bool>('failMethod'),
         throwsA(isA<PlatformException>()),
+      );
+    });
+
+    test('logException handles SpotifyException without error', () {
+      expect(
+        () => gateway.logException(
+          'connect',
+          const SpotifyAuthenticationException('Auth failed', code: 'AUTH_01'),
+        ),
+        returnsNormally,
+      );
+    });
+
+    test('logException handles MissingPluginException without error', () {
+      expect(
+        () => gateway.logException(
+          'unimplemented',
+          MissingPluginException('Not implemented'),
+        ),
+        returnsNormally,
+      );
+    });
+
+    test('logException handles generic Exception without error', () {
+      expect(
+        () => gateway.logException(
+          'generic',
+          Exception('Something went wrong'),
+        ),
+        returnsNormally,
       );
     });
   });

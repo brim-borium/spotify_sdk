@@ -18,6 +18,7 @@ import 'package:spotify_sdk_platform_interface/src/method_channel_spotify_sdk.da
 export 'package:spotify_sdk_platform_interface/enums/image_dimension_enum.dart';
 export 'package:spotify_sdk_platform_interface/enums/podcast_playback_speed.dart';
 export 'package:spotify_sdk_platform_interface/enums/repeat_mode_enum.dart';
+export 'package:spotify_sdk_platform_interface/exceptions/spotify_exceptions.dart';
 export 'package:spotify_sdk_platform_interface/extensions/image_dimension_extension.dart';
 export 'package:spotify_sdk_platform_interface/extensions/podcast_playback_speed_extension.dart';
 export 'package:spotify_sdk_platform_interface/models/album.dart';

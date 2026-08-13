@@ -6,7 +6,8 @@ Adhere to these rules when working in [packages/spotify_sdk_ios/ios/](file:///Us
 
 ## 1. Project Organization
 - Native iOS Swift logic lives in [SwiftSpotifySdkPlugin.swift](file:///Users/tobi/Projects/spotify_sdk/packages/spotify_sdk_ios/ios/Classes/SwiftSpotifySdkPlugin.swift).
-- Method and channel names align with `MethodNames` in [platform_channels.dart](file:///Users/tobi/Projects/spotify_sdk/packages/spotify_sdk_platform_interface/lib/platform_channels.dart).
+- Method and channel names align with [SpotifySdkConstants.swift](file:///Users/tobi/Projects/spotify_sdk/packages/spotify_sdk_ios/ios/Classes/SpotifySdkConstants.swift) and [platform_channels.dart](file:///Users/tobi/Projects/spotify_sdk/packages/spotify_sdk_platform_interface/lib/platform_channels.dart).
+- Target minimum iOS deployment version is **13.0** (aligned across `spotify_sdk_ios.podspec`, `Package.swift`, and example `Podfile`).
 
 ---
 
@@ -24,18 +25,15 @@ Adhere to these rules when working in [packages/spotify_sdk_ios/ios/](file:///Us
 ## 3. Implementation Patterns
 
 ### Swift MethodChannel Calls
-- Extract arguments using Swift `guard` statements and type casting:
-  ```swift
-  guard let args = call.arguments as? [String: Any],
-        let clientID = args["clientId"] as? String else {
-      result(FlutterError(code: "invalid_arguments", message: "Missing client ID", details: nil))
-      return
-  }
-  ```
+- Extract arguments using Swift `guard` statements and type casting with constants from `SpotifySdkConstants`.
 - Map native Swift errors to Dart `PlatformException` via `FlutterError`.
 
 ### Swift EventChannel Streams
-- Implement `FlutterStreamHandler` for state stream subscriptions.
+- Implement `FlutterStreamHandler` across all 5 standard event streams:
+  - `PlayerStateStreamHandler.swift` (`player_state_subscription`)
+  - `PlayerContextStreamHandler.swift` (`player_context_subscription`)
+  - `ConnectionStatusStreamHandler.swift` (`connection_status_subscription`)
+  - `CapabilitiesHandler.swift` (`capabilities_subscription`, implements `SPTAppRemoteUserAPIDelegate`)
+  - `UserStatusHandler.swift` (`user_status_subscription`)
 - Serialize event payloads to JSON strings before calling `events(...)`.
-- Prevent memory leaks by capturing `[weak self]` in completion handlers.
-
+- Prevent memory leaks by capturing `[weak self]` in completion handlers and delegates.

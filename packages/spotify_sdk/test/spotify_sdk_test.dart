@@ -445,4 +445,41 @@ void main() {
       expect(mockPlatform.calls, contains('subscribeUserStatus'));
     });
   });
+
+  group('SpotifyException domain hierarchy in public API', () {
+    test('all domain exception types are exported and instantiable', () {
+      expect(
+        const SpotifyAuthenticationException('auth failed'),
+        isA<SpotifyException>(),
+      );
+      expect(
+        const SpotifyNotInstalledException('not installed'),
+        isA<SpotifyException>(),
+      );
+      expect(
+        const SpotifyConnectionException('disconnected'),
+        isA<SpotifyException>(),
+      );
+      expect(
+        const SpotifyPlaybackException('playback error'),
+        isA<SpotifyException>(),
+      );
+      expect(
+        const SpotifyLibraryException('library error'),
+        isA<SpotifyException>(),
+      );
+      expect(
+        const SpotifyImageException('image error'),
+        isA<SpotifyException>(),
+      );
+      expect(
+        const SpotifyUnimplementedException('unimplemented'),
+        isA<SpotifyException>(),
+      );
+      expect(
+        const SpotifyGeneralException('general error'),
+        isA<SpotifyException>(),
+      );
+    });
+  });
 }

@@ -138,6 +138,29 @@ You can also check if the native Spotify application is installed on the user's 
 final isInstalled = await SpotifySdk.isSpotifyInstalled();
 ```
 
+### Error Handling
+
+The SDK provides strongly-typed domain exceptions extending `SpotifyException`:
+
+```dart
+try {
+  await SpotifySdk.connectToSpotifyRemote(
+    clientId: 'YOUR_CLIENT_ID',
+    redirectUrl: 'YOUR_REDIRECT_URL',
+  );
+} on SpotifyNotInstalledException catch (e) {
+  // Prompt user to install Spotify
+} on SpotifyAuthenticationException catch (e) {
+  // Handle auth failure or user cancellation
+} on SpotifyConnectionException catch (e) {
+  // Handle remote connection errors
+} on SpotifyPlaybackException catch (e) {
+  // Handle playback or track seek errors
+} on SpotifyException catch (e) {
+  // Handle any general Spotify error (e.message, e.code, e.cause)
+}
+```
+
 ### Api
 
 #### Connecting/Authenticating
