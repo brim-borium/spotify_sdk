@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/services.dart';
+import 'package:spotify_sdk_platform_interface/exceptions/spotify_exceptions.dart';
 import 'package:spotify_sdk_platform_interface/logging/logger.dart';
 
 /// Gateway encapsulating method channels, event channels,
@@ -109,7 +110,9 @@ class PlatformChannelGateway {
 
   /// Logs exceptions accurately mapped to the given [method] name.
   void logException(String method, Exception e) {
-    if (e is PlatformException) {
+    if (e is SpotifyException) {
+      _logger.e('$method failed with: ${e.message} (code: ${e.code})');
+    } else if (e is PlatformException) {
       var message = e.message ?? '';
       message += e.details != null ? '\n${e.details}' : '';
       _logger.e('$method failed with: $message');
