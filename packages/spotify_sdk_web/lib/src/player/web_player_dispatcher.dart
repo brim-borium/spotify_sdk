@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:developer';
 import 'dart:js_interop';
 
@@ -22,13 +21,13 @@ class WebPlayerDispatcher {
   });
 
   /// Event stream controller for player context changes.
-  final StreamController<String> playerContextEventController;
+  final StreamController<PlayerContext> playerContextEventController;
 
   /// Event stream controller for player state changes.
-  final StreamController<String> playerStateEventController;
+  final StreamController<PlayerState> playerStateEventController;
 
   /// Event stream controller for connection status updates.
-  final StreamController<String> connectionStatusEventController;
+  final StreamController<ConnectionStatus> connectionStatusEventController;
 
   /// Callback when player emits 'ready' event.
   final void Function(String deviceId) onSpotifyConnected;
@@ -50,11 +49,11 @@ class WebPlayerDispatcher {
           final pState = toPlayerState(state);
           if (pState != null) {
             lastPlayerState = pState;
-            playerStateEventController.add(jsonEncode(pState.toJson()));
+            playerStateEventController.add(pState);
           }
           final pContext = toPlayerContext(state);
           if (pContext != null) {
-            playerContextEventController.add(jsonEncode(pContext.toJson()));
+            playerContextEventController.add(pContext);
           }
         }).toJS,
       )
