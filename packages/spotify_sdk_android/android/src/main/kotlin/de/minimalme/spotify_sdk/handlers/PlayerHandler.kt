@@ -3,6 +3,7 @@ package de.minimalme.spotify_sdk.handlers
 import com.google.gson.Gson
 import com.spotify.protocol.types.PlaybackSpeed
 import de.minimalme.spotify_sdk.RemoteManager
+import de.minimalme.spotify_sdk.SpotifySdkConstants
 import io.flutter.plugin.common.MethodChannel.Result
 
 class PlayerHandler(private val remoteManager: RemoteManager) {

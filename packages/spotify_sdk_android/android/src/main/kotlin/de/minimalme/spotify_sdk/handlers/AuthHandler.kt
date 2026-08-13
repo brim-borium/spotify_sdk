@@ -10,6 +10,7 @@ import com.spotify.sdk.android.auth.AuthorizationRequest
 import com.spotify.sdk.android.auth.AuthorizationResponse
 import de.minimalme.spotify_sdk.RemoteManager
 import de.minimalme.spotify_sdk.SpotifyErrorMapper
+import de.minimalme.spotify_sdk.SpotifySdkConstants
 import de.minimalme.spotify_sdk.subscriptions.*
 import io.flutter.plugin.common.MethodChannel.Result
 

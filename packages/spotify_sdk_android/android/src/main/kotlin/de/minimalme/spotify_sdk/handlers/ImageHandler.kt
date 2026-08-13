@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import com.spotify.protocol.types.Image.Dimension
 import com.spotify.protocol.types.ImageUri
 import de.minimalme.spotify_sdk.RemoteManager
+import de.minimalme.spotify_sdk.SpotifySdkConstants
 import io.flutter.plugin.common.MethodChannel.Result
 import java.io.ByteArrayOutputStream
 

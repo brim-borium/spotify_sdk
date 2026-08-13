@@ -2,6 +2,7 @@ package de.minimalme.spotify_sdk.handlers
 
 import com.google.gson.Gson
 import de.minimalme.spotify_sdk.RemoteManager
+import de.minimalme.spotify_sdk.SpotifySdkConstants
 import io.flutter.plugin.common.MethodChannel.Result
 
 class LibraryHandler(private val remoteManager: RemoteManager) {
