@@ -37,7 +37,7 @@ To maintain synchronization and consistency across all platform wrappers, the co
     *   [spotify_sdk_platform_interface](file:///Users/tobi/Projects/spotify_sdk/packages/spotify_sdk_platform_interface): The common contracts, model definitions, and channels.
     *   [spotify_sdk_android](file:///Users/tobi/Projects/spotify_sdk/packages/spotify_sdk_android), [spotify_sdk_ios](file:///Users/tobi/Projects/spotify_sdk/packages/spotify_sdk_ios), [spotify_sdk_web](file:///Users/tobi/Projects/spotify_sdk/packages/spotify_sdk_web): The platform-specific native implementations.
 2.  **Centralized Bridge Pattern**:
-    *   All method channel names, event channel names, method keys, and parameter keys MUST be stored centrally in [platform_channels.dart](file:///Users/tobi/Projects/spotify_sdk/packages/spotify_sdk_platform_interface/lib/platform_channels.dart).
+    *   All method channel names, event channel names, method keys, and parameter keys MUST be stored centrally in [platform_channels.dart](file:///Users/tobi/Projects/spotify_sdk/packages/spotify_sdk_platform_interface/lib/platform_channels.dart), mirrored natively in `SpotifySdkConstants.kt` (Android) and `SpotifySdkConstants.swift` (iOS) across all 5 standard event channels.
 3.  **Data Serialization & Code Generation**:
     *   All model classes reside in the platform interface models folder and must use `json_serializable`.
     *   Always use `@JsonKey(name: 'snake_case')` for fields to align with the native Spotify SDK payloads.

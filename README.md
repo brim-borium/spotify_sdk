@@ -196,8 +196,8 @@ The userApi as described [here](https://spotify.github.io/android-sdk/app-remote
 |  getCapabilities | Gets the current users capabilities | ✔ | ✔ | ✔ |
 |  getLibraryState | Gets the current library state | ✔ | ✔ | ✔ |
 |  removeFromLibrary | Removes the given spotifyUri to the users library | ✔ | ✔ | ✔ |
-|  subscribeCapabilities |  Subscribes to the current users capabilities | ✔ | ❌ | ✔ |
-|  subscribeUserStatus |  Subscribes to  the current users status | ✔ | ❌ | ✔ |
+|  subscribeCapabilities |  Subscribes to the current users capabilities | ✔ | ✔ | ✔ |
+|  subscribeUserStatus |  Subscribes to the current users status | ✔ | ✔ | ✔ |
 
 #### Connect Api
 

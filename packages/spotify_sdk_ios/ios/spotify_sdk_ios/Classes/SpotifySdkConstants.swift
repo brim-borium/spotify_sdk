@@ -2,14 +2,22 @@ import Foundation
 
 public class SpotifySdkConstants
 {
-    //connecting
+    // channels
+    public static let channelSpotifySdk = "spotify_sdk"
+    public static let channelPlayerContext = "player_context_subscription"
+    public static let channelPlayerState = "player_state_subscription"
+    public static let channelCapabilities = "capabilities_subscription"
+    public static let channelUserStatus = "user_status_subscription"
+    public static let channelConnectionStatus = "connection_status_subscription"
+
+    // connecting
     public static let methodConnectToSpotify = "connectToSpotify"
     public static let methodGetAccessToken = "getAccessToken"
     public static let methodGetSwapToken = "getSwapToken"
     public static let methodIsSpotifyInstalled = "isSpotifyInstalled"
     public static let methodDisconnectFromSpotify = "disconnectFromSpotify"
 
-    //player api
+    // player api
     public static let methodQueueTrack = "queueTrack"
     public static let methodPlay = "play"
     public static let methodPause = "pause"
@@ -27,14 +35,16 @@ public class SpotifySdkConstants
     public static let methodToggleRepeat = "toggleRepeat"
     public static let methodSwitchToLocalDevice = "switchToLocalDevice"
 
-    //user api
+    // user api
     public static let methodAddToLibrary = "addToLibrary"
     public static let methodRemoveFromLibrary = "removeFromLibrary"
     public static let methodGetCapabilities = "getCapabilities"
+    public static let methodGetLibraryState = "getLibraryState"
 
-    //images api
+    // images api
     public static let methodGetImage = "getImage"
 
+    // parameters
     public static let paramClientId = "clientId"
     public static let paramRedirectUrl = "redirectUrl"
     public static let paramSpotifyUri = "spotifyUri"
@@ -48,5 +58,6 @@ public class SpotifySdkConstants
     public static let paramRepeatMode = "repeatMode"
     public static let paramTrackIndex = "trackIndex"
     public static let scope = "scope"
+    public static let paramScope = "scope"
     public static let getLibraryState = "getLibraryState"
 }

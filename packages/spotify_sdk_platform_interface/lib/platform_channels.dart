@@ -78,6 +78,12 @@ class MethodNames {
   /// method name for [subscribeConnectionStatus]
   static const String subscribeConnectionStatus = 'subscribeConnectionStatus';
 
+  /// method name for [subscribeCapabilities]
+  static const String subscribeCapabilities = 'subscribeCapabilities';
+
+  /// method name for [subscribeUserStatus]
+  static const String subscribeUserStatus = 'subscribeUserStatus';
+
   /// method name for [toggleRepeat]
   static const String toggleRepeat = 'toggleRepeat';
 

@@ -11,7 +11,7 @@ class ImageHandler(private val remoteManager: RemoteManager) {
 
     fun getImage(imageUri: String?, imageDimension: Int?, result: Result) {
         if (imageUri.isNullOrBlank()) {
-            result.error("getImageError", "imageUri is not set", "")
+            result.error(SpotifySdkConstants.ERROR_GET_IMAGE, "imageUri is not set", "")
             return
         }
         val dimension = when (imageDimension) {
@@ -28,7 +28,7 @@ class ImageHandler(private val remoteManager: RemoteManager) {
                     bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
                     result.success(stream.toByteArray())
                 }
-                .setErrorCallback { throwable -> result.error("getImageError", "error when getting image: $imageUri", throwable.toString()) }
+                .setErrorCallback { throwable -> result.error(SpotifySdkConstants.ERROR_GET_IMAGE, "error when getting image: $imageUri", throwable.toString()) }
         }
     }
 }

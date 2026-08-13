@@ -29,7 +29,7 @@ class RemoteManager {
         if (remote != null && remote.isConnected) {
             block(remote)
         } else {
-            result.error("spotifyAppRemoteNull", "spotifyAppRemote is null or disconnected", "")
+            result.error(SpotifySdkConstants.ERROR_SPOTIFY_APP_REMOTE_NULL, "spotifyAppRemote is null or disconnected", "")
         }
     }
 
@@ -37,7 +37,7 @@ class RemoteManager {
         if (pendingOperation == null) {
             pendingOperation = PendingOperation(this, result)
         } else {
-            result.error("errorPendingOperation", "Operation $this cannot be started because another operation is pending: ${pendingOperation?.methodName}", "")
+            result.error(SpotifySdkConstants.ERROR_PENDING_OPERATION, "Operation $this cannot be started because another operation is pending: ${pendingOperation?.methodName}", "")
         }
     }
 }

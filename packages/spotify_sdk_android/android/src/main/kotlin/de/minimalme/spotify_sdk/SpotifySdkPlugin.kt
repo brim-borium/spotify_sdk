@@ -18,14 +18,6 @@ import de.minimalme.spotify_sdk.subscriptions.ConnectionStatusChannel
 class SpotifySdkPlugin : MethodCallHandler, FlutterPlugin, ActivityAware, PluginRegistry.ActivityResultListener {
 
     private lateinit var methodChannel: MethodChannel
-    private val channelName = "spotify_sdk"
-
-    private val playerContextSubscription = "player_context_subscription"
-    private val playerStateSubscription = "player_state_subscription"
-    private val capabilitiesSubscription = "capabilities_subscription"
-    private val userStatusSubscription = "user_status_subscription"
-    private val connectionStatusSubscription = "connection_status_subscription"
-
     val remoteManager = RemoteManager()
     val authHandler = AuthHandler(remoteManager)
     val playerHandler = PlayerHandler(remoteManager)
@@ -35,14 +27,14 @@ class SpotifySdkPlugin : MethodCallHandler, FlutterPlugin, ActivityAware, Plugin
     override fun onAttachedToEngine(binding: FlutterPlugin.FlutterPluginBinding) {
         remoteManager.applicationContext = binding.applicationContext
 
-        methodChannel = MethodChannel(binding.binaryMessenger, channelName)
+        methodChannel = MethodChannel(binding.binaryMessenger, SpotifySdkConstants.CHANNEL_SPOTIFY_SDK)
         methodChannel.setMethodCallHandler(this)
 
-        remoteManager.playerContextChannel = EventChannel(binding.binaryMessenger, playerContextSubscription)
-        remoteManager.playerStateChannel = EventChannel(binding.binaryMessenger, playerStateSubscription)
-        remoteManager.capabilitiesChannel = EventChannel(binding.binaryMessenger, capabilitiesSubscription)
-        remoteManager.userStatusChannel = EventChannel(binding.binaryMessenger, userStatusSubscription)
-        remoteManager.connectionStatusChannel = EventChannel(binding.binaryMessenger, connectionStatusSubscription)
+        remoteManager.playerContextChannel = EventChannel(binding.binaryMessenger, SpotifySdkConstants.CHANNEL_PLAYER_CONTEXT)
+        remoteManager.playerStateChannel = EventChannel(binding.binaryMessenger, SpotifySdkConstants.CHANNEL_PLAYER_STATE)
+        remoteManager.capabilitiesChannel = EventChannel(binding.binaryMessenger, SpotifySdkConstants.CHANNEL_CAPABILITIES)
+        remoteManager.userStatusChannel = EventChannel(binding.binaryMessenger, SpotifySdkConstants.CHANNEL_USER_STATUS)
+        remoteManager.connectionStatusChannel = EventChannel(binding.binaryMessenger, SpotifySdkConstants.CHANNEL_CONNECTION_STATUS)
 
         remoteManager.connectionStatusChannel?.setStreamHandler(ConnectionStatusChannel(remoteManager.connStatusEventChannel))
     }
@@ -84,39 +76,53 @@ class SpotifySdkPlugin : MethodCallHandler, FlutterPlugin, ActivityAware, Plugin
     override fun onMethodCall(call: MethodCall, result: Result) {
         when (call.method) {
             // Auth & Session
-            "connectToSpotify" -> authHandler.connectToSpotify(call.argument("clientId"), call.argument("redirectUrl"), result)
-            "getAccessToken" -> authHandler.getAccessToken(call.argument("clientId"), call.argument("redirectUrl"), call.argument("scope"), result)
-            "getSwapToken" -> authHandler.getSwapToken(call.argument("clientId"), call.argument("redirectUrl"), call.argument("scope"), result)
-            "isSpotifyInstalled" -> authHandler.isSpotifyInstalled(result)
-            "disconnectFromSpotify" -> authHandler.disconnectFromSpotify(result)
+            SpotifySdkConstants.METHOD_CONNECT_TO_SPOTIFY -> authHandler.connectToSpotify(
+                call.argument(SpotifySdkConstants.PARAM_CLIENT_ID),
+                call.argument(SpotifySdkConstants.PARAM_REDIRECT_URL),
+                result
+            )
+            SpotifySdkConstants.METHOD_GET_ACCESS_TOKEN -> authHandler.getAccessToken(
+                call.argument(SpotifySdkConstants.PARAM_CLIENT_ID),
+                call.argument(SpotifySdkConstants.PARAM_REDIRECT_URL),
+                call.argument(SpotifySdkConstants.PARAM_SCOPE),
+                result
+            )
+            SpotifySdkConstants.METHOD_GET_SWAP_TOKEN -> authHandler.getSwapToken(
+                call.argument(SpotifySdkConstants.PARAM_CLIENT_ID),
+                call.argument(SpotifySdkConstants.PARAM_REDIRECT_URL),
+                call.argument(SpotifySdkConstants.PARAM_SCOPE),
+                result
+            )
+            SpotifySdkConstants.METHOD_IS_SPOTIFY_INSTALLED -> authHandler.isSpotifyInstalled(result)
+            SpotifySdkConstants.METHOD_DISCONNECT_FROM_SPOTIFY -> authHandler.disconnectFromSpotify(result)
 
             // Playback & Controls
-            "switchToLocalDevice" -> playerHandler.switchToLocalDevice(result)
-            "getCrossfadeState" -> playerHandler.getCrossfadeState(result)
-            "getPlayerState" -> playerHandler.getPlayerState(result)
-            "play" -> playerHandler.play(call.argument("spotifyUri"), result)
-            "pause" -> playerHandler.pause(result)
-            "queueTrack" -> playerHandler.queue(call.argument("spotifyUri"), result)
-            "resume" -> playerHandler.resume(result)
-            "seekTo" -> playerHandler.seekTo((call.argument<Number>("positionedMilliseconds"))?.toLong(), result)
-            "seekToRelativePosition" -> playerHandler.seekToRelativePosition((call.argument<Number>("relativeMilliseconds"))?.toLong(), result)
-            "setPodcastPlaybackSpeed" -> playerHandler.setPodcastPlaybackSpeed((call.argument<Number>("podcastPlaybackSpeed"))?.toDouble(), result)
-            "skipNext" -> playerHandler.skipNext(result)
-            "skipPrevious" -> playerHandler.skipPrevious(result)
-            "skipToIndex" -> playerHandler.skipToIndex(call.argument("spotifyUri"), call.argument("trackIndex"), result)
-            "toggleShuffle" -> playerHandler.toggleShuffle(result)
-            "setShuffle" -> playerHandler.setShuffle(call.argument("shuffle"), result)
-            "toggleRepeat" -> playerHandler.toggleRepeat(result)
-            "setRepeatMode" -> playerHandler.setRepeatMode(call.argument("repeatMode"), result)
+            SpotifySdkConstants.METHOD_SWITCH_TO_LOCAL_DEVICE -> playerHandler.switchToLocalDevice(result)
+            SpotifySdkConstants.METHOD_GET_CROSSFADE_STATE -> playerHandler.getCrossfadeState(result)
+            SpotifySdkConstants.METHOD_GET_PLAYER_STATE -> playerHandler.getPlayerState(result)
+            SpotifySdkConstants.METHOD_PLAY -> playerHandler.play(call.argument(SpotifySdkConstants.PARAM_SPOTIFY_URI), result)
+            SpotifySdkConstants.METHOD_PAUSE -> playerHandler.pause(result)
+            SpotifySdkConstants.METHOD_QUEUE_TRACK -> playerHandler.queue(call.argument(SpotifySdkConstants.PARAM_SPOTIFY_URI), result)
+            SpotifySdkConstants.METHOD_RESUME -> playerHandler.resume(result)
+            SpotifySdkConstants.METHOD_SEEK_TO -> playerHandler.seekTo((call.argument<Number>(SpotifySdkConstants.PARAM_POSITIONED_MILLISECONDS))?.toLong(), result)
+            SpotifySdkConstants.METHOD_SEEK_TO_RELATIVE_POSITION -> playerHandler.seekToRelativePosition((call.argument<Number>(SpotifySdkConstants.PARAM_RELATIVE_MILLISECONDS))?.toLong(), result)
+            SpotifySdkConstants.METHOD_SET_PODCAST_PLAYBACK_SPEED -> playerHandler.setPodcastPlaybackSpeed((call.argument<Number>(SpotifySdkConstants.PARAM_PODCAST_PLAYBACK_SPEED))?.toDouble(), result)
+            SpotifySdkConstants.METHOD_SKIP_NEXT -> playerHandler.skipNext(result)
+            SpotifySdkConstants.METHOD_SKIP_PREVIOUS -> playerHandler.skipPrevious(result)
+            SpotifySdkConstants.METHOD_SKIP_TO_INDEX -> playerHandler.skipToIndex(call.argument(SpotifySdkConstants.PARAM_SPOTIFY_URI), call.argument(SpotifySdkConstants.PARAM_TRACK_INDEX), result)
+            SpotifySdkConstants.METHOD_TOGGLE_SHUFFLE -> playerHandler.toggleShuffle(result)
+            SpotifySdkConstants.METHOD_SET_SHUFFLE -> playerHandler.setShuffle(call.argument(SpotifySdkConstants.PARAM_SHUFFLE), result)
+            SpotifySdkConstants.METHOD_TOGGLE_REPEAT -> playerHandler.toggleRepeat(result)
+            SpotifySdkConstants.METHOD_SET_REPEAT_MODE -> playerHandler.setRepeatMode(call.argument(SpotifySdkConstants.PARAM_REPEAT_MODE), result)
 
             // User Library & Capabilities
-            "addToLibrary" -> libraryHandler.addToUserLibrary(call.argument("spotifyUri"), result)
-            "removeFromLibrary" -> libraryHandler.removeFromUserLibrary(call.argument("spotifyUri"), result)
-            "getCapabilities" -> libraryHandler.getCapabilities(result)
-            "getLibraryState" -> libraryHandler.getLibraryState(call.argument("spotifyUri"), result)
+            SpotifySdkConstants.METHOD_ADD_TO_LIBRARY -> libraryHandler.addToUserLibrary(call.argument(SpotifySdkConstants.PARAM_SPOTIFY_URI), result)
+            SpotifySdkConstants.METHOD_REMOVE_FROM_LIBRARY -> libraryHandler.removeFromUserLibrary(call.argument(SpotifySdkConstants.PARAM_SPOTIFY_URI), result)
+            SpotifySdkConstants.METHOD_GET_CAPABILITIES -> libraryHandler.getCapabilities(result)
+            SpotifySdkConstants.METHOD_GET_LIBRARY_STATE -> libraryHandler.getLibraryState(call.argument(SpotifySdkConstants.PARAM_SPOTIFY_URI), result)
 
             // Cover Art Images
-            "getImage" -> imageHandler.getImage(call.argument("imageUri"), call.argument("imageDimension"), result)
+            SpotifySdkConstants.METHOD_GET_IMAGE -> imageHandler.getImage(call.argument(SpotifySdkConstants.PARAM_IMAGE_URI), call.argument(SpotifySdkConstants.PARAM_IMAGE_DIMENSION), result)
 
             else -> result.notImplemented()
         }

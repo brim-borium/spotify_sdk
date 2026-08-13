@@ -7,6 +7,9 @@ class ConnectionStatusHandler: StatusHandler, SPTAppRemoteDelegate {
     var connectionResult: FlutterResult?
     
     func appRemoteDidEstablishConnection(_ appRemote: SPTAppRemote) {
+        RemoteManager.shared.capabilitiesHandler?.setAppRemote(appRemote)
+        RemoteManager.shared.userStatusHandler?.updateConnectionStatus(isConnected: true)
+
         connectionResult?(true)
         tokenResult?(appRemote.connectionParameters.accessToken)
         eventSink?("{\"connected\": true}")
@@ -16,6 +19,7 @@ class ConnectionStatusHandler: StatusHandler, SPTAppRemoteDelegate {
     }
 
     func appRemote(_ appRemote: SPTAppRemote, didFailConnectionAttemptWithError error: Error?) {
+        RemoteManager.shared.userStatusHandler?.updateConnectionStatus(isConnected: false)
         defer {
             connectionResult = nil
             tokenResult = nil
@@ -35,6 +39,7 @@ class ConnectionStatusHandler: StatusHandler, SPTAppRemoteDelegate {
     }
 
     func appRemote(_ appRemote: SPTAppRemote, didDisconnectWithError error: Error?) {
+        RemoteManager.shared.userStatusHandler?.updateConnectionStatus(isConnected: false)
         if error != nil {
             // report spotify remote error to plugin
             eventSink?("{\"connected\": false, \"errorCode\": \"\(error!._code)\", \"errorDetails\": \"\(error!.localizedDescription)\"}")
