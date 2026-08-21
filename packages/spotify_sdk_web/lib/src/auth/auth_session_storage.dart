@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:web/web.dart' as web;
 
 /// Spotify token data object.
