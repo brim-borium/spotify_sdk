@@ -12,6 +12,9 @@
 
 This is a flutter package that wraps the native [iOS](https://github.com/spotify/ios-sdk) and [Android](https://github.com/spotify/android-sdk) Spotify "remote" SDKs as well as the [Spotify Web Playback SDK](https://developer.spotify.com/documentation/web-playback-sdk/) for web. Since it wraps the native SDKs it has the same features and limitations.
 
+> [!IMPORTANT]
+> **Upgrading to 4.0.0?** Check out the [4.0.0 Migration Guide](https://pub.dev/packages/spotify_sdk/changelog#400) for important migration instructions regarding Android zero-configuration setup, Spotify Android Auth SDK v5.0.0 manifest registration, and typed `SpotifyException` domain error handling.
+
 ## Setup
 
 ### Android

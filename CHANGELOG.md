@@ -3,6 +3,73 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 4.0.0
+
+A major release bringing federated monorepo architecture, zero-configuration Android setup, Spotify Android Auth SDK 5.0.0, native iOS playback feature parity, typed domain exception hierarchy, Web Playback SDK with modern `package:web` / WASM support, and compatibility with Flutter 3.47.1 & Dart 3.13.
+
+### ⚠️ Breaking Changes & Migration Guide
+
+#### 1. Android Zero-Configuration SDK Auto-Download
+* **What changed**: The plugin now automatically resolves and downloads the native Spotify App Remote SDK binary during Gradle compilation.
+* **Migration**:
+  * Remove `dart run spotify_sdk:android_setup` from any setup scripts (deprecated & removed).
+  * Remove `include ':spotify-app-remote'` from `android/settings.gradle` / `android/settings.gradle.kts`.
+  * Delete the legacy `android/spotify-app-remote` folder if present from previous installations.
+
+#### 2. Android Auth SDK v5.0.0 Migration
+* **What changed**: Upgraded from Spotify Android Auth 2.x to `com.spotify.android:auth:5.0.0`. Manifest placeholders (`redirectSchemeName`, `redirectHostName`) are no longer used.
+* **Migration**:
+  * In `android/app/src/main/AndroidManifest.xml`, register `RedirectUriReceiverActivity` directly inside `<application>`:
+    ```xml
+    <activity
+        android:name="com.spotify.sdk.android.auth.browser.RedirectUriReceiverActivity"
+        android:exported="true">
+        <intent-filter>
+            <action android:name="android.intent.action.VIEW" />
+            <category android:name="android.intent.category.DEFAULT" />
+            <category android:name="android.intent.category.BROWSABLE" />
+            <data
+                android:scheme="your-redirect-scheme"
+                android:host="your-redirect-host" />
+        </intent-filter>
+    </activity>
+    ```
+
+#### 3. Structured Domain Exceptions (`SpotifyException`)
+* **What changed**: Replaced generic, untyped `PlatformException`s with a structured domain exception hierarchy inheriting from `SpotifyException` (`SpotifyAuthenticationException`, `SpotifyConnectionException`, `SpotifyPlaybackException`, `SpotifyUnsupportedException`, `SpotifyRateLimitException`, `SpotifyUnknownException`).
+* **Migration**:
+  * Catch typed `SpotifyException` subclasses instead of relying on `PlatformException.code` string matching:
+    ```dart
+    try {
+      await SpotifySdk.connectToSpotifyRemote(...);
+    } on SpotifyAuthenticationException catch (e) {
+      // Authentication failure
+    } on SpotifyConnectionException catch (e) {
+      // Connection failure
+    } on SpotifyException catch (e) {
+      // General domain exception
+    }
+    ```
+
+#### 4. Web Migration to `package:web` (WASM Ready)
+* **What changed**: Migrated from legacy `dart:html` to `package:web` and `dart:js_interop`.
+* **Migration**: No consumer code changes needed. Fully compatible with WebAssembly (`--wasm`) builds in Flutter 3.47+.
+
+#### 5. Platform Minimums
+* **Flutter**: `>=3.47.1` | **Dart**: `>=3.13.0 <4.0.0`
+* **Android**: minSdk `24`, Gradle `9.7+`, Kotlin `2.4.10+`
+* **iOS**: Minimum deployment target iOS `15.0+`
+
+---
+
+### ✨ Features & Improvements
+
+* **Centralized Bridge Pattern**: Introduced `PlatformChannelGateway` and centralized constants across Dart, Android (`SpotifySdkConstants.kt`), iOS (`SpotifySdkConstants.swift`), and Web.
+* **Synchronized Event Streams**: Full support for all 5 standard event channels across all platforms (`player_state`, `player_context`, `connection_status`, `capabilities`, `user_status`).
+* **iOS Playback Parity**: Added `getCrossFadeState`, `switchToLocalDevice`, universal links restoration handler, and enhanced repeat/shuffle control.
+* **Web PKCE OAuth**: Complete PKCE authorization flow with token refresh and Spotify Web Playback SDK streaming.
+* **Code Quality**: 100% test coverage for platform delegation & web clients; `very_good_analysis` strict linting throughout.
+
 ## 2026-08-21
 
 ### Changes
