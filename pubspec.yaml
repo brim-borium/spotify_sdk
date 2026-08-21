@@ -3,8 +3,8 @@ description: Root workspace for spotify_sdk monorepo
 publish_to: 'none'
 
 environment:
-  sdk: ^3.12.0
-  flutter: '>=3.44.0'
+  sdk: ^3.13.0
+  flutter: '>=3.47.1'
 
 workspace:
   - packages/spotify_sdk
@@ -15,7 +15,7 @@ workspace:
   - packages/spotify_sdk/example
 
 dev_dependencies:
-  melos: ^8.2.2
+  melos: ^8.3.0
   very_good_analysis: ^10.3.0
 
 melos:
@@ -54,7 +54,7 @@ melos:
       description: Run all package tests.
 
     generate:all:
-      run: melos exec --depends-on="build_runner" -- dart run build_runner build --delete-conflicting-outputs
+      run: melos exec --depends-on="build_runner" -- dart run build_runner build
       description: Run build_runner code generation across all packages.
 
     sync:license:

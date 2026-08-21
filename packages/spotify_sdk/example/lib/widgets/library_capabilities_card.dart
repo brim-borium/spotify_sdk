@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:spotify_sdk_example/controllers/spotify_controller.dart';
 import 'package:spotify_sdk_example/theme/spotify_theme.dart';
