@@ -1,3 +1,7 @@
+## 4.3.0
+
+ - **FEAT**: upgrade to Flutter 3.47.1 and update dependencies (#268).
+
 ## 4.2.1
 
  - **REFACTOR**: synchronize native event channels and centralize Android constants (#262).

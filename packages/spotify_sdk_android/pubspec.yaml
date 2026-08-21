@@ -1,6 +1,6 @@
 name: spotify_sdk_android
 description: The Android platform implementation of the spotify_sdk plugin.
-version: 4.2.1
+version: 4.3.0
 homepage: https://github.com/brim-borium/spotify_sdk
 repository: https://github.com/brim-borium/spotify_sdk/tree/main/packages/spotify_sdk_android
 topics:
@@ -15,7 +15,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  spotify_sdk_platform_interface: ^4.2.0
+  spotify_sdk_platform_interface: ^4.3.0
 
 dev_dependencies:
   flutter_test:

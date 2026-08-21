@@ -3,6 +3,47 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 2026-08-21
+
+### Changes
+
+---
+
+Packages with breaking changes:
+
+ - There are no breaking changes in this release.
+
+Packages with other changes:
+
+ - [`spotify_sdk` - `v4.0.0-dev.8`](#spotify_sdk---v400-dev8)
+ - [`spotify_sdk_android` - `v4.3.0`](#spotify_sdk_android---v430)
+ - [`spotify_sdk_ios` - `v4.3.0`](#spotify_sdk_ios---v430)
+ - [`spotify_sdk_platform_interface` - `v4.3.0`](#spotify_sdk_platform_interface---v430)
+ - [`spotify_sdk_web` - `v4.3.0`](#spotify_sdk_web---v430)
+
+---
+
+#### `spotify_sdk` - `v4.0.0-dev.8`
+
+ - **FEAT**: upgrade to Flutter 3.47.1 and update dependencies (#268).
+
+#### `spotify_sdk_android` - `v4.3.0`
+
+ - **FEAT**: upgrade to Flutter 3.47.1 and update dependencies (#268).
+
+#### `spotify_sdk_ios` - `v4.3.0`
+
+ - **FEAT**: upgrade to Flutter 3.47.1 and update dependencies (#268).
+
+#### `spotify_sdk_platform_interface` - `v4.3.0`
+
+ - **FEAT**: upgrade to Flutter 3.47.1 and update dependencies (#268).
+
+#### `spotify_sdk_web` - `v4.3.0`
+
+ - **FEAT**: upgrade to Flutter 3.47.1 and update dependencies (#268).
+
+
 ## 2026-08-13
 
 ### Changes

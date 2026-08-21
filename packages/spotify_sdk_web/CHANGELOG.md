@@ -1,3 +1,7 @@
+## 4.3.0
+
+ - **FEAT**: upgrade to Flutter 3.47.1 and update dependencies (#268).
+
 ## 4.2.1
 
  - **REFACTOR**: harden monorepo pipeline, unify release gates & optimize web event dispatcher (#264).

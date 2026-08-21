@@ -1,6 +1,6 @@
 name: spotify_sdk_web
 description: The Web platform implementation of the spotify_sdk plugin.
-version: 4.2.1
+version: 4.3.0
 homepage: https://github.com/brim-borium/spotify_sdk
 repository: https://github.com/brim-borium/spotify_sdk/tree/main/packages/spotify_sdk_web
 topics:
@@ -19,7 +19,7 @@ dependencies:
   flutter_web_plugins:
     sdk: flutter
   http: ^1.6.0
-  spotify_sdk_platform_interface: ^4.2.0
+  spotify_sdk_platform_interface: ^4.3.0
   synchronized: ^3.4.1+2
   web: ^1.1.1
 
