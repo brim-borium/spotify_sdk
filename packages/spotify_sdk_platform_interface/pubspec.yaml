@@ -23,4 +23,4 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   json_serializable: ^6.14.1
-  very_good_analysis: ^10.3.0
+  very_good_analysis: ^11.0.0
