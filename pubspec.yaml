@@ -28,9 +28,6 @@ melos:
       ignore:
         - "spotify_sdk_example"
         - "spotify_sdk_monorepo"
-      gitTagVersion: false
-      hooks:
-        post: dart run tool/tag_version.dart
     publish:
       hooks:
         pre: melos run generate:all
