@@ -5,7 +5,7 @@ on:
       - "[0-9]+.[0-9]+.[0-9]+*" # tag-pattern on pub.dev: ''
 
 jobs:
-  pana:
+  validate:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -14,21 +14,19 @@ jobs:
 
       - name: Setup Workspace
         uses: ./.github/actions/setup-workspace
+        with:
+          setup-java: 'true'
 
-      - name: Install Pana & Webp
+      - name: Prepare iOS Spotify SDK
         run: |
-          flutter pub global activate pana
-          sudo apt-get install -y webp
+          cd packages/spotify_sdk_ios/ios
+          ./prepare-iOS-SDK.sh
 
-      - name: Verify Monorepo Pub Scores
-        run: |
-          for pkg in packages/spotify_sdk packages/spotify_sdk_platform_interface packages/spotify_sdk_android packages/spotify_sdk_ios packages/spotify_sdk_web; do
-            echo "Verifying Pana score for $pkg..."
-            (cd "$pkg" && ../../.github/scripts/verify_pub_score.sh 140)
-          done
+      - name: Verify Publish Dry Run
+        run: melos run publish:dry-run
 
   publish:
-    needs: pana
+    needs: validate
     environment: 'pub.dev'
     permissions:
       id-token: write # Required for authentication using OIDC
