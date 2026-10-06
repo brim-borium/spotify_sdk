@@ -16,7 +16,7 @@ runs:
   steps:
     - name: ☕ Set up Java
       if: inputs.setup-java == 'true'
-      uses: actions/setup-java@v4
+      uses: actions/setup-java@v5
       with:
         distribution: 'zulu'
         java-version: '17'
