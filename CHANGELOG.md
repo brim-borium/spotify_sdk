@@ -3,6 +3,36 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 2026-10-07
+
+### Changes
+
+---
+
+Packages with breaking changes:
+
+ - There are no breaking changes in this release.
+
+Packages with other changes:
+
+ - [`spotify_sdk` - `v4.3.3`](#spotify_sdk---v433)
+
+Packages versioned in lockstep only:
+
+> Packages listed below have no changes of their own. Their versions have been bumped to keep all packages in this workspace in lockstep.
+
+ - `spotify_sdk_android` - `v4.3.3`
+ - `spotify_sdk_ios` - `v4.3.3`
+ - `spotify_sdk_platform_interface` - `v4.3.3`
+ - `spotify_sdk_web` - `v4.3.3`
+
+---
+
+#### `spotify_sdk` - `v4.3.3`
+
+ - **FIX**(spotify_sdk): fix capitalization of Spotify Remote in class docstring.
+
+
 ## 2026-10-06
 
 ### Changes
