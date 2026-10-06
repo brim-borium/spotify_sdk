@@ -15,6 +15,47 @@ Packages with breaking changes:
 
 Packages with other changes:
 
+ - [`spotify_sdk` - `v4.0.2`](#spotify_sdk---v402)
+ - [`spotify_sdk_android` - `v4.3.2`](#spotify_sdk_android---v432)
+ - [`spotify_sdk_ios` - `v4.3.2`](#spotify_sdk_ios---v432)
+ - [`spotify_sdk_platform_interface` - `v4.3.2`](#spotify_sdk_platform_interface---v432)
+ - [`spotify_sdk_web` - `v4.3.2`](#spotify_sdk_web---v432)
+
+---
+
+#### `spotify_sdk` - `v4.0.2`
+
+ - **FIX**: upgrade flutter to 3.47.6, update dependencies to very_good_analysis 11.0.0, and establish coding standards (#274).
+
+#### `spotify_sdk_android` - `v4.3.2`
+
+ - **FIX**: upgrade flutter to 3.47.6, update dependencies to very_good_analysis 11.0.0, and establish coding standards (#274).
+
+#### `spotify_sdk_ios` - `v4.3.2`
+
+ - **FIX**: upgrade flutter to 3.47.6, update dependencies to very_good_analysis 11.0.0, and establish coding standards (#274).
+
+#### `spotify_sdk_platform_interface` - `v4.3.2`
+
+ - **FIX**: upgrade flutter to 3.47.6, update dependencies to very_good_analysis 11.0.0, and establish coding standards (#274).
+
+#### `spotify_sdk_web` - `v4.3.2`
+
+ - **FIX**: upgrade flutter to 3.47.6, update dependencies to very_good_analysis 11.0.0, and establish coding standards (#274).
+
+
+## 2026-10-06
+
+### Changes
+
+---
+
+Packages with breaking changes:
+
+ - There are no breaking changes in this release.
+
+Packages with other changes:
+
  - [`spotify_sdk` - `v4.0.1`](#spotify_sdk---v401)
  - [`spotify_sdk_android` - `v4.3.1`](#spotify_sdk_android---v431)
  - [`spotify_sdk_ios` - `v4.3.1`](#spotify_sdk_ios---v431)

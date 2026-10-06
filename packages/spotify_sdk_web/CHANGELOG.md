@@ -1,3 +1,7 @@
+## 4.3.2
+
+ - **FIX**: upgrade flutter to 3.47.6, update dependencies to very_good_analysis 11.0.0, and establish coding standards (#274).
+
 ## 4.3.1
 
  - **FIX**: upgrade flutter to 3.47.6, update dependencies to very_good_analysis 11.0.0, and establish coding standards (#274).
