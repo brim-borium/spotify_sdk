@@ -9,21 +9,16 @@ import 'package:spotify_sdk_platform_interface/logging/logger.dart';
 /// deserialization, and logging.
 class PlatformChannelGateway {
   /// Creates a [PlatformChannelGateway].
-  PlatformChannelGateway({
-    MethodChannel? methodChannel,
-    Logger? logger,
-  }) : _channel = methodChannel ?? const MethodChannel('spotify_sdk'),
-       _logger = logger ?? Logger();
+  new({MethodChannel? methodChannel, Logger? logger})
+    : _channel = methodChannel ?? const MethodChannel('spotify_sdk'),
+      _logger = logger ?? Logger();
 
   final MethodChannel _channel;
   final Logger _logger;
   final Map<String, EventChannel> _eventChannels = {};
 
   EventChannel _getEventChannel(String channelName) =>
-      _eventChannels.putIfAbsent(
-        channelName,
-        () => EventChannel(channelName),
-      );
+      _eventChannels.putIfAbsent(channelName, () => EventChannel(channelName));
 
   /// Invokes a method channel call expecting no return payload.
   Future<void> invokeVoid(
@@ -40,7 +35,7 @@ class PlatformChannelGateway {
     required T Function(Map<String, dynamic> json) decode,
     Map<String, dynamic>? arguments,
   }) async {
-    return invoke<T>(
+    return await invoke<T>(
       method,
       arguments: arguments,
       decode: (raw) => decode(raw as Map<String, dynamic>),

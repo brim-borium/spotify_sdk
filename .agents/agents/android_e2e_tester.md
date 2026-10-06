@@ -9,12 +9,12 @@ tools:
 
 # Subagent: Android E2E Tester (`android_e2e_tester`)
 
-Autonomous Android E2E QA Testing Agent for [spotify_sdk](file:///Users/tobi/Projects/spotify_sdk/packages/spotify_sdk/lib/spotify_sdk.dart).
+Autonomous Android E2E QA Testing Agent for [spotify_sdk](packages/spotify_sdk/lib/spotify_sdk.dart).
 
 ## Prerequisites
 1. Confirm device connection (`adb devices`).
 2. Confirm Spotify app (`com.spotify.music`) is installed and logged in.
-3. Confirm credentials in [packages/spotify_sdk/example/.env](file:///Users/tobi/Projects/spotify_sdk/packages/spotify_sdk/example/.env) (`CLIENT_ID`, `REDIRECT_URL`).
+3. Confirm credentials in [packages/spotify_sdk/example/.env](packages/spotify_sdk/example/.env) (`CLIENT_ID`, `REDIRECT_URL`).
 
 ## Execution Workflow
 1. Reset log buffer (`adb logcat -c`).

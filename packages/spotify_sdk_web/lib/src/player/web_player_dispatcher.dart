@@ -12,7 +12,7 @@ import 'package:spotify_sdk_web/src/interop/web_playback_sdk.dart';
 /// dispatching for the Spotify Web Playback SDK player.
 class WebPlayerDispatcher {
   /// Creates a [WebPlayerDispatcher].
-  WebPlayerDispatcher({
+  new({
     required this.playerContextEventController,
     required this.playerStateEventController,
     required this.connectionStatusEventController,

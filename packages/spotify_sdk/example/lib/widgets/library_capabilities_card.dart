@@ -7,10 +7,7 @@ import 'package:spotify_sdk_example/theme/spotify_theme.dart';
 /// Card for testing Library API and Capabilities.
 class LibraryCapabilitiesCard extends StatefulWidget {
   /// Creates a [LibraryCapabilitiesCard].
-  const LibraryCapabilitiesCard({
-    required this.controller,
-    super.key,
-  });
+  const new({required this.controller, super.key});
 
   /// Spotify controller reference.
   final SpotifyController controller;
@@ -96,17 +93,12 @@ class _LibraryCapabilitiesCardState extends State<LibraryCapabilitiesCard> {
                           final uri = _targetUriController.text.trim();
                           if (uri.isNotEmpty) {
                             unawaited(
-                              widget.controller.addToLibrary(
-                                spotifyUri: uri,
-                              ),
+                              widget.controller.addToLibrary(spotifyUri: uri),
                             );
                           }
                         }
                       : null,
-                  icon: const Icon(
-                    Icons.favorite_rounded,
-                    color: Colors.white,
-                  ),
+                  icon: const Icon(Icons.favorite_rounded, color: Colors.white),
                   label: const Text('Add to Library'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: SpotifyTheme.pastelCoral,

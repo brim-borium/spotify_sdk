@@ -31,10 +31,7 @@ void main() {
               case 'disconnectFromSpotify':
                 return true;
               case 'getCrossfadeState':
-                return jsonEncode({
-                  'isEnabled': true,
-                  'duration': 5000,
-                });
+                return jsonEncode({'isEnabled': true, 'duration': 5000});
               case 'getPlayerState':
                 return jsonEncode({
                   'track': {

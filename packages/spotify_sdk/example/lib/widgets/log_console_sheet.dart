@@ -9,10 +9,7 @@ import 'package:spotify_sdk_example/theme/spotify_theme.dart';
 /// Expandable log console sheet to view live SDK updates and tracebacks.
 class LogConsoleSheet extends StatelessWidget {
   /// Creates a [LogConsoleSheet].
-  const LogConsoleSheet({
-    required this.controller,
-    super.key,
-  });
+  const new({required this.controller, super.key});
 
   /// Spotify controller reference.
   final SpotifyController controller;
@@ -72,9 +69,7 @@ class LogConsoleSheet extends StatelessWidget {
                         vertical: 2,
                       ),
                       decoration: BoxDecoration(
-                        color: SpotifyTheme.pastelMint.withValues(
-                          alpha: 0.2,
-                        ),
+                        color: SpotifyTheme.pastelMint.withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Text(
@@ -104,9 +99,7 @@ class LogConsoleSheet extends StatelessWidget {
                                   )
                                   .join('\n');
                               unawaited(
-                                Clipboard.setData(
-                                  ClipboardData(text: text),
-                                ),
+                                Clipboard.setData(ClipboardData(text: text)),
                               );
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
@@ -117,10 +110,7 @@ class LogConsoleSheet extends StatelessWidget {
                             },
                     ),
                     IconButton(
-                      icon: const Icon(
-                        Icons.delete_outline_rounded,
-                        size: 20,
-                      ),
+                      icon: const Icon(Icons.delete_outline_rounded, size: 20),
                       tooltip: 'Clear logs',
                       onPressed: logs.isEmpty ? null : controller.clearLogs,
                     ),
@@ -137,9 +127,7 @@ class LogConsoleSheet extends StatelessWidget {
                 ? const Center(
                     child: Text(
                       'No SDK logs recorded yet.',
-                      style: TextStyle(
-                        color: SpotifyTheme.textDarkSecondary,
-                      ),
+                      style: TextStyle(color: SpotifyTheme.textDarkSecondary),
                     ),
                   )
                 : ListView.separated(

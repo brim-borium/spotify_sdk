@@ -7,10 +7,7 @@ import 'package:spotify_sdk_example/theme/spotify_theme.dart';
 /// Card for device management and crossfade state inspection.
 class SystemCrossfadeCard extends StatelessWidget {
   /// Creates a [SystemCrossfadeCard].
-  const SystemCrossfadeCard({
-    required this.controller,
-    super.key,
-  });
+  const new({required this.controller, super.key});
 
   /// Spotify controller reference.
   final SpotifyController controller;

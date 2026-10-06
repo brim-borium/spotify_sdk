@@ -13,7 +13,7 @@ import 'package:synchronized/synchronized.dart' as synchronized;
 /// and synchronized token refresh locks.
 class SpotifyAuthSession {
   /// Creates a [SpotifyAuthSession].
-  SpotifyAuthSession({
+  new({
     AuthSessionStorage? storage,
     OAuthWindowAdapter? windowAdapter,
     http.Client? httpClient,
@@ -44,7 +44,7 @@ class SpotifyAuthSession {
 
   /// Retrieves a valid access token, performing background refresh if expired.
   Future<String> getValidToken() async {
-    return _tokenLock.synchronized<String>(() async {
+    return await _tokenLock.synchronized<String>(() async {
       final token = currentToken;
       if (token == null || token.accessToken.isEmpty) {
         throw PlatformException(
@@ -158,18 +158,13 @@ class SpotifyAuthSession {
       };
     } else {
       urlStr = tokenSwapURL!;
-      payload = <String, String>{
-        'code': authCode,
-        'redirect_uri': redirectUrl,
-      };
+      payload = <String, String>{'code': authCode, 'redirect_uri': redirectUrl};
     }
 
     try {
       final response = await _httpClient.post(
         Uri.parse(urlStr),
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
         body: payload,
       );
 
@@ -220,9 +215,7 @@ class SpotifyAuthSession {
     try {
       final response = await _httpClient.post(
         Uri.parse(urlStr),
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
         body: payload,
       );
 

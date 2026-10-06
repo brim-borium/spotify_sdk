@@ -15,8 +15,8 @@ workspace:
   - packages/spotify_sdk/example
 
 dev_dependencies:
-  melos: ^8.3.0
-  very_good_analysis: ^10.3.0
+  melos: ^8.9.0
+  very_good_analysis: ^11.0.0
 
 melos:
   command:

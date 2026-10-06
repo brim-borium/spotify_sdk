@@ -24,7 +24,7 @@ Object? _readLinkedFromUri(Map map, String key) =>
 @JsonSerializable()
 class Track {
   /// Constructor for [Track].
-  Track(
+  new(
     this.album,
     this.artist,
     this.artists,
@@ -38,7 +38,7 @@ class Track {
   });
 
   /// Converts a [Map<String, dynamic>] to a [Track].
-  factory Track.fromJson(Map<String, dynamic> json) => _$TrackFromJson(json);
+  factory fromJson(Map<String, dynamic> json) => _$TrackFromJson(json);
 
   /// The album this track belongs to.
   final Album album;

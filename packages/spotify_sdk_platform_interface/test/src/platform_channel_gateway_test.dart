@@ -85,10 +85,8 @@ void main() {
 
     test('logException handles generic Exception without error', () {
       expect(
-        () => gateway.logException(
-          'generic',
-          Exception('Something went wrong'),
-        ),
+        () =>
+            gateway.logException('generic', Exception('Something went wrong')),
         returnsNormally,
       );
     });

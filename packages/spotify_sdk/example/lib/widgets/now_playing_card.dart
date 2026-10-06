@@ -8,10 +8,7 @@ import 'package:spotify_sdk_example/theme/spotify_theme.dart';
 /// A card displaying current playing track information and album artwork.
 class NowPlayingCard extends StatelessWidget {
   /// Creates a [NowPlayingCard].
-  const NowPlayingCard({
-    required this.controller,
-    super.key,
-  });
+  const new({required this.controller, super.key});
 
   /// Spotify controller reference.
   final SpotifyController controller;

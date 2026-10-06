@@ -6,7 +6,7 @@ part 'connection_status.g.dart';
 @JsonSerializable()
 class ConnectionStatus {
   /// Constructor for [ConnectionStatus].
-  ConnectionStatus(
+  new(
     this.message,
     this.errorCode,
     this.errorDetails, {
@@ -14,7 +14,7 @@ class ConnectionStatus {
   });
 
   /// Converts a [Map<String, dynamic>] to a [ConnectionStatus].
-  factory ConnectionStatus.fromJson(Map<String, dynamic> json) =>
+  factory fromJson(Map<String, dynamic> json) =>
       _$ConnectionStatusFromJson(json);
 
   /// Whether the SDK is connected.

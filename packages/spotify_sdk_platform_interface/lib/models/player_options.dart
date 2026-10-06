@@ -7,14 +7,10 @@ part 'player_options.g.dart';
 @JsonSerializable()
 class PlayerOptions {
   /// Constructor for [PlayerOptions].
-  PlayerOptions(
-    this.repeatMode, {
-    required this.isShuffling,
-  });
+  new(this.repeatMode, {required this.isShuffling});
 
   /// Converts a [Map<String, dynamic>] to a [PlayerOptions].
-  factory PlayerOptions.fromJson(Map<String, dynamic> json) =>
-      _$PlayerOptionsFromJson(json);
+  factory fromJson(Map<String, dynamic> json) => _$PlayerOptionsFromJson(json);
 
   /// Whether shuffle is enabled.
   @JsonKey(name: 'shuffle')

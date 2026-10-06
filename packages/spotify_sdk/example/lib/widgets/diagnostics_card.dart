@@ -7,10 +7,7 @@ import 'package:spotify_sdk_example/theme/spotify_theme.dart';
 /// Card for inspecting system diagnostics (getCrossfadeState, getCapabilities).
 class DiagnosticsCard extends StatelessWidget {
   /// Creates a [DiagnosticsCard].
-  const DiagnosticsCard({
-    required this.controller,
-    super.key,
-  });
+  const new({required this.controller, super.key});
 
   /// Reference to [SpotifyController].
   final SpotifyController controller;

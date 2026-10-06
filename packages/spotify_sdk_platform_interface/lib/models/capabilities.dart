@@ -6,13 +6,10 @@ part 'capabilities.g.dart';
 @JsonSerializable()
 class Capabilities {
   /// Constructor for [Capabilities].
-  Capabilities({
-    required this.canPlayOnDemand,
-  });
+  new({required this.canPlayOnDemand});
 
   /// Converts a [Map<String, dynamic>] to a [Capabilities].
-  factory Capabilities.fromJson(Map<String, dynamic> json) =>
-      _$CapabilitiesFromJson(json);
+  factory fromJson(Map<String, dynamic> json) => _$CapabilitiesFromJson(json);
 
   /// Whether the user can play tracks on demand.
   @JsonKey(name: 'can_play_on_demand')

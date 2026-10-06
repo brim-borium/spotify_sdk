@@ -8,10 +8,7 @@ import 'package:spotify_sdk_example/theme/spotify_theme.dart';
 /// Card for testing advanced playback features.
 class AdvancedPlaybackCard extends StatefulWidget {
   /// Creates an [AdvancedPlaybackCard].
-  const AdvancedPlaybackCard({
-    required this.controller,
-    super.key,
-  });
+  const new({required this.controller, super.key});
 
   /// Reference to [SpotifyController].
   final SpotifyController controller;
@@ -223,9 +220,7 @@ class _AdvancedPlaybackCardState extends State<AdvancedPlaybackCard> {
       backgroundColor: SpotifyTheme.backgroundLight,
       onPressed: widget.controller.isConnected
           ? () {
-              unawaited(
-                widget.controller.setPodcastPlaybackSpeed(speed),
-              );
+              unawaited(widget.controller.setPodcastPlaybackSpeed(speed));
             }
           : null,
     );

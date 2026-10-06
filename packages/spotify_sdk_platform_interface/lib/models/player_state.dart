@@ -9,7 +9,7 @@ part 'player_state.g.dart';
 @JsonSerializable()
 class PlayerState {
   /// Constructor for [PlayerState].
-  PlayerState(
+  new(
     this.track,
     this.playbackSpeed,
     this.playbackPosition,
@@ -19,8 +19,7 @@ class PlayerState {
   });
 
   /// Converts a [Map<String, dynamic>] to a [PlayerState].
-  factory PlayerState.fromJson(Map<String, dynamic> json) =>
-      _$PlayerStateFromJson(json);
+  factory fromJson(Map<String, dynamic> json) => _$PlayerStateFromJson(json);
 
   /// The currently playing track.
   final Track? track;

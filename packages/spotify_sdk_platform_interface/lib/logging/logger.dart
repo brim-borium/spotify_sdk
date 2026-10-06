@@ -4,7 +4,7 @@ import 'dart:developer' as developer;
 /// external `logger` package to avoid `dart:io` transitive imports.
 class Logger {
   /// Creates a new [Logger] instance.
-  Logger({this.printer});
+  new({this.printer});
 
   /// Optional printer configuration (not used by this lightweight logger).
   final dynamic printer;

@@ -22,7 +22,8 @@ class WebSdkLoader {
       return;
     }
     if (_loadCompleter != null) {
-      return _loadCompleter!.future;
+      await _loadCompleter!.future;
+      return;
     }
 
     _loadCompleter = Completer<void>();
@@ -31,7 +32,8 @@ class WebSdkLoader {
       log('Reusing previously initialized Spotify Web SDK');
       _sdkLoaded = true;
       _loadCompleter!.complete();
-      return _loadCompleter!.future;
+      await _loadCompleter!.future;
+      return;
     }
 
     log('Loading Spotify Web SDK script...');
@@ -45,6 +47,6 @@ class WebSdkLoader {
     final script = web.HTMLScriptElement()..src = scriptUrl;
     web.document.body?.append(script);
 
-    return _loadCompleter!.future;
+    await _loadCompleter!.future;
   }
 }

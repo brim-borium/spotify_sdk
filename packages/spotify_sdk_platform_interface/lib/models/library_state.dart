@@ -6,15 +6,10 @@ part 'library_state.g.dart';
 @JsonSerializable()
 class LibraryState {
   /// Constructor for [LibraryState].
-  LibraryState(
-    this.uri, {
-    required this.isSaved,
-    required this.canSave,
-  });
+  new(this.uri, {required this.isSaved, required this.canSave});
 
   /// Converts a [Map<String, dynamic>] to a [LibraryState].
-  factory LibraryState.fromJson(Map<String, dynamic> json) =>
-      _$LibraryStateFromJson(json);
+  factory fromJson(Map<String, dynamic> json) => _$LibraryStateFromJson(json);
 
   /// The URI of the item.
   @JsonKey(name: 'uri')

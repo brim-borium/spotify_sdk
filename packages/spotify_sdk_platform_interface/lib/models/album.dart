@@ -6,10 +6,10 @@ part 'album.g.dart';
 @JsonSerializable()
 class Album {
   /// Constructor for [Album].
-  Album(this.name, this.uri);
+  new(this.name, this.uri);
 
   /// Converts a [Map<String, dynamic>] to an [Album].
-  factory Album.fromJson(Map<String, dynamic> json) => _$AlbumFromJson(json);
+  factory fromJson(Map<String, dynamic> json) => _$AlbumFromJson(json);
 
   /// The name of the album.
   final String? name;

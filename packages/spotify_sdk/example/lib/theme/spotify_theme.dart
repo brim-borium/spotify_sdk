@@ -42,10 +42,7 @@ abstract class SpotifyTheme {
 
   /// Linear gradient for the hero banner card
   static const LinearGradient heroGradient = LinearGradient(
-    colors: [
-      Color(0xFFE0C3FC),
-      Color(0xFF8EC5FC),
-    ],
+    colors: [Color(0xFFE0C3FC), Color(0xFF8EC5FC)],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
@@ -103,10 +100,7 @@ abstract class SpotifyTheme {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(14),
           ),
-          textStyle: const TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-          ),
+          textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(

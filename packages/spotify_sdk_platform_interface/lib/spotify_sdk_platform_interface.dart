@@ -39,7 +39,7 @@ export 'package:spotify_sdk_platform_interface/src/method_channel_spotify_sdk.da
 /// The interface that implementations of spotify_sdk must implement.
 abstract class SpotifySdkPlatform extends PlatformInterface {
   /// Constructs a SpotifySdkPlatform.
-  SpotifySdkPlatform() : super(token: _token);
+  new() : super(token: _token);
 
   static final Object _token = Object();
 
@@ -120,10 +120,7 @@ abstract class SpotifySdkPlatform extends PlatformInterface {
   }
 
   /// Plays the given [spotifyUri].
-  Future<void> play({
-    required String spotifyUri,
-    bool asRadio = false,
-  }) {
+  Future<void> play({required String spotifyUri, bool asRadio = false}) {
     throw UnimplementedError('play() has not been implemented.');
   }
 
@@ -170,9 +167,7 @@ abstract class SpotifySdkPlatform extends PlatformInterface {
   }
 
   /// Adds the given [relativeMilliseconds] to the current playback time.
-  Future<void> seekToRelativePosition({
-    required int relativeMilliseconds,
-  }) {
+  Future<void> seekToRelativePosition({required int relativeMilliseconds}) {
     throw UnimplementedError(
       'seekToRelativePosition() has not been implemented.',
     );
@@ -204,16 +199,12 @@ abstract class SpotifySdkPlatform extends PlatformInterface {
   }
 
   /// Gets the [Capabilities] of the current user.
-  Future<Capabilities?> getCapabilities({
-    required String spotifyUri,
-  }) {
+  Future<Capabilities?> getCapabilities({required String spotifyUri}) {
     throw UnimplementedError('getCapabilities() has not been implemented.');
   }
 
   /// Gets the [LibraryState] of the given [spotifyUri].
-  Future<LibraryState?> getLibraryState({
-    required String spotifyUri,
-  }) {
+  Future<LibraryState?> getLibraryState({required String spotifyUri}) {
     throw UnimplementedError('getLibraryState() has not been implemented.');
   }
 
@@ -231,9 +222,7 @@ abstract class SpotifySdkPlatform extends PlatformInterface {
   }
 
   /// Sets the repeat mode.
-  Future<void> setRepeatMode({
-    required SpotifyRepeatMode repeatMode,
-  }) {
+  Future<void> setRepeatMode({required SpotifyRepeatMode repeatMode}) {
     throw UnimplementedError('setRepeatMode() has not been implemented.');
   }
 

@@ -15,7 +15,7 @@ Future<void> main() async {
 /// The root application widget for Spotify SDK Example.
 class SpotifySdkApp extends StatefulWidget {
   /// Constructor for [SpotifySdkApp].
-  const SpotifySdkApp({super.key});
+  const new({super.key});
 
   @override
   State<SpotifySdkApp> createState() => _SpotifySdkAppState();

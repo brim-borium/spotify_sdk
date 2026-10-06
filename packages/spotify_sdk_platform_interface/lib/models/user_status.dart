@@ -6,11 +6,10 @@ part 'user_status.g.dart';
 @JsonSerializable()
 class UserStatus {
   /// Constructor for [UserStatus].
-  UserStatus(this.code, this.shortMessage, this.longMessage);
+  new(this.code, this.shortMessage, this.longMessage);
 
   /// Converts a [Map<String, dynamic>] to a [UserStatus].
-  factory UserStatus.fromJson(Map<String, dynamic> json) =>
-      _$UserStatusFromJson(json);
+  factory fromJson(Map<String, dynamic> json) => _$UserStatusFromJson(json);
 
   /// Status code for OK.
   final int statusCodeOk = 0;

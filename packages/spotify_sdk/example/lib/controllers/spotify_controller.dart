@@ -10,7 +10,7 @@ import 'package:spotify_sdk_example/models/status_log_entry.dart';
 /// State Controller that wraps [SpotifySdk] calls and stream providers.
 class SpotifyController extends ChangeNotifier {
   /// Creates a [SpotifyController].
-  SpotifyController() {
+  new() {
     _initConnectionLogging();
     _initPlayerStateListening();
   }
@@ -131,10 +131,7 @@ class SpotifyController extends ChangeNotifier {
           notifyListeners();
         },
         onError: (Object error) {
-          log(
-            'Player state stream error: $error',
-            severity: LogSeverity.error,
-          );
+          log('Player state stream error: $error', severity: LogSeverity.error);
         },
       );
     } on Object catch (e) {
@@ -253,7 +250,7 @@ class SpotifyController extends ChangeNotifier {
 
   /// Retrieves current PlayerState on demand.
   Future<PlayerState?> getPlayerState() async {
-    return _runSdkCall(
+    return await _runSdkCall(
       'getting player state',
       SpotifySdk.getPlayerState,
       onSuccess: (state) {
@@ -447,9 +444,8 @@ class SpotifyController extends ChangeNotifier {
           notifyListeners();
         }
         unawaited(
-          Future<void>.delayed(
-            const Duration(milliseconds: 250),
-          ).then((_) => getPlayerState()),
+          Future<void>.delayed(const Duration(milliseconds: 250))
+              .then((_) => getPlayerState()),
         );
       },
     );
@@ -474,9 +470,8 @@ class SpotifyController extends ChangeNotifier {
           notifyListeners();
         }
         unawaited(
-          Future<void>.delayed(
-            const Duration(milliseconds: 250),
-          ).then((_) => getPlayerState()),
+          Future<void>.delayed(const Duration(milliseconds: 250))
+              .then((_) => getPlayerState()),
         );
       },
     );
@@ -538,9 +533,8 @@ class SpotifyController extends ChangeNotifier {
       onSuccess: (_) {
         log('Queued URI: $spotifyUri', severity: LogSeverity.success);
         unawaited(
-          Future<void>.delayed(
-            const Duration(milliseconds: 250),
-          ).then((_) => getPlayerState()),
+          Future<void>.delayed(const Duration(milliseconds: 250))
+              .then((_) => getPlayerState()),
         );
       },
     );
@@ -565,9 +559,8 @@ class SpotifyController extends ChangeNotifier {
           notifyListeners();
         }
         unawaited(
-          Future<void>.delayed(
-            const Duration(milliseconds: 250),
-          ).then((_) => getPlayerState()),
+          Future<void>.delayed(const Duration(milliseconds: 250))
+              .then((_) => getPlayerState()),
         );
       },
     );
@@ -577,9 +570,7 @@ class SpotifyController extends ChangeNotifier {
   Future<void> seekToRelative(int relativeMs) async {
     await _runSdkCall(
       'relative seek',
-      () => SpotifySdk.seekToRelativePosition(
-        relativeMilliseconds: relativeMs,
-      ),
+      () => SpotifySdk.seekToRelativePosition(relativeMilliseconds: relativeMs),
       onSuccess: (_) {
         log('Sought relative ${relativeMs}ms');
         if (_lastPlayerState != null) {
@@ -597,9 +588,8 @@ class SpotifyController extends ChangeNotifier {
           notifyListeners();
         }
         unawaited(
-          Future<void>.delayed(
-            const Duration(milliseconds: 250),
-          ).then((_) => getPlayerState()),
+          Future<void>.delayed(const Duration(milliseconds: 250))
+              .then((_) => getPlayerState()),
         );
       },
     );
@@ -629,9 +619,8 @@ class SpotifyController extends ChangeNotifier {
           notifyListeners();
         }
         unawaited(
-          Future<void>.delayed(
-            const Duration(milliseconds: 250),
-          ).then((_) => getPlayerState()),
+          Future<void>.delayed(const Duration(milliseconds: 250))
+              .then((_) => getPlayerState()),
         );
       },
     );
@@ -660,9 +649,8 @@ class SpotifyController extends ChangeNotifier {
           notifyListeners();
         }
         unawaited(
-          Future<void>.delayed(
-            const Duration(milliseconds: 250),
-          ).then((_) => getPlayerState()),
+          Future<void>.delayed(const Duration(milliseconds: 250))
+              .then((_) => getPlayerState()),
         );
       },
     );
@@ -697,9 +685,8 @@ class SpotifyController extends ChangeNotifier {
           notifyListeners();
         }
         unawaited(
-          Future<void>.delayed(
-            const Duration(milliseconds: 250),
-          ).then((_) => getPlayerState()),
+          Future<void>.delayed(const Duration(milliseconds: 250))
+              .then((_) => getPlayerState()),
         );
       },
     );
@@ -728,9 +715,8 @@ class SpotifyController extends ChangeNotifier {
           notifyListeners();
         }
         unawaited(
-          Future<void>.delayed(
-            const Duration(milliseconds: 250),
-          ).then((_) => getPlayerState()),
+          Future<void>.delayed(const Duration(milliseconds: 250))
+              .then((_) => getPlayerState()),
         );
       },
     );
@@ -744,9 +730,8 @@ class SpotifyController extends ChangeNotifier {
       onSuccess: (_) {
         log('Set podcast speed to ${speed.name}');
         unawaited(
-          Future<void>.delayed(
-            const Duration(milliseconds: 250),
-          ).then((_) => getPlayerState()),
+          Future<void>.delayed(const Duration(milliseconds: 250))
+              .then((_) => getPlayerState()),
         );
       },
     );
@@ -776,7 +761,7 @@ class SpotifyController extends ChangeNotifier {
 
   /// Gets library state of item.
   Future<LibraryState?> getLibraryState({required String spotifyUri}) async {
-    return _runSdkCall(
+    return await _runSdkCall(
       'getting library state',
       () => SpotifySdk.getLibraryState(spotifyUri: spotifyUri),
       onSuccess: (state) {
@@ -789,7 +774,7 @@ class SpotifyController extends ChangeNotifier {
 
   /// Gets user capabilities for URI.
   Future<Capabilities?> getCapabilities({required String spotifyUri}) async {
-    return _runSdkCall(
+    return await _runSdkCall(
       'getting capabilities',
       () => SpotifySdk.getCapabilities(spotifyUri: spotifyUri),
       onSuccess: (capabilities) {
@@ -802,7 +787,7 @@ class SpotifyController extends ChangeNotifier {
 
   /// Fetches current crossfade state.
   Future<CrossfadeState?> getCrossfadeState() async {
-    return _runSdkCall(
+    return await _runSdkCall(
       'getting crossfade state',
       SpotifySdk.getCrossFadeState,
       onSuccess: (state) {
@@ -819,10 +804,7 @@ class SpotifyController extends ChangeNotifier {
       'switching to local device',
       SpotifySdk.switchToLocalDevice,
       onSuccess: (_) {
-        log(
-          'Switched playback to local device',
-          severity: LogSeverity.success,
-        );
+        log('Switched playback to local device', severity: LogSeverity.success);
       },
     );
   }
