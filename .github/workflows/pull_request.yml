@@ -136,6 +136,7 @@ jobs:
 
   # Package Score Job: Verifies pub.dev package compatibility score using pana
   pana:
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
