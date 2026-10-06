@@ -2,9 +2,7 @@ name: Publish to pub.dev
 on:
   push:
     tags:
-      - '*-v*'
       - 'v*'
-      - '*.*.*'
 
 jobs:
   validate:
@@ -25,14 +23,7 @@ jobs:
           ./prepare-iOS-SDK.sh
 
       - name: Verify Publish Dry Run
-        run: |
-          TAG="${{ github.ref_name }}"
-          if [[ "$TAG" == *-v* ]]; then
-            PKG="${TAG%-v*}"
-            melos publish --dry-run --yes --scope="$PKG"
-          else
-            melos run publish:dry-run
-          fi
+        run: melos run publish:dry-run
 
   publish:
     needs: validate
@@ -66,11 +57,4 @@ jobs:
           ./prepare-iOS-SDK.sh
 
       - name: 📢 Publish packages via Melos
-        run: |
-          TAG="${{ github.ref_name }}"
-          if [[ "$TAG" == *-v* ]]; then
-            PKG="${TAG%-v*}"
-            melos publish --no-dry-run --yes --scope="$PKG"
-          else
-            melos publish --no-dry-run --yes
-          fi
+        run: melos publish --no-dry-run --yes

@@ -25,6 +25,8 @@ melos:
       hooks:
         post: melos run sync:license
     version:
+      mode: fixed
+      workspaceTag: true
       ignore:
         - "spotify_sdk_example"
         - "spotify_sdk_monorepo"
