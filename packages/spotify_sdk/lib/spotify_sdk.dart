@@ -5,7 +5,7 @@ import 'package:spotify_sdk_platform_interface/spotify_sdk_platform_interface.da
 
 export 'package:spotify_sdk_platform_interface/spotify_sdk_platform_interface.dart';
 
-/// [SpotifySdk] holds the functionality to connect via spotify remote or
+/// [SpotifySdk] holds the functionality to connect via Spotify Remote or
 /// get an authToken to control the spotify playback.
 class SpotifySdk {
   /// Connects to Spotify Remote, returning a [bool] for confirmation.
