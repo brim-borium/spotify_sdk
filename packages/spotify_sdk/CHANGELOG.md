@@ -1,3 +1,7 @@
+## 4.0.1
+
+ - **FIX**: upgrade flutter to 3.47.6, update dependencies to very_good_analysis 11.0.0, and establish coding standards (#274).
+
 ## 4.0.0
 
 A major release bringing federated monorepo architecture, zero-configuration Android setup, Spotify Android Auth SDK 5.0.0, native iOS playback feature parity, typed domain exception hierarchy, Web Playback SDK with modern `package:web` / WASM support, and compatibility with Flutter 3.47.1 & Dart 3.13.

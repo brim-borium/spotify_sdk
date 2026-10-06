@@ -3,6 +3,47 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 2026-10-06
+
+### Changes
+
+---
+
+Packages with breaking changes:
+
+ - There are no breaking changes in this release.
+
+Packages with other changes:
+
+ - [`spotify_sdk` - `v4.0.1`](#spotify_sdk---v401)
+ - [`spotify_sdk_android` - `v4.3.1`](#spotify_sdk_android---v431)
+ - [`spotify_sdk_ios` - `v4.3.1`](#spotify_sdk_ios---v431)
+ - [`spotify_sdk_platform_interface` - `v4.3.1`](#spotify_sdk_platform_interface---v431)
+ - [`spotify_sdk_web` - `v4.3.1`](#spotify_sdk_web---v431)
+
+---
+
+#### `spotify_sdk` - `v4.0.1`
+
+ - **FIX**: upgrade flutter to 3.47.6, update dependencies to very_good_analysis 11.0.0, and establish coding standards (#274).
+
+#### `spotify_sdk_android` - `v4.3.1`
+
+ - **FIX**: upgrade flutter to 3.47.6, update dependencies to very_good_analysis 11.0.0, and establish coding standards (#274).
+
+#### `spotify_sdk_ios` - `v4.3.1`
+
+ - **FIX**: upgrade flutter to 3.47.6, update dependencies to very_good_analysis 11.0.0, and establish coding standards (#274).
+
+#### `spotify_sdk_platform_interface` - `v4.3.1`
+
+ - **FIX**: upgrade flutter to 3.47.6, update dependencies to very_good_analysis 11.0.0, and establish coding standards (#274).
+
+#### `spotify_sdk_web` - `v4.3.1`
+
+ - **FIX**: upgrade flutter to 3.47.6, update dependencies to very_good_analysis 11.0.0, and establish coding standards (#274).
+
+
 ## 4.0.0
 
 A major release bringing federated monorepo architecture, zero-configuration Android setup, Spotify Android Auth SDK 5.0.0, native iOS playback feature parity, typed domain exception hierarchy, Web Playback SDK with modern `package:web` / WASM support, and compatibility with Flutter 3.47.1 & Dart 3.13.
