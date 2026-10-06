@@ -56,5 +56,8 @@ Consult scoped rule files when touching platform-specific directories:
 ### Issue Tracker
 GitHub issues house tasks and specs for this repository. See [docs/agents/issue-tracker.md](file:///Users/tobi/Projects/spotify_sdk/docs/agents/issue-tracker.md).
 
+### Triage Labels
+Canonical five-role triage vocabulary. See [docs/agents/triage-labels.md](file:///Users/tobi/Projects/spotify_sdk/docs/agents/triage-labels.md).
+
 ### Domain Docs
-Single-context layout with [CONTEXT.md](file:///Users/tobi/Projects/spotify_sdk/CONTEXT.md) and [docs/adr/](file:///Users/tobi/Projects/spotify_sdk/docs/adr/) at repo root. See [docs/agents/domain.md](file:///Users/tobi/Projects/spotify_sdk/docs/agents/domain.md).
+Single-context layout with [GLOSSARY.md](file:///Users/tobi/Projects/spotify_sdk/GLOSSARY.md) and [docs/adr/](file:///Users/tobi/Projects/spotify_sdk/docs/adr/) at repo root. See [docs/agents/domain.md](file:///Users/tobi/Projects/spotify_sdk/docs/agents/domain.md).
