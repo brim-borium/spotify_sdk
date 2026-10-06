@@ -10,10 +10,7 @@ import 'package:spotify_sdk_example/widgets/log_console_sheet.dart';
 /// Main home screen displaying the unified Spotify SDK Showcase dashboard.
 class HomeScreen extends StatelessWidget {
   /// Creates a [HomeScreen].
-  const HomeScreen({
-    required this.controller,
-    super.key,
-  });
+  const new({required this.controller, super.key});
 
   /// Spotify controller reference.
   final SpotifyController controller;
@@ -67,9 +64,8 @@ class HomeScreen extends StatelessWidget {
                     color: SpotifyTheme.pastelMint,
                   ),
                   tooltip: 'Connect Remote',
-                  onPressed: () => unawaited(
-                    controller.connectToSpotifyRemote(),
-                  ),
+                  onPressed: () =>
+                      unawaited(controller.connectToSpotifyRemote()),
                 ),
               const SizedBox(width: 8),
             ],

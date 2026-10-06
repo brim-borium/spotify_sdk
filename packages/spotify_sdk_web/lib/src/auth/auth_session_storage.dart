@@ -5,7 +5,7 @@ import 'package:web/web.dart' as web;
 /// Spotify token data object.
 class SpotifyToken {
   /// Creates a [SpotifyToken].
-  SpotifyToken({
+  new({
     required this.clientId,
     required this.accessToken,
     required this.refreshToken,
@@ -13,7 +13,7 @@ class SpotifyToken {
   });
 
   /// Converts JSON map to [SpotifyToken].
-  factory SpotifyToken.fromJson(Map<String, dynamic> json) => SpotifyToken(
+  factory fromJson(Map<String, dynamic> json) => SpotifyToken(
     clientId: json['client_id'] as String,
     accessToken: json['access_token'] as String,
     refreshToken: json['refresh_token'] as String,
@@ -60,10 +60,7 @@ class BrowserAuthStorage implements AuthSessionStorage {
 
   @override
   void saveToken(SpotifyToken token) {
-    web.window.localStorage.setItem(
-      _storageKey,
-      jsonEncode(token.toJson()),
-    );
+    web.window.localStorage.setItem(_storageKey, jsonEncode(token.toJson()));
   }
 
   @override

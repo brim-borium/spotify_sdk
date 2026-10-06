@@ -146,14 +146,12 @@ class SpotifySdk {
       SpotifySdkPlatform.instance.removeFromLibrary(spotifyUri: spotifyUri);
 
   /// Gets the [Capabilities] of the current user.
-  static Future<Capabilities?> getCapabilities({
-    required String spotifyUri,
-  }) => SpotifySdkPlatform.instance.getCapabilities(spotifyUri: spotifyUri);
+  static Future<Capabilities?> getCapabilities({required String spotifyUri}) =>
+      SpotifySdkPlatform.instance.getCapabilities(spotifyUri: spotifyUri);
 
   /// Gets the [LibraryState] of the given [spotifyUri].
-  static Future<LibraryState?> getLibraryState({
-    required String spotifyUri,
-  }) => SpotifySdkPlatform.instance.getLibraryState(spotifyUri: spotifyUri);
+  static Future<LibraryState?> getLibraryState({required String spotifyUri}) =>
+      SpotifySdkPlatform.instance.getLibraryState(spotifyUri: spotifyUri);
 
   /// Gets an image from a specified [imageUri].
   static Future<Uint8List?> getImage({
@@ -169,9 +167,8 @@ class SpotifySdk {
       SpotifySdkPlatform.instance.setShuffle(shuffle: shuffle);
 
   /// Sets the repeat mode.
-  static Future<void> setRepeatMode({
-    required SpotifyRepeatMode repeatMode,
-  }) => SpotifySdkPlatform.instance.setRepeatMode(repeatMode: repeatMode);
+  static Future<void> setRepeatMode({required SpotifyRepeatMode repeatMode}) =>
+      SpotifySdkPlatform.instance.setRepeatMode(repeatMode: repeatMode);
 
   /// Subscribes to the [PlayerContext] and returns it.
   static Stream<PlayerContext> subscribePlayerContext() =>

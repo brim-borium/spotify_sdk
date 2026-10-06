@@ -6,10 +6,10 @@ part 'artist.g.dart';
 @JsonSerializable()
 class Artist {
   /// Constructor for [Artist].
-  Artist(this.name, this.uri);
+  new(this.name, this.uri);
 
   /// Converts a [Map<String, dynamic>] to an [Artist].
-  factory Artist.fromJson(Map<String, dynamic> json) => _$ArtistFromJson(json);
+  factory fromJson(Map<String, dynamic> json) => _$ArtistFromJson(json);
 
   /// The name of the artist.
   final String? name;

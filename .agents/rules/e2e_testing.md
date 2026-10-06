@@ -11,7 +11,7 @@ Autonomous end-to-end testing of `spotify_sdk` example app on physical Android d
 | **`mobile-next/mobile-mcp`** | UI gesture automation & accessibility tree | UI testing (taps, swipes, SSO flows) |
 | **`landicefu/android-adb-mcp-server`** | ADB CLI wrapper & Logcat diagnostics | Logcat cross-checking & shell commands |
 
-Workspace configuration lives in [.mcp.json](file:///Users/tobi/Projects/spotify_sdk/.mcp.json).
+Workspace configuration lives in [.mcp.json](.mcp.json).
 
 ---
 
@@ -19,7 +19,7 @@ Workspace configuration lives in [.mcp.json](file:///Users/tobi/Projects/spotify
 
 1. USB Debugging enabled on physical Android device (`adb devices`).
 2. Spotify Premium app installed and logged in.
-3. Credentials defined in [packages/spotify_sdk/example/.env](file:///Users/tobi/Projects/spotify_sdk/packages/spotify_sdk/example/.env) (`CLIENT_ID`, `REDIRECT_URL`).
+3. Credentials defined in [packages/spotify_sdk/example/.env](packages/spotify_sdk/example/.env) (`CLIENT_ID`, `REDIRECT_URL`).
 
 ---
 

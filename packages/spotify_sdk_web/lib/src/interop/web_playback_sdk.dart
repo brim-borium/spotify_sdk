@@ -22,7 +22,7 @@ external JSFunction? get onSpotifyWebPlaybackSDKReady;
 extension type Player._(JSObject _) implements JSObject {
   /// The main constructor for initializing the Web Playback SDK.
   /// It should contain an object with the player name, volume and access token.
-  external Player(PlayerOptions options);
+  external new(PlayerOptions options);
 
   /// Device id of the player.
   external String? get deviceID;
@@ -74,11 +74,7 @@ extension type Player._(JSObject _) implements JSObject {
 @JS()
 extension type PlayerOptions._(JSObject _) implements JSObject {
   /// constructor
-  external factory PlayerOptions({
-    String? name,
-    JSFunction? getOAuthToken,
-    double? volume,
-  });
+  external factory({String? name, JSFunction? getOAuthToken, double? volume});
 
   /// name
   external String? get name;
@@ -94,7 +90,7 @@ extension type PlayerOptions._(JSObject _) implements JSObject {
 @JS()
 extension type WebPlaybackPlayer._(JSObject _) implements JSObject {
   /// constructor
-  external factory WebPlaybackPlayer({String? device_id});
+  external factory({String? device_id});
 
   /// device id
   external String? get device_id;
@@ -104,7 +100,7 @@ extension type WebPlaybackPlayer._(JSObject _) implements JSObject {
 @JS()
 extension type WebPlaybackState._(JSObject _) implements JSObject {
   /// constructor
-  external factory WebPlaybackState({
+  external factory({
     WebPlayerContext? context,
     WebPlayerDisallows? disallows,
     bool? paused,
@@ -144,10 +140,7 @@ extension type WebPlaybackState._(JSObject _) implements JSObject {
 @JS()
 extension type WebPlayerContext._(JSObject _) implements JSObject {
   /// constructor
-  external factory WebPlayerContext({
-    String? uri,
-    WebPlayerContextMetadata? metadata,
-  });
+  external factory({String? uri, WebPlayerContextMetadata? metadata});
 
   /// uri
   external String? get uri;
@@ -160,11 +153,7 @@ extension type WebPlayerContext._(JSObject _) implements JSObject {
 @JS()
 extension type WebPlayerContextMetadata._(JSObject _) implements JSObject {
   /// constructor
-  external factory WebPlayerContextMetadata({
-    String? title,
-    String? subtitle,
-    String? type,
-  });
+  external factory({String? title, String? subtitle, String? type});
 
   /// title
   external String? get title;
@@ -180,7 +169,7 @@ extension type WebPlayerContextMetadata._(JSObject _) implements JSObject {
 @JS()
 extension type WebPlayerDisallows._(JSObject _) implements JSObject {
   /// constructor
-  external factory WebPlayerDisallows({
+  external factory({
     bool? pausing,
     bool? peeking_next,
     bool? peeking_prev,
@@ -216,7 +205,7 @@ extension type WebPlayerDisallows._(JSObject _) implements JSObject {
 @JS()
 extension type WebPlayerTrackWindow._(JSObject _) implements JSObject {
   /// constructor
-  external factory WebPlayerTrackWindow({
+  external factory({
     WebPlaybackTrack? current_track,
     JSArray<WebPlaybackTrack>? previous_tracks,
     JSArray<WebPlaybackTrack>? next_tracks,
@@ -236,7 +225,7 @@ extension type WebPlayerTrackWindow._(JSObject _) implements JSObject {
 @JS()
 extension type WebPlaybackTrack._(JSObject _) implements JSObject {
   /// constructor
-  external factory WebPlaybackTrack({
+  external factory({
     String? uri,
     String? id,
     String? type,
@@ -284,7 +273,7 @@ extension type WebPlaybackTrack._(JSObject _) implements JSObject {
 @JS()
 extension type WebPlaybackAlbum._(JSObject _) implements JSObject {
   /// constructor
-  external factory WebPlaybackAlbum({
+  external factory({
     String? uri,
     String? name,
     JSArray<WebPlaybackAlbumImage>? images,
@@ -304,7 +293,7 @@ extension type WebPlaybackAlbum._(JSObject _) implements JSObject {
 @JS()
 extension type WebLinkedFrom._(JSObject _) implements JSObject {
   /// constructor
-  external factory WebLinkedFrom({String? uri, String? id});
+  external factory({String? uri, String? id});
 
   /// uri
   external String? get uri;
@@ -317,7 +306,7 @@ extension type WebLinkedFrom._(JSObject _) implements JSObject {
 @JS()
 extension type WebPlaybackArtist._(JSObject _) implements JSObject {
   /// constructor
-  external factory WebPlaybackArtist({String? uri, String? name});
+  external factory({String? uri, String? name});
 
   /// uri
   external String? get uri;
@@ -330,7 +319,7 @@ extension type WebPlaybackArtist._(JSObject _) implements JSObject {
 @JS()
 extension type WebPlaybackAlbumImage._(JSObject _) implements JSObject {
   /// constructor
-  external factory WebPlaybackAlbumImage({String? url});
+  external factory({String? url});
 
   /// url
   external String? get url;
@@ -340,7 +329,7 @@ extension type WebPlaybackAlbumImage._(JSObject _) implements JSObject {
 @JS()
 extension type WebPlaybackError._(JSObject _) implements JSObject {
   /// constructor
-  external factory WebPlaybackError({String? message});
+  external factory({String? message});
 
   /// message
   external String? get message;

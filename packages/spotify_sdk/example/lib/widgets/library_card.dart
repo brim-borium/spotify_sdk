@@ -7,10 +7,7 @@ import 'package:spotify_sdk_example/theme/spotify_theme.dart';
 /// Card for interacting with Spotify User Library APIs.
 class LibraryCard extends StatefulWidget {
   /// Creates a [LibraryCard].
-  const LibraryCard({
-    required this.controller,
-    super.key,
-  });
+  const new({required this.controller, super.key});
 
   /// Reference to [SpotifyController].
   final SpotifyController controller;
@@ -122,9 +119,7 @@ class _LibraryCardState extends State<LibraryCard> {
                             final uri = _uriController.text.trim();
                             if (uri.isNotEmpty) {
                               unawaited(
-                                widget.controller.addToLibrary(
-                                  spotifyUri: uri,
-                                ),
+                                widget.controller.addToLibrary(spotifyUri: uri),
                               );
                             }
                           }

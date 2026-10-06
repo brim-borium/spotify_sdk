@@ -6,11 +6,10 @@ part 'image_uri.g.dart';
 @JsonSerializable()
 class ImageUri {
   /// Constructor for [ImageUri].
-  ImageUri(this.raw);
+  new(this.raw);
 
   /// Converts a [Map<String, dynamic>] to an [ImageUri].
-  factory ImageUri.fromJson(Map<String, dynamic> json) =>
-      _$ImageUriFromJson(json);
+  factory fromJson(Map<String, dynamic> json) => _$ImageUriFromJson(json);
 
   /// The raw URI string.
   final String raw;

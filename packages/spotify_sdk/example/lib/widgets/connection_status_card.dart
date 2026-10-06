@@ -8,10 +8,7 @@ import 'package:spotify_sdk_example/theme/spotify_theme.dart';
 /// Card managing Spotify Remote Connection and Auth Token acquisition.
 class ConnectionStatusCard extends StatelessWidget {
   /// Creates a [ConnectionStatusCard].
-  const ConnectionStatusCard({
-    required this.controller,
-    super.key,
-  });
+  const new({required this.controller, super.key});
 
   /// Spotify controller reference.
   final SpotifyController controller;
@@ -190,9 +187,7 @@ class ConnectionStatusCard extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: SpotifyTheme.pastelYellow.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: SpotifyTheme.pastelYellow,
-                    ),
+                    border: Border.all(color: SpotifyTheme.pastelYellow),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,

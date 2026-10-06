@@ -1,6 +1,6 @@
 # Web Platform Rules for `spotify_sdk`
 
-Adhere to these rules when working in [packages/spotify_sdk_web/lib/spotify_sdk_web.dart](file:///Users/tobi/Projects/spotify_sdk/packages/spotify_sdk_web/lib/spotify_sdk_web.dart).
+Adhere to these rules when working in [packages/spotify_sdk_web/lib/spotify_sdk_web.dart](packages/spotify_sdk_web/lib/spotify_sdk_web.dart).
 
 ---
 

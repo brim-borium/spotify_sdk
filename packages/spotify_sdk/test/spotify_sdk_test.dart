@@ -89,10 +89,7 @@ class MockSpotifySdkPlatform extends SpotifySdkPlatform
   }
 
   @override
-  Future<void> play({
-    required String spotifyUri,
-    bool asRadio = false,
-  }) async {
+  Future<void> play({required String spotifyUri, bool asRadio = false}) async {
     calls.add('play');
   }
 
@@ -169,17 +166,13 @@ class MockSpotifySdkPlatform extends SpotifySdkPlatform
   }
 
   @override
-  Future<Capabilities?> getCapabilities({
-    required String spotifyUri,
-  }) async {
+  Future<Capabilities?> getCapabilities({required String spotifyUri}) async {
     calls.add('getCapabilities');
     return Capabilities(canPlayOnDemand: true);
   }
 
   @override
-  Future<LibraryState?> getLibraryState({
-    required String spotifyUri,
-  }) async {
+  Future<LibraryState?> getLibraryState({required String spotifyUri}) async {
     calls.add('getLibraryState');
     return LibraryState('spotify:track:123', isSaved: true, canSave: true);
   }
@@ -199,9 +192,7 @@ class MockSpotifySdkPlatform extends SpotifySdkPlatform
   }
 
   @override
-  Future<void> setRepeatMode({
-    required SpotifyRepeatMode repeatMode,
-  }) async {
+  Future<void> setRepeatMode({required SpotifyRepeatMode repeatMode}) async {
     calls.add('setRepeatMode');
   }
 

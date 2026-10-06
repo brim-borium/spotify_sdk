@@ -3,16 +3,11 @@ import 'package:flutter/services.dart';
 /// Base exception class for all Spotify SDK errors.
 abstract class SpotifyException implements Exception {
   /// Constructs a [SpotifyException].
-  const SpotifyException(
-    this.message, {
-    this.code,
-    this.details,
-    this.cause,
-  });
+  const new(this.message, {this.code, this.details, this.cause});
 
   /// Factory translating any generic [Exception] or [PlatformException] into
   /// a specific [SpotifyException] subclass.
-  factory SpotifyException.fromException(Exception e) {
+  factory fromException(Exception e) {
     if (e is SpotifyException) {
       return e;
     }
@@ -25,15 +20,12 @@ abstract class SpotifyException implements Exception {
     if (e is PlatformException) {
       return SpotifyException.fromPlatformException(e);
     }
-    return SpotifyGeneralException(
-      e.toString(),
-      cause: e,
-    );
+    return SpotifyGeneralException(e.toString(), cause: e);
   }
 
   /// Factory mapping a [PlatformException] by its code and message into
   /// the appropriate domain exception subtype.
-  factory SpotifyException.fromPlatformException(PlatformException e) {
+  factory fromPlatformException(PlatformException e) {
     final codeLower = e.code.toLowerCase();
     final msg = (e.message != null && e.message!.isNotEmpty)
         ? e.message!
@@ -151,89 +143,49 @@ abstract class SpotifyException implements Exception {
 /// Thrown when authentication, token swap, or token refresh fails.
 class SpotifyAuthenticationException extends SpotifyException {
   /// Constructs a [SpotifyAuthenticationException].
-  const SpotifyAuthenticationException(
-    super.message, {
-    super.code,
-    super.details,
-    super.cause,
-  });
+  const new(super.message, {super.code, super.details, super.cause});
 }
 
 /// Thrown when Spotify app is not installed on the mobile host device.
 class SpotifyNotInstalledException extends SpotifyException {
   /// Constructs a [SpotifyNotInstalledException].
-  const SpotifyNotInstalledException(
-    super.message, {
-    super.code,
-    super.details,
-    super.cause,
-  });
+  const new(super.message, {super.code, super.details, super.cause});
 }
 
 /// Thrown when connecting to Spotify App Remote fails or Spotify Remote
 /// is disconnected.
 class SpotifyConnectionException extends SpotifyException {
   /// Constructs a [SpotifyConnectionException].
-  const SpotifyConnectionException(
-    super.message, {
-    super.code,
-    super.details,
-    super.cause,
-  });
+  const new(super.message, {super.code, super.details, super.cause});
 }
 
 /// Thrown when playback commands (play, pause, skip, seek, queue, repeat,
 /// shuffle) fail.
 class SpotifyPlaybackException extends SpotifyException {
   /// Constructs a [SpotifyPlaybackException].
-  const SpotifyPlaybackException(
-    super.message, {
-    super.code,
-    super.details,
-    super.cause,
-  });
+  const new(super.message, {super.code, super.details, super.cause});
 }
 
 /// Thrown when user library or capability operations fail.
 class SpotifyLibraryException extends SpotifyException {
   /// Constructs a [SpotifyLibraryException].
-  const SpotifyLibraryException(
-    super.message, {
-    super.code,
-    super.details,
-    super.cause,
-  });
+  const new(super.message, {super.code, super.details, super.cause});
 }
 
 /// Thrown when image / artwork fetching fails.
 class SpotifyImageException extends SpotifyException {
   /// Constructs a [SpotifyImageException].
-  const SpotifyImageException(
-    super.message, {
-    super.code,
-    super.details,
-    super.cause,
-  });
+  const new(super.message, {super.code, super.details, super.cause});
 }
 
 /// Thrown when a method is not implemented on the current platform.
 class SpotifyUnimplementedException extends SpotifyException {
   /// Constructs a [SpotifyUnimplementedException].
-  const SpotifyUnimplementedException(
-    super.message, {
-    super.code,
-    super.details,
-    super.cause,
-  });
+  const new(super.message, {super.code, super.details, super.cause});
 }
 
 /// Generic Spotify SDK exception for uncategorized errors.
 class SpotifyGeneralException extends SpotifyException {
   /// Constructs a [SpotifyGeneralException].
-  const SpotifyGeneralException(
-    super.message, {
-    super.code,
-    super.details,
-    super.cause,
-  });
+  const new(super.message, {super.code, super.details, super.cause});
 }

@@ -11,7 +11,7 @@ Execute autonomous end-to-end testing on physical Android devices using ADB MCP 
 
 1. **Pre-flight Checks**:
    - Verify device connection (`adb devices`).
-   - Check [packages/spotify_sdk/example/.env](file:///Users/tobi/Projects/spotify_sdk/packages/spotify_sdk/example/.env).
+   - Check [packages/spotify_sdk/example/.env](packages/spotify_sdk/example/.env).
    - Confirm Spotify app (`com.spotify.music`) is installed and logged in.
 
 2. **Reset Log Buffer**: Clear old logs with `adb logcat -c`.

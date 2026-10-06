@@ -7,10 +7,7 @@ import 'package:spotify_sdk_example/theme/spotify_theme.dart';
 /// Card for testing custom URI play & queue requests with preset track buttons.
 class CustomPlaybackCard extends StatefulWidget {
   /// Creates a [CustomPlaybackCard].
-  const CustomPlaybackCard({
-    required this.controller,
-    super.key,
-  });
+  const new({required this.controller, super.key});
 
   /// Spotify controller reference.
   final SpotifyController controller;
@@ -135,9 +132,7 @@ class _CustomPlaybackCardState extends State<CustomPlaybackCard> {
                       ? () {
                           final uri = _uriTextController.text.trim();
                           if (uri.isNotEmpty) {
-                            unawaited(
-                              widget.controller.play(spotifyUri: uri),
-                            );
+                            unawaited(widget.controller.play(spotifyUri: uri));
                           }
                         }
                       : null,
@@ -155,9 +150,7 @@ class _CustomPlaybackCardState extends State<CustomPlaybackCard> {
                       ? () {
                           final uri = _uriTextController.text.trim();
                           if (uri.isNotEmpty) {
-                            unawaited(
-                              widget.controller.queue(spotifyUri: uri),
-                            );
+                            unawaited(widget.controller.queue(spotifyUri: uri));
                           }
                         }
                       : null,

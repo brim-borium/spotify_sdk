@@ -9,10 +9,7 @@ import 'package:spotify_sdk_web/src/player/web_player_dispatcher.dart';
 /// Manages Spotify Web Playback SDK Player instance lifecycle and device ID.
 class WebPlayerManager {
   /// Constructor
-  WebPlayerManager({
-    required this.authSession,
-    required this.playerDispatcher,
-  });
+  new({required this.authSession, required this.playerDispatcher});
 
   /// Authentication session manager.
   final SpotifyAuthSession authSession;

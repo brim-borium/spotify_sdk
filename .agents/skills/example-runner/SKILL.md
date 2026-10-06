@@ -5,11 +5,11 @@ description: Run and test spotify_sdk integration using the companion example ap
 
 # Example App Runner (`example-runner`)
 
-Run and test the plugin using the companion application in [example/](file:///Users/tobi/Projects/spotify_sdk/example).
+Run and test the plugin using the companion application in [example/](example).
 
 ## Setup
 
-Create `.env` file at [example/.env](file:///Users/tobi/Projects/spotify_sdk/example/.env):
+Create `.env` file at [example/.env](example/.env):
 ```ini
 CLIENT_ID=your_spotify_client_id
 REDIRECT_URL=your_spotify_redirect_url

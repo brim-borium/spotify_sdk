@@ -6,10 +6,7 @@ import 'package:spotify_sdk_example/widgets/system_crossfade_card.dart';
 /// Tab for authentication, connections, device switching, and crossfade.
 class SystemTab extends StatelessWidget {
   /// Creates a [SystemTab].
-  const SystemTab({
-    required this.controller,
-    super.key,
-  });
+  const new({required this.controller, super.key});
 
   /// Spotify controller reference.
   final SpotifyController controller;

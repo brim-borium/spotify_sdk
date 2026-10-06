@@ -32,7 +32,7 @@ export 'package:spotify_sdk_web/src/player/web_player_manager.dart';
 ///
 class SpotifySdkPlugin extends SpotifySdkPlatform {
   /// constructor
-  SpotifySdkPlugin(
+  new(
     this.playerContextEventController,
     this.playerStateEventController,
     this.playerCapabilitiesEventController,
@@ -145,7 +145,7 @@ class SpotifySdkPlugin extends SpotifySdkPlatform {
 
     switch (call.method) {
       case MethodNames.connectToSpotify:
-        return connectToSpotifyRemote(
+        return await connectToSpotifyRemote(
           clientId: arguments?[ParamNames.clientId] as String? ?? '',
           redirectUrl: arguments?[ParamNames.redirectUrl] as String? ?? '',
           spotifyUri: arguments?[ParamNames.spotifyUri] as String? ?? '',
@@ -156,7 +156,7 @@ class SpotifySdkPlugin extends SpotifySdkPlatform {
           accessToken: arguments?[ParamNames.accessToken] as String?,
         );
       case MethodNames.getAccessToken:
-        return getAccessToken(
+        return await getAccessToken(
           clientId: arguments?[ParamNames.clientId] as String? ?? '',
           redirectUrl: arguments?[ParamNames.redirectUrl] as String? ?? '',
           spotifyUri: arguments?[ParamNames.spotifyUri] as String? ?? '',
@@ -164,7 +164,7 @@ class SpotifySdkPlugin extends SpotifySdkPlatform {
           scope: arguments?[ParamNames.scope] as String?,
         );
       case MethodNames.disconnectFromSpotify:
-        return disconnect();
+        return await disconnect();
       case MethodNames.getCrossfadeState:
         final crossfade = await getCrossFadeState();
         return crossfade != null ? jsonEncode(crossfade.toJson()) : null;
@@ -233,7 +233,7 @@ class SpotifySdkPlugin extends SpotifySdkPlatform {
                       orElse: () => ImageDimension.medium,
                     )
                   : ImageDimension.medium);
-        return getImage(
+        return await getImage(
           imageUri: ImageUri(arguments?[ParamNames.imageUri] as String? ?? ''),
           dimension: dimension,
         );
@@ -277,9 +277,7 @@ class SpotifySdkPlugin extends SpotifySdkPlatform {
       );
     }
 
-    final success = await _playerManager.connectPlayer(
-      playerName: playerName,
-    );
+    final success = await _playerManager.connectPlayer(playerName: playerName);
 
     if (!success) {
       _onSpotifyDisconnected(
@@ -305,7 +303,7 @@ class SpotifySdkPlugin extends SpotifySdkPlatform {
         code: 'Authentication Error',
       );
     }
-    return _authSession.authorize(
+    return await _authSession.authorize(
       clientId: clientId,
       redirectUrl: redirectUrl,
       scopes: scope ?? defaultScopes,
@@ -319,7 +317,7 @@ class SpotifySdkPlugin extends SpotifySdkPlatform {
     String? scope,
     String? tokenSwapUrl,
   }) async {
-    return getAccessToken(
+    return await getAccessToken(
       clientId: clientId,
       redirectUrl: redirectUrl,
       scope: scope,
@@ -358,10 +356,7 @@ class SpotifySdkPlugin extends SpotifySdkPlatform {
   }
 
   @override
-  Future<void> play({
-    required String spotifyUri,
-    bool asRadio = false,
-  }) async {
+  Future<void> play({required String spotifyUri, bool asRadio = false}) async {
     await _sdkLoader.ensureSdkLoaded();
     await _webApiClient.play(
       uri: spotifyUri,
@@ -407,10 +402,7 @@ class SpotifySdkPlugin extends SpotifySdkPlatform {
     final currentState = await getPlayerState();
     final currentPosition = currentState?.playbackPosition ?? 0;
     final targetPosition = (currentPosition + relativeMilliseconds)
-        .clamp(
-          0,
-          double.infinity,
-        )
+        .clamp(0, double.infinity)
         .toInt();
     await seekTo(positionedMilliseconds: targetPosition);
   }
@@ -482,27 +474,21 @@ class SpotifySdkPlugin extends SpotifySdkPlatform {
   }
 
   @override
-  Future<Capabilities?> getCapabilities({
-    required String spotifyUri,
-  }) async {
+  Future<Capabilities?> getCapabilities({required String spotifyUri}) async {
     await _sdkLoader.ensureSdkLoaded();
     return Capabilities(canPlayOnDemand: true);
   }
 
   @override
-  Future<LibraryState?> getLibraryState({
-    required String spotifyUri,
-  }) async {
+  Future<LibraryState?> getLibraryState({required String spotifyUri}) async {
     await _sdkLoader.ensureSdkLoaded();
-    return _webApiClient.getLibraryState(spotifyUri: spotifyUri);
+    return await _webApiClient.getLibraryState(spotifyUri: spotifyUri);
   }
 
   @override
   Future<void> switchToLocalDevice() async {
     await _sdkLoader.ensureSdkLoaded();
-    return _webApiClient.switchToLocalDevice(
-      deviceId: _playerManager.deviceId,
-    );
+    await _webApiClient.switchToLocalDevice(deviceId: _playerManager.deviceId);
   }
 
   @override
@@ -511,7 +497,10 @@ class SpotifySdkPlugin extends SpotifySdkPlatform {
     ImageDimension dimension = ImageDimension.medium,
   }) async {
     await _sdkLoader.ensureSdkLoaded();
-    return _webApiClient.getImage(imageUri: imageUri, dimension: dimension);
+    return await _webApiClient.getImage(
+      imageUri: imageUri,
+      dimension: dimension,
+    );
   }
 
   @override
@@ -557,12 +546,7 @@ class SpotifySdkPlugin extends SpotifySdkPlatform {
 
     // emit connected event
     connectionStatusEventController.add(
-      ConnectionStatus(
-        'Spotify SDK connected',
-        '',
-        '',
-        connected: true,
-      ),
+      ConnectionStatus('Spotify SDK connected', '', '', connected: true),
     );
   }
 

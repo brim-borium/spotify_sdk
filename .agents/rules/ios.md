@@ -1,12 +1,12 @@
 # iOS Platform Rules for `spotify_sdk`
 
-Adhere to these rules when working in [packages/spotify_sdk_ios/ios/](file:///Users/tobi/Projects/spotify_sdk/packages/spotify_sdk_ios/ios).
+Adhere to these rules when working in [packages/spotify_sdk_ios/ios/](packages/spotify_sdk_ios/ios).
 
 ---
 
 ## 1. Project Organization
-- Native iOS Swift logic lives in [SwiftSpotifySdkPlugin.swift](file:///Users/tobi/Projects/spotify_sdk/packages/spotify_sdk_ios/ios/Classes/SwiftSpotifySdkPlugin.swift).
-- Method and channel names align with [SpotifySdkConstants.swift](file:///Users/tobi/Projects/spotify_sdk/packages/spotify_sdk_ios/ios/Classes/SpotifySdkConstants.swift) and [platform_channels.dart](file:///Users/tobi/Projects/spotify_sdk/packages/spotify_sdk_platform_interface/lib/platform_channels.dart).
+- Native iOS Swift logic lives in [SwiftSpotifySdkPlugin.swift](packages/spotify_sdk_ios/ios/Classes/SwiftSpotifySdkPlugin.swift).
+- Method and channel names align with [SpotifySdkConstants.swift](packages/spotify_sdk_ios/ios/Classes/SpotifySdkConstants.swift) and [platform_channels.dart](packages/spotify_sdk_platform_interface/lib/platform_channels.dart).
 - Target minimum iOS deployment version is **13.0** (aligned across `spotify_sdk_ios.podspec`, `Package.swift`, and example `Podfile`).
 
 ---

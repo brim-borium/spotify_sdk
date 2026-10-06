@@ -5,7 +5,7 @@ description: Generate Dart JSON models and *.g.dart files using build_runner.
 
 # Build Runner (`build-runner`)
 
-Run `build_runner` to generate serialization models in [packages/spotify_sdk_platform_interface/lib/models/](file:///Users/tobi/Projects/spotify_sdk/packages/spotify_sdk_platform_interface/lib/models).
+Run `build_runner` to generate serialization models in [packages/spotify_sdk_platform_interface/lib/models/](packages/spotify_sdk_platform_interface/lib/models).
 
 ## Invocation
 

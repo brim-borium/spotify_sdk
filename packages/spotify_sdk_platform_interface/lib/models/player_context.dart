@@ -6,11 +6,10 @@ part 'player_context.g.dart';
 @JsonSerializable()
 class PlayerContext {
   /// Constructor for [PlayerContext].
-  PlayerContext(this.title, this.subtitle, this.type, this.uri);
+  new(this.title, this.subtitle, this.type, this.uri);
 
   /// Converts a [Map<String, dynamic>] to a [PlayerContext].
-  factory PlayerContext.fromJson(Map<String, dynamic> json) =>
-      _$PlayerContextFromJson(json);
+  factory fromJson(Map<String, dynamic> json) => _$PlayerContextFromJson(json);
 
   /// The title of the context.
   final String title;

@@ -6,7 +6,7 @@ part 'player_restrictions.g.dart';
 @JsonSerializable()
 class PlayerRestrictions {
   /// Constructor for [PlayerRestrictions].
-  PlayerRestrictions({
+  new({
     required this.canSkipNext,
     required this.canSkipPrevious,
     required this.canRepeatTrack,
@@ -16,7 +16,7 @@ class PlayerRestrictions {
   });
 
   /// Converts a [Map<String, dynamic>] to a [PlayerRestrictions].
-  factory PlayerRestrictions.fromJson(Map<String, dynamic> json) =>
+  factory fromJson(Map<String, dynamic> json) =>
       _$PlayerRestrictionsFromJson(json);
 
   /// Whether skipping to the next track is allowed.

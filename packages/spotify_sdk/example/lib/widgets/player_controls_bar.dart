@@ -8,10 +8,7 @@ import 'package:spotify_sdk_example/theme/spotify_theme.dart';
 /// Interactive playback options control card.
 class PlayerControlsBar extends StatefulWidget {
   /// Creates a [PlayerControlsBar].
-  const PlayerControlsBar({
-    required this.controller,
-    super.key,
-  });
+  const new({required this.controller, super.key});
 
   /// Spotify controller reference.
   final SpotifyController controller;
@@ -84,9 +81,8 @@ class _PlayerControlsBarState extends State<PlayerControlsBar> {
                       Expanded(
                         child: OutlinedButton.icon(
                           onPressed: widget.controller.isConnected
-                              ? () => unawaited(
-                                  widget.controller.toggleShuffle(),
-                                )
+                              ? () =>
+                                    unawaited(widget.controller.toggleShuffle())
                               : null,
                           icon: Icon(
                             Icons.shuffle_rounded,
@@ -269,9 +265,7 @@ class _PlayerControlsBarState extends State<PlayerControlsBar> {
       label: Text(label),
       selected: playerState?.playbackSpeed == speed.value,
       onSelected: widget.controller.isConnected
-          ? (_) => unawaited(
-              widget.controller.setPodcastPlaybackSpeed(speed),
-            )
+          ? (_) => unawaited(widget.controller.setPodcastPlaybackSpeed(speed))
           : null,
       selectedColor: SpotifyTheme.pastelLavender.withValues(alpha: 0.3),
       backgroundColor: SpotifyTheme.backgroundLight,

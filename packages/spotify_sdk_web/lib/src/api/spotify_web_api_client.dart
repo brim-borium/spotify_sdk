@@ -13,11 +13,9 @@ import 'package:spotify_sdk_web/src/auth/spotify_auth_session.dart';
 /// [http.Client].
 class SpotifyWebApiClient {
   /// Creates a [SpotifyWebApiClient].
-  SpotifyWebApiClient({
-    SpotifyAuthSession? authSession,
-    http.Client? httpClient,
-  }) : _authSession = authSession ?? SpotifyAuthSession(),
-       _httpClient = httpClient ?? http.Client();
+  new({SpotifyAuthSession? authSession, http.Client? httpClient})
+    : _authSession = authSession ?? SpotifyAuthSession(),
+      _httpClient = httpClient ?? http.Client();
 
   final SpotifyAuthSession _authSession;
   final http.Client _httpClient;
@@ -33,10 +31,7 @@ class SpotifyWebApiClient {
   }
 
   /// Plays a given [uri] (track or context) on player device [deviceId].
-  Future<void> play({
-    required String? uri,
-    required String? deviceId,
-  }) async {
+  Future<void> play({required String? uri, required String? deviceId}) async {
     if (deviceId == null || deviceId.isEmpty) {
       throw PlatformException(
         message: 'Spotify player not connected!',
@@ -78,10 +73,7 @@ class SpotifyWebApiClient {
 
   /// Adds a given track [uri] to the playback queue on player
   /// device [deviceId].
-  Future<void> queue({
-    required String? uri,
-    required String? deviceId,
-  }) async {
+  Future<void> queue({required String? uri, required String? deviceId}) async {
     if (deviceId == null || deviceId.isEmpty) {
       throw PlatformException(
         message: 'Spotify player not connected!',

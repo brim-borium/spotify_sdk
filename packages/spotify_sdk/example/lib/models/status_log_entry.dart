@@ -16,7 +16,7 @@ enum LogSeverity {
 /// Represents a log entry captured during Spotify SDK interactions.
 class StatusLogEntry {
   /// Creates a [StatusLogEntry].
-  StatusLogEntry({
+  new({
     required this.message,
     this.detail,
     this.severity = LogSeverity.info,

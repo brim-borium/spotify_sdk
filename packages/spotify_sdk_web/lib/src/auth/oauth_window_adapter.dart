@@ -5,7 +5,6 @@ import 'package:flutter/services.dart';
 import 'package:web/web.dart' as web;
 
 /// Interface for launching the Spotify authorization popup window.
-// ignore: one_member_abstracts
 abstract class OAuthWindowAdapter {
   /// Opens popup to [authorizationUri] and returns
   /// the OAuth response query string.
@@ -44,26 +43,24 @@ class BrowserWindowAdapter implements OAuthWindowAdapter {
     );
 
     String? message;
-    final sub = web.window.onMessage.listen(
-      (event) {
-        try {
-          final jsData = event.data;
-          if (jsData != null) {
-            String? data;
-            try {
-              data = (jsData as JSString).toDart;
-            } on Object catch (_) {
-              data = jsData.toString();
-            }
-            if (data.contains('code=') || data.contains('error=')) {
-              message = data;
-            }
+    final sub = web.window.onMessage.listen((event) {
+      try {
+        final jsData = event.data;
+        if (jsData != null) {
+          String? data;
+          try {
+            data = (jsData as JSString).toDart;
+          } on Object catch (_) {
+            data = jsData.toString();
           }
-        } on Object catch (_) {
-          // Ignore non-string or external message events
+          if (data.contains('code=') || data.contains('error=')) {
+            message = data;
+          }
         }
-      },
-    );
+      } on Object catch (_) {
+        // Ignore non-string or external message events
+      }
+    });
 
     while (authPopup?.closed != true && message == null) {
       await Future<void>.delayed(const Duration(milliseconds: 250));
@@ -115,7 +112,7 @@ class BrowserWindowAdapter implements OAuthWindowAdapter {
 /// Fake implementation of [OAuthWindowAdapter] for testing.
 class FakeWindowAdapter implements OAuthWindowAdapter {
   /// Creates a [FakeWindowAdapter].
-  FakeWindowAdapter({this.authCodeToReturn = 'mock_auth_code'});
+  new({this.authCodeToReturn = 'mock_auth_code'});
 
   /// Auth code to return automatically.
   final String authCodeToReturn;

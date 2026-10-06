@@ -8,7 +8,7 @@ import 'package:spotify_sdk_platform_interface/src/platform_channel_gateway.dart
 /// An implementation of [SpotifySdkPlatform] that uses method channels.
 class MethodChannelSpotifySdk extends SpotifySdkPlatform {
   /// Creates a [MethodChannelSpotifySdk], optionally taking a custom [gateway].
-  MethodChannelSpotifySdk({PlatformChannelGateway? gateway})
+  new({PlatformChannelGateway? gateway})
     : _gateway = gateway ?? PlatformChannelGateway();
 
   final PlatformChannelGateway _gateway;
@@ -114,16 +114,14 @@ class MethodChannelSpotifySdk extends SpotifySdkPlatform {
   );
 
   @override
-  Future<void> play({
-    required String spotifyUri,
-    bool asRadio = false,
-  }) => _gateway.invokeVoid(
-    MethodNames.play,
-    arguments: {
-      ParamNames.spotifyUri: spotifyUri,
-      ParamNames.asRadio: asRadio,
-    },
-  );
+  Future<void> play({required String spotifyUri, bool asRadio = false}) =>
+      _gateway.invokeVoid(
+        MethodNames.play,
+        arguments: {
+          ParamNames.spotifyUri: spotifyUri,
+          ParamNames.asRadio: asRadio,
+        },
+      );
 
   @override
   Future<void> pause() => _gateway.invokeVoid(MethodNames.pause);
@@ -136,9 +134,7 @@ class MethodChannelSpotifySdk extends SpotifySdkPlatform {
     required PodcastPlaybackSpeed podcastPlaybackSpeed,
   }) => _gateway.invokeVoid(
     MethodNames.setPodcastPlaybackSpeed,
-    arguments: {
-      ParamNames.podcastPlaybackSpeed: podcastPlaybackSpeed.value,
-    },
+    arguments: {ParamNames.podcastPlaybackSpeed: podcastPlaybackSpeed.value},
   );
 
   @override
@@ -163,20 +159,15 @@ class MethodChannelSpotifySdk extends SpotifySdkPlatform {
   Future<void> seekTo({required int positionedMilliseconds}) =>
       _gateway.invokeVoid(
         MethodNames.seekTo,
-        arguments: {
-          ParamNames.positionedMilliseconds: positionedMilliseconds,
-        },
+        arguments: {ParamNames.positionedMilliseconds: positionedMilliseconds},
       );
 
   @override
-  Future<void> seekToRelativePosition({
-    required int relativeMilliseconds,
-  }) => _gateway.invokeVoid(
-    MethodNames.seekToRelativePosition,
-    arguments: {
-      ParamNames.relativeMilliseconds: relativeMilliseconds,
-    },
-  );
+  Future<void> seekToRelativePosition({required int relativeMilliseconds}) =>
+      _gateway.invokeVoid(
+        MethodNames.seekToRelativePosition,
+        arguments: {ParamNames.relativeMilliseconds: relativeMilliseconds},
+      );
 
   @override
   Future<void> switchToLocalDevice() =>
@@ -204,21 +195,19 @@ class MethodChannelSpotifySdk extends SpotifySdkPlatform {
       );
 
   @override
-  Future<Capabilities?> getCapabilities({
-    required String spotifyUri,
-  }) => _gateway.invokeJson<Capabilities>(
-    MethodNames.getCapabilities,
-    decode: Capabilities.fromJson,
-  );
+  Future<Capabilities?> getCapabilities({required String spotifyUri}) =>
+      _gateway.invokeJson<Capabilities>(
+        MethodNames.getCapabilities,
+        decode: Capabilities.fromJson,
+      );
 
   @override
-  Future<LibraryState?> getLibraryState({
-    required String spotifyUri,
-  }) => _gateway.invokeJson<LibraryState>(
-    MethodNames.getLibraryState,
-    arguments: {ParamNames.spotifyUri: spotifyUri},
-    decode: LibraryState.fromJson,
-  );
+  Future<LibraryState?> getLibraryState({required String spotifyUri}) =>
+      _gateway.invokeJson<LibraryState>(
+        MethodNames.getLibraryState,
+        arguments: {ParamNames.spotifyUri: spotifyUri},
+        decode: LibraryState.fromJson,
+      );
 
   @override
   Future<Uint8List?> getImage({
@@ -239,12 +228,11 @@ class MethodChannelSpotifySdk extends SpotifySdkPlatform {
   );
 
   @override
-  Future<void> setRepeatMode({
-    required SpotifyRepeatMode repeatMode,
-  }) => _gateway.invokeVoid(
-    MethodNames.setRepeatMode,
-    arguments: {ParamNames.repeatMode: repeatMode.index},
-  );
+  Future<void> setRepeatMode({required SpotifyRepeatMode repeatMode}) =>
+      _gateway.invokeVoid(
+        MethodNames.setRepeatMode,
+        arguments: {ParamNames.repeatMode: repeatMode.index},
+      );
 
   @override
   Stream<PlayerContext> subscribePlayerContext() =>

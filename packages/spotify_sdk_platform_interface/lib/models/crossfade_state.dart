@@ -6,14 +6,10 @@ part 'crossfade_state.g.dart';
 @JsonSerializable()
 class CrossfadeState {
   /// Constructor for [CrossfadeState].
-  CrossfadeState(
-    this.duration, {
-    required this.isEnabled,
-  });
+  new(this.duration, {required this.isEnabled});
 
   /// Converts a [Map<String, dynamic>] to a [CrossfadeState].
-  factory CrossfadeState.fromJson(Map<String, dynamic> json) =>
-      _$CrossfadeStateFromJson(json);
+  factory fromJson(Map<String, dynamic> json) => _$CrossfadeStateFromJson(json);
 
   /// Whether crossfade is enabled.
   final bool isEnabled;

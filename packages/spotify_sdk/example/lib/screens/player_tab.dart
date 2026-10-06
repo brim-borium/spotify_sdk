@@ -11,10 +11,7 @@ import 'package:spotify_sdk_example/widgets/player_controls_bar.dart';
 /// Main Player Tab featuring connection status, player controls, and SDK tools.
 class PlayerTab extends StatelessWidget {
   /// Creates a [PlayerTab].
-  const PlayerTab({
-    required this.controller,
-    super.key,
-  });
+  const new({required this.controller, super.key});
 
   /// Spotify controller reference.
   final SpotifyController controller;

@@ -60,9 +60,7 @@ void main() {
 
     test('handleMethodCall throws PlatformException for unknown method', () {
       expect(
-        () => plugin.handleMethodCall(
-          const MethodCall('unimplementedMethod'),
-        ),
+        () => plugin.handleMethodCall(const MethodCall('unimplementedMethod')),
         throwsA(isA<PlatformException>()),
       );
     });
