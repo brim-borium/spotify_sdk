@@ -80,15 +80,17 @@ class AuthHandler: NSObject {
         appRemote.delegate = remoteManager.connectionStatusHandler
         appRemote.connectionParameters.accessToken = accessToken
 
-        let playerDelegate = PlayerDelegate()
+        let playerDelegate = remoteManager.playerDelegate
         if remoteManager.playerStateHandler == nil {
             remoteManager.playerStateHandler = PlayerStateHandler(appRemote: appRemote, playerDelegate: playerDelegate)
             RemoteManager.playerStateChannel?.setStreamHandler(remoteManager.playerStateHandler)
         }
+        remoteManager.playerStateHandler?.setAppRemote(appRemote)
         if remoteManager.playerContextHandler == nil {
             remoteManager.playerContextHandler = PlayerContextHandler(appRemote: appRemote, playerDelegate: playerDelegate)
             RemoteManager.playerContextChannel?.setStreamHandler(remoteManager.playerContextHandler)
         }
+        remoteManager.playerContextHandler?.setAppRemote(appRemote)
         if remoteManager.capabilitiesHandler == nil {
             remoteManager.capabilitiesHandler = CapabilitiesHandler()
             RemoteManager.capabilitiesChannel?.setStreamHandler(remoteManager.capabilitiesHandler)

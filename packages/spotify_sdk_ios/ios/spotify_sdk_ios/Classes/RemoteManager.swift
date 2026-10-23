@@ -5,6 +5,7 @@ class RemoteManager: NSObject {
     static let shared = RemoteManager()
 
     var appRemote: SPTAppRemote?
+    let playerDelegate = PlayerDelegate()
     var connectionStatusHandler: ConnectionStatusHandler?
     var playerStateHandler: PlayerStateHandler?
     var playerContextHandler: PlayerContextHandler?

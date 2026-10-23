@@ -35,12 +35,7 @@ class AuthHandler(private val remoteManager: RemoteManager) {
             connectionParams,
             object : ConnectionListener {
                 override fun onConnected(appRemote: SpotifyAppRemote) {
-                    remoteManager.spotifyAppRemote = appRemote
-
-                    remoteManager.playerContextChannel?.setStreamHandler(PlayerContextChannel(appRemote.playerApi))
-                    remoteManager.playerStateChannel?.setStreamHandler(PlayerStateChannel(appRemote.playerApi))
-                    remoteManager.capabilitiesChannel?.setStreamHandler(CapabilitiesChannel(appRemote.userApi))
-                    remoteManager.userStatusChannel?.setStreamHandler(UserStatusChannel(appRemote.userApi))
+                    remoteManager.attachAppRemote(appRemote)
                     initiallyConnected = true
 
                     Log.i(loggingTag, "App Remote successfully connected")
@@ -112,6 +107,7 @@ class AuthHandler(private val remoteManager: RemoteManager) {
         val remote = remoteManager.spotifyAppRemote
         if (remote != null && remote.isConnected) {
             SpotifyAppRemote.disconnect(remote)
+            remoteManager.detachAppRemote()
             remoteManager.connStatusEventChannel(ConnectionStatusChannel.ConnectionEvent(false, "Successfully disconnected from Spotify.", null, null))
             result.success(true)
         } else if (remote != null && !remote.isConnected) {

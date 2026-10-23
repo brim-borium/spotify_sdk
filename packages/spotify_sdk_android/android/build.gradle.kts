@@ -126,6 +126,7 @@ dependencies {
     implementation("com.fasterxml.jackson.core:jackson-annotations:2.22")
     implementation("com.google.code.gson:gson:2.14.0")
     implementation("com.github.stuhlmeier:kotlin-events:v2.0")
+    testImplementation("junit:junit:4.13.2")
 }
 
 kotlin {

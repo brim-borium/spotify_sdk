@@ -25,18 +25,26 @@ class SpotifySdkPlugin : MethodCallHandler, FlutterPlugin, ActivityAware, Plugin
     val imageHandler = ImageHandler(remoteManager)
 
     override fun onAttachedToEngine(binding: FlutterPlugin.FlutterPluginBinding) {
-        remoteManager.applicationContext = binding.applicationContext
+        registerChannels(binding.binaryMessenger, binding.applicationContext)
+    }
 
-        methodChannel = MethodChannel(binding.binaryMessenger, SpotifySdkConstants.CHANNEL_SPOTIFY_SDK)
+    internal fun registerChannels(binaryMessenger: io.flutter.plugin.common.BinaryMessenger, applicationContext: android.content.Context?) {
+        remoteManager.applicationContext = applicationContext
+
+        methodChannel = MethodChannel(binaryMessenger, SpotifySdkConstants.CHANNEL_SPOTIFY_SDK)
         methodChannel.setMethodCallHandler(this)
 
-        remoteManager.playerContextChannel = EventChannel(binding.binaryMessenger, SpotifySdkConstants.CHANNEL_PLAYER_CONTEXT)
-        remoteManager.playerStateChannel = EventChannel(binding.binaryMessenger, SpotifySdkConstants.CHANNEL_PLAYER_STATE)
-        remoteManager.capabilitiesChannel = EventChannel(binding.binaryMessenger, SpotifySdkConstants.CHANNEL_CAPABILITIES)
-        remoteManager.userStatusChannel = EventChannel(binding.binaryMessenger, SpotifySdkConstants.CHANNEL_USER_STATUS)
-        remoteManager.connectionStatusChannel = EventChannel(binding.binaryMessenger, SpotifySdkConstants.CHANNEL_CONNECTION_STATUS)
+        remoteManager.playerContextChannel = EventChannel(binaryMessenger, SpotifySdkConstants.CHANNEL_PLAYER_CONTEXT)
+        remoteManager.playerStateChannel = EventChannel(binaryMessenger, SpotifySdkConstants.CHANNEL_PLAYER_STATE)
+        remoteManager.capabilitiesChannel = EventChannel(binaryMessenger, SpotifySdkConstants.CHANNEL_CAPABILITIES)
+        remoteManager.userStatusChannel = EventChannel(binaryMessenger, SpotifySdkConstants.CHANNEL_USER_STATUS)
+        remoteManager.connectionStatusChannel = EventChannel(binaryMessenger, SpotifySdkConstants.CHANNEL_CONNECTION_STATUS)
 
-        remoteManager.connectionStatusChannel?.setStreamHandler(ConnectionStatusChannel(remoteManager.connStatusEventChannel))
+        remoteManager.playerContextChannel?.setStreamHandler(remoteManager.playerContextStreamHandler)
+        remoteManager.playerStateChannel?.setStreamHandler(remoteManager.playerStateStreamHandler)
+        remoteManager.capabilitiesChannel?.setStreamHandler(remoteManager.capabilitiesStreamHandler)
+        remoteManager.userStatusChannel?.setStreamHandler(remoteManager.userStatusStreamHandler)
+        remoteManager.connectionStatusChannel?.setStreamHandler(remoteManager.connectionStatusStreamHandler)
     }
 
     override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {

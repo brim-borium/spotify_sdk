@@ -3,7 +3,11 @@ package de.minimalme.spotify_sdk
 import android.app.Activity
 import android.content.Context
 import com.spotify.android.appremote.api.SpotifyAppRemote
+import de.minimalme.spotify_sdk.subscriptions.CapabilitiesChannel
 import de.minimalme.spotify_sdk.subscriptions.ConnectionStatusChannel
+import de.minimalme.spotify_sdk.subscriptions.PlayerContextChannel
+import de.minimalme.spotify_sdk.subscriptions.PlayerStateChannel
+import de.minimalme.spotify_sdk.subscriptions.UserStatusChannel
 import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodChannel.Result
 import kotlinx.event.SetEvent
@@ -22,7 +26,29 @@ class RemoteManager {
     var connectionStatusChannel: EventChannel? = null
 
     var connStatusEventChannel: SetEvent<ConnectionStatusChannel.ConnectionEvent> = event()
+    val connectionStatusStreamHandler = ConnectionStatusChannel(connStatusEventChannel)
+    val playerContextStreamHandler = PlayerContextChannel()
+    val playerStateStreamHandler = PlayerStateChannel()
+    val capabilitiesStreamHandler = CapabilitiesChannel()
+    val userStatusStreamHandler = UserStatusChannel()
+
     var pendingOperation: PendingOperation? = null
+
+    fun attachAppRemote(appRemote: SpotifyAppRemote) {
+        spotifyAppRemote = appRemote
+        playerContextStreamHandler.attachPlayerApi(appRemote.playerApi)
+        playerStateStreamHandler.attachPlayerApi(appRemote.playerApi)
+        capabilitiesStreamHandler.attachUserApi(appRemote.userApi)
+        userStatusStreamHandler.attachUserApi(appRemote.userApi)
+    }
+
+    fun detachAppRemote() {
+        playerContextStreamHandler.attachPlayerApi(null)
+        playerStateStreamHandler.attachPlayerApi(null)
+        capabilitiesStreamHandler.attachUserApi(null)
+        userStatusStreamHandler.attachUserApi(null)
+        spotifyAppRemote = null
+    }
 
     inline fun withAppRemote(result: Result, block: (SpotifyAppRemote) -> Unit) {
         val remote = spotifyAppRemote

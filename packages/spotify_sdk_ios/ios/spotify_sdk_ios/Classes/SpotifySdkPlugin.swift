@@ -35,6 +35,12 @@ public class SpotifySdkPlugin: NSObject, FlutterPlugin {
         instance.remoteManager.connectionStatusHandler = ConnectionStatusHandler()
         connectionStatusChannel.setStreamHandler(instance.remoteManager.connectionStatusHandler)
 
+        instance.remoteManager.playerStateHandler = PlayerStateHandler(playerDelegate: instance.remoteManager.playerDelegate)
+        RemoteManager.playerStateChannel?.setStreamHandler(instance.remoteManager.playerStateHandler)
+
+        instance.remoteManager.playerContextHandler = PlayerContextHandler(playerDelegate: instance.remoteManager.playerDelegate)
+        RemoteManager.playerContextChannel?.setStreamHandler(instance.remoteManager.playerContextHandler)
+
         instance.remoteManager.capabilitiesHandler = CapabilitiesHandler()
         RemoteManager.capabilitiesChannel?.setStreamHandler(instance.remoteManager.capabilitiesHandler)
 
