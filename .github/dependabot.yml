@@ -83,7 +83,7 @@ updates:
 
   # Example app pub dependencies
   - package-ecosystem: "pub"
-    directory: "/example"
+    directory: "/packages/spotify_sdk/example"
     schedule:
       interval: "weekly"
     commit-message:
@@ -122,7 +122,7 @@ updates:
 
   # Gradle updates for Example app
   - package-ecosystem: "gradle"
-    directory: "/example/android"
+    directory: "/packages/spotify_sdk/example/android"
     schedule:
       interval: "weekly"
     commit-message:
