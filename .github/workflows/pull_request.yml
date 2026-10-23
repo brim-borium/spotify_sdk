@@ -45,9 +45,6 @@ jobs:
       - name: Run Tests with Coverage
         run: melos run test:coverage
 
-      - name: Run Android Native Unit Tests
-        run: melos run test:android
-
       - name: Render Coverage Table & Filter Generated Code
         if: always()
         run: |
@@ -108,6 +105,9 @@ jobs:
         run: |
           cd packages/spotify_sdk/example
           flutter build apk --debug
+
+      - name: Run Android Native Unit Tests
+        run: melos run test:android
 
       - name: Build Web Example App
         run: |

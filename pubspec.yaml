@@ -49,7 +49,7 @@ melos:
       description: Ensure all packages match standard formatting.
 
     test:android:
-      run: ./packages/spotify_sdk/example/android/gradlew -p packages/spotify_sdk/example/android :spotify_sdk_android:testDebugUnitTest
+      run: (test -f packages/spotify_sdk/example/android/gradlew || (cd packages/spotify_sdk/example && flutter build apk --debug)) && ./packages/spotify_sdk/example/android/gradlew -p packages/spotify_sdk/example/android :spotify_sdk_android:testDebugUnitTest
       description: Run Android native JUnit unit tests.
 
     test:all:
