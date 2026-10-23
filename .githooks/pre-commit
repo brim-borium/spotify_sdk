@@ -1,0 +1,10 @@
+#!/usr/bin/env sh
+set -e
+
+staged_dart_files=$(git diff --cached --name-only --diff-filter=ACMR -- '*.dart')
+if [ -n "$staged_dart_files" ]; then
+  echo "Checking Dart formatting on staged files..."
+  echo "$staged_dart_files" | xargs dart format --output=none --set-exit-if-changed
+  echo "Running static analysis..."
+  melos run analyze
+fi
