@@ -75,25 +75,10 @@ class AuthHandler: NSObject {
 
         let configuration = SPTConfiguration(clientID: clientId, redirectURL: redirectURL)
         let appRemote = SPTAppRemote(configuration: configuration, logLevel: .none)
-        remoteManager.appRemote = appRemote
 
         appRemote.delegate = remoteManager.connectionStatusHandler
         appRemote.connectionParameters.accessToken = accessToken
-
-        let playerDelegate = PlayerDelegate()
-        if remoteManager.playerStateHandler == nil {
-            remoteManager.playerStateHandler = PlayerStateHandler(appRemote: appRemote, playerDelegate: playerDelegate)
-            RemoteManager.playerStateChannel?.setStreamHandler(remoteManager.playerStateHandler)
-        }
-        if remoteManager.playerContextHandler == nil {
-            remoteManager.playerContextHandler = PlayerContextHandler(appRemote: appRemote, playerDelegate: playerDelegate)
-            RemoteManager.playerContextChannel?.setStreamHandler(remoteManager.playerContextHandler)
-        }
-        if remoteManager.capabilitiesHandler == nil {
-            remoteManager.capabilitiesHandler = CapabilitiesHandler()
-            RemoteManager.capabilitiesChannel?.setStreamHandler(remoteManager.capabilitiesHandler)
-        }
-        remoteManager.capabilitiesHandler?.setAppRemote(appRemote)
+        remoteManager.attachAppRemote(appRemote)
 
         var scopes: [String]?
         if let additionalScopes = additionalScopes {
