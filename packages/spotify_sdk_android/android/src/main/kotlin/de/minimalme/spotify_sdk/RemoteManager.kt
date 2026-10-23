@@ -36,17 +36,17 @@ class RemoteManager {
 
     fun attachAppRemote(appRemote: SpotifyAppRemote) {
         spotifyAppRemote = appRemote
-        playerContextStreamHandler.attachPlayerApi(appRemote.playerApi)
-        playerStateStreamHandler.attachPlayerApi(appRemote.playerApi)
-        capabilitiesStreamHandler.attachUserApi(appRemote.userApi)
-        userStatusStreamHandler.attachUserApi(appRemote.userApi)
+        playerContextStreamHandler.attachApi(appRemote.playerApi)
+        playerStateStreamHandler.attachApi(appRemote.playerApi)
+        capabilitiesStreamHandler.attachApi(appRemote.userApi)
+        userStatusStreamHandler.attachApi(appRemote.userApi)
     }
 
     fun detachAppRemote() {
-        playerContextStreamHandler.attachPlayerApi(null)
-        playerStateStreamHandler.attachPlayerApi(null)
-        capabilitiesStreamHandler.attachUserApi(null)
-        userStatusStreamHandler.attachUserApi(null)
+        playerContextStreamHandler.attachApi(null)
+        playerStateStreamHandler.attachApi(null)
+        capabilitiesStreamHandler.attachApi(null)
+        userStatusStreamHandler.attachApi(null)
         spotifyAppRemote = null
     }
 

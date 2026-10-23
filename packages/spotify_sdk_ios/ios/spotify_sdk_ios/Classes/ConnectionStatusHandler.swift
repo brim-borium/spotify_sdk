@@ -7,9 +7,7 @@ class ConnectionStatusHandler: StatusHandler, SPTAppRemoteDelegate {
     var connectionResult: FlutterResult?
     
     func appRemoteDidEstablishConnection(_ appRemote: SPTAppRemote) {
-        RemoteManager.shared.playerStateHandler?.setAppRemote(appRemote)
-        RemoteManager.shared.playerContextHandler?.setAppRemote(appRemote)
-        RemoteManager.shared.capabilitiesHandler?.setAppRemote(appRemote)
+        RemoteManager.shared.attachAppRemote(appRemote)
         RemoteManager.shared.userStatusHandler?.updateConnectionStatus(isConnected: true)
 
         connectionResult?(true)

@@ -21,4 +21,11 @@ class RemoteManager: NSObject {
     override init() {
         super.init()
     }
+
+    func attachAppRemote(_ appRemote: SPTAppRemote) {
+        self.appRemote = appRemote
+        playerStateHandler?.setAppRemote(appRemote)
+        playerContextHandler?.setAppRemote(appRemote)
+        capabilitiesHandler?.setAppRemote(appRemote)
+    }
 }
