@@ -1,3 +1,7 @@
+## 4.3.4
+
+ - Bump version to keep all packages in the workspace in lockstep.
+
 ## 4.3.3
 
  - **FIX**(spotify_sdk): fix capitalization of Spotify Remote in class docstring.

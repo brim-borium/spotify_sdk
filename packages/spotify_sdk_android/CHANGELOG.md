@@ -1,3 +1,7 @@
+## 4.3.4
+
+ - **FIX**(android,ios): register all EventChannel stream handlers on engine attach (#281).
+
 ## 4.3.3
 
  - Bump version to keep all packages in the workspace in lockstep.
