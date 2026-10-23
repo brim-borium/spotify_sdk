@@ -20,8 +20,8 @@ dependencies:
     sdk: flutter
   http: ^1.6.0
   spotify_sdk_platform_interface: ^4.3.3
-  synchronized: ^3.4.2
-  web: ^1.1.1
+  synchronized: ^3.5.0
+  web: ^1.1.2
 
 dev_dependencies:
   flutter_test:
