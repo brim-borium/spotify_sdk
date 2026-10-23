@@ -106,6 +106,9 @@ jobs:
           cd packages/spotify_sdk/example
           flutter build apk --debug
 
+      - name: Run Android Native Unit Tests
+        run: melos run test:android
+
       - name: Build Web Example App
         run: |
           cd packages/spotify_sdk/example

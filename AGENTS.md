@@ -4,11 +4,11 @@ Multi-platform Flutter plugin bridging native Spotify SDKs (Android, iOS, Web). 
 
 ---
 
-## 1. Architectural Intent & Standards
+## 1. Navigation Pointers
 
-- **Coding Standards**: See [CODING_STANDARDS.md](CODING_STANDARDS.md) for bridge patterns, model generation, error handling, and naming conventions.
-- **Central Constants**: All method channels and keys reside in [packages/spotify_sdk_platform_interface/lib/platform_channels.dart](packages/spotify_sdk_platform_interface/lib/platform_channels.dart), mirrored natively in `SpotifySdkConstants.kt` (Android) and `SpotifySdkConstants.swift` (iOS).
-- **Public API**: Consolidated in [packages/spotify_sdk/lib/spotify_sdk.dart](packages/spotify_sdk/lib/spotify_sdk.dart).
+- **Coding Standards (Review)**: [CODING_STANDARDS.md](CODING_STANDARDS.md) — bridge patterns, channel registration, model generation, error handling, and naming rules.
+- **Channel Constants**: [platform_channels.dart](packages/spotify_sdk_platform_interface/lib/platform_channels.dart)
+- **Public API**: [spotify_sdk.dart](packages/spotify_sdk/lib/spotify_sdk.dart)
 
 ---
 

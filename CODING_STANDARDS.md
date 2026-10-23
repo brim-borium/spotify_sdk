@@ -10,6 +10,7 @@ Guidelines and standards enforced during code review (via `/code-review`).
 - **Central Constants**: Store all method channel names and parameter keys in `packages/spotify_sdk_platform_interface/lib/platform_channels.dart`, mirrored natively in `SpotifySdkConstants.kt` (Android) and `SpotifySdkConstants.swift` (iOS).
 - **Consolidated API**: Expose public methods and event streams through `packages/spotify_sdk/lib/spotify_sdk.dart`.
 - **Synchronized Channels**: Support all 5 standard event channels across all platforms (`player_state`, `player_context`, `connection_status`, `capabilities`, `user_status`).
+- **Eager StreamHandler Registration**: Register all 5 `EventChannel` stream handlers eagerly on engine attachment (`onAttachedToEngine` on Android, `register(with:)` on iOS) so pre-connect Dart `.listen()` calls never fail with `MissingPluginException`; attach and detach the underlying native remote API on session connect/disconnect.
 
 ---
 

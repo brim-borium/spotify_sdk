@@ -29,33 +29,23 @@ To avoid ambiguity, the codebase aligns on the following terminology:
 *   **Artwork Image**: Refers to raw cover art assets. Represented by a persistent identifier (`ImageUri.raw`) and requested at specific resolution constraints (`ImageDimension`: `large`, `medium`, `small`, `thumbnail`).
 *   **Domain Exceptions** (represented in code by `SpotifyException`): Strongly-typed domain errors categorized by failure context (`SpotifyAuthenticationException`, `SpotifyNotInstalledException`, `SpotifyConnectionException`, `SpotifyPlaybackException`, `SpotifyLibraryException`, `SpotifyImageException`, `SpotifyUnimplementedException`, `SpotifyGeneralException`) with underlying `cause` preservation.
 
-## Architectural Conventions
+## Deep Modules & Package Boundaries
 
-To maintain synchronization and consistency across all platform wrappers, the codebase enforces the following conventions:
+For coding standards, channel synchronization, serialization, and exception rules, see [CODING_STANDARDS.md](CODING_STANDARDS.md).
 
 1.  **Federated Monorepo Structure**: 
     *   [spotify_sdk](packages/spotify_sdk): The public user-facing API package.
     *   [spotify_sdk_platform_interface](packages/spotify_sdk_platform_interface): The common contracts, model definitions, channels, and exception hierarchy.
     *   [spotify_sdk_android](packages/spotify_sdk_android), [spotify_sdk_ios](packages/spotify_sdk_ios), [spotify_sdk_web](packages/spotify_sdk_web): The platform-specific native implementations.
-2.  **Centralized Bridge Pattern**:
-    *   All method channel names, event channel names, method keys, and parameter keys MUST be stored centrally in [platform_channels.dart](packages/spotify_sdk_platform_interface/lib/platform_channels.dart), mirrored natively in `SpotifySdkConstants.kt` (Android) and `SpotifySdkConstants.swift` (iOS) across all 5 standard event channels (`player_state`, `player_context`, `connection_status`, `capabilities`, `user_status`).
-3.  **Data Serialization & Code Generation**:
-    *   All model classes reside in the platform interface models folder and must use `json_serializable`.
-    *   Always use `@JsonKey(name: 'snake_case')` for fields to align with the native Spotify SDK payloads.
-    *   Never manually edit `.g.dart` files; always run `build_runner` for regeneration.
-4.  **Structured Domain Error Handling**:
-    *   Wrap all native channel invocations in `try-on Exception` blocks.
-    *   Log exceptions using a unified Logger helper, mapping errors to `SpotifyException` subtypes via `SpotifyException.fromPlatformException` and `SpotifyException.fromException`.
-    *   Always preserve root `cause` and native error details when propagating domain exceptions.
-5.  **Platform Channel Gateway (`PlatformChannelGateway`)**:
+2.  **Platform Channel Gateway (`PlatformChannelGateway`)**:
     *   Centralized deep module in `spotify_sdk_platform_interface` encapsulating method channel invocations, JSON deserialization, event stream subscriptions, and method-bound exception logging.
-6.  **Web Auth Session (`SpotifyAuthSession`)**:
+3.  **Web Auth Session (`SpotifyAuthSession`)**:
     *   Dedicated deep module in `spotify_sdk_web` managing browser OAuth PKCE code verifier/challenge math, token storage seams (`AuthSessionStorage`), popup authorization seams (`OAuthWindowAdapter`), and reentrant refresh locks.
-7.  **Web Player Dispatcher (`WebPlayerDispatcher`), Web SDK Loader (`WebSdkLoader`), and Player Manager (`WebPlayerManager`)**:
+4.  **Web Player Dispatcher (`WebPlayerDispatcher`), Web SDK Loader (`WebSdkLoader`), and Player Manager (`WebPlayerManager`)**:
     *   Isolated deep modules in `spotify_sdk_web`: `WebSdkLoader` encapsulates DOM script injection and SDK ready callback detection; `WebPlayerManager` manages device ID resolution via event-driven `Completer<String>` (eliminating polling loops); `WebPlayerDispatcher` directly emits typed Dart domain models (`PlayerState`, `PlayerContext`, `ConnectionStatus`) into broadcast stream controllers without intermediate JSON string encoding/decoding.
-8.  **Web API Client (`SpotifyWebApiClient`)**:
+5.  **Web API Client (`SpotifyWebApiClient`)**:
     *   Dedicated deep module in `spotify_sdk_web` encapsulating Spotify REST Web API requests (library state, queueing, playback seeking, artwork HTTP fetching, device switching) with automatic bearer token authorization via `SpotifyAuthSession` and error translation.
-9.  **Native Remote Managers (`RemoteManager`)**:
-    *   Stateful native coordinators (`RemoteManager.kt` on Android, `RemoteManager.swift` on iOS) managing `SpotifyAppRemote` / `SPTAppRemote` connection lifecycles, session parameters, and clean teardown.
-10. **Native Domain Handlers (`AuthHandler`, `PlayerHandler`, `LibraryHandler`, `ImageHandler`, `CapabilitiesHandler`, `UserStatusHandler`)**:
+6.  **Native Remote Managers (`RemoteManager`)**:
+    *   Stateful native coordinators (`RemoteManager.kt` on Android, `RemoteManager.swift` on iOS) managing `SpotifyAppRemote` / `SPTAppRemote` connection lifecycles, stream handler API attachment, session parameters, and clean teardown.
+7.  **Native Domain Handlers (`AuthHandler`, `PlayerHandler`, `LibraryHandler`, `ImageHandler`, `CapabilitiesHandler`, `UserStatusHandler`)**:
     *   Deep modular handlers on both Android and iOS that isolate method execution by domain boundaries, delegating to `RemoteManager` and mapping errors via `SpotifyErrorMapper`.

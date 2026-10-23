@@ -27,6 +27,7 @@ Adhere to these rules when working in [packages/spotify_sdk_android/android/](pa
 - Return Spotify SDK errors via `result.error(code, message, details)` mapped through `SpotifyErrorMapper`.
 
 ### EventChannel Subscriptions
-- Implement `EventChannel.StreamHandler` for all 5 state subscriptions (`player_state`, `player_context`, `connection_status`, `capabilities`, `user_status`).
+- Implement `EventChannel.StreamHandler` (extending `BaseSubscriptionChannel` for SDK-backed streams) for all 5 state subscriptions (`player_state`, `player_context`, `connection_status`, `capabilities`, `user_status`).
+- Register all 5 stream handlers eagerly in `onAttachedToEngine`, and attach/detach `SpotifyAppRemote` APIs via `RemoteManager.attachAppRemote` / `detachAppRemote`.
 - Emit JSON strings for consistent cross-platform parsing on Dart side.
-- Clean up connections and nullify references inside `onCancel`.
+- Clean up subscriptions and nullify `eventSink` references inside `onCancel`.
